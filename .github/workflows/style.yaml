@@ -1,0 +1,57 @@
+# STYLE WORKFLOW CONFIGURATION FILE
+# #######################################################################
+# Configuration file for checking code style consistency
+# GitHub CI services (GitHub Actions and GitHub Pages)
+
+
+# WORKFLOW FILE
+# ***********************************************************************
+
+# Workflow
+# =======================================================================
+name: style
+
+# Triggers
+# =======================================================================
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# Permissions
+# =======================================================================
+# no permissions
+
+# JOBS
+# =======================================================================
+jobs:
+  # BUILD JOB
+  black:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Get your code
+      # -----------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Python environment
+      # -----------------------------------------------------------------
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'  # <-- [CHECK THIS] Specs the version you use locally
+
+      # Step 3: Install dev dependencies
+      # -----------------------------------------------------------------
+      - name: Install dependencies
+        # V [CHECK THIS] use the appropriate package manager
+        # V [CHECK THIS] black must be listed in pyproject.toml dev dependencies
+        run: |
+          python -m pip install --upgrade pip 
+          pip install black
+
+      # Step 4: Check black
+      # -----------------------------------------------------------------
+      - name: Run Black
+        run: black --check .

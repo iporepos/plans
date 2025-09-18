@@ -1,0 +1,166 @@
+# PROJECT CONFIGURATION FILE
+# #######################################################################
+# This is a simple template for the modern configuration file for python projets.
+
+
+# BUILT SYSTEM CONFIG
+# ***********************************************************************
+[build-system]
+
+# 'requires' lists the packages that are needed to build your project
+# These are only needed at build time, not when running your package
+# Default values are fine for most projects
+requires = [
+    "setuptools>=65.0",  # Standard Python packaging tool
+    "wheel"              # Required to build wheel distributions (.whl)
+    # ... [ADD MORE IF NEDDED]
+]
+
+# 'build-backend' tells pip or other tools which system to use to build your project
+# setuptools.build_meta is the default and works for almost all projects
+# Other options exist (e.g., flit.buildapi, poetry.core.masonry.api) if you use alternative build tools
+build-backend = "setuptools.build_meta"
+
+# Notes:
+# - This section is mandatory for PEP 518 compliance.
+# - It does not affect runtime dependencies or optional extras.
+# - Safe to leave as-is unless you are using a non-standard build system.
+
+
+# PROJECT METADATA
+# ***********************************************************************
+[project]
+
+
+# BASIC
+# =======================================================================
+# The name of your package/project
+name = "plans"
+# Version number
+version = "1.0.0"
+# Short description
+description = "PLANS is a tool that helps water resources managers and engineers plan nature-based solutions for water at the hillslope scale."
+# Keywords (optional) for search on PyPI
+keywords = [
+    "python",
+    "water resources",
+    "hydrology",
+    "nature-based solutions",
+    "ecosystem services",
+]
+
+
+# CREDITS AND DOCS
+# =======================================================================
+
+# README file
+# ------------------------------------------------------------------------
+readme = "README.md"
+
+# Contacts
+# ------------------------------------------------------------------------
+# Here we use 'url' instead of email to avoid publishing email addresses
+authors = [
+    { name = "Iporã Possantti"},
+    { name = "Rafael Barbedo"},
+    # ... [ADD MORE IF NEDDED]
+    # tip: include email if needed:
+    # { name = "NAME", email = "myemail@org"}
+]
+# Maintainers (optional)
+# Can include multiple people responsible for maintaining the project
+maintainers = [
+    { name = "Iporã Possantti"},
+    # ... [ADD MORE IF NEDDED]
+    # tip: include email if needed:
+    # { name = "NAME", email = "myemail@org"}
+]
+
+# License information
+# ------------------------------------------------------------------------
+# 'text' is the SPDX license identifier
+license = "GPL-3.0-or-later" # <-- [CHECK THIS]
+# Point to license files in the root of the project
+license-files = ["LICENSE"] # <-- [CHECK THIS] license file in your project root
+
+# SPECS
+# =======================================================================
+# Minimum required Python version
+requires-python = ">=3.11"
+
+# DEPENDENCIES
+# =======================================================================
+# For local installation, Run:
+# >>> pip install -e ".[dev,docs]"
+
+# Runtime dependencies
+# ------------------------------------------------------------------------
+# These are the packages your project needs to run
+# Installed automatically when someone installs your package
+
+dependencies = [
+    "requests",
+    "numpy",
+    "matplotlib",
+    "scipy",
+    "pandas",
+    "geopandas",
+    "rasterio",
+    "Pillow"
+    # [EXAMPLE] custom dependency directly from GitHub:
+    # "my-package @ git+https://github.com/username/my-package.git@main",
+    # ... [ADD MORE IF NEDDED]
+]
+
+
+
+# OPTIONAL DEPENDENCIES
+# ***********************************************************************
+
+# These are extra groups you can install manually, for example:
+# - dev: development tools (testing, linting, formatting)
+# - docs: documentation tools
+[project.optional-dependencies]
+
+# Development dependencies
+# =======================================================================
+# install with `pip install -e ".[dev]"`
+
+dev = [
+    "black",
+    "notebook",
+    # ... [ADD MORE IF NEDDED]
+]
+
+# Documentation dependencies
+# =======================================================================
+# install with `pip install -e ".[docs]"`
+docs = [
+    "sphinx",                       # Documentation generator
+    "sphinx-autodoc-typehints",     # Include Python type hints in docs
+    "sphinx-rtd-theme",             # Sphinx theme
+    "pydata-sphinx-theme",          # Sphinx theme
+    "sphinx_copybutton",            # Sphinx feature for code blocks
+    "myst-parser",                  # Sphinx feature for markdown files
+    # ... [ADD MORE IF NEDDED]
+]
+# Notes
+# =======================================================================
+# - Runtime dependencies are installed automatically on 'pip install -e .'
+# - Optional dependencies must be installed explicitly via extras
+# - Use version ranges to avoid conflicts (e.g., pandas requires a specific numpy version)
+# - Custom dependencies can be installed from GitHub using the @ git+ URL syntax
+
+
+
+# URLS
+# ***********************************************************************
+[project.urls]
+"Homepage" = "https://github.com/iporepos/plans"
+
+
+
+# SETUPTOOLS
+# ***********************************************************************
+[tool.setuptools.packages.find]
+where = ["src"]  # <-- Tell setuptools to look for packages in /src
