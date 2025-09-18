@@ -11,7 +11,7 @@ User Guide
 
 .. attention::
 
-   This section deprecated. Updates soon.
+   This section is under active development.
 
 
 Contents

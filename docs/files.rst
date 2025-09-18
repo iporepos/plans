@@ -15,7 +15,7 @@ This is the input and output (I/O) files documentation of ``plans``.
 
 .. attention::
 
-   This section deprecated. Updates soon.
+   This section is under active development.
 
 I/O workflow is quite straight forward.
 All files are always formatted in only two ways:
