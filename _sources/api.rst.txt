@@ -9,12 +9,6 @@
 API
 ############################################
 
-.. include:: ./ipsum.rst
-
-.. note::
-
-    This API reference is under active development
-
 
 Modules
 ********************************************
