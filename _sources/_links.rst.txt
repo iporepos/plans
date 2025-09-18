@@ -2,6 +2,14 @@
 
 .. _LibreOffice: https://www.libreoffice.org/
 
+.. _SWAT: https://swat.tamu.edu/
+
+.. _InVEST: https://naturalcapitalproject.stanford.edu/software/invest
+
+.. _TOPMODEL: https://hess.copernicus.org/articles/25/527/2021/
+
+.. python
+
 .. _Python: https://www.python.org/
 
 .. _NumPy: https://numpy.org/
@@ -18,11 +26,17 @@
 
 .. _Jupyter: https://jupyter.org/
 
-.. _surface runoff: https://en.wikipedia.org/wiki/Surface_runoff
+.. hydrology
+
+.. _overland flow: https://en.wikipedia.org/wiki/Surface_runoff
 
 .. _infiltration: https://en.wikipedia.org/wiki/Infiltration_(hydrology)
 
 .. _Nature-based Solutions for Water: https://www.undp.org/publications/nature-based-solutions-water
+
+.. _soil moisture: https://en.wikipedia.org/wiki/Soil_moisture
+
+.. misc
 
 .. _ISO 8601: https://en.wikipedia.org/wiki/ISO_8601
 

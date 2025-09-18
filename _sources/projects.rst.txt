@@ -2,6 +2,8 @@
 
 .. include:: ./badge_source.rst
 
+----
+
 .. _projects:
 
 Projects

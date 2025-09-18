@@ -2,9 +2,11 @@
 
 .. include:: ./badge_source.rst
 
-.. _theory:
+----
 
-Theory
+.. _gallery:
+
+Gallery
 #######################################################################
 
 .. warning::
@@ -13,3 +15,9 @@ Theory
 
 
 .. include:: ./ipsum.rst
+
+
+.. include:: ./figs/infiltration_pot.rst
+
+
+.. include:: ./figs/riparian_wetlands.rst

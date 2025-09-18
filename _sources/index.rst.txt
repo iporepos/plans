@@ -1,8 +1,8 @@
+.. include:: ./_links.rst
+
 .. include:: ./badge_source.rst
 
-.. a cool logo. replace or remove if appropriate [CHANGE THIS]:
-
-.. include:: ./logo.rst
+.. include:: ./figs/logo.rst
 
 ----
 
@@ -12,14 +12,6 @@ Plans
 ############################################
 
 Welcome to ``plans`` documentation page!
-
-``plans`` is a tool that helps water resources managers and engineers plan nature-based solutions for water at the hillslope scale.
-
-
-.. warning::
-
-   This project is under active development, so most features are still being tested.
-
 
 Contents
 ********************************************
@@ -32,3 +24,15 @@ Contents
    usage
    api
    development
+
+.. include:: ./includes/short_description.rst
+
+.. include:: ./figs/about.rst
+
+.. include:: ./figs/riparian_wetlands.rst
+
+
+
+.. warning::
+
+   This project is under active development, so most features are still being tested.
