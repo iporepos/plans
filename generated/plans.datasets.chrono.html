@@ -1,0 +1,841 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>plans.datasets.chrono &#8212; plans 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/plans.datasets.chrono';</script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="plans.datasets.spatial" href="plans.datasets.spatial.html" />
+    <link rel="prev" title="plans.datasets.core" href="plans.datasets.core.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">plans 1.0.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../usage.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../usage.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">plans.datasets.chrono</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-plans.datasets.chrono">
+<span id="plans-datasets-chrono"></span><h1>plans.datasets.chrono<a class="headerlink" href="#module-plans.datasets.chrono" title="Link to this heading">#</a></h1>
+<p>Handle chronological (time series) datasets.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p># todo [major docstring improvement] – overview
+Mauris gravida ex quam, in porttitor lacus lobortis vitae.
+In a lacinia nisl. Pellentesque habitant morbi tristique senectus
+et netus et malesuada fames ac turpis egestas.</p>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading">#</a></h2>
+<p># todo [major docstring improvement] – examples
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,
+in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Mauris gravida ex quam, in porttitor lacus lobortis vitae.
+In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.
+In a lacinia nisl.</p>
+</section>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.chrono.FlowSeries" title="plans.datasets.chrono.FlowSeries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FlowSeries</span></code></a>([name, alias])</p></td>
+<td><p>A class for representing and working with streamflow time series data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.chrono.RainSeries" title="plans.datasets.chrono.RainSeries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RainSeries</span></code></a>([name, alias])</p></td>
+<td><p>A class for representing and working with rainfall time series data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.chrono.RainSeriesSamples" title="plans.datasets.chrono.RainSeriesSamples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RainSeriesSamples</span></code></a>([name])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.chrono.StageSeries" title="plans.datasets.chrono.StageSeries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StageSeries</span></code></a>([name, alias])</p></td>
+<td><p>A class for representing and working with river stage time series data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.chrono.StageSeriesCollection" title="plans.datasets.chrono.StageSeriesCollection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StageSeriesCollection</span></code></a>([name])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.chrono.TempSeries" title="plans.datasets.chrono.TempSeries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TempSeries</span></code></a>([name, alias])</p></td>
+<td><p>A class for representing and working with temperature time series data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.chrono.TempSeriesSamples" title="plans.datasets.chrono.TempSeriesSamples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TempSeriesSamples</span></code></a>([name])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.chrono.RainSeries">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.chrono.</span></span><span class="sig-name descname"><span class="pre">RainSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyRainfallSeries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#RainSeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.RainSeries" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.TimeSeries" title="plans.datasets.core.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a></p>
+<p>A class for representing and working with rainfall time series data.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">RainSeries</span></code> class extends the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> class and focuses on handling rainfall data.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.chrono.RainSeries.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyRainfallSeries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#RainSeries.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.RainSeries.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize a RainSeries object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – str, optional
+Name of the rainfall series. Default is “MyRainfallSeries”.</p></li>
+<li><p><strong>alias</strong> (<em>str</em>) – str, optional
+Alias for the rainfall series. Default is None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.chrono.RainSeries.interpolate_gaps">
+<span class="sig-name descname"><span class="pre">interpolate_gaps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#RainSeries.interpolate_gaps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.RainSeries.interpolate_gaps" title="Link to this definition">#</a></dt>
+<dd><p>Fills gaps in a time series using various interpolation methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<em>str</em>) – Specifies the interpolation method. The default value is <code class="docutils literal notranslate"><span class="pre">linear</span></code>.</p></li>
+<li><p><strong>constant</strong> (<em>float</em>) – [optional] The constant value used when the <code class="docutils literal notranslate"><span class="pre">constant</span></code> method is selected. Default value = 0.</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em>) – [optional] If True, modifies the original DataFrame in-place. Default value = False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> with interpolated values if inplace is False, otherwise None.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or None</p>
+</dd>
+</dl>
+<p><strong>Notes</strong></p>
+<p>This function handles time series data, standardizing it if necessary before performing interpolation.
+The process is applied to each unique epoch within the series.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">linear</span></code> method applies linear interpolation, while <code class="docutils literal notranslate"><span class="pre">nearest</span></code> uses the value of the closest data point.
+<cite>zero</cite> is a zero-order interpolation (similar to <code class="docutils literal notranslate"><span class="pre">nearest</span></code>). <code class="docutils literal notranslate"><span class="pre">slinear</span></code>, <code class="docutils literal notranslate"><span class="pre">quadratic</span></code>, and <code class="docutils literal notranslate"><span class="pre">cubic</span></code> are spline
+interpolations of first, second, and third order, respectively. <code class="docutils literal notranslate"><span class="pre">constant</span></code> fills gaps with a constant value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.chrono.RainSeries._set_frequency">
+<span class="sig-name descname"><span class="pre">_set_frequency</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#RainSeries._set_frequency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.RainSeries._set_frequency" title="Link to this definition">#</a></dt>
+<dd><p>Guess the datetime resolution of a time series based on the consistency of
+timestamp components (e.g., seconds, minutes).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method infers the datetime frequency of the time series data
+based on the consistency of timestamp components.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.chrono.TempSeries">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.chrono.</span></span><span class="sig-name descname"><span class="pre">TempSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyTemperatureSeries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#TempSeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.TempSeries" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.TimeSeries" title="plans.datasets.core.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a></p>
+<p>A class for representing and working with temperature time series data.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">TemperatureSeries</span></code> class extends the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> class and focuses on handling temperature data.</p>
+<p><strong>Examples</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">temperature_data</span> <span class="o">=</span> <span class="n">TempSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Temperature2022&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;Temp2022&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.chrono.TempSeries.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyTemperatureSeries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#TempSeries.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.TempSeries.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize a TempSeries object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the temperature series. Default is “MyTemperatureSeries”.</p></li>
+<li><p><strong>alias</strong> (<em>str</em>) – Alias for the temperature series. Default is None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.chrono.StageSeries">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.chrono.</span></span><span class="sig-name descname"><span class="pre">StageSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyStageSeries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#StageSeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.StageSeries" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.TimeSeries" title="plans.datasets.core.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a></p>
+<p>A class for representing and working with river stage time series data.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">StageSeries</span></code> class extends the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> class and focuses on handling river stage data.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.chrono.StageSeries.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyStageSeries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#StageSeries.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.StageSeries.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize a StageSeries object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the river stage series. Default is “MyStageSeries”.</p></li>
+<li><p><strong>alias</strong> (<em>str</em>) – Alias for the river stage series. Default is None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.chrono.StageSeries.get_metadata">
+<span class="sig-name descname"><span class="pre">get_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#StageSeries.get_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.StageSeries.get_metadata" title="Link to this definition">#</a></dt>
+<dd><p>Get all metadata from the base object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>metadata</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+<p><strong>Notes:</strong></p>
+<ul class="simple">
+<li><p>Metadata includes information from the base class (TimeSeries) and additional TempSeries-specific attributes.</p></li>
+<li><p>The returned dictionary contains key-value pairs with metadata information.</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.chrono.FlowSeries">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.chrono.</span></span><span class="sig-name descname"><span class="pre">FlowSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyFlowSeries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#FlowSeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.FlowSeries" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.TimeSeries" title="plans.datasets.core.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a></p>
+<p>A class for representing and working with streamflow time series data.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.chrono.FlowSeries.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyFlowSeries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#FlowSeries.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.FlowSeries.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize a FlowSeries object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – str, optional
+Name of the streamflow series. Default is “MyFlowSeries”.</p></li>
+<li><p><strong>alias</strong> – str, optional
+Alias for the flow</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.chrono.FlowSeries.view_cfcs">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">view_cfcs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freqs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#FlowSeries.view_cfcs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.FlowSeries.view_cfcs" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.chrono.RainSeriesSamples">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.chrono.</span></span><span class="sig-name descname"><span class="pre">RainSeriesSamples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyRSColection'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#RainSeriesSamples"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.RainSeriesSamples" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.TimeSeriesSpatialSamples" title="plans.datasets.core.TimeSeriesSpatialSamples"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesSpatialSamples</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.chrono.RainSeriesSamples.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyRSColection'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#RainSeriesSamples.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.RainSeriesSamples.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Deploy the time series collection data structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the time series collection. Default is “myTSCollection”.</p></li>
+<li><p><strong>base_object</strong> (<a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.TimeSeries" title="plans.datasets.core.TimeSeries"><em>TimeSeries</em></a><em> or </em><em>None</em>) – Base object for the time series collection.
+If None, a default TimeSeries object is created.
+Default is None.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Notes</strong></p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">base_object</span></code> is not provided, a default <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object is created.</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.chrono.TempSeriesSamples">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.chrono.</span></span><span class="sig-name descname"><span class="pre">TempSeriesSamples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyTempSColection'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#TempSeriesSamples"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.TempSeriesSamples" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.TimeSeriesSpatialSamples" title="plans.datasets.core.TimeSeriesSpatialSamples"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesSpatialSamples</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.chrono.TempSeriesSamples.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyTempSColection'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#TempSeriesSamples.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.TempSeriesSamples.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Deploy the time series collection data structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the time series collection. Default is “myTSCollection”.</p></li>
+<li><p><strong>base_object</strong> (<a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.TimeSeries" title="plans.datasets.core.TimeSeries"><em>TimeSeries</em></a><em> or </em><em>None</em>) – Base object for the time series collection.
+If None, a default TimeSeries object is created.
+Default is None.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Notes</strong></p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">base_object</span></code> is not provided, a default <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object is created.</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.chrono.StageSeriesCollection">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.chrono.</span></span><span class="sig-name descname"><span class="pre">StageSeriesCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MySSColection'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#StageSeriesCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.StageSeriesCollection" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.TimeSeriesCluster" title="plans.datasets.core.TimeSeriesCluster"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesCluster</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.chrono.StageSeriesCollection.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MySSColection'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#StageSeriesCollection.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.StageSeriesCollection.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Deploy the time series collection data structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the time series collection. Default is “myTSCollection”.</p></li>
+<li><p><strong>base_object</strong> (<a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.TimeSeries" title="plans.datasets.core.TimeSeries"><em>TimeSeries</em></a><em> or </em><em>None</em>) – Base object for the time series collection.
+If None, a default TimeSeries object is created.
+Default is None.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Notes</strong></p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">base_object</span></code> is not provided, a default <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object is created.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.chrono.StageSeriesCollection.set_data">
+<span class="sig-name descname"><span class="pre">set_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_dates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#StageSeriesCollection.set_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.StageSeriesCollection.set_data" title="Link to this definition">#</a></dt>
+<dd><p>Set data for the time series collection from a info DataFrame.</p>
+<p><strong>Notes:</strong></p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">set_data</span></code> method populates the time series collection with data based on the provided DataFrame.</p></li>
+<li><p>It creates time series objects, loads data, and performs additional processing steps.</p></li>
+<li><p>Adjust <code class="docutils literal notranslate"><span class="pre">skip_process</span></code> according to your data processing needs.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_info</strong> (class:<cite>pandas.DataFrame</cite>) – <p>class:<cite>pandas.DataFrame</cite>
+DataFrame containing metadata information for the time series collection.
+This DataFrame is expected to have matching fields to the metadata keys.</p>
+<p>Required fields:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Id</span></code>: int, required. Unique number id.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Name</span></code>: str, required. Simple name.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Alias</span></code>: str, required. Short nickname.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Units</span></code>: str, required. Units of data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VarField</span></code>: str, required. Variable column in data file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DtField</span></code>: str, required. Date-time column in data file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">File</span></code>: str, required. Name or path to data time series <code class="docutils literal notranslate"><span class="pre">csv</span></code> file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">X</span></code>: float, required. Longitude in WGS 84 Datum (EPSG4326).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Y</span></code>: float, required. Latitude in WGS 84 Datum (EPSG4326).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Code</span></code>: str, required</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Source</span></code>: str, required</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Description</span></code>: str, required</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Color</span></code>: str, required</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">UpstreamArea</span></code>: float, required</p></li>
+</ul>
+</p></li>
+<li><p><strong>src_dir</strong> (<em>str</em>) – str, optional
+Path for source directory in the case for only file names in <code class="docutils literal notranslate"><span class="pre">File</span></code> column.</p></li>
+<li><p><strong>filter_dates</strong> (<em>str</em>) – list, optional
+List of Start and End dates for filter data</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="plans.datasets.core.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">plans.datasets.core</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="plans.datasets.spatial.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">plans.datasets.spatial</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.RainSeries"><code class="docutils literal notranslate"><span class="pre">RainSeries</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.RainSeries.__init__"><code class="docutils literal notranslate"><span class="pre">RainSeries.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.RainSeries.interpolate_gaps"><code class="docutils literal notranslate"><span class="pre">RainSeries.interpolate_gaps()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.RainSeries._set_frequency"><code class="docutils literal notranslate"><span class="pre">RainSeries._set_frequency()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.TempSeries"><code class="docutils literal notranslate"><span class="pre">TempSeries</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.TempSeries.__init__"><code class="docutils literal notranslate"><span class="pre">TempSeries.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.StageSeries"><code class="docutils literal notranslate"><span class="pre">StageSeries</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.StageSeries.__init__"><code class="docutils literal notranslate"><span class="pre">StageSeries.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.StageSeries.get_metadata"><code class="docutils literal notranslate"><span class="pre">StageSeries.get_metadata()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.FlowSeries"><code class="docutils literal notranslate"><span class="pre">FlowSeries</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.FlowSeries.__init__"><code class="docutils literal notranslate"><span class="pre">FlowSeries.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.FlowSeries.view_cfcs"><code class="docutils literal notranslate"><span class="pre">FlowSeries.view_cfcs()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.RainSeriesSamples"><code class="docutils literal notranslate"><span class="pre">RainSeriesSamples</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.RainSeriesSamples.__init__"><code class="docutils literal notranslate"><span class="pre">RainSeriesSamples.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.TempSeriesSamples"><code class="docutils literal notranslate"><span class="pre">TempSeriesSamples</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.TempSeriesSamples.__init__"><code class="docutils literal notranslate"><span class="pre">TempSeriesSamples.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.StageSeriesCollection"><code class="docutils literal notranslate"><span class="pre">StageSeriesCollection</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.StageSeriesCollection.__init__"><code class="docutils literal notranslate"><span class="pre">StageSeriesCollection.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.chrono.StageSeriesCollection.set_data"><code class="docutils literal notranslate"><span class="pre">StageSeriesCollection.set_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/generated/plans.datasets.chrono.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023, Iporã Possantti.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

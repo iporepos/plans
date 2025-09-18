@@ -1,0 +1,1102 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>plans.parsers.inmet &#8212; plans 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/plans/parsers/inmet';</script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">plans 1.0.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../usage.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../usage.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">plans.parsers.inmet</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for plans.parsers.inmet</h1><div class="highlight"><pre>
+<span></span><span class="c1"># SPDX-License-Identifier: GPL-3.0-or-later</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2025 The Project Authors</span>
+<span class="c1"># See pyproject.toml for authors/maintainers.</span>
+<span class="c1"># See LICENSE for license details.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Parse data from ``INMET`` files (Brazillian Meteorological Office)</span>
+
+<span class="sd">Overview</span>
+<span class="sd">--------</span>
+
+<span class="sd"># todo [major docstring improvement] -- overview</span>
+<span class="sd">Mauris gravida ex quam, in porttitor lacus lobortis vitae.</span>
+<span class="sd">In a lacinia nisl. Pellentesque habitant morbi tristique senectus</span>
+<span class="sd">et netus et malesuada fames ac turpis egestas.</span>
+
+<span class="sd">Example</span>
+<span class="sd">-------</span>
+
+<span class="sd"># todo [major docstring improvement] -- examples</span>
+<span class="sd">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
+<span class="sd">Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,</span>
+<span class="sd">in porttitor lacus lobortis vitae. In a lacinia nisl.</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    # set file path</span>
+<span class="sd">    f = &quot;../_inmet_auto_src.csv&quot;</span>
+
+<span class="sd">    # instantiate object</span>
+<span class="sd">    auto = inmet.Automatic(name=&quot;Automatic Station&quot;)</span>
+
+<span class="sd">    # load data</span>
+<span class="sd">    auto.load_data(file_path=f)</span>
+
+<span class="sd">    # print data (pandas dataframe)</span>
+<span class="sd">    print(auto.data.head().to_string(index=False))</span>
+
+<span class="sd">    # print metadata (pandas dataframe)</span>
+<span class="sd">    print(auto.station_metadata_df.to_string())</span>
+
+<span class="sd">    # export to folder</span>
+<span class="sd">    auto.export_data(folder=&quot;C:/data&quot;, append_id=True)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+
+<div class="viewcode-block" id="_StationINMET_">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._StationINMET_">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">_StationINMET_</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This is a base object for parsing Inmet Stations datasets</span>
+
+<span class="sd">    Objects downstream will use or overwrite this methods</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="_StationINMET_.__init__">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._StationINMET_.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyStationINMET&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialization method</span>
+
+<span class="sd">        :param name: name of station</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Object attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span> <span class="o">=</span> <span class="s2">&quot;datetime&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;inmet&quot;</span>
+
+        <span class="c1"># base glossary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gls</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;CH (NUVENS ALTAS)(codigo)&quot;</span><span class="p">:</span> <span class="s2">&quot;ch&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PRECIPITACAO TOTAL, HORARIO(mm)&quot;</span><span class="p">:</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;VISIBILIDADE, HORARIA(codigo)&quot;</span><span class="p">:</span> <span class="s2">&quot;vis&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># data strucutre attributes</span>
+        <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata_util</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">station_metadata</span> <span class="o">=</span> <span class="n">d1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">station_metadata_df</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">glossary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_glossary</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_data</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># reading attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_metadata_splitter</span> <span class="o">=</span> <span class="s2">&quot;: &quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_delimiter</span> <span class="o">=</span> <span class="s2">&quot;;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_decimals</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_skiprows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">station_metadata</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_dtfields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Data Medicao&quot;</span><span class="p">,</span> <span class="s2">&quot;Hora Medicao&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_dtformat</span> <span class="o">=</span> <span class="s2">&quot;%Y-%m0-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_nan</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;null&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">9999</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="_StationINMET_.get_metadata">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._StationINMET_.get_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Base metata getter method</span>
+
+<span class="sd">        :return: dictionary of metadata</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dict_meta</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;Start&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_data</span><span class="p">,</span> <span class="s2">&quot;End&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_data</span><span class="p">}</span>
+        <span class="n">dict_meta</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">station_metadata</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dict_meta</span></div>
+
+
+<div class="viewcode-block" id="_StationINMET_.update">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._StationINMET_.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Base update method</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># update start and end dates</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">end_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="_StationINMET_._metadata_util">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._StationINMET_._metadata_util">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_metadata_util</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Utility method for naming conversions</span>
+
+<span class="sd">        :return: utility dictionaries</span>
+<span class="sd">        :rtype: dict, dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;station_name&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;NOME&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;station_id&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;CODIGOESTACAO&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;station_y&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Latitude&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;station_x&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Longitude&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;station_z&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Altitude&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;station_status&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Situacao&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;station_start&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;DataInicial&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;station_end&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;DataFinal&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;timescale&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;PeriodicidadedaMedicao&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="n">d1</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">d2</span><span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="k">return</span> <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span></div>
+
+
+<div class="viewcode-block" id="_StationINMET_._standardize_metadata_fields">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._StationINMET_._standardize_metadata_fields">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_standardize_metadata_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Utility method for standardizing metadata fields</span>
+
+<span class="sd">        :param metadata: dictionary of incoming metadata</span>
+<span class="sd">        :type metadata: dict</span>
+<span class="sd">        :return: new standard metatada dictionary</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dict_1</span><span class="p">,</span> <span class="n">dict_convert</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata_util</span><span class="p">()</span>
+        <span class="n">new_metadata</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">dict_convert</span><span class="p">:</span>
+            <span class="n">new_metadata</span><span class="p">[</span><span class="n">dict_convert</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">new_metadata</span></div>
+
+
+<div class="viewcode-block" id="_StationINMET_._get_columns_gls">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._StationINMET_._get_columns_gls">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_columns_gls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve the glossary mapping and its mirror.</span>
+
+<span class="sd">        :return: A tuple containing the glossary mapping and its mirror.</span>
+<span class="sd">        :rtype: tuple[dict, dict]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># compute the opposite</span>
+        <span class="n">inverse_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gls</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">gls</span><span class="p">,</span> <span class="n">inverse_mapping</span></div>
+
+
+<div class="viewcode-block" id="_StationINMET_.get_glossary">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._StationINMET_.get_glossary">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_glossary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a glossary DataFrame from the stored glossary mapping.</span>
+
+<span class="sd">        :return: A DataFrame containing field names and their source descriptions.</span>
+<span class="sd">        :rtype: class.`pandas.DataFrame`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_columns_gls</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;Field&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">a</span><span class="p">],</span> <span class="s2">&quot;SourceDescription&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">a</span><span class="p">]}</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="_StationINMET_.fix_text">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._StationINMET_.fix_text">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fix_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">remove_spaces</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Standardize text by converting to uppercase and replacing specific characters.</span>
+
+<span class="sd">        :param text: The inputs text to be processed.</span>
+<span class="sd">        :type text: str</span>
+<span class="sd">        :param remove_spaces: Whether to remove spaces from the text.</span>
+<span class="sd">        :type remove_spaces: bool, optional</span>
+<span class="sd">        :return: The processed text.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="c1"># Iterate through each line and replace problematic characters</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Ç&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Á&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Ã&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Í&quot;</span><span class="p">,</span> <span class="s2">&quot;I&quot;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;É&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;(YYYY-MM-DD)&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">remove_spaces</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">text</span></div>
+
+
+<div class="viewcode-block" id="_StationINMET_.read_metadata">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._StationINMET_.read_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read station metadata from a file and return it as a dictionary.</span>
+
+<span class="sd">        :param file_path: Path to the metadata file.</span>
+<span class="sd">        :type file_path: str</span>
+<span class="sd">        :return: Dictionary containing metadata fields and values.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Read station_metadata</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="c1"># Read lines until a blank line is encountered, indicating the end of station_metadata</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reading_metadata_splitter</span><span class="p">)</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>  <span class="c1"># fix decimals</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix_text</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">remove_spaces</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="c1"># standardize fields</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_standardize_metadata_fields</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">metadata</span></div>
+
+
+<div class="viewcode-block" id="_StationINMET_.load_metadata">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._StationINMET_.load_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load station metadata from a file and store it in a DataFrame.</span>
+
+<span class="sd">        :param file_path: Path to the metadata file.</span>
+<span class="sd">        :type file_path: str</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">station_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_metadata</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">station_metadata_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;Field&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">station_metadata</span><span class="p">],</span>
+                <span class="s2">&quot;Value&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">station_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">station_metadata</span><span class="p">],</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="_StationINMET_.read_data">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._StationINMET_.read_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;read all data from file</span>
+
+<span class="sd">        :param file_path: file path</span>
+<span class="sd">        :type file_path: str</span>
+<span class="sd">        :return: pandas dataframe</span>
+<span class="sd">        :rtype: class.`pandas.DataFrame`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># load station_metadata first</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_metadata</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">station_metadata_df</span><span class="p">)</span>
+        <span class="c1"># Read data using pandas, specifying the data type of the &#39;Hora Medicao&#39; column as a string</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+            <span class="n">file_path</span><span class="p">,</span>
+            <span class="n">skiprows</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reading_skiprows</span><span class="p">,</span>
+            <span class="n">delimiter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reading_delimiter</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="p">{</span><span class="n">e</span><span class="p">:</span> <span class="nb">str</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reading_dtfields</span><span class="p">},</span>
+            <span class="n">decimal</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reading_decimals</span><span class="p">,</span>
+            <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reading_encoding</span><span class="p">,</span>
+            <span class="n">na_values</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reading_nan</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># handle void case</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Combine &#39;Data Medicao&#39; and &#39;Hora Medicao&#39; columns into a single datetime field</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reading_dtfields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span>
+                    <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reading_dtfields</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">()</span><span class="o">.</span><span class="n">str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+                    <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reading_dtfields</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">()</span><span class="o">.</span><span class="n">str</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="nb">format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reading_dtformat</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span>
+                    <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reading_dtfields</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="s2">&quot; 12:00:00&quot;</span><span class="p">,</span>
+                    <span class="nb">format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reading_dtformat</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="c1"># Drop the original &#39;Data Medicao&#39; and &#39;Hora Medicao&#39; columns</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reading_dtfields</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># Reorganize columns with &#39;DateTime&#39; at the beginning</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
+                <span class="n">column</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">df</span> <span class="k">if</span> <span class="n">column</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span>
+            <span class="p">]</span>
+
+            <span class="c1"># Apply the column reorganization</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span>
+
+            <span class="c1"># Check and eliminate the last column if it doesn&#39;t have a name</span>
+            <span class="k">if</span> <span class="s2">&quot;Unnamed&quot;</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="n">fix_names</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="n">fix_names</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix_text</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="c1"># Rename columns in the DataFrame</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">fix_names</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># get new colum names</span>
+            <span class="n">simplified_names</span><span class="p">,</span> <span class="n">inverse_mapping</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_columns_gls</span><span class="p">()</span>
+
+            <span class="c1"># Rename columns in the DataFrame</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">simplified_names</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># Clear void rows</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">df</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="_StationINMET_.load_data">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._StationINMET_.load_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load data from a file and update the instance.</span>
+
+<span class="sd">        :param file_path: Path to the data file.</span>
+<span class="sd">        :type file_path: str</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="_StationINMET_.export_data">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._StationINMET_.export_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">export_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">append_id</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export the data to a CSV file.</span>
+
+<span class="sd">        :param folder: Folder where the file will be saved.</span>
+<span class="sd">        :type folder: str</span>
+<span class="sd">        :param append_id: Whether to append the station ID to the filename.</span>
+<span class="sd">        :type append_id: bool, optional</span>
+<span class="sd">        :return: Path to the exported file.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_data</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m0</span><span class="si">%d</span><span class="s2">%H&quot;</span><span class="p">)</span>
+        <span class="n">dte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_data</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m0</span><span class="si">%d</span><span class="s2">%H&quot;</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_DTS</span><span class="si">{}</span><span class="s2">-DTE</span><span class="si">{}</span><span class="s2">.csv&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">station_metadata</span><span class="p">[</span><span class="s2">&quot;station_id&quot;</span><span class="p">],</span> <span class="n">dts</span><span class="p">,</span> <span class="n">dte</span>
+        <span class="p">)</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+        <span class="n">_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">append_id</span><span class="p">:</span>
+            <span class="n">id_s</span> <span class="o">=</span> <span class="s2">&quot;record_id&quot;</span>
+            <span class="n">_meta_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">station_metadata_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="c1"># Extracting the Value for Station_Code</span>
+            <span class="n">station_code</span> <span class="o">=</span> <span class="n">_meta_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">_meta_df</span><span class="p">[</span><span class="s2">&quot;Field&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;station_id&quot;</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">_df</span><span class="p">[</span><span class="s2">&quot;station_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">station_code</span>
+            <span class="c1"># Create the ID field (Station_Code + YYYYMMDDHH)</span>
+            <span class="n">_df</span><span class="p">[</span><span class="n">id_s</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">_df</span><span class="p">[</span><span class="s2">&quot;station_id&quot;</span><span class="p">]</span>
+                <span class="o">+</span> <span class="s2">&quot;DT&quot;</span>
+                <span class="o">+</span> <span class="n">_df</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m0</span><span class="si">%d</span><span class="s2">%H&quot;</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">&quot;0000&quot;</span>
+            <span class="p">)</span>
+            <span class="c1"># Arrange columns</span>
+            <span class="n">_new_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">id_s</span><span class="p">,</span> <span class="s2">&quot;station_id&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">_cols</span><span class="p">[:]</span>
+            <span class="n">_df</span> <span class="o">=</span> <span class="n">_df</span><span class="p">[</span><span class="n">_new_cols</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">file_path</span></div>
+
+
+<div class="viewcode-block" id="_StationINMET_.export_metadata">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._StationINMET_.export_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">export_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export station metadata to a CSV file.</span>
+
+<span class="sd">        :param folder: Folder where the file will be saved.</span>
+<span class="sd">        :type folder: str</span>
+<span class="sd">        :return: Path to the exported metadata file.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_info.csv&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">station_metadata</span><span class="p">[</span><span class="s2">&quot;Station_Code&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">station_metadata_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">file_path</span></div>
+
+
+<div class="viewcode-block" id="_StationINMET_.export_glossary">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._StationINMET_.export_glossary">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">export_glossary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export the glossary to a CSV file.</span>
+
+<span class="sd">        :param folder: Folder where the file will be saved.</span>
+<span class="sd">        :type folder: str</span>
+<span class="sd">        :return: Path to the exported glossary file.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_glossary.csv&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">station_metadata</span><span class="p">[</span><span class="s2">&quot;Station_Code&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_glossary</span><span class="p">()</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">file_path</span></div>
+
+
+<div class="viewcode-block" id="_StationINMET_.export">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._StationINMET_.export">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export data, metadata, and glossary to CSV files.</span>
+
+<span class="sd">        :param folder: Folder where the files will be saved.</span>
+<span class="sd">        :type folder: str</span>
+<span class="sd">        :return: Dictionary containing paths to the exported files.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_data</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">)</span>
+        <span class="n">f2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_metadata</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">)</span>
+        <span class="n">f3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_glossary</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">f1</span><span class="p">,</span> <span class="s2">&quot;Metadata&quot;</span><span class="p">:</span> <span class="n">f2</span><span class="p">,</span> <span class="s2">&quot;Glossary&quot;</span><span class="p">:</span> <span class="n">f3</span><span class="p">}</span></div>
+</div>
+
+
+
+<span class="c1"># todo docstrings</span>
+<div class="viewcode-block" id="_Conventional_">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._Conventional_">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">_Conventional_</span><span class="p">(</span><span class="n">_StationINMET_</span><span class="p">):</span>
+
+    <span class="c1"># todo docstring</span>
+<div class="viewcode-block" id="_Conventional_.__init__">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._Conventional_.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyConvetional&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="c1"># overwrite super() attributes:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;inmet_conv&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">gls</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;CH (NUVENS ALTAS)(codigo)&quot;</span><span class="p">:</span> <span class="s2">&quot;ch&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;VISIBILIDADE, HORARIA(codigo)&quot;</span><span class="p">:</span> <span class="s2">&quot;vis&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">glossary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_glossary</span><span class="p">()</span>
+
+        <span class="c1"># reading</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_metadata_splitter</span> <span class="o">=</span> <span class="s2">&quot;: &quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_delimiter</span> <span class="o">=</span> <span class="s2">&quot;;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_decimals</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_skiprows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">station_metadata</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_dtfields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DATA MEDICAO&quot;</span><span class="p">,</span> <span class="s2">&quot;HORA MEDICAO&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="_Conventional_._metadata_util">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._Conventional_._metadata_util">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_metadata_util</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;station_name&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;NOME&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;station_code&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;CODIGOESTACAO&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;station_y&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;LATITUDE&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;station_x&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;LONGITUDE&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;station_z&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;ALTITUDE&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;station_status&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;SITUACAO&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;station_start&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;DATAINICIAL&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;station_End&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;DATAFINAL&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;timescale&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;PERIODICIDADEDAMEDICAO&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="n">d1</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">d2</span><span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="k">return</span> <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span></div>
+</div>
+
+
+
+<span class="c1"># todo docstring</span>
+<div class="viewcode-block" id="ConventionalHourly">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet.ConventionalHourly">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConventionalHourly</span><span class="p">(</span><span class="n">_Conventional_</span><span class="p">):</span>
+
+    <span class="c1"># todo docstring</span>
+<div class="viewcode-block" id="ConventionalHourly.__init__">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet.ConventionalHourly.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyConvetionalHourly&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="c1"># overwrite super() attributes:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;inmet_convh&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gls</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;CH (NUVENS ALTAS)(CODIGO)&quot;</span><span class="p">:</span> <span class="s2">&quot;ch&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;CL (NUVENS BAIXAS)(CODIGO)&quot;</span><span class="p">:</span> <span class="s2">&quot;cl&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;CM (NUVENS MEDIAS)(CODIGO)&quot;</span><span class="p">:</span> <span class="s2">&quot;cm&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;NEBULOSIDADE, HORARIA(DECIMOS)&quot;</span><span class="p">:</span> <span class="s2">&quot;neb&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PRECIPITACAO TOTAL, HORARIO(MM)&quot;</span><span class="p">:</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PRESSAO ATMOSFERICA AO NIVEL DA ESTACAO, HORARIA(MB)&quot;</span><span class="p">:</span> <span class="s2">&quot;pa_loc&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PRESSAO ATMOSFERICA AO NIVEL DO MAR, HORARIA(MB)&quot;</span><span class="p">:</span> <span class="s2">&quot;pa_sea&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TEMPERATURA DO AR - BULBO SECO, HORARIA(°C)&quot;</span><span class="p">:</span> <span class="s2">&quot;temp_db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TEMPERATURA DO AR - BULBO UMIDO, HORARIA(°C)&quot;</span><span class="p">:</span> <span class="s2">&quot;temp_wb&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TEMPERATURA DO PONTO DE ORVALHO(°C)&quot;</span><span class="p">:</span> <span class="s2">&quot;temp_dp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;UMIDADE RELATIVA DO AR, HORARIA(%)&quot;</span><span class="p">:</span> <span class="s2">&quot;rm&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;VENTO, DIRECAO HORARIA(CODIGO)&quot;</span><span class="p">:</span> <span class="s2">&quot;wd&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;VENTO, VELOCIDADE HORARIA(M/S)&quot;</span><span class="p">:</span> <span class="s2">&quot;ws&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;VISIBILIDADE, HORARIA(CODIGO)&quot;</span><span class="p">:</span> <span class="s2">&quot;vis&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># reading</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_dtfields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Data Medicao&quot;</span><span class="p">,</span> <span class="s2">&quot;Hora Medicao&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_dtformat</span> <span class="o">=</span> <span class="s2">&quot;%Y-%m0-</span><span class="si">%d</span><span class="s2"> %H%M&quot;</span></div>
+</div>
+
+
+
+<span class="c1"># todo docstring</span>
+<div class="viewcode-block" id="ConventionalDaily">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet.ConventionalDaily">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConventionalDaily</span><span class="p">(</span><span class="n">_Conventional_</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parser object for ``INMET`` Conventional Stations - Daily measurements.&quot;&quot;&quot;</span>
+
+    <span class="c1"># todo docstring</span>
+<div class="viewcode-block" id="ConventionalDaily.__init__">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet.ConventionalDaily.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyConvetionalDaily&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="c1"># overwrite super() attributes:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;inmet_convd&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gls</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;INSOLACAO TOTAL, DIARIO(H)&quot;</span><span class="p">:</span> <span class="s2">&quot;ist&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;EVAPORACAO DO PICHE, DIARIA(MM)&quot;</span><span class="p">:</span> <span class="s2">&quot;evp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PRECIPITACAO TOTAL, DIARIO(MM)&quot;</span><span class="p">:</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TEMPERATURA MAXIMA, DIARIA(°C)&quot;</span><span class="p">:</span> <span class="s2">&quot;temp_max&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TEMPERATURA MEDIA COMPENSADA, DIARIA(°C)&quot;</span><span class="p">:</span> <span class="s2">&quot;temp_mean&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TEMPERATURA MINIMA, DIARIA(°C)&quot;</span><span class="p">:</span> <span class="s2">&quot;temp_min&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;UMIDADE RELATIVA DO AR, MEDIA DIARIA(%)&quot;</span><span class="p">:</span> <span class="s2">&quot;rm_mean&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;UMIDADE RELATIVA DO AR, MINIMA DIARIA(%)&quot;</span><span class="p">:</span> <span class="s2">&quot;rm_min&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;VENTO, VELOCIDADE MEDIA DIARIA(M/S)&quot;</span><span class="p">:</span> <span class="s2">&quot;ws_mean&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># reading</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_dtfields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Data Medicao&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_dtformat</span> <span class="o">=</span> <span class="s2">&quot;%Y-%m0-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="_Automatic_">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._Automatic_">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">_Automatic_</span><span class="p">(</span><span class="n">_StationINMET_</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base Parser object for automatic INMET stations&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="_Automatic_.__init__">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet._Automatic_.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyAutomatic&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="c1"># Object attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;inmet_autoh&quot;</span>
+        <span class="c1"># reading specs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_delimiter</span> <span class="o">=</span> <span class="s2">&quot;;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_skiprows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">station_metadata</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Automatic">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet.Automatic">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Automatic</span><span class="p">(</span><span class="n">_Automatic_</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parser object for ``INMET`` Automatic Stations provided by any date range.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Automatic.__init__">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet.Automatic.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyAutomatic&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gls</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;PRECIPITACAO TOTAL, HORARIO(MM)&quot;</span><span class="p">:</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PRESSAO ATMOSFERICA AO NIVEL DA ESTACAO, HORARIA(MB)&quot;</span><span class="p">:</span> <span class="s2">&quot;pa_loc&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PRESSAO ATMOSFERICA REDUZIDA NIVEL DO MAR, AUT(MB)&quot;</span><span class="p">:</span> <span class="s2">&quot;pa_sea&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PRESSAO ATMOSFERICA MAX.NA HORA ANT. (AUT)(MB)&quot;</span><span class="p">:</span> <span class="s2">&quot;pa_loc_premax&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PRESSAO ATMOSFERICA MIN. NA HORA ANT. (AUT)(MB)&quot;</span><span class="p">:</span> <span class="s2">&quot;pa_loc_premin&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;RADIACAO GLOBAL(KJ/M²)&quot;</span><span class="p">:</span> <span class="s2">&quot;rad&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TEMPERATURA DA CPU DA ESTACAO(°C)&quot;</span><span class="p">:</span> <span class="s2">&quot;temp_cpu&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TEMPERATURA DO AR - BULBO SECO, HORARIA(°C)&quot;</span><span class="p">:</span> <span class="s2">&quot;temp_db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TEMPERATURA DO PONTO DE ORVALHO(°C)&quot;</span><span class="p">:</span> <span class="s2">&quot;temp_db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TEMPERATURA MAXIMA NA HORA ANT. (AUT)(°C)&quot;</span><span class="p">:</span> <span class="s2">&quot;temp_db_premax&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TEMPERATURA MINIMA NA HORA ANT. (AUT)(°C)&quot;</span><span class="p">:</span> <span class="s2">&quot;temp_db_premin&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TEMPERATURA ORVALHO MAX. NA HORA ANT. (AUT)(°C)&quot;</span><span class="p">:</span> <span class="s2">&quot;temp_db_premax&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TEMPERATURA ORVALHO MIN. NA HORA ANT. (AUT)(°C)&quot;</span><span class="p">:</span> <span class="s2">&quot;temp_db_premin&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TENSAO DA BATERIA DA ESTACAO(V)&quot;</span><span class="p">:</span> <span class="s2">&quot;volt&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;UMIDADE REL. MAX. NA HORA ANT. (AUT)(%)&quot;</span><span class="p">:</span> <span class="s2">&quot;rm_premin&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;UMIDADE REL. MIN. NA HORA ANT. (AUT)(%)&quot;</span><span class="p">:</span> <span class="s2">&quot;rm_premax&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;UMIDADE RELATIVA DO AR, HORARIA(%)&quot;</span><span class="p">:</span> <span class="s2">&quot;rm&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;VENTO, DIRECAO HORARIA (GR)(° (GR))&quot;</span><span class="p">:</span> <span class="s2">&quot;wd&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;VENTO, RAJADA MAXIMA(M/S)&quot;</span><span class="p">:</span> <span class="s2">&quot;wg&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;VENTO, VELOCIDADE HORARIA(M/S)&quot;</span><span class="p">:</span> <span class="s2">&quot;ws&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="c1"># data</span>
+        <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata_util</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">station_metadata</span> <span class="o">=</span> <span class="n">d1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">glossary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_glossary</span><span class="p">()</span>
+
+        <span class="c1"># reading</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_metadata_splitter</span> <span class="o">=</span> <span class="s2">&quot;: &quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reading_dtformat</span> <span class="o">=</span> <span class="s2">&quot;%Y-%m0-</span><span class="si">%d</span><span class="s2"> %H%M&quot;</span></div>
+
+
+<div class="viewcode-block" id="Automatic._metadata_util">
+<a class="viewcode-back" href="../../../generated/plans.parsers.inmet.html#plans.parsers.inmet.Automatic._metadata_util">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_metadata_util</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;station_name&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;NOME&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;station_id&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;CODIGOESTACAO&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;station_y&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Latitude&quot;</span><span class="o">.</span><span class="n">upper</span><span class="p">()],</span>
+            <span class="s2">&quot;station_x&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Longitude&quot;</span><span class="o">.</span><span class="n">upper</span><span class="p">()],</span>
+            <span class="s2">&quot;station_z&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Altitude&quot;</span><span class="o">.</span><span class="n">upper</span><span class="p">()],</span>
+            <span class="s2">&quot;station_status&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Situacao&quot;</span><span class="o">.</span><span class="n">upper</span><span class="p">()],</span>
+            <span class="s2">&quot;station_start&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;DataInicial&quot;</span><span class="o">.</span><span class="n">upper</span><span class="p">()],</span>
+            <span class="s2">&quot;station_end&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;DataFinal&quot;</span><span class="o">.</span><span class="n">upper</span><span class="p">()],</span>
+            <span class="s2">&quot;timescale&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;PeriodicidadedaMedicao&quot;</span><span class="o">.</span><span class="n">upper</span><span class="p">()],</span>
+        <span class="p">}</span>
+        <span class="n">d1</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">d2</span><span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">k</span>
+
+        <span class="k">return</span> <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span></div>
+</div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">)</span>
+    <span class="c1"># todo [testing]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    # file path</span>
+<span class="sd">    f = &quot;_inmet_auto_src.csv&quot;</span>
+
+<span class="sd">    # instantiate object</span>
+<span class="sd">    auto = Automatic(name=&quot;Automatic Station&quot;)</span>
+
+<span class="sd">    # load data</span>
+<span class="sd">    auto.load_data(file_path=f)</span>
+
+<span class="sd">    # print data (pandas dataframe)</span>
+<span class="sd">    print(auto.data.head().to_string(index=False))</span>
+
+<span class="sd">    # print metadata (pandas dataframe)</span>
+<span class="sd">    print(auto.station_metadata_df.to_string())</span>
+
+<span class="sd">    # export to folder</span>
+<span class="sd">    auto.export_data(folder=&quot;C:/data&quot;, append_id=True)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023, Iporã Possantti.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

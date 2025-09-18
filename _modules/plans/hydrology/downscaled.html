@@ -1,0 +1,1488 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>plans.hydrology.downscaled &#8212; plans 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/plans/hydrology/downscaled';</script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">plans 1.0.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../usage.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../usage.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">plans.hydrology.downscaled</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for plans.hydrology.downscaled</h1><div class="highlight"><pre>
+<span></span><span class="c1"># SPDX-License-Identifier: GPL-3.0-or-later</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2025 The Project Authors</span>
+<span class="c1"># See pyproject.toml for authors/maintainers.</span>
+<span class="c1"># See LICENSE for license details.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">{Short module description (1-3 sentences)}</span>
+<span class="sd">todo docstring</span>
+
+<span class="sd">Features</span>
+<span class="sd">--------</span>
+<span class="sd">todo docstring</span>
+
+<span class="sd">* {feature 1}</span>
+<span class="sd">* {feature 2}</span>
+<span class="sd">* {feature 3}</span>
+<span class="sd">* {etc}</span>
+
+<span class="sd">Overview</span>
+<span class="sd">--------</span>
+<span class="sd">todo docstring</span>
+<span class="sd">{Overview description}</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">todo docstring</span>
+<span class="sd">{Examples in rST}</span>
+
+<span class="sd">Print a message</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    # print message</span>
+<span class="sd">    print(&quot;Hello world!&quot;)</span>
+<span class="sd">    # [Output] &gt;&gt; &#39;Hello world!&#39;</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># IMPORTS</span>
+<span class="c1"># ***********************************************************************</span>
+<span class="c1"># import modules from other libs</span>
+
+<span class="c1"># Native imports</span>
+<span class="c1"># =======================================================================</span>
+<span class="c1"># import {module}</span>
+<span class="c1"># ... {develop}</span>
+
+<span class="c1"># External imports</span>
+<span class="c1"># =======================================================================</span>
+<span class="c1"># import {module}</span>
+<span class="c1"># ... {develop}</span>
+
+<span class="c1"># Project-level imports</span>
+<span class="c1"># =======================================================================</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plans.hydrology.upscaled</span><span class="w"> </span><span class="kn">import</span> <span class="n">Global</span>
+
+<span class="c1"># ... {develop}</span>
+
+
+<span class="c1"># CONSTANTS</span>
+<span class="c1"># ***********************************************************************</span>
+<span class="c1"># define constants in uppercase</span>
+
+<span class="c1"># CONSTANTS -- Project-level</span>
+<span class="c1"># =======================================================================</span>
+<span class="c1"># ... {develop}</span>
+
+<span class="c1"># CONSTANTS -- Module-level</span>
+<span class="c1"># =======================================================================</span>
+<span class="c1"># ... {develop}</span>
+
+
+<span class="c1"># FUNCTIONS</span>
+<span class="c1"># ***********************************************************************</span>
+
+<span class="c1"># FUNCTIONS -- Project-level</span>
+<span class="c1"># =======================================================================</span>
+
+
+<span class="c1"># ... {develop}</span>
+
+<span class="c1"># FUNCTIONS -- Module-level</span>
+<span class="c1"># =======================================================================</span>
+<span class="c1"># ... {develop}</span>
+
+
+<span class="c1"># CLASSES</span>
+<span class="c1"># ***********************************************************************</span>
+
+<span class="c1"># CLASSES -- Project-level</span>
+<span class="c1"># =======================================================================</span>
+
+
+<div class="viewcode-block" id="Local">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Local</span><span class="p">(</span><span class="n">Global</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a local Rainfall-Runoff model. Simulates the the catchment globally and locally</span>
+<span class="sd">    by applying downscaling methods. Expected inputs:</span>
+
+<span class="sd">    - `clim.csv` for Precipitation (P) and Potential Evapotranspiration (E_pot).</span>
+<span class="sd">    - `path_areas.csv` for deriving the geomorphic unit hydrograph.</span>
+<span class="sd">    - # todo [complete]</span>
+
+<span class="sd">    # todo [major docstring] examples</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Local.__init__">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyLocal&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;Loc001&quot;</span><span class="p">):</span>
+        <span class="c1"># todo [docstring]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+        <span class="c1"># overwriters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object_alias</span> <span class="o">=</span> <span class="s2">&quot;Local&quot;</span>
+
+        <span class="c1"># simulation variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datakey</span> <span class="o">=</span> <span class="s2">&quot;map&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_g2g</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wmask</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># scenarios</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario_clim</span> <span class="o">=</span> <span class="s2">&quot;obs&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario_lulc</span> <span class="o">=</span> <span class="s2">&quot;obs&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">folders</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folders_ls</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;topo&quot;</span><span class="p">,</span> <span class="s2">&quot;lulc&quot;</span><span class="p">,</span> <span class="s2">&quot;clim&quot;</span><span class="p">,</span> <span class="s2">&quot;basins&quot;</span><span class="p">,</span> <span class="s2">&quot;soils&quot;</span><span class="p">]</span>
+
+        <span class="c1"># -------------- DATA -------------- #</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basemap</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># -------------- LOCAL INPUTS -------------- #</span>
+
+        <span class="c1"># -------------- basins -------------- #</span>
+
+        <span class="c1"># single basin data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename_data_basin</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_basin</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># maps -- this will be a Collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_basins</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_data_basins_ls</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename_data_basins</span> <span class="o">=</span> <span class="s2">&quot;basins_*.tif&quot;</span>
+        <span class="c1"># simulation basin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sbasin</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># -------------- topographic saturation index -------------- #</span>
+        <span class="c1"># tsi map</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_tsi</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename_data_tsi</span> <span class="o">=</span> <span class="s2">&quot;tsi.tif&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsi_n</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># default discretization for tsi</span>
+
+        <span class="c1"># -------------- soils -------------- #</span>
+
+        <span class="c1"># soil table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_soils_table</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_soils_table_src</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_data_soils_table</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename_data_soils_table</span> <span class="o">=</span> <span class="s2">&quot;soils.csv&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">soils_n</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># number of lulc classes</span>
+
+        <span class="c1"># soil map</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_soils</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_data_soils</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename_data_soils</span> <span class="o">=</span> <span class="s2">&quot;soils.tif&quot;</span>
+
+        <span class="c1"># -------------- lulc -------------- #</span>
+
+        <span class="c1"># lulc table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_lulc_table</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_lulc_table_src</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_data_lulc_table</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename_data_lulc_table</span> <span class="o">=</span> <span class="s2">&quot;lulc.csv&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lulc_n</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># number of lulc classes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lulc_maps_ls</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lulc_maps_dc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lulc_maps_dc_inv</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># lulc maps -- this will be a Collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_lulc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_data_lulc_ls</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename_data_lulc</span> <span class="o">=</span> <span class="s2">&quot;lulc_*.tif&quot;</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instructions: make a model that handles both G2G and HRU approach.</span>
+<span class="sd">        The trick seems to have a area matrix that is the same...   </span>
+
+<span class="sd">        - Use downscale_values() functions from plans.geo</span>
+<span class="sd">        - Downscaling may include parameter maps as proxys.</span>
+<span class="sd">        - </span>
+
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="Local._set_model_vars">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local._set_model_vars">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_model_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># todo [docstring]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_model_vars</span><span class="p">()</span>
+        <span class="c1"># include local attribute</span>
+        <span class="n">ls_non_local</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;e_pot&quot;</span><span class="p">,</span> <span class="s2">&quot;q_obs&quot;</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;qbf&quot;</span><span class="p">,</span> <span class="s2">&quot;qhf&quot;</span><span class="p">,</span> <span class="s2">&quot;qgf&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="p">:</span>
+            <span class="n">_b</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">ls_non_local</span><span class="p">):</span>
+                <span class="n">_b</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;local&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_b</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+    <span class="c1"># todo [move upstream] -- evaluate to retrofit Global() so it can handle scenarios?</span>
+<div class="viewcode-block" id="Local._set_scenario">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local._set_scenario">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_clim</span><span class="o">=</span><span class="s2">&quot;obs&quot;</span><span class="p">,</span> <span class="n">scenario_lulc</span><span class="o">=</span><span class="s2">&quot;obs&quot;</span><span class="p">):</span>
+        <span class="c1"># todo [docstring]</span>
+        <span class="k">if</span> <span class="n">scenario_clim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scenario_clim</span> <span class="o">=</span> <span class="n">scenario_clim</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">folder_data_clim</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folders</span><span class="p">[</span><span class="s2">&quot;clim&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario_clim</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">scenario_lulc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scenario_lulc</span> <span class="o">=</span> <span class="n">scenario_lulc</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">folder_data_lulc</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folders</span><span class="p">[</span><span class="s2">&quot;lulc&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario_lulc</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Local._set_sbasin">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local._set_sbasin">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_sbasin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># todo [docstring]</span>
+        <span class="n">ls_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_obs</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sbasin</span> <span class="o">=</span> <span class="n">ls_cols</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Local._set_basemap">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local._set_basemap">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_basemap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># todo [docstring]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_g2g</span><span class="p">:</span>
+            <span class="n">shp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_tsi</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">shp</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tsi_n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lulc_n</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">soils_n</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basemap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shp</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Local._setup_wmask">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local._setup_wmask">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_wmask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># todo [docstring]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_g2g</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wmask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_basin</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># todo [develop] URH approach</span>
+            <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Local._setup_vars">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local._setup_vars">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># todo [docstring]</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="p">:</span>
+            <span class="n">is_local</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;local&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">is_local</span><span class="p">:</span>
+                <span class="c1"># append a zero 2d map with 2 rows</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;map&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">basemap</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">basemap</span><span class="p">])</span> <span class="o">*</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Local._setup_params">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local._setup_params">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># todo [docstring]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_setup_params</span><span class="p">()</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># ---------------- parameter maps setup ----------------- #</span>
+        <span class="c1">#</span>
+        <span class="n">dc_aux</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;lulc&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;table&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_lulc_table</span><span class="p">,</span>
+                <span class="s2">&quot;ids&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_lulc_table</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_id</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+                <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_lulc_table</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;soils&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;table&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_soils_table</span><span class="p">,</span>
+                <span class="s2">&quot;ids&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_soils_table</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_id</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+                <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_soils_table</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+
+        <span class="c1"># retrieve only conceptual parameters</span>
+        <span class="n">ls_params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="n">p_kind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">p_kind</span> <span class="o">==</span> <span class="s2">&quot;conceptual&quot;</span><span class="p">:</span>
+                <span class="n">ls_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># loop over parameters</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ls_params</span><span class="p">:</span>
+            <span class="n">p_domain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="s2">&quot;domain&quot;</span><span class="p">]</span>
+            <span class="c1"># 1) weights</span>
+            <span class="k">if</span> <span class="n">p_domain</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">dc_aux</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+
+                <span class="c1"># get ids</span>
+                <span class="n">vc_ids</span> <span class="o">=</span> <span class="n">dc_aux</span><span class="p">[</span><span class="n">p_domain</span><span class="p">][</span><span class="s2">&quot;ids&quot;</span><span class="p">]</span>
+
+                <span class="c1"># handle missing fields</span>
+                <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dc_aux</span><span class="p">[</span><span class="n">p_domain</span><span class="p">][</span><span class="s2">&quot;fields&quot;</span><span class="p">]:</span>
+                    <span class="c1"># set as constants</span>
+                    <span class="n">vc_weights</span> <span class="o">=</span> <span class="p">(</span><span class="n">vc_ids</span> <span class="o">*</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># grab from table</span>
+                    <span class="n">vc_weights</span> <span class="o">=</span> <span class="n">dc_aux</span><span class="p">[</span><span class="n">p_domain</span><span class="p">][</span><span class="s2">&quot;table&quot;</span><span class="p">][</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+                <span class="c1"># downscale weights to match global mean</span>
+                <span class="n">vc_down</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">downscale_linear</span><span class="p">(</span>
+                    <span class="n">scalar</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">],</span> <span class="n">array_covar</span><span class="o">=</span><span class="n">vc_weights</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span>
+                <span class="p">)</span>
+                <span class="c1"># reset data table</span>
+                <span class="n">dc_aux</span><span class="p">[</span><span class="n">p_domain</span><span class="p">][</span><span class="s2">&quot;table&quot;</span><span class="p">][</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">vc_down</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+            <span class="c1"># [SOILS] parameter maps</span>
+            <span class="k">if</span> <span class="n">p_domain</span> <span class="o">==</span> <span class="s2">&quot;soils&quot;</span><span class="p">:</span>
+                <span class="n">grd_src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_soils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="c1"># append as &quot;map&quot; key</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="s2">&quot;map&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span>
+                    <span class="n">array</span><span class="o">=</span><span class="n">grd_src</span><span class="p">,</span> <span class="n">old_values</span><span class="o">=</span><span class="n">vc_ids</span><span class="p">,</span> <span class="n">new_values</span><span class="o">=</span><span class="n">vc_down</span>
+                <span class="p">)</span>
+
+            <span class="c1"># [LULC] parameter maps</span>
+            <span class="k">if</span> <span class="n">p_domain</span> <span class="o">==</span> <span class="s2">&quot;lulc&quot;</span><span class="p">:</span>
+                <span class="c1"># run over all available lulcs</span>
+                <span class="k">for</span> <span class="n">lulc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lulc_maps_ls</span><span class="p">:</span>
+                    <span class="n">grd_src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_lulc</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">lulc</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span>
+                        <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                    <span class="p">)</span>
+                    <span class="c1"># append as lulc name</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">lulc</span><span class="p">]</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span>
+                        <span class="n">array</span><span class="o">=</span><span class="n">grd_src</span><span class="p">,</span> <span class="n">old_values</span><span class="o">=</span><span class="n">vc_ids</span><span class="p">,</span> <span class="n">new_values</span><span class="o">=</span><span class="n">vc_down</span>
+                    <span class="p">)</span>
+            <span class="c1">#</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Local._setup_add_lulc_to_data">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local._setup_add_lulc_to_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_add_lulc_to_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># todo [docstring]</span>
+        <span class="n">df_main</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">df_lulc_meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_lulc</span><span class="o">.</span><span class="n">catalog</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># Convert &#39;datetime&#39; columns to datetime objects</span>
+        <span class="n">df_main</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_datetime</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df_main</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_datetime</span><span class="p">])</span>
+        <span class="n">df_lulc_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_datetime</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span>
+            <span class="n">df_lulc_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_datetime</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Sort both DataFrames by &#39;datetime&#39; for merge_asof</span>
+        <span class="n">df_main_sorted</span> <span class="o">=</span> <span class="n">df_main</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">field_datetime</span><span class="p">)</span>
+        <span class="n">df_lulc_meta_sorted</span> <span class="o">=</span> <span class="n">df_lulc_meta</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">field_datetime</span><span class="p">)</span>
+
+        <span class="c1"># Perform a backward merge_asof to find the closest preceding or equal lulc entry</span>
+        <span class="n">merged_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge_asof</span><span class="p">(</span>
+            <span class="n">df_main_sorted</span><span class="p">,</span>
+            <span class="n">df_lulc_meta_sorted</span><span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_datetime</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">]],</span>
+            <span class="n">on</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">field_datetime</span><span class="p">,</span>
+            <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;backward&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Rename the &#39;name&#39; column to &#39;lulc&#39;</span>
+        <span class="n">merged_df</span> <span class="o">=</span> <span class="n">merged_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">:</span> <span class="s2">&quot;lulc_map&quot;</span><span class="p">})</span>
+
+        <span class="c1"># get ids for lulc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lulc_maps_dc</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lulc_maps_dc_inv</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lulc_maps_ls</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lulc_maps_dc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">lulc_maps_ls</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lulc_maps_dc_inv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lulc_maps_ls</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="c1"># handle fine tuning</span>
+        <span class="n">merged_df</span><span class="p">[</span><span class="s2">&quot;lulc_map_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">merged_df</span><span class="p">[</span><span class="s2">&quot;lulc_map&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lulc_maps_dc</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">merged_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;lulc_map&quot;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># reset clim data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">merged_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># append to simulation data also</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sdata</span><span class="p">[</span><span class="s2">&quot;lulc_map_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;lulc_map_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[:]</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Local._setup_start">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local._setup_start">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># todo [docstring]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_setup_start</span><span class="p">()</span>
+        <span class="c1"># loop over vars</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="p">:</span>
+            <span class="c1"># set initial conditions on storages</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;level&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;local&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span> <span class="ow">or</span> <span class="n">v</span> <span class="o">==</span> <span class="s2">&quot;dv&quot;</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;map&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;map&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">0&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">)][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+                    <span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Local.setter">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local.setter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_setter</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set selected attributes based on an incoming dictionary.</span>
+<span class="sd">        This is calling the superior method using load_data=False.</span>
+
+<span class="sd">        :param dict_setter: incoming dictionary with attribute values</span>
+<span class="sd">        :type dict_setter: dict</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setter</span><span class="p">(</span><span class="n">dict_setter</span><span class="p">)</span>
+
+        <span class="c1"># folder parents</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">folders_ls</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">folders</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_data</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span>
+        <span class="c1"># data folders</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder_data_topo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">folders</span><span class="p">[</span><span class="s2">&quot;topo&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder_data_soils</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">folders</span><span class="p">[</span><span class="s2">&quot;soils&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder_data_basins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">folders</span><span class="p">[</span><span class="s2">&quot;basins&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder_data_obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">folders</span><span class="p">[</span><span class="s2">&quot;basins&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder_data_pah</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">folders</span><span class="p">[</span><span class="s2">&quot;basins&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_scenario</span><span class="p">(</span><span class="n">scenario_clim</span><span class="o">=</span><span class="s2">&quot;obs&quot;</span><span class="p">,</span> <span class="n">scenario_lulc</span><span class="o">=</span><span class="s2">&quot;obs&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder_output</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_data</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/outputs&quot;</span><span class="p">)</span>
+        <span class="c1"># ... continues in downstream objects ... #</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Local.get_evaldata">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local.get_evaldata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_evaldata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># todo [docstring]</span>
+        <span class="n">data_obs_src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_obs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">s_standard</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_obs&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">var_eval</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_obs</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sbasin</span><span class="p">:</span> <span class="n">s_standard</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_evaldata</span><span class="p">()</span>
+        <span class="c1"># reset values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_obs</span> <span class="o">=</span> <span class="n">data_obs_src</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1"># df.rename(columns={s_standard: self.sbasin}, inplace=True)</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="Local.load_basin">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local.load_basin">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_basin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># todo [docstring]</span>
+        <span class="c1"># set simulation basin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_sbasin</span><span class="p">()</span>
+        <span class="c1"># load AOI map</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.tif&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folders</span><span class="p">[</span><span class="s2">&quot;basins&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">sbasin</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_basin</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">AOI</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sbasin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_basin</span><span class="o">.</span><span class="n">alias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sbasin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_basin</span><span class="o">.</span><span class="n">file_data</span> <span class="o">=</span> <span class="n">f</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_basin</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_data</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="c1"># todo [refactor]</span>
+        <span class="c1"># this code is for multi-basin loading</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        # -------------- load available basins data -------------- #</span>
+<span class="sd">        # map Collection</span>
+<span class="sd">        self.file_data_basins_ls = glob.glob(f&quot;{self.folder_data_basins}/{self.filename_data_basins}&quot;)</span>
+<span class="sd">        self.data_basins = ds.QualiRasterCollection(name=self.name)</span>
+<span class="sd">        # todo [DRY] -- optimize using a load_folder() approach</span>
+<span class="sd">        #  self.data_basins.load_folder(folder=self.folder_data_basins, name_pattern=self.filename_data_basins)</span>
+<span class="sd">        for f in self.file_data_basins_ls:</span>
+<span class="sd">            # todo [DEV] -- feature for handling the file format (tif, etc)</span>
+<span class="sd">            _name = os.path.basename(f).split(&quot;_&quot;)[-1].replace(&quot;.tif&quot;, &quot;&quot;)</span>
+<span class="sd">            _aoi = ds.AOI(name=_name)</span>
+<span class="sd">            _aoi.alias = _name</span>
+<span class="sd">            _aoi.file_data = f</span>
+<span class="sd">            _aoi.load_data(file_data=f)</span>
+<span class="sd">            self.data_basins.append(new_object=_aoi)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Local.load_tsi">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local.load_tsi">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_tsi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># todo [docstring]</span>
+        <span class="c1"># map</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_data_tsi</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_data_topo</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename_data_tsi</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_tsi</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">HTWI</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_tsi</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_data_tsi</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Local.load_soils">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local.load_soils">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_soils</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># todo [docstring]</span>
+        <span class="c1"># soils table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_data_soils_table</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folders</span><span class="p">[</span><span class="s2">&quot;soils&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename_data_soils_table</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_soils_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_data_soils_table</span><span class="p">,</span>
+            <span class="n">sep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_csv_sep</span><span class="p">,</span>
+            <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_encoding</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_soils_table_src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_soils_table</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">soils_n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_soils_table</span><span class="p">)</span>
+
+        <span class="c1"># soils map</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_data_soils</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_data_soils</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename_data_soils</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_soils</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">Soils</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_soils</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
+            <span class="n">file_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_data_soils</span><span class="p">,</span> <span class="n">file_table</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_data_soils_table</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Local.load_lulc">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local.load_lulc">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_lulc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># todo [docstring]</span>
+        <span class="c1"># lulc table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_data_lulc_table</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folders</span><span class="p">[</span><span class="s2">&quot;lulc&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename_data_lulc_table</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_lulc_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_data_lulc_table</span><span class="p">,</span>
+            <span class="n">sep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_csv_sep</span><span class="p">,</span>
+            <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_encoding</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_lulc_table_src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_lulc_table</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lulc_n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_lulc_table</span><span class="p">)</span>
+
+        <span class="c1"># lulc map collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_lulc</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">LULCSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="c1"># todo [develop] -- feature for handling the file format (tif, etc)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_lulc</span><span class="o">.</span><span class="n">load_folder</span><span class="p">(</span>
+            <span class="n">folder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_data_lulc</span><span class="p">,</span>
+            <span class="n">file_table</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_data_lulc_table</span><span class="p">,</span>
+            <span class="n">name_pattern</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filename_data_lulc</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.tif&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="n">talk</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lulc_maps_ls</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_lulc</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Local.load_data">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local.load_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load simulation data. Expected to increment superior methods.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+
+        <span class="c1"># -------------- load basin data -------------- #</span>
+        <span class="c1"># todo [develop] multi-site simulation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_basin</span><span class="p">()</span>
+
+        <span class="c1"># -------------- load topo data -------------- #</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_tsi</span><span class="p">()</span>
+
+        <span class="c1"># -------------- load soils data -------------- #</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_soils</span><span class="p">()</span>
+
+        <span class="c1"># -------------- load lulc data -------------- #</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_lulc</span><span class="p">()</span>
+
+        <span class="c1"># -------------- update other mutables -------------- #</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_basemap</span><span class="p">()</span>
+        <span class="c1"># evaluate using self.update()</span>
+
+        <span class="c1"># ... continues in downstream objects ... #</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Local.setup">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local.setup">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set model simulation.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            This method overwrites model data.</span>
+
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># set all local variables (this need to be only t and t+1)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_vars</span><span class="p">()</span>
+
+        <span class="c1"># setup superior object</span>
+        <span class="c1"># this sets all global variables to the main data table</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+
+        <span class="c1"># add lulc to clim series</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_add_lulc_to_data</span><span class="p">()</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># ---------------- parameter maps setup ----------------- #</span>
+        <span class="c1">#</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Local.solve">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local.solve">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solve the model for inputs and initial conditions by numerical methods.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            This method overwrites model data.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># ---------------- simulation setup ----------------</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># dt is the fraction of 1 Day/(1 simulation time step)</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+
+        <span class="c1"># full global processes data is a dataframe with numpy arrays</span>
+        <span class="n">gb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdata</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># ---------------- parameters variables ----------------</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># [Soil] soil parameters</span>
+        <span class="n">g_cap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;gcap&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">datakey</span><span class="p">]</span>
+        <span class="c1"># compute the global/basin gcap</span>
+        <span class="n">gb_g_cap</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">upscale</span><span class="p">(</span><span class="n">array</span><span class="o">=</span><span class="n">g_cap</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wmask</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+        <span class="n">k_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;kv&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">datakey</span><span class="p">]</span>
+        <span class="n">g_k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;gk&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">datakey</span><span class="p">]</span>
+        <span class="c1"># compute the global/basin gk</span>
+        <span class="n">gb_g_k</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">upscale</span><span class="p">(</span><span class="n">array</span><span class="o">=</span><span class="n">g_k</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wmask</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+        <span class="n">g_e_cap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;ecap&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">datakey</span><span class="p">]</span>
+        <span class="n">d_e_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;dea&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">datakey</span><span class="p">]</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># ---------------- derived parameter variables ----------------</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># [Surface] Conpute shutdown factor for underland flow</span>
+        <span class="n">s_uf_shutdown</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_s_uf_shutdown</span><span class="p">(</span><span class="n">s_uf_cap</span><span class="p">,</span> <span class="n">s_uf_a</span><span class="p">)</span>
+
+        <span class="c1"># [Surface] Compute effective overland flow activation level</span>
+        <span class="n">s_of_a_eff</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_sof_a_eff</span><span class="p">(</span><span class="n">s_uf_cap</span><span class="p">,</span> <span class="n">s_of_a</span><span class="p">)</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># ---------------- testing features ----------------</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># [Testing feature] shutdown E_pot</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shutdown_epot</span><span class="p">:</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;e_pot&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slen</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># ---------------- numerical solution ----------------</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># ---------------- START TIME LOOP ---------------- #</span>
+        <span class="c1"># loop over steps (Euler Method)</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_steps</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="c1"># reset i</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="c1">#</span>
+            <span class="c1"># [LULC] ---------- variable parameters ---------- #</span>
+            <span class="c1">#</span>
+
+            <span class="c1"># access the current lulc epoch</span>
+            <span class="n">lulc_map_id</span> <span class="o">=</span> <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;lulc_map_id&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+            <span class="n">lulc_map_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lulc_maps_dc_inv</span><span class="p">[</span><span class="n">lulc_map_id</span><span class="p">]</span>
+
+            <span class="c1"># [Canopy] canopy parameters</span>
+            <span class="n">c_k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;ck&quot;</span><span class="p">][</span><span class="n">lulc_map_name</span><span class="p">]</span>
+            <span class="n">c_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;ca&quot;</span><span class="p">][</span><span class="n">lulc_map_name</span><span class="p">]</span>
+
+            <span class="c1"># [Surface] surface parameters</span>
+            <span class="n">s_k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;sk&quot;</span><span class="p">][</span><span class="n">lulc_map_name</span><span class="p">]</span>
+            <span class="n">s_of_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;sofa&quot;</span><span class="p">][</span><span class="n">lulc_map_name</span><span class="p">]</span>
+            <span class="n">s_of_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;sofc&quot;</span><span class="p">][</span><span class="n">lulc_map_name</span><span class="p">]</span>
+            <span class="n">s_uf_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;sufa&quot;</span><span class="p">][</span><span class="n">lulc_map_name</span><span class="p">]</span>
+            <span class="n">s_uf_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;sufc&quot;</span><span class="p">][</span><span class="n">lulc_map_name</span><span class="p">]</span>
+            <span class="n">s_uf_cap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;sufcap&quot;</span><span class="p">][</span><span class="n">lulc_map_name</span><span class="p">]</span>
+
+            <span class="c1">#</span>
+            <span class="c1"># [Deficit] ---------- update deficits ---------- #</span>
+            <span class="c1">#</span>
+
+            <span class="c1"># [Deficit] Phreatic zone deficit</span>
+            <span class="c1">## gb[&quot;d&quot;][t] = Global.compute_d(g_cap=g_cap, g=gb[&quot;g&quot;][t])</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_d</span><span class="p">(</span><span class="n">g_cap</span><span class="o">=</span><span class="n">g_cap</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;g&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">])</span>
+
+            <span class="c1"># [Deficit] Vadose zone deficit</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;dv&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_dv</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">v</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">])</span>
+
+            <span class="c1">#</span>
+            <span class="c1"># [Evaporation] ---------- get evaporation flows first ---------- #</span>
+            <span class="c1">#</span>
+
+            <span class="c1"># [Evaporation] [Canopy] ---- evaporation from canopy</span>
+
+            <span class="c1"># [Evaporation] [Canopy] compute potential flow</span>
+            <span class="n">e_c_pot</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_ec_pot</span><span class="p">(</span><span class="n">e_pot</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;e_pot&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">])</span>
+
+            <span class="c1"># [Evaporation] [Canopy] compute capacity flow</span>
+            <span class="n">e_c_cap</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_ec_cap</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+            <span class="c1"># [Evaporation] [Canopy] compute actual flow</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;ec&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_ec</span><span class="p">(</span><span class="n">e_c_pot</span><span class="p">,</span> <span class="n">e_c_cap</span><span class="p">)</span>
+
+            <span class="c1"># [Evaporation] [Soil] ---- transpiration from soil</span>
+
+            <span class="c1"># [Evaporation] [Soil] compute potential flow</span>
+            <span class="n">e_t_pot</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_et_pot</span><span class="p">(</span><span class="n">e_pot</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;e_pot&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">ec</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;ec&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">])</span>
+
+            <span class="c1"># [Evaporation] [Soil] compute the root zone depth factor</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;egf&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_et_f</span><span class="p">(</span><span class="n">dv</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;dv&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">d_et_a</span><span class="o">=</span><span class="n">d_e_a</span><span class="p">)</span>
+
+            <span class="c1"># [Evaporation] [Soil] compute capacity flow</span>
+            <span class="n">e_t_cap</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_et_cap</span><span class="p">(</span>
+                <span class="n">e_t_f</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;egf&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">g</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;g&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">g_et_cap</span><span class="o">=</span><span class="n">g_e_cap</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span>
+            <span class="p">)</span>
+
+            <span class="c1"># [Evaporation] [Soil] compute actual flow</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;eg&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_et</span><span class="p">(</span><span class="n">e_t_pot</span><span class="p">,</span> <span class="n">e_t_cap</span><span class="p">)</span>
+
+            <span class="c1"># [Evaporation] [Surface] ---- evaporation from surface</span>
+
+            <span class="c1"># [Evaporation] [Surface] compute potential flow</span>
+            <span class="n">e_s_pot</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_es_pot</span><span class="p">(</span>
+                <span class="n">e_pot</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;e_pot&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">ec</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;ec&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">et</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;eg&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="c1"># [Evaporation] [Surface] compute capacity flow</span>
+            <span class="n">e_s_cap</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_es_cap</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+            <span class="c1"># [Evaporation] [Surface] compute actual flow</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;es&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_es</span><span class="p">(</span><span class="n">e_s_pot</span><span class="p">,</span> <span class="n">e_s_cap</span><span class="p">)</span>
+
+            <span class="c1">#</span>
+            <span class="c1"># [Evaporation] [Balance] ---- a priori discounts ---------- #</span>
+            <span class="c1">#</span>
+
+            <span class="c1"># [Evaporation] [Balance] -- apply discount a priori</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_e_discount</span><span class="p">(</span>
+                <span class="n">storage</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">discount</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;ec&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="c1"># [Evaporation] [Balance] -- apply discount a priori</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;g&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_e_discount</span><span class="p">(</span>
+                <span class="n">storage</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;g&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">discount</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;eg&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="c1"># [Evaporation] [Balance] water balance -- apply discount a priori</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_e_discount</span><span class="p">(</span>
+                <span class="n">storage</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">discount</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;es&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="c1">#</span>
+            <span class="c1"># [Canopy] ---------- Solve canopy water balance ---------- #</span>
+            <span class="c1">#</span>
+
+            <span class="c1"># [Canopy] [Throughfall] --</span>
+
+            <span class="c1"># [Canopy] [Throughfall] Compute throughfall fraction</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;ptff&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_tf_f</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">ca</span><span class="o">=</span><span class="n">c_a</span><span class="p">)</span>
+
+            <span class="c1"># [Canopy] [Throughfall] Compute throughfall capacity</span>
+            <span class="n">p_tf_cap</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_tf_cap</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">ca</span><span class="o">=</span><span class="n">c_a</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+            <span class="c1"># [Canopy] [Throughfall] Compute throughfall</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;ptf&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_tf</span><span class="p">(</span><span class="n">p_tf_cap</span><span class="o">=</span><span class="n">p_tf_cap</span><span class="p">,</span> <span class="n">p_tf_f</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;ptff&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">])</span>
+
+            <span class="c1"># [Canopy] [Stemflow] --</span>
+
+            <span class="c1"># [Canopy] [Stemflow] Compute potential stemflow -- only activated storage contributes</span>
+            <span class="n">c_sf_pot</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_sf_pot</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">ca</span><span class="o">=</span><span class="n">c_a</span><span class="p">)</span>
+
+            <span class="c1"># [Canopy] [Stemflow] Compute actual stemflow</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;psf&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">compute_decay</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="n">c_sf_pot</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">c_k</span><span class="p">)</span>
+
+            <span class="c1"># [Canopy] [Aggflows] --</span>
+
+            <span class="c1"># [Canopy] [Aggflows] Compute effective rain on surface</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;ps&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_ps</span><span class="p">(</span><span class="n">sf</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;psf&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">tf</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;ptf&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">])</span>
+
+            <span class="c1"># [Canopy] [Aggflows] Compute effective rain on canopy</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;pc&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_pc</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">tf_f</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;ptff&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">])</span>
+
+            <span class="c1"># [Canopy] [Water Balance] ---- Apply water balance</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">][</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_next_c</span><span class="p">(</span>
+                <span class="n">c</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">pc</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;pc&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">sf</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;psf&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="c1">#</span>
+            <span class="c1"># [Surface] ---------- Solve surface water balance ---------- #</span>
+            <span class="c1">#</span>
+
+            <span class="c1"># [Surface] [Overland] -- Overland flow</span>
+
+            <span class="c1"># [Surface] [Overland] Compute surface overland spill storage capacity</span>
+            <span class="n">sof_ss_cap</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_sof_cap</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">sof_a</span><span class="o">=</span><span class="n">s_of_a_eff</span><span class="p">)</span>
+
+            <span class="c1"># [Surface] [Overland] Compute overland flow fraction</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qoff&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_qof_f</span><span class="p">(</span><span class="n">sof_cap</span><span class="o">=</span><span class="n">sof_ss_cap</span><span class="p">,</span> <span class="n">sof_c</span><span class="o">=</span><span class="n">s_of_c</span><span class="p">)</span>
+
+            <span class="c1"># [Surface] [Overland] Compute overland flow capacity</span>
+            <span class="n">q_of_cap</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_qof_cap</span><span class="p">(</span><span class="n">sof_cap</span><span class="o">=</span><span class="n">sof_ss_cap</span><span class="p">,</span> <span class="n">ps</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;ps&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+            <span class="c1"># [Surface] [Overland] Compute potential overland</span>
+            <span class="n">q_of_pot</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_qof_pot</span><span class="p">(</span><span class="n">qof_cap</span><span class="o">=</span><span class="n">q_of_cap</span><span class="p">,</span> <span class="n">qof_f</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qoff&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">])</span>
+
+            <span class="c1"># [Surface] [Underland] -- Underland flow</span>
+
+            <span class="c1"># [Surface] [Underland] Compute surface underland spill storage capacity</span>
+            <span class="n">suf_ss_cap</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_suf_cap</span><span class="p">(</span>
+                <span class="n">s</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">suf_a</span><span class="o">=</span><span class="n">s_uf_a</span><span class="p">,</span> <span class="n">shutdown</span><span class="o">=</span><span class="n">s_uf_shutdown</span>
+            <span class="p">)</span>
+
+            <span class="c1"># [Surface] [Underland] Compute underland flow fraction</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;quff&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_quf_f</span><span class="p">(</span><span class="n">suf_cap</span><span class="o">=</span><span class="n">suf_ss_cap</span><span class="p">,</span> <span class="n">suf_c</span><span class="o">=</span><span class="n">s_uf_c</span><span class="p">)</span>
+
+            <span class="c1"># [Surface] [Underland] Compute underland flow capacity</span>
+            <span class="n">q_uf_cap</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_quf_cap</span><span class="p">(</span><span class="n">suf_cap</span><span class="o">=</span><span class="n">suf_ss_cap</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+            <span class="c1"># [Surface] [Underland] Compute potential underland flow</span>
+            <span class="n">q_uf_pot</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_quf_pot</span><span class="p">(</span><span class="n">quf_cap</span><span class="o">=</span><span class="n">q_uf_cap</span><span class="p">,</span> <span class="n">quf_f</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;quff&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">])</span>
+
+            <span class="c1"># [Surface] [Infiltration] -- Infiltration flow</span>
+
+            <span class="c1"># [Surface] [Infiltration] -- Potential infiltration from downstream (soil)</span>
+            <span class="n">q_if_pot_down</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_qif_pot_down</span><span class="p">(</span>
+                <span class="n">d</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">v</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span>
+            <span class="p">)</span>
+
+            <span class="c1"># [Surface] [Infiltration] -- Potential infiltration from upstream (hydraulic head)</span>
+            <span class="n">q_if_pot_up</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_qif_pot_up</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">sk</span><span class="o">=</span><span class="n">s_k</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+            <span class="c1"># [Surface] [Infiltration] -- Potential infiltration</span>
+            <span class="n">q_if_pot</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_qif_pot</span><span class="p">(</span><span class="n">if_down</span><span class="o">=</span><span class="n">q_if_pot_down</span><span class="p">,</span> <span class="n">if_up</span><span class="o">=</span><span class="n">q_if_pot_up</span><span class="p">)</span>
+
+            <span class="c1"># [Testing feature]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shutdown_qif</span><span class="p">:</span>
+                <span class="n">q_if_pot</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">q_if_pot</span>
+
+            <span class="c1"># [Surface] -- Full potential outflow</span>
+            <span class="n">s_out_pot</span> <span class="o">=</span> <span class="n">q_of_pot</span> <span class="o">+</span> <span class="n">q_uf_pot</span> <span class="o">+</span> <span class="n">q_if_pot</span>
+
+            <span class="c1"># [Surface] ---- Actual flows</span>
+
+            <span class="c1"># [Surface] Compute surface outflow capacity</span>
+            <span class="n">s_out_cap</span> <span class="o">=</span> <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+
+            <span class="c1"># [Surface] Compute Actual outflow</span>
+            <span class="n">s_out_act</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">s_out_cap</span> <span class="o">&gt;</span> <span class="n">s_out_pot</span><span class="p">,</span> <span class="n">s_out_pot</span><span class="p">,</span> <span class="n">s_out_cap</span><span class="p">)</span>
+
+            <span class="c1"># [Surface] Allocate outflows</span>
+            <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+                <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qof&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_out_act</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="n">s_out_pot</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">q_of_pot</span> <span class="o">/</span> <span class="n">s_out_pot</span>
+                <span class="p">)</span>
+                <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;quf&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_out_act</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="n">s_out_pot</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">q_uf_pot</span> <span class="o">/</span> <span class="n">s_out_pot</span>
+                <span class="p">)</span>
+                <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qif&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_out_act</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="n">s_out_pot</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">q_if_pot</span> <span class="o">/</span> <span class="n">s_out_pot</span>
+                <span class="p">)</span>
+
+            <span class="c1"># [Surface Water Balance] ---- Apply water balance.</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">][</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_next_s</span><span class="p">(</span>
+                <span class="n">s</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span>
+                <span class="n">ps</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;ps&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span>
+                <span class="n">qof</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qof&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span>
+                <span class="n">quf</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;quf&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span>
+                <span class="n">qif</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qif&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span>
+            <span class="p">)</span>
+
+            <span class="c1">#</span>
+            <span class="c1"># [Soil] ---------- Solve soil water balance ---------- #</span>
+            <span class="c1">#</span>
+
+            <span class="c1"># [Soil Vadose Zone]</span>
+
+            <span class="c1"># [Soil Vadose Zone] Get Recharge Fraction</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qvff&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_qvf_f</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">v</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">])</span>
+
+            <span class="c1"># [Soil Vadose Zone] Compute Potential Recharge</span>
+            <span class="n">q_vf_pot</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_qvf_pot</span><span class="p">(</span><span class="n">qvf_f</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qvff&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">kv</span><span class="o">=</span><span class="n">k_v</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+            <span class="c1"># [Soil Vadose Zone] Compute Maximal Recharge</span>
+            <span class="n">q_vf_cap</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_qvf_cap</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+            <span class="c1"># [Soil Vadose Zone] Compute Actual Recharge</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qvf&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_qvf</span><span class="p">(</span><span class="n">qvf_pot</span><span class="o">=</span><span class="n">q_vf_pot</span><span class="p">,</span> <span class="n">qvf_cap</span><span class="o">=</span><span class="n">q_vf_cap</span><span class="p">)</span>
+
+            <span class="c1"># [Vadose Water Balance] ---- Apply water balance</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">][</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_next_v</span><span class="p">(</span>
+                <span class="n">v</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">qif</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qif&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">qvf</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qvf&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="c1"># [Soil Phreatic Zone]</span>
+
+            <span class="c1"># [Soil Phreatic Zone] Compute Base flow (blue water -- discount on green water)</span>
+            <span class="c1"># gb[&quot;qgf&quot;][t] = (np.max([gb[&quot;g&quot;][t] - g_et_cap, 0.0])) * dt / g_k</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qgf&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_qgf</span><span class="p">(</span>
+                <span class="n">g</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;g&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">get_cap</span><span class="o">=</span><span class="n">g_e_cap</span><span class="p">,</span> <span class="n">gk</span><span class="o">=</span><span class="n">g_k</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span>
+            <span class="p">)</span>
+
+            <span class="c1"># [Testing feature]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shutdown_qbf</span><span class="p">:</span>
+                <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qgf&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qgf&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+
+            <span class="c1"># [Phreatic Water Balance] ---- Apply water balance</span>
+            <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;g&quot;</span><span class="p">][</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_next_g</span><span class="p">(</span>
+                <span class="n">g</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;g&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">qvf</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qvf&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">qgf</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qgf&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="c1"># ---------------- END TIME LOOP ---------------- #</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># [Total Flows] ---------- compute total flows ---------- #</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># [Total Flows] Total E</span>
+        <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;e&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_e</span><span class="p">(</span><span class="n">ec</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;ec&quot;</span><span class="p">],</span> <span class="n">es</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;es&quot;</span><span class="p">],</span> <span class="n">eg</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;eg&quot;</span><span class="p">])</span>
+
+        <span class="c1"># [Total Flows] Compute Hillslope flow</span>
+        <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qhf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">compute_qhf</span><span class="p">(</span><span class="n">qof</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qof&quot;</span><span class="p">],</span> <span class="n">quf</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;quf&quot;</span><span class="p">],</span> <span class="n">qgf</span><span class="o">=</span><span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qgf&quot;</span><span class="p">])</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># [Streamflow] ---------- Solve flow routing to basin gauge station ---------- #</span>
+        <span class="c1">#</span>
+
+        <span class="c1"># global basin is considered the first</span>
+        <span class="n">basin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basins_ls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># [Baseflow] Compute river base flow</span>
+        <span class="n">vct_inflow</span> <span class="o">=</span> <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qgf&quot;</span><span class="p">]</span>
+        <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qbf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">propagate_inflow</span><span class="p">(</span>
+            <span class="n">inflow</span><span class="o">=</span><span class="n">vct_inflow</span><span class="p">,</span>
+            <span class="n">unit_hydrograph</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_guh</span><span class="p">[</span><span class="n">basin</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># [Fast Streamflow] Compute Streamflow</span>
+        <span class="c1"># todo [feature] evaluate to split into more components</span>
+        <span class="n">vct_inflow</span> <span class="o">=</span> <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;quf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qof&quot;</span><span class="p">]</span>
+        <span class="n">q_fast</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">propagate_inflow</span><span class="p">(</span>
+            <span class="n">inflow</span><span class="o">=</span><span class="n">vct_inflow</span><span class="p">,</span> <span class="n">unit_hydrograph</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_guh</span><span class="p">[</span><span class="n">basin</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="p">)</span>
+        <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gb</span><span class="p">[</span><span class="s2">&quot;qbf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">q_fast</span>
+
+        <span class="c1"># set data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">gb</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Local.export">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local.export">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">views</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Export object resources. Expected to be called after setup.</span>
+
+<span class="sd">        :param folder: path to folder</span>
+<span class="sd">        :type folder: str</span>
+<span class="sd">        :param filename: file name without extension</span>
+<span class="sd">        :type filename: str</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># export model simulation data with views=False</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">views</span><span class="o">=</span><span class="n">views</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+
+        <span class="c1"># handle Local views</span>
+        <span class="k">if</span> <span class="n">views</span><span class="p">:</span>
+            <span class="c1"># todo [develop] local views</span>
+            <span class="k">pass</span>
+
+        <span class="c1"># export Soils table data</span>
+        <span class="n">fpath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename_data_soils_table</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_soils_table</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+            <span class="n">fpath</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_csv_sep</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_encoding</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="c1"># export LULC table data</span>
+        <span class="n">fpath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename_data_lulc_table</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_lulc_table</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+            <span class="n">fpath</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_csv_sep</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_encoding</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span></div>
+
+        <span class="c1"># ... continues in downstream objects ... #</span>
+
+<div class="viewcode-block" id="Local.demo">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.downscaled.html#plans.hydrology.downscaled.Local.demo">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">demo</span><span class="p">():</span>
+        <span class="c1"># todo [docstring]</span>
+        <span class="c1"># comment</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        [Model Equation]</span>
+<span class="sd">        todo [description]</span>
+<span class="sd">        $$$</span>
+
+<span class="sd">        todo [equation]</span>
+
+<span class="sd">        $$$</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">output</span></div>
+</div>
+
+
+
+<span class="c1"># ... {develop}</span>
+
+<span class="c1"># CLASSES -- Module-level</span>
+<span class="c1"># =======================================================================</span>
+<span class="c1"># ... {develop}</span>
+
+
+<span class="c1"># SCRIPT</span>
+<span class="c1"># ***********************************************************************</span>
+<span class="c1"># standalone behaviour as a script</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Test doctests</span>
+    <span class="c1"># ===================================================================</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
+
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+
+    <span class="c1"># Script section</span>
+    <span class="c1"># ===================================================================</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+    <span class="c1"># ... {develop}</span>
+
+    <span class="c1"># Script subsection</span>
+    <span class="c1"># -------------------------------------------------------------------</span>
+    <span class="c1"># ... {develop}</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023, Iporã Possantti.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1222 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>plans.hydrology.core &#8212; plans 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/plans/hydrology/core';</script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">plans 1.0.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../usage.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../usage.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">plans.hydrology.core</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for plans.hydrology.core</h1><div class="highlight"><pre>
+<span></span><span class="c1"># SPDX-License-Identifier: GPL-3.0-or-later</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2025 The Project Authors</span>
+<span class="c1"># See pyproject.toml for authors/maintainers.</span>
+<span class="c1"># See LICENSE for license details.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">{Short module description (1-3 sentences)}</span>
+<span class="sd">todo docstring</span>
+
+<span class="sd">Features</span>
+<span class="sd">--------</span>
+<span class="sd">todo docstring</span>
+
+<span class="sd">* {feature 1}</span>
+<span class="sd">* {feature 2}</span>
+<span class="sd">* {feature 3}</span>
+<span class="sd">* {etc}</span>
+
+<span class="sd">Overview</span>
+<span class="sd">--------</span>
+<span class="sd">todo docstring</span>
+<span class="sd">{Overview description}</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">todo docstring</span>
+<span class="sd">{Examples in rST}</span>
+
+<span class="sd">Print a message</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    # print message</span>
+<span class="sd">    print(&quot;Hello world!&quot;)</span>
+<span class="sd">    # [Output] &gt;&gt; &#39;Hello world!&#39;</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># IMPORTS</span>
+<span class="c1"># ***********************************************************************</span>
+<span class="c1"># import modules from other libs</span>
+
+<span class="c1"># Native imports</span>
+<span class="c1"># =======================================================================</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="c1"># ... {develop}</span>
+
+<span class="c1"># External imports</span>
+<span class="c1"># =======================================================================</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.dates</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mdates</span>
+
+<span class="c1"># ... {develop}</span>
+
+<span class="c1"># Project-level imports</span>
+<span class="c1"># =======================================================================</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plans.root</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plans</span><span class="w"> </span><span class="kn">import</span> <span class="n">geo</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">plans.datasets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plans.analyst</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bivar</span>
+
+<span class="c1"># ... {develop}</span>
+
+
+<span class="c1"># CONSTANTS</span>
+<span class="c1"># ***********************************************************************</span>
+<span class="c1"># define constants in uppercase</span>
+
+<span class="c1"># CONSTANTS -- Project-level</span>
+<span class="c1"># =======================================================================</span>
+<span class="c1"># ... {develop}</span>
+
+<span class="c1"># Subsubsection example</span>
+<span class="c1"># -----------------------------------------------------------------------</span>
+<span class="n">HELLO</span> <span class="o">=</span> <span class="s2">&quot;Hello World!&quot;</span>  <span class="c1"># example</span>
+<span class="c1"># ... {develop}</span>
+
+<span class="c1"># CONSTANTS -- Module-level</span>
+<span class="c1"># =======================================================================</span>
+<span class="c1"># ... {develop}</span>
+
+
+<span class="c1"># FUNCTIONS</span>
+<span class="c1"># ***********************************************************************</span>
+
+<span class="c1"># FUNCTIONS -- Project-level</span>
+<span class="c1"># =======================================================================</span>
+
+
+<div class="viewcode-block" id="compute_decay">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.compute_decay">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_decay</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="c1"># todo [docstring]</span>
+    <span class="c1">#  Qt = dt * St / k</span>
+    <span class="k">return</span> <span class="n">s</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">/</span> <span class="n">k</span></div>
+
+
+
+<div class="viewcode-block" id="compute_flow">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.compute_flow">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_flow</span><span class="p">(</span><span class="n">flow_pot</span><span class="p">,</span> <span class="n">flow_cap</span><span class="p">):</span>
+    <span class="c1"># todo [docstring]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">flow_pot</span> <span class="o">&gt;</span> <span class="n">flow_cap</span><span class="p">,</span> <span class="n">flow_cap</span><span class="p">,</span> <span class="n">flow_pot</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># ... {develop}</span>
+
+<span class="c1"># FUNCTIONS -- Module-level</span>
+<span class="c1"># =======================================================================</span>
+<span class="c1"># ... {develop}</span>
+
+
+<span class="c1"># CLASSES</span>
+<span class="c1"># ***********************************************************************</span>
+
+<span class="c1"># CLASSES -- Project-level</span>
+<span class="c1"># =======================================================================</span>
+
+
+<div class="viewcode-block" id="Model">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Model</span><span class="p">(</span><span class="n">DataSet</span><span class="p">):</span>
+    <span class="c1"># todo [optimize for DRY] move this class to root.py and make more abstract for all Models.</span>
+    <span class="c1">#  Here can be a HydroModel(Model).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The core ``Model`` base object. Expected to hold one :class:`pandas.DataFrame` as simulation data and</span>
+<span class="sd">    a dictionary as parameters. This is a dummy class to be developed downstream.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Model.__init__">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyModel&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;HM01&quot;</span><span class="p">):</span>
+        <span class="c1"># ------------ call super ----------- #</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+
+        <span class="c1"># defaults</span>
+        <span class="c1"># self.field_datetime = &quot;DateTime&quot;</span>
+
+        <span class="c1"># overwriters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object_alias</span> <span class="o">=</span> <span class="s2">&quot;M&quot;</span>
+
+        <span class="c1"># variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_model_vars</span><span class="p">()</span>
+
+        <span class="c1"># parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_params</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># global parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_model_params</span><span class="p">()</span>
+
+        <span class="c1"># simulation data</span>
+        <span class="c1"># dataframe for i/o and post-processing operations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># dict for fast numerical processing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sdata</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slen</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># observed data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename_data_obs</span> <span class="o">=</span> <span class="s2">&quot;q_obs.csv&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_data_obs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_obs</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># evaluation parameters (model metrics)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rmse</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rsq</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># run file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_model</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># flags</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_dt_flag</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># testing helpers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_steps</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Model._set_fields">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model._set_fields">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set fields names.</span>
+<span class="sd">        Expected to increment superior methods.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># ------------ call super ----------- #</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_fields</span><span class="p">()</span>
+        <span class="c1"># Attribute fields</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_file_params</span> <span class="o">=</span> <span class="s2">&quot;file_parameters&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_folder_data</span> <span class="o">=</span> <span class="s2">&quot;folder_data&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_rmse</span> <span class="o">=</span> <span class="s2">&quot;rmse&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_rsq</span> <span class="o">=</span> <span class="s2">&quot;r2&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_bias</span> <span class="o">=</span> <span class="s2">&quot;bias&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_datetime</span> <span class="o">=</span> <span class="s2">&quot;datetime&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_units</span> <span class="o">=</span> <span class="s2">&quot;units&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_parameter</span> <span class="o">=</span> <span class="s2">&quot;parameter&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_id</span> <span class="o">=</span> <span class="s2">&quot;id&quot;</span></div>
+
+
+        <span class="c1"># ... continues in downstream objects ... #</span>
+
+<div class="viewcode-block" id="Model._set_model_vars">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model._set_model_vars">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_model_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># todo [docstrings]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vars</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{k}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Accumulated time&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;mm&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Storage level&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;level&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;mm/</span><span class="si">{dt_freq}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Outflow&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;flow&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;san&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;mm&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Storage level (analytical solution)&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;level&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;sobs&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;mm&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Storage level (observed evidence)&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;level&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">var_eval</span> <span class="o">=</span> <span class="s2">&quot;s&quot;</span></div>
+
+
+<div class="viewcode-block" id="Model._set_model_params">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model._set_model_params">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_model_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal method for setting up model parameters data</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># model parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Residence time&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;conceptual&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;tex&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;domain&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;S0&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;mm&quot;</span><span class="p">,</span>  <span class="c1"># default is mm</span>
+                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Storage initial condition&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;conceptual&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;tex&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;domain&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Time Step in k units&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;procedural&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;tex&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;domain&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;dt_freq&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;unitless&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Time Step frequency flag&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;procedural&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;t0&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;timestamp&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Simulation start&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;procedural&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;tex&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;domain&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;tN&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;timestamp&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Simulation end&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;procedural&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;tex&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;domain&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reference_dt_param</span> <span class="o">=</span> <span class="s2">&quot;k&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Model._set_view_specs">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model._set_view_specs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_view_specs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set view specifications.</span>
+<span class="sd">        Expected to increment superior methods.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span>
+        <span class="c1"># cleanup useless entries</span>
+        <span class="n">dc_remove</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;xvar&quot;</span><span class="p">:</span> <span class="s2">&quot;RM&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;yvar&quot;</span><span class="p">:</span> <span class="s2">&quot;TempDB&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;xlabel&quot;</span><span class="p">:</span> <span class="s2">&quot;RM&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ylabel&quot;</span><span class="p">:</span> <span class="s2">&quot;TempDB&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">,</span>
+            <span class="s2">&quot;xmin&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;xmax&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;ymin&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;ymax&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">dc_remove</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="c1"># add new specs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+                <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Model.get_vars">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.get_vars">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># todo [docstring]</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">DataSet</span><span class="o">.</span><span class="n">dc2df</span><span class="p">(</span><span class="n">dc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;variable&quot;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;variable&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="Model.get_params">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.get_params">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># todo [docstring]</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">DataSet</span><span class="o">.</span><span class="n">dc2df</span><span class="p">(</span><span class="n">dc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;parameter&quot;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;parameter&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="Model.get_metadata">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.get_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a dictionary with object metadata.</span>
+<span class="sd">        Expected to increment superior methods.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            Metadata does **not** necessarily inclue all object attributes.</span>
+
+<span class="sd">        :return: dictionary with all metadata</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># ------------ call super ----------- #</span>
+        <span class="n">dict_meta</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()</span>
+
+        <span class="c1"># remove useless fields</span>
+        <span class="k">del</span> <span class="n">dict_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_file_data</span><span class="p">]</span>
+
+        <span class="c1"># customize local metadata:</span>
+        <span class="n">dict_meta_local</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_rmse</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rmse</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_rsq</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rsq</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_bias</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_file_params</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_params</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_folder_data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">folder_data</span><span class="p">,</span>
+            <span class="c1"># ... continue if necessary</span>
+        <span class="p">}</span>
+
+        <span class="c1"># update</span>
+        <span class="n">dict_meta</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dict_meta_local</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dict_meta</span></div>
+
+
+<div class="viewcode-block" id="Model.setter">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.setter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_setter</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set selected attributes based on an incoming dictionary.</span>
+<span class="sd">        This is calling the superior method using load_data=False.</span>
+
+<span class="sd">        :param dict_setter: incoming dictionary with attribute values</span>
+<span class="sd">        :type dict_setter: dict</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setter</span><span class="p">(</span><span class="n">dict_setter</span><span class="p">,</span> <span class="n">load_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># set new attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_params</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dict_setter</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_file_params</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder_data</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dict_setter</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_folder_data</span><span class="p">])</span>
+
+        <span class="c1"># ... continues in downstream objects ... #</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Model.update">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Refresh all mutable attributes based on data (includins paths).</span>
+<span class="sd">        Base method. This is overwrinting the superior method.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># refresh all mutable attributes</span>
+
+        <span class="c1"># (re)set fields</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_fields</span><span class="p">()</span>
+
+        <span class="c1"># (re)set view specs</span>
+        <span class="c1">## self._set_view_specs()</span>
+
+        <span class="c1"># update major attributes</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># data size (rows)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># ... continues in downstream objects ... #</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Model.update_dt">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.update_dt">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update Time Step value, units and tag to match the model reference time parameter (like k)</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># this flag prevents revisting the function unintentionally</span>
+        <span class="c1"># todo actually this is more like a bad bugfix so it would be nice</span>
+        <span class="c1">#  to remove the flag and optimize this process.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_dt_flag</span><span class="p">:</span>
+            <span class="c1"># handle inputs dt</span>
+            <span class="n">s_dt_unit_tag</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">][</span><span class="s2">&quot;units&quot;</span><span class="p">]</span>
+
+            <span class="c1"># handle all good condition</span>
+            <span class="k">if</span> <span class="n">s_dt_unit_tag</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_dt_param</span><span class="p">][</span><span class="s2">&quot;units&quot;</span><span class="p">]:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1">#</span>
+                <span class="c1">#</span>
+                <span class="c1"># compute time step in reference units</span>
+                <span class="n">ft_aux</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">get_timestep_factor</span><span class="p">(</span>
+                    <span class="n">from_unit</span><span class="o">=</span><span class="n">s_dt_unit_tag</span><span class="p">,</span>
+                    <span class="n">to_unit</span><span class="o">=</span><span class="s2">&quot;1&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_dt_param</span><span class="p">][</span><span class="s2">&quot;units&quot;</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="c1">#</span>
+                <span class="c1">#</span>
+                <span class="c1"># update</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ft_aux</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">][</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_dt_param</span><span class="p">][</span>
+                    <span class="s2">&quot;units&quot;</span>
+                <span class="p">][:]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;dt_freq&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_dt_unit_tag</span>
+            <span class="c1"># shut down</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_dt_flag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Model.load_params">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.load_params">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load parameter data</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># -------------- load parameter data -------------- #</span>
+
+        <span class="c1">#  develop logic in downstream objects</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Model.load_data">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.load_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load simulation data. Expected to overwrite superior methods.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># -------------- load simulation data -------------- #</span>
+
+        <span class="c1"># develop logic in downstream objects</span>
+
+        <span class="c1"># -------------- update other mutables -------------- #</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+        <span class="c1"># ... continues in downstream objects ... #</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Model.load">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.load">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load parameters and data</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># first params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_params</span><span class="p">()</span>
+        <span class="c1"># then data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Model.setup">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.setup">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set model simulation. Expected to be incremented downstream.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            This method overwrites model data.</span>
+
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># ensure to update dt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_dt</span><span class="p">()</span>
+        <span class="c1"># get timestep series</span>
+        <span class="n">vc_ts</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">get_timestep_series</span><span class="p">(</span>
+            <span class="n">start_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;t0&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">],</span>
+            <span class="n">end_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;tN&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">],</span>
+            <span class="n">time_unit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;dt_freq&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">vc_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+            <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">stop</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">vc_ts</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">],</span>
+            <span class="n">num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">vc_ts</span><span class="p">),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># built-up data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vc_t</span><span class="p">)</span>
+        <span class="c1"># setup simulation data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sdata</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_datetime</span><span class="p">:</span> <span class="n">vc_ts</span><span class="p">,</span>
+            <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="n">vc_t</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="c1"># setup</span>
+        <span class="c1"># self.data = pd.DataFrame(self.sdata)</span>
+        <span class="c1"># append variables to dataframe</span>
+        <span class="c1"># develop logic in downstream objects</span>
+
+        <span class="c1"># set initial conditions</span>
+        <span class="c1"># develop logic in downstream objects</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Model.solve">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.solve">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solve the model for boundary and initial conditions by numerical methods.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            This method overwrites model data.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># develop logic in downstream objects</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Model.evaluate">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.evaluate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate model.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># develop logic in downstream objects</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Model.run">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.run">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setup_model</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simulate model (full procedure).</span>
+
+<span class="sd">        :param setup_model: flag for setting up data (default=True)</span>
+<span class="sd">        :type setup_model: bool</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">setup_model</span><span class="p">:</span>  <span class="c1"># by-passing setup may save computing time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Model.export">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.export">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Export object resources</span>
+
+<span class="sd">        :param folder: path to folder</span>
+<span class="sd">        :type folder: str</span>
+<span class="sd">        :param filename: file name without extension</span>
+<span class="sd">        :type filename: str</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># export model simulation data</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">data_suffix</span><span class="o">=</span><span class="s2">&quot;sim&quot;</span><span class="p">)</span>
+
+        <span class="c1"># export model parameter file</span>
+        <span class="n">df_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_params</span><span class="p">()</span>
+        <span class="n">df_params</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">_params.csv&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+        <span class="c1"># export model observation data</span>
+        <span class="c1"># develop in downstream objects</span>
+
+        <span class="c1"># ... continues in downstream objects ... #</span>
+
+<div class="viewcode-block" id="Model.save">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.save">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save to sourced files is not allowed for Model() family. Use .export() instead.</span>
+<span class="sd">        This is overwriting superior methods.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Model.view">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.view">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># develop logic in downstream object</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Model.get_timestep_factor">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.get_timestep_factor">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_timestep_factor</span><span class="p">(</span><span class="n">from_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">to_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the conversion factor between two time units.</span>
+
+<span class="sd">        For instance, to find out how many days are in a given number of &#39;10min&#39; intervals,</span>
+<span class="sd">        this function provides the multiplier.</span>
+
+<span class="sd">        :param from_unit: The starting time unit (e.g., &#39;10min&#39;, &#39;15s&#39;).</span>
+<span class="sd">        :type from_unit: str</span>
+<span class="sd">        :param to_unit: The desired time unit (e.g., &#39;days&#39;, &#39;min&#39;).</span>
+<span class="sd">        :type to_unit: str</span>
+<span class="sd">        :return: The factor to convert from the starting to the desired time unit.</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">from_duration</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">from_unit</span><span class="p">)</span>
+        <span class="n">to_duration</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">to_unit</span><span class="p">)</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="n">to_duration</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="n">from_duration</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">factor</span></div>
+
+
+<div class="viewcode-block" id="Model.get_timestep_series">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.get_timestep_series">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_timestep_series</span><span class="p">(</span>
+        <span class="n">start_time</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_time</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">time_unit</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DatetimeIndex</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a time series of timestamps.</span>
+
+<span class="sd">        Creates a sequence of timestamps between a start and end time,</span>
+<span class="sd">        with a specified frequency.</span>
+
+<span class="sd">        :param start_time: The starting timestamp for the series (e.g., &#39;2024-01-01&#39;, &#39;2024-01-01 00:00:00&#39;).</span>
+<span class="sd">        :type start_time: str</span>
+<span class="sd">        :param end_time: The ending timestamp for the series (e.g., &#39;2024-01-10&#39;, &#39;2024-01-10 23:59:59&#39;).</span>
+<span class="sd">        :type end_time: str</span>
+<span class="sd">        :param time_unit: The frequency or interval between timestamps (e.g., &#39;D&#39; for day, &#39;H&#39; for hour, &#39;10min&#39;).</span>
+<span class="sd">        :type time_unit: str</span>
+<span class="sd">        :return: A pandas DatetimeIndex representing the generated time series.</span>
+<span class="sd">        :rtype: pd.DatetimeIndex</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">raw_time_series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end_time</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">time_unit</span><span class="p">)</span>
+        <span class="n">time_series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                <span class="n">raw_time_series</span><span class="o">.</span><span class="n">microsecond</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="n">raw_time_series</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                <span class="n">raw_time_series</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">time_series</span></div>
+
+
+<div class="viewcode-block" id="Model.get_gaussian_signal">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.Model.get_gaussian_signal">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_gaussian_signal</span><span class="p">(</span>
+        <span class="n">value_max</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">position_factor</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a vector of normally (gaussian) distributed values. Useful for testing inputs inflows.</span>
+
+<span class="sd">        :param value_max: actual maximum value in the vector</span>
+<span class="sd">        :type value_max: float</span>
+<span class="sd">        :param size: size of vector (time series size)</span>
+<span class="sd">        :type size: int</span>
+<span class="sd">        :param sigma: standard deviation for gaussian (normal) distribution.</span>
+<span class="sd">        :type sigma: float</span>
+<span class="sd">        :param position_factor: where to place the peak in the vector</span>
+<span class="sd">        :type position_factor: float</span>
+<span class="sd">        :param reverse: boolean to reverse position in order</span>
+<span class="sd">        :type reverse: bool</span>
+<span class="sd">        :return: vector of values</span>
+<span class="sd">        :rtype: Numpy array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">gaussian_filter</span>
+
+        <span class="c1"># Create the initial signal</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="c1"># place peak</span>
+        <span class="n">v</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">/</span> <span class="n">position_factor</span><span class="p">)]</span> <span class="o">=</span> <span class="n">value_max</span>
+        <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># Apply Gaussian filter</span>
+        <span class="n">filtered_signal</span> <span class="o">=</span> <span class="n">gaussian_filter</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">/</span> <span class="n">sigma</span><span class="p">)</span>
+        <span class="c1"># Normalize the signal to have a maximum value of max_v</span>
+        <span class="n">normalized_signal</span> <span class="o">=</span> <span class="p">(</span><span class="n">filtered_signal</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">filtered_signal</span><span class="p">))</span> <span class="o">*</span> <span class="n">value_max</span>
+        <span class="n">v_norm</span> <span class="o">=</span> <span class="n">normalized_signal</span> <span class="o">*</span> <span class="p">(</span><span class="n">normalized_signal</span> <span class="o">&gt;</span> <span class="mf">0.01</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v_norm</span></div>
+</div>
+
+
+
+<span class="c1"># ... {develop}</span>
+
+<span class="c1"># CLASSES -- Module-level</span>
+<span class="c1"># =======================================================================</span>
+<span class="c1"># ... {develop}</span>
+
+
+<span class="c1"># SCRIPT</span>
+<span class="c1"># ***********************************************************************</span>
+<span class="c1"># standalone behaviour as a script</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Test doctests</span>
+    <span class="c1"># ===================================================================</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
+
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+
+    <span class="c1"># Script section</span>
+    <span class="c1"># ===================================================================</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+    <span class="c1"># ... {develop}</span>
+
+    <span class="c1"># Script subsection</span>
+    <span class="c1"># -------------------------------------------------------------------</span>
+    <span class="c1"># ... {develop}</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023, Iporã Possantti.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1562 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>plans.datasets.spatial &#8212; plans 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/plans.datasets.spatial';</script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="plans.parsers" href="plans.parsers.html" />
+    <link rel="prev" title="plans.datasets.chrono" href="plans.datasets.chrono.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">plans 1.0.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../usage.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../usage.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">plans.datasets.spatial</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-plans.datasets.spatial">
+<span id="plans-datasets-spatial"></span><h1>plans.datasets.spatial<a class="headerlink" href="#module-plans.datasets.spatial" title="Link to this heading">#</a></h1>
+<p>Handle spatial datasets (maps).</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p># todo [major docstring improvement] – overview
+Mauris gravida ex quam, in porttitor lacus lobortis vitae.
+In a lacinia nisl. Pellentesque habitant morbi tristique senectus
+et netus et malesuada fames ac turpis egestas.</p>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading">#</a></h2>
+<p># todo [major docstring improvement] – examples
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,
+in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Mauris gravida ex quam, in porttitor lacus lobortis vitae.
+In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.
+In a lacinia nisl.</p>
+</section>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.spatial.AOI" title="plans.datasets.spatial.AOI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AOI</span></code></a>([name])</p></td>
+<td><p>AOI map dataset</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.spatial.AOICollection" title="plans.datasets.spatial.AOICollection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AOICollection</span></code></a>(name)</p></td>
+<td><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRasterCollection`</span></code> for holding AOI maps</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.spatial.Basins" title="plans.datasets.spatial.Basins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Basins</span></code></a>([name])</p></td>
+<td><p>Basins map dataset</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.spatial.DTO" title="plans.datasets.spatial.DTO"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DTO</span></code></a>([name])</p></td>
+<td><p>Distance to outlet raster map dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.spatial.EBA" title="plans.datasets.spatial.EBA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EBA</span></code></a>(name, datetime[, q_a])</p></td>
+<td><p>Equivalent Biodiversity Area raster map dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.spatial.ET24h" title="plans.datasets.spatial.ET24h"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ET24h</span></code></a>(name, date)</p></td>
+<td><p>ET 24h raster map dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.spatial.ETSeries" title="plans.datasets.spatial.ETSeries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ETSeries</span></code></a>(name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.spatial.Elevation" title="plans.datasets.spatial.Elevation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Elevation</span></code></a>([name])</p></td>
+<td><p>Elevation (DEM) raster map dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.spatial.FAC" title="plans.datasets.spatial.FAC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FAC</span></code></a>(name)</p></td>
+<td><p>Flow Accumulation raster map dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.spatial.HAND" title="plans.datasets.spatial.HAND"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HAND</span></code></a>([name])</p></td>
+<td><p>HAND raster map dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.spatial.HTWI" title="plans.datasets.spatial.HTWI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HTWI</span></code></a>([name])</p></td>
+<td><p>HTWI (HAND-TWI) raster map dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.spatial.HabDegradation" title="plans.datasets.spatial.HabDegradation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HabDegradation</span></code></a>(name, datetime)</p></td>
+<td><p>Habitat Degradation raster map dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.spatial.HabQuality" title="plans.datasets.spatial.HabQuality"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HabQuality</span></code></a>(name, datetime)</p></td>
+<td><p>Habitat Quality raster map dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.spatial.Hydrology" title="plans.datasets.spatial.Hydrology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Hydrology</span></code></a>(name, varalias, datetime)</p></td>
+<td><p>Primitive hydrology raster map dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.spatial.LDD" title="plans.datasets.spatial.LDD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LDD</span></code></a>([name])</p></td>
+<td><p>LDD - Local Drain Direction map dataset convention:</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.spatial.LULC" title="plans.datasets.spatial.LULC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LULC</span></code></a>(name, datetime)</p></td>
+<td><p>Land Use and Land Cover map dataset</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.spatial.LULCChange" title="plans.datasets.spatial.LULCChange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LULCChange</span></code></a>(name, date_start, date_end, name_lulc)</p></td>
+<td><p>Land Use and Land Cover Change map dataset</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.spatial.LULCSeries" title="plans.datasets.spatial.LULCSeries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LULCSeries</span></code></a>(name)</p></td>
+<td><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRasterSeries`</span></code> for holding Land Use and Land Cover maps</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.spatial.Lithology" title="plans.datasets.spatial.Lithology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lithology</span></code></a>([name])</p></td>
+<td><p>Lithology map dataset</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.spatial.NDVI" title="plans.datasets.spatial.NDVI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDVI</span></code></a>(name, datetime)</p></td>
+<td><p>NDVI raster map dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.spatial.NDVISeries" title="plans.datasets.spatial.NDVISeries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NDVISeries</span></code></a>(name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.spatial.Slope" title="plans.datasets.spatial.Slope"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Slope</span></code></a>([name])</p></td>
+<td><p>Slope raster map dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.spatial.Soils" title="plans.datasets.spatial.Soils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Soils</span></code></a>([name])</p></td>
+<td><p>Soils map dataset</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.spatial.TWI" title="plans.datasets.spatial.TWI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TWI</span></code></a>([name])</p></td>
+<td><p>TWI raster map dataset.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Elevation">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">Elevation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DEM'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Elevation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Elevation" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.SciRaster" title="plans.datasets.core.SciRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">SciRaster</span></code></a></p>
+<p>Elevation (DEM) raster map dataset.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Elevation.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DEM'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Elevation.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Elevation.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of map</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Elevation.get_tpi">
+<span class="sig-name descname"><span class="pre">get_tpi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell_radius</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Elevation.get_tpi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Elevation.get_tpi" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Elevation.get_tpi_landforms">
+<span class="sig-name descname"><span class="pre">get_tpi_landforms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">radius_micro</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius_macro</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Elevation.get_tpi_landforms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Elevation.get_tpi_landforms" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Slope">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">Slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Slope'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Slope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Slope" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.SciRaster" title="plans.datasets.core.SciRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">SciRaster</span></code></a></p>
+<p>Slope raster map dataset.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Slope.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Slope'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Slope.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Slope.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of map</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.TWI">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">TWI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'TWI'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#TWI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.TWI" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.SciRaster" title="plans.datasets.core.SciRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">SciRaster</span></code></a></p>
+<p>TWI raster map dataset.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.TWI.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'TWI'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#TWI.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.TWI.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of map</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.HTWI">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">HTWI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'HTWI'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#HTWI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.HTWI" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.SciRaster" title="plans.datasets.core.SciRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">SciRaster</span></code></a></p>
+<p>HTWI (HAND-TWI) raster map dataset.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.HTWI.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'HTWI'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#HTWI.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.HTWI.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of map</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.HAND">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">HAND</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'HAND'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#HAND"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.HAND" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.SciRaster" title="plans.datasets.core.SciRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">SciRaster</span></code></a></p>
+<p>HAND raster map dataset.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.HAND.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'HAND'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#HAND.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.HAND.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of map</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.DTO">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">DTO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DTO'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#DTO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.DTO" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.SciRaster" title="plans.datasets.core.SciRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">SciRaster</span></code></a></p>
+<p>Distance to outlet raster map dataset.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.DTO.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DTO'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#DTO.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.DTO.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of map</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.FAC">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">FAC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#FAC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.FAC" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.SciRaster" title="plans.datasets.core.SciRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">SciRaster</span></code></a></p>
+<p>Flow Accumulation raster map dataset.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.FAC.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#FAC.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.FAC.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of map</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.NDVI">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">NDVI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#NDVI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.NDVI" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.SciRaster" title="plans.datasets.core.SciRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">SciRaster</span></code></a></p>
+<p>NDVI raster map dataset.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.NDVI.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#NDVI.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.NDVI.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of map</p></li>
+<li><p><strong>datetime</strong> (<em>str</em>) – date of map in <code class="docutils literal notranslate"><span class="pre">yyyy-mm-dd</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.NDVI.set_data">
+<span class="sig-name descname"><span class="pre">set_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#NDVI.set_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.NDVI.set_data" title="Link to this definition">#</a></dt>
+<dd><p>Set the data grid for the raster object.
+This function allows setting the data grid for the raster object.
+The incoming grid should be a NumPy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>grid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The data grid to be set for the raster.</p>
+</dd>
+</dl>
+<p><strong>Notes</strong></p>
+<ul class="simple">
+<li><p>The function overwrites the existing data grid in the raster object with the incoming grid, ensuring that the data type matches the raster’s dtype.</p></li>
+<li><p>Nodata values are masked after setting the grid.</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.ET24h">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">ET24h</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#ET24h"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.ET24h" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.SciRaster" title="plans.datasets.core.SciRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">SciRaster</span></code></a></p>
+<p>ET 24h raster map dataset.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.ET24h.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#ET24h.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.ET24h.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of map</p></li>
+<li><p><strong>date</strong> (<em>str</em>) – date of map in <code class="docutils literal notranslate"><span class="pre">yyyy-mm-dd</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.ET24h.set_data">
+<span class="sig-name descname"><span class="pre">set_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#ET24h.set_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.ET24h.set_data" title="Link to this definition">#</a></dt>
+<dd><p>Set the data grid for the raster object.
+This function allows setting the data grid for the raster object.
+The incoming grid should be a NumPy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>grid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The data grid to be set for the raster.</p>
+</dd>
+</dl>
+<p><strong>Notes</strong></p>
+<ul class="simple">
+<li><p>The function overwrites the existing data grid in the raster object with the incoming grid, ensuring that the data type matches the raster’s dtype.</p></li>
+<li><p>Nodata values are masked after setting the grid.</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Hydrology">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">Hydrology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varalias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Hydrology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Hydrology" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.SciRaster" title="plans.datasets.core.SciRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">SciRaster</span></code></a></p>
+<p>Primitive hydrology raster map dataset.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Hydrology.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varalias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Hydrology.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Hydrology.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of map</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Hydrology._set_cmaps">
+<span class="sig-name descname"><span class="pre">_set_cmaps</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Hydrology._set_cmaps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Hydrology._set_cmaps" title="Link to this definition">#</a></dt>
+<dd><p>Sets predefined colormaps for different types of scientific data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Hydrology._set_vars">
+<span class="sig-name descname"><span class="pre">_set_vars</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Hydrology._set_vars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Hydrology._set_vars" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.HabQuality">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">HabQuality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#HabQuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.HabQuality" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.SciRaster" title="plans.datasets.core.SciRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">SciRaster</span></code></a></p>
+<p>Habitat Quality raster map dataset.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.HabQuality.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#HabQuality.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.HabQuality.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of map</p></li>
+<li><p><strong>datetime</strong> (<em>str</em>) – date of map in <code class="docutils literal notranslate"><span class="pre">yyyy-mm-dd</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.HabQuality.get_biodiversity_area">
+<span class="sig-name descname"><span class="pre">get_biodiversity_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b_a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.Raster" title="plans.datasets.core.Raster"><span class="pre">Raster</span></a></span></span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#HabQuality.get_biodiversity_area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.HabQuality.get_biodiversity_area" title="Link to this definition">#</a></dt>
+<dd><p>Get a raster of Biodiversity Area
+:param b_a: model parameter
+:type b_a: float
+:return: Raster object of biodiversity area
+:rtype: Raster</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.HabDegradation">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">HabDegradation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#HabDegradation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.HabDegradation" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.SciRaster" title="plans.datasets.core.SciRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">SciRaster</span></code></a></p>
+<p>Habitat Degradation raster map dataset.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.HabDegradation.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#HabDegradation.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.HabDegradation.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of map</p></li>
+<li><p><strong>datetime</strong> (<em>str</em>) – date of map in <code class="docutils literal notranslate"><span class="pre">yyyy-mm-dd</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.EBA">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">EBA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#EBA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.EBA" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.SciRaster" title="plans.datasets.core.SciRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">SciRaster</span></code></a></p>
+<p>Equivalent Biodiversity Area raster map dataset.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.EBA.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#EBA.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.EBA.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of map</p></li>
+<li><p><strong>datetime</strong> (<em>str</em>) – date of map in <code class="docutils literal notranslate"><span class="pre">yyyy-mm-dd</span></code></p></li>
+<li><p><strong>q_a</strong> (<em>float</em>) – habitat quality reference</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.EBA.set_data">
+<span class="sig-name descname"><span class="pre">set_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#EBA.set_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.EBA.set_data" title="Link to this definition">#</a></dt>
+<dd><p>Set the data grid for the raster object.
+This function allows setting the data grid for the raster object.
+The incoming grid should be a NumPy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>grid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The data grid to be set for the raster.</p>
+</dd>
+</dl>
+<p><strong>Notes</strong></p>
+<ul class="simple">
+<li><p>The function overwrites the existing data grid in the raster object with the incoming grid, ensuring that the data type matches the raster’s dtype.</p></li>
+<li><p>Nodata values are masked after setting the grid.</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Basins">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">Basins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BasinsMap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Basins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Basins" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.QualiRaster" title="plans.datasets.core.QualiRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRaster</span></code></a></p>
+<p>Basins map dataset</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Basins.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BasinsMap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Basins.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Basins.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of map</p></li>
+<li><p><strong>dtype</strong> (<em>str</em>) – data type of raster cells, defaults to</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Basins.get_upstream_ids">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_upstream_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basin_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topology_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visited</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Basins.get_upstream_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Basins.get_upstream_ids" title="Link to this definition">#</a></dt>
+<dd><p>Recursive utility function for listing all upstream basins</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>basin_id</strong> (<em>int</em>) – basin id to start</p></li>
+<li><p><strong>topology_df</strong> (<em>pandas.DataFrame</em>) – dataframe with topology. expected to have Id and Downstream_Id columns</p></li>
+<li><p><strong>visited</strong> (<em>list</em><em> or </em><em>None</em>) – visited id (default=None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>upstream ids</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Basins.get_basin_aoi">
+<span class="sig-name descname"><span class="pre">get_basin_aoi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basin_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Basins.get_basin_aoi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Basins.get_basin_aoi" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.LULC">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">LULC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#LULC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.LULC" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.QualiRaster" title="plans.datasets.core.QualiRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRaster</span></code></a></p>
+<p>Land Use and Land Cover map dataset</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.LULC.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#LULC.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.LULC.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize <code class="xref py py-class docutils literal notranslate"><span class="pre">LULC`</span></code> map</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of map</p></li>
+<li><p><strong>datetime</strong> (<em>str</em>) – date of map in <code class="docutils literal notranslate"><span class="pre">yyyy-mm-dd</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.LULCChange">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">LULCChange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_lulc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#LULCChange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.LULCChange" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.QualiRaster" title="plans.datasets.core.QualiRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRaster</span></code></a></p>
+<p>Land Use and Land Cover Change map dataset</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.LULCChange.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_lulc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#LULCChange.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.LULCChange.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize <code class="xref py py-class docutils literal notranslate"><span class="pre">LULCChange`</span></code> map</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of map</p></li>
+<li><p><strong>date_start</strong> (<em>str</em>) – date of map in <code class="docutils literal notranslate"><span class="pre">yyyy-mm-dd</span></code></p></li>
+<li><p><strong>date_end</strong> (<em>str</em>) – date of map in <code class="docutils literal notranslate"><span class="pre">yyyy-mm-dd</span></code></p></li>
+<li><p><strong>name_lulc</strong> (<em>str</em>) – name of lulc incoming map</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Lithology">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">Lithology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LitoMap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Lithology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Lithology" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.QualiRaster" title="plans.datasets.core.QualiRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRaster</span></code></a></p>
+<p>Lithology map dataset</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Lithology.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LitoMap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Lithology.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Lithology.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize <code class="xref py py-class docutils literal notranslate"><span class="pre">Lithology`</span></code> map</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Soils">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">Soils</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SoilsMap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Soils"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Soils" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.QualiRaster" title="plans.datasets.core.QualiRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRaster</span></code></a></p>
+<p>Soils map dataset</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Soils.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SoilsMap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Soils.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Soils.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of map</p></li>
+<li><p><strong>dtype</strong> (<em>str</em>) – data type of raster cells, defaults to</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.Soils.set_hydro_soils">
+<span class="sig-name descname"><span class="pre">set_hydro_soils</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">map_lito</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_hand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_slope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_hand</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_slope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#Soils.set_hydro_soils"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.Soils.set_hydro_soils" title="Link to this definition">#</a></dt>
+<dd><p>Set hydrological soils based on lithology, Hand and Slope maps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>map_lito</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">datasets.Lithology</span></code>) – Lithology raster map</p></li>
+<li><p><strong>map_hand</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">datasets.HAND</span></code>) – HAND raster map</p></li>
+<li><p><strong>map_slope</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">datasets.Slope</span></code>) – Slope raster map</p></li>
+<li><p><strong>n_hand</strong> (<em>float</em>) – HAND threshold for alluvial definition</p></li>
+<li><p><strong>n_slope</strong> (<em>float</em>) – Slope threshold for colluvial definition</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.AOI">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">AOI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'AOIMap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#AOI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.AOI" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.QualiHard" title="plans.datasets.core.QualiHard"><code class="xref py py-class docutils literal notranslate"><span class="pre">QualiHard</span></code></a></p>
+<p>AOI map dataset</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.AOI.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'AOIMap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#AOI.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.AOI.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of map</p></li>
+<li><p><strong>dtype</strong> (<em>str</em>) – data type of raster cells, defaults to</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.AOI.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#AOI.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.AOI.update" title="Link to this definition">#</a></dt>
+<dd><p>Refresh all mutable attributes based on data (includins paths).
+Expected to be incremented downstream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.AOI.get_table">
+<span class="sig-name descname"><span class="pre">get_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#AOI.get_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.AOI.get_table" title="Link to this definition">#</a></dt>
+<dd><p>Retrieves a sample DataFrame representing an AOI classification table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A DataFrame with sample AOI classification data.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.AOI.set_area">
+<span class="sig-name descname"><span class="pre">set_area</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#AOI.set_area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.AOI.set_area" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.AOI.get_metadata">
+<span class="sig-name descname"><span class="pre">get_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#AOI.get_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.AOI.get_metadata" title="Link to this definition">#</a></dt>
+<dd><p>Get a dictionary with object metadata.
+Expected to increment superior methods.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Metadata does <strong>not</strong> necessarily inclue all object attributes.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dictionary with all metadata</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.AOI.view">
+<span class="sig-name descname"><span class="pre">view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./output'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">150</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'jpg'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#AOI.view"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.AOI.view" title="Link to this definition">#</a></dt>
+<dd><p>Plot a basic pannel of raster map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>show</strong> (<em>bool</em>) – boolean to show plot instead of saving, defaults to False</p></li>
+<li><p><strong>folder</strong> (<em>str</em>) – path to output folder, defaults to <code class="docutils literal notranslate"><span class="pre">./output</span></code></p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – name of file, defaults to None</p></li>
+<li><p><strong>dpi</strong> (<em>int</em>) – image resolution, defaults to 96</p></li>
+<li><p><strong>fig_format</strong> (<em>str</em>) – image fig_format (ex: png or jpg). Default jpg</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.LDD">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">LDD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LDDMap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#LDD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.LDD" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.QualiHard" title="plans.datasets.core.QualiHard"><code class="xref py py-class docutils literal notranslate"><span class="pre">QualiHard</span></code></a></p>
+<p>LDD - Local Drain Direction map dataset
+convention:</p>
+<p>7   8   9
+4   5   6
+1   2   3</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.LDD.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LDDMap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#LDD.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.LDD.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of map</p></li>
+<li><p><strong>dtype</strong> (<em>str</em>) – data type of raster cells, defaults to</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.LDD.get_table">
+<span class="sig-name descname"><span class="pre">get_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#LDD.get_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.LDD.get_table" title="Link to this definition">#</a></dt>
+<dd><p>Retrieves a sample DataFrame representing a classification table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A DataFrame with sample classification data.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.NDVISeries">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">NDVISeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#NDVISeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.NDVISeries" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.RasterSeries" title="plans.datasets.core.RasterSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">RasterSeries</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.NDVISeries.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#NDVISeries.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.NDVISeries.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Deploy RasterSeries</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">RasterSeries.name`</span></code> name attribute</p></li>
+<li><p><strong>varname</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.varname`</span></code> variable name attribute, defaults to None</p></li>
+<li><p><strong>varalias</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.varalias`</span></code> variable alias attribute, defaults to None</p></li>
+<li><p><strong>units</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.units`</span></code> units attribute, defaults to None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.NDVISeries.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prj_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#NDVISeries.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.NDVISeries.load_data" title="Link to this definition">#</a></dt>
+<dd><p>Load a <code class="xref py py-class docutils literal notranslate"><span class="pre">NDVI`</span></code> object from a raster file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name attribute</p></li>
+<li><p><strong>datetime</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.date`</span></code> date attribute, defaults to None</p></li>
+<li><p><strong>file_data</strong> (<em>str</em>) – path to <code class="docutils literal notranslate"><span class="pre">.asc</span></code> raster file</p></li>
+<li><p><strong>prj_file</strong> (<em>str</em>) – path to <code class="docutils literal notranslate"><span class="pre">.prj</span></code> projection file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.ETSeries">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">ETSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#ETSeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.ETSeries" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.RasterSeries" title="plans.datasets.core.RasterSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">RasterSeries</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.ETSeries.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#ETSeries.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.ETSeries.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Deploy RasterSeries</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">RasterSeries.name`</span></code> name attribute</p></li>
+<li><p><strong>varname</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.varname`</span></code> variable name attribute, defaults to None</p></li>
+<li><p><strong>varalias</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.varalias`</span></code> variable alias attribute, defaults to None</p></li>
+<li><p><strong>units</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.units`</span></code> units attribute, defaults to None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.ETSeries.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prj_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#ETSeries.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.ETSeries.load_data" title="Link to this definition">#</a></dt>
+<dd><p>Load a <code class="xref py py-class docutils literal notranslate"><span class="pre">ET24h`</span></code> object from a raster file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name attribute</p></li>
+<li><p><strong>datetime</strong> (<em>str</em>) – datetime attribute, defaults to None</p></li>
+<li><p><strong>file_data</strong> (<em>str</em>) – path to raster file</p></li>
+<li><p><strong>prj_file</strong> (<em>str</em>) – path to projection file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.AOICollection">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">AOICollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#AOICollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.AOICollection" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.QualiRasterCollection" title="plans.datasets.core.QualiRasterCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRasterCollection</span></code></a></p>
+<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRasterCollection`</span></code> for holding AOI maps</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.AOICollection.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#AOICollection.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.AOICollection.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Deploy Qualitative Raster Series</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">RasterSeries.name`</span></code> name attribute</p></li>
+<li><p><strong>varname</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.varname`</span></code> variable name attribute, defaults to None</p></li>
+<li><p><strong>varalias</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.varalias`</span></code> variable alias attribute, defaults to None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.AOICollection.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_prj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#AOICollection.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.AOICollection.load_data" title="Link to this definition">#</a></dt>
+<dd><p>Load a <code class="xref py py-class docutils literal notranslate"><span class="pre">AOI`</span></code> object from raster file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name attribute</p></li>
+<li><p><strong>file_data</strong> (<em>str</em>) – path to raster file</p></li>
+<li><p><strong>file_prj</strong> (<em>str</em>) – path to projection file</p></li>
+<li><p><strong>file_table</strong> (<em>str</em>) – path to table file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.spatial.LULCSeries">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.spatial.</span></span><span class="sig-name descname"><span class="pre">LULCSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#LULCSeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.LULCSeries" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="plans.datasets.core.html#plans.datasets.core.QualiRasterSeries" title="plans.datasets.core.QualiRasterSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRasterSeries</span></code></a></p>
+<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRasterSeries`</span></code> for holding Land Use and Land Cover maps</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.LULCSeries.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#LULCSeries.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.LULCSeries.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Deploy Qualitative Raster Series</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">RasterSeries.name`</span></code> name attribute</p></li>
+<li><p><strong>varname</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.varname`</span></code> variable name attribute, defaults to None</p></li>
+<li><p><strong>varalias</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.varalias`</span></code> variable alias attribute, defaults to None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.LULCSeries.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_prj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#LULCSeries.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.LULCSeries.load_data" title="Link to this definition">#</a></dt>
+<dd><p>Load a <code class="xref py py-class docutils literal notranslate"><span class="pre">LULC`</span></code> object from raster file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name attribute</p></li>
+<li><p><strong>datetime</strong> (<em>str</em>) – date attribute</p></li>
+<li><p><strong>file_data</strong> (<em>str</em>) – path to raster file</p></li>
+<li><p><strong>file_prj</strong> (<em>str</em>) – path to projection file</p></li>
+<li><p><strong>file_table</strong> (<em>str</em>) – path to table file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.LULCSeries.get_lulcc">
+<span class="sig-name descname"><span class="pre">get_lulcc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_lulc_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#LULCSeries.get_lulcc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.LULCSeries.get_lulcc" title="Link to this definition">#</a></dt>
+<dd><p>Get the <code class="xref py py-class docutils literal notranslate"><span class="pre">LULCChange`</span></code> of a given time interval and LULC class Id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>date_start</strong> (<em>str</em>) – start date of time interval</p></li>
+<li><p><strong>date_end</strong> (<em>str</em>) – end date of time interval</p></li>
+<li><p><strong>by_lulc_id</strong> (<em>int</em>) – LULC class Id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>map of LULC Change</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#plans.datasets.spatial.LULCChange" title="plans.datasets.spatial.LULCChange"><code class="xref py py-class docutils literal notranslate"><span class="pre">LULCChange</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.LULCSeries.get_lulcc_series">
+<span class="sig-name descname"><span class="pre">get_lulcc_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">by_lulc_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#LULCSeries.get_lulcc_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.LULCSeries.get_lulcc_series" title="Link to this definition">#</a></dt>
+<dd><p>Get the <code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRasterSeries`</span></code> of LULC Change for the entire LULC series for a given LULC Id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>by_lulc_id</strong> (<em>int</em>) – LULC class Id</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Series of LULC Change</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRasterSeries</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.spatial.LULCSeries.get_conversion_matrix">
+<span class="sig-name descname"><span class="pre">get_conversion_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">talk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/spatial.html#LULCSeries.get_conversion_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.spatial.LULCSeries.get_conversion_matrix" title="Link to this definition">#</a></dt>
+<dd><p>Compute the conversion matrix, expansion matrix and retraction matrix for a given interval</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>date_start</strong> (<em>str</em>) – start date of time interval</p></li>
+<li><p><strong>date_end</strong> (<em>str</em>) – end date of time interval</p></li>
+<li><p><strong>talk</strong> (<em>bool</em>) – option for printing messages</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict of outputs</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="plans.datasets.chrono.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">plans.datasets.chrono</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="plans.parsers.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">plans.parsers</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Elevation"><code class="docutils literal notranslate"><span class="pre">Elevation</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Elevation.__init__"><code class="docutils literal notranslate"><span class="pre">Elevation.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Elevation.get_tpi"><code class="docutils literal notranslate"><span class="pre">Elevation.get_tpi()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Elevation.get_tpi_landforms"><code class="docutils literal notranslate"><span class="pre">Elevation.get_tpi_landforms()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Slope"><code class="docutils literal notranslate"><span class="pre">Slope</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Slope.__init__"><code class="docutils literal notranslate"><span class="pre">Slope.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.TWI"><code class="docutils literal notranslate"><span class="pre">TWI</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.TWI.__init__"><code class="docutils literal notranslate"><span class="pre">TWI.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.HTWI"><code class="docutils literal notranslate"><span class="pre">HTWI</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.HTWI.__init__"><code class="docutils literal notranslate"><span class="pre">HTWI.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.HAND"><code class="docutils literal notranslate"><span class="pre">HAND</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.HAND.__init__"><code class="docutils literal notranslate"><span class="pre">HAND.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.DTO"><code class="docutils literal notranslate"><span class="pre">DTO</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.DTO.__init__"><code class="docutils literal notranslate"><span class="pre">DTO.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.FAC"><code class="docutils literal notranslate"><span class="pre">FAC</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.FAC.__init__"><code class="docutils literal notranslate"><span class="pre">FAC.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.NDVI"><code class="docutils literal notranslate"><span class="pre">NDVI</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.NDVI.__init__"><code class="docutils literal notranslate"><span class="pre">NDVI.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.NDVI.set_data"><code class="docutils literal notranslate"><span class="pre">NDVI.set_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.ET24h"><code class="docutils literal notranslate"><span class="pre">ET24h</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.ET24h.__init__"><code class="docutils literal notranslate"><span class="pre">ET24h.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.ET24h.set_data"><code class="docutils literal notranslate"><span class="pre">ET24h.set_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Hydrology"><code class="docutils literal notranslate"><span class="pre">Hydrology</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Hydrology.__init__"><code class="docutils literal notranslate"><span class="pre">Hydrology.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Hydrology._set_cmaps"><code class="docutils literal notranslate"><span class="pre">Hydrology._set_cmaps()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Hydrology._set_vars"><code class="docutils literal notranslate"><span class="pre">Hydrology._set_vars()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.HabQuality"><code class="docutils literal notranslate"><span class="pre">HabQuality</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.HabQuality.__init__"><code class="docutils literal notranslate"><span class="pre">HabQuality.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.HabQuality.get_biodiversity_area"><code class="docutils literal notranslate"><span class="pre">HabQuality.get_biodiversity_area()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.HabDegradation"><code class="docutils literal notranslate"><span class="pre">HabDegradation</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.HabDegradation.__init__"><code class="docutils literal notranslate"><span class="pre">HabDegradation.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.EBA"><code class="docutils literal notranslate"><span class="pre">EBA</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.EBA.__init__"><code class="docutils literal notranslate"><span class="pre">EBA.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.EBA.set_data"><code class="docutils literal notranslate"><span class="pre">EBA.set_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Basins"><code class="docutils literal notranslate"><span class="pre">Basins</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Basins.__init__"><code class="docutils literal notranslate"><span class="pre">Basins.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Basins.get_upstream_ids"><code class="docutils literal notranslate"><span class="pre">Basins.get_upstream_ids()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Basins.get_basin_aoi"><code class="docutils literal notranslate"><span class="pre">Basins.get_basin_aoi()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.LULC"><code class="docutils literal notranslate"><span class="pre">LULC</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.LULC.__init__"><code class="docutils literal notranslate"><span class="pre">LULC.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.LULCChange"><code class="docutils literal notranslate"><span class="pre">LULCChange</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.LULCChange.__init__"><code class="docutils literal notranslate"><span class="pre">LULCChange.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Lithology"><code class="docutils literal notranslate"><span class="pre">Lithology</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Lithology.__init__"><code class="docutils literal notranslate"><span class="pre">Lithology.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Soils"><code class="docutils literal notranslate"><span class="pre">Soils</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Soils.__init__"><code class="docutils literal notranslate"><span class="pre">Soils.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.Soils.set_hydro_soils"><code class="docutils literal notranslate"><span class="pre">Soils.set_hydro_soils()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.AOI"><code class="docutils literal notranslate"><span class="pre">AOI</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.AOI.__init__"><code class="docutils literal notranslate"><span class="pre">AOI.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.AOI.update"><code class="docutils literal notranslate"><span class="pre">AOI.update()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.AOI.get_table"><code class="docutils literal notranslate"><span class="pre">AOI.get_table()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.AOI.set_area"><code class="docutils literal notranslate"><span class="pre">AOI.set_area()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.AOI.get_metadata"><code class="docutils literal notranslate"><span class="pre">AOI.get_metadata()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.AOI.view"><code class="docutils literal notranslate"><span class="pre">AOI.view()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.LDD"><code class="docutils literal notranslate"><span class="pre">LDD</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.LDD.__init__"><code class="docutils literal notranslate"><span class="pre">LDD.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.LDD.get_table"><code class="docutils literal notranslate"><span class="pre">LDD.get_table()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.NDVISeries"><code class="docutils literal notranslate"><span class="pre">NDVISeries</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.NDVISeries.__init__"><code class="docutils literal notranslate"><span class="pre">NDVISeries.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.NDVISeries.load_data"><code class="docutils literal notranslate"><span class="pre">NDVISeries.load_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.ETSeries"><code class="docutils literal notranslate"><span class="pre">ETSeries</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.ETSeries.__init__"><code class="docutils literal notranslate"><span class="pre">ETSeries.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.ETSeries.load_data"><code class="docutils literal notranslate"><span class="pre">ETSeries.load_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.AOICollection"><code class="docutils literal notranslate"><span class="pre">AOICollection</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.AOICollection.__init__"><code class="docutils literal notranslate"><span class="pre">AOICollection.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.AOICollection.load_data"><code class="docutils literal notranslate"><span class="pre">AOICollection.load_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.LULCSeries"><code class="docutils literal notranslate"><span class="pre">LULCSeries</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.LULCSeries.__init__"><code class="docutils literal notranslate"><span class="pre">LULCSeries.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.LULCSeries.load_data"><code class="docutils literal notranslate"><span class="pre">LULCSeries.load_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.LULCSeries.get_lulcc"><code class="docutils literal notranslate"><span class="pre">LULCSeries.get_lulcc()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.LULCSeries.get_lulcc_series"><code class="docutils literal notranslate"><span class="pre">LULCSeries.get_lulcc_series()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.spatial.LULCSeries.get_conversion_matrix"><code class="docutils literal notranslate"><span class="pre">LULCSeries.get_conversion_matrix()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/generated/plans.datasets.spatial.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023, Iporã Possantti.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

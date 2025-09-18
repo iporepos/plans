@@ -1,0 +1,951 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>plans.parsers.inmet &#8212; plans 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/plans.parsers.inmet';</script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="plans.parsers.snirh" href="plans.parsers.snirh.html" />
+    <link rel="prev" title="plans.parsers.flare" href="plans.parsers.flare.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">plans 1.0.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../usage.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../usage.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">plans.parsers.inmet</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-plans.parsers.inmet">
+<span id="plans-parsers-inmet"></span><h1>plans.parsers.inmet<a class="headerlink" href="#module-plans.parsers.inmet" title="Link to this heading">#</a></h1>
+<p>Parse data from <code class="docutils literal notranslate"><span class="pre">INMET</span></code> files (Brazillian Meteorological Office)</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p># todo [major docstring improvement] – overview
+Mauris gravida ex quam, in porttitor lacus lobortis vitae.
+In a lacinia nisl. Pellentesque habitant morbi tristique senectus
+et netus et malesuada fames ac turpis egestas.</p>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading">#</a></h2>
+<p># todo [major docstring improvement] – examples
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,
+in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># set file path</span>
+<span class="n">f</span> <span class="o">=</span> <span class="s2">&quot;../_inmet_auto_src.csv&quot;</span>
+
+<span class="c1"># instantiate object</span>
+<span class="n">auto</span> <span class="o">=</span> <span class="n">inmet</span><span class="o">.</span><span class="n">Automatic</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Automatic Station&quot;</span><span class="p">)</span>
+
+<span class="c1"># load data</span>
+<span class="n">auto</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># print data (pandas dataframe)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">auto</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+
+<span class="c1"># print metadata (pandas dataframe)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">auto</span><span class="o">.</span><span class="n">station_metadata_df</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+
+<span class="c1"># export to folder</span>
+<span class="n">auto</span><span class="o">.</span><span class="n">export_data</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="s2">&quot;C:/data&quot;</span><span class="p">,</span> <span class="n">append_id</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.parsers.inmet.Automatic" title="plans.parsers.inmet.Automatic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Automatic</span></code></a>([name])</p></td>
+<td><p>Parser object for <code class="docutils literal notranslate"><span class="pre">INMET</span></code> Automatic Stations provided by any date range.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.parsers.inmet.ConventionalDaily" title="plans.parsers.inmet.ConventionalDaily"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConventionalDaily</span></code></a>([name])</p></td>
+<td><p>Parser object for <code class="docutils literal notranslate"><span class="pre">INMET</span></code> Conventional Stations - Daily measurements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.parsers.inmet.ConventionalHourly" title="plans.parsers.inmet.ConventionalHourly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConventionalHourly</span></code></a>([name])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.parsers.inmet._StationINMET_">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.parsers.inmet.</span></span><span class="sig-name descname"><span class="pre">_StationINMET_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyStationINMET'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_StationINMET_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._StationINMET_" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is a base object for parsing Inmet Stations datasets</p>
+<p>Objects downstream will use or overwrite this methods</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._StationINMET_.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyStationINMET'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_StationINMET_.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._StationINMET_.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialization method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of station</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._StationINMET_.get_metadata">
+<span class="sig-name descname"><span class="pre">get_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_StationINMET_.get_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._StationINMET_.get_metadata" title="Link to this definition">#</a></dt>
+<dd><p>Base metata getter method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dictionary of metadata</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._StationINMET_.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_StationINMET_.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._StationINMET_.update" title="Link to this definition">#</a></dt>
+<dd><p>Base update method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._StationINMET_._metadata_util">
+<span class="sig-name descname"><span class="pre">_metadata_util</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_StationINMET_._metadata_util"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._StationINMET_._metadata_util" title="Link to this definition">#</a></dt>
+<dd><p>Utility method for naming conversions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>utility dictionaries</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict, dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._StationINMET_._standardize_metadata_fields">
+<span class="sig-name descname"><span class="pre">_standardize_metadata_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_StationINMET_._standardize_metadata_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._StationINMET_._standardize_metadata_fields" title="Link to this definition">#</a></dt>
+<dd><p>Utility method for standardizing metadata fields</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>metadata</strong> (<em>dict</em>) – dictionary of incoming metadata</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>new standard metatada dictionary</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._StationINMET_._get_columns_gls">
+<span class="sig-name descname"><span class="pre">_get_columns_gls</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_StationINMET_._get_columns_gls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._StationINMET_._get_columns_gls" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the glossary mapping and its mirror.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A tuple containing the glossary mapping and its mirror.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple[dict, dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._StationINMET_.get_glossary">
+<span class="sig-name descname"><span class="pre">get_glossary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_StationINMET_.get_glossary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._StationINMET_.get_glossary" title="Link to this definition">#</a></dt>
+<dd><p>Generate a glossary DataFrame from the stored glossary mapping.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A DataFrame containing field names and their source descriptions.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>class.`pandas.DataFrame`</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._StationINMET_.fix_text">
+<span class="sig-name descname"><span class="pre">fix_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_spaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_StationINMET_.fix_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._StationINMET_.fix_text" title="Link to this definition">#</a></dt>
+<dd><p>Standardize text by converting to uppercase and replacing specific characters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – The inputs text to be processed.</p></li>
+<li><p><strong>remove_spaces</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to remove spaces from the text.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The processed text.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._StationINMET_.read_metadata">
+<span class="sig-name descname"><span class="pre">read_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_StationINMET_.read_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._StationINMET_.read_metadata" title="Link to this definition">#</a></dt>
+<dd><p>Read station metadata from a file and return it as a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>str</em>) – Path to the metadata file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing metadata fields and values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._StationINMET_.load_metadata">
+<span class="sig-name descname"><span class="pre">load_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_StationINMET_.load_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._StationINMET_.load_metadata" title="Link to this definition">#</a></dt>
+<dd><p>Load station metadata from a file and store it in a DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>str</em>) – Path to the metadata file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._StationINMET_.read_data">
+<span class="sig-name descname"><span class="pre">read_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_StationINMET_.read_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._StationINMET_.read_data" title="Link to this definition">#</a></dt>
+<dd><p>read all data from file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>str</em>) – file path</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas dataframe</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>class.`pandas.DataFrame`</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._StationINMET_.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_StationINMET_.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._StationINMET_.load_data" title="Link to this definition">#</a></dt>
+<dd><p>Load data from a file and update the instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>str</em>) – Path to the data file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._StationINMET_.export_data">
+<span class="sig-name descname"><span class="pre">export_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">append_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_StationINMET_.export_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._StationINMET_.export_data" title="Link to this definition">#</a></dt>
+<dd><p>Export the data to a CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>folder</strong> (<em>str</em>) – Folder where the file will be saved.</p></li>
+<li><p><strong>append_id</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to append the station ID to the filename.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Path to the exported file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._StationINMET_.export_metadata">
+<span class="sig-name descname"><span class="pre">export_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_StationINMET_.export_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._StationINMET_.export_metadata" title="Link to this definition">#</a></dt>
+<dd><p>Export station metadata to a CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>folder</strong> (<em>str</em>) – Folder where the file will be saved.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Path to the exported metadata file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._StationINMET_.export_glossary">
+<span class="sig-name descname"><span class="pre">export_glossary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_StationINMET_.export_glossary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._StationINMET_.export_glossary" title="Link to this definition">#</a></dt>
+<dd><p>Export the glossary to a CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>folder</strong> (<em>str</em>) – Folder where the file will be saved.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Path to the exported glossary file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._StationINMET_.export">
+<span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_StationINMET_.export"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._StationINMET_.export" title="Link to this definition">#</a></dt>
+<dd><p>Export data, metadata, and glossary to CSV files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>folder</strong> (<em>str</em>) – Folder where the files will be saved.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing paths to the exported files.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.parsers.inmet._Conventional_">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.parsers.inmet.</span></span><span class="sig-name descname"><span class="pre">_Conventional_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyConvetional'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_Conventional_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._Conventional_" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#plans.parsers.inmet._StationINMET_" title="plans.parsers.inmet._StationINMET_"><code class="xref py py-class docutils literal notranslate"><span class="pre">_StationINMET_</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._Conventional_.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyConvetional'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_Conventional_.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._Conventional_.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialization method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of station</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._Conventional_._metadata_util">
+<span class="sig-name descname"><span class="pre">_metadata_util</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_Conventional_._metadata_util"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._Conventional_._metadata_util" title="Link to this definition">#</a></dt>
+<dd><p>Utility method for naming conversions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>utility dictionaries</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict, dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.parsers.inmet.ConventionalHourly">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.parsers.inmet.</span></span><span class="sig-name descname"><span class="pre">ConventionalHourly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyConvetionalHourly'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#ConventionalHourly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet.ConventionalHourly" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#plans.parsers.inmet._Conventional_" title="plans.parsers.inmet._Conventional_"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Conventional_</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet.ConventionalHourly.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyConvetionalHourly'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#ConventionalHourly.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet.ConventionalHourly.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialization method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of station</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.parsers.inmet.ConventionalDaily">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.parsers.inmet.</span></span><span class="sig-name descname"><span class="pre">ConventionalDaily</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyConvetionalDaily'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#ConventionalDaily"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet.ConventionalDaily" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#plans.parsers.inmet._Conventional_" title="plans.parsers.inmet._Conventional_"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Conventional_</span></code></a></p>
+<p>Parser object for <code class="docutils literal notranslate"><span class="pre">INMET</span></code> Conventional Stations - Daily measurements.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet.ConventionalDaily.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyConvetionalDaily'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#ConventionalDaily.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet.ConventionalDaily.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialization method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of station</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.parsers.inmet._Automatic_">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.parsers.inmet.</span></span><span class="sig-name descname"><span class="pre">_Automatic_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyAutomatic'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_Automatic_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._Automatic_" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#plans.parsers.inmet._StationINMET_" title="plans.parsers.inmet._StationINMET_"><code class="xref py py-class docutils literal notranslate"><span class="pre">_StationINMET_</span></code></a></p>
+<p>Base Parser object for automatic INMET stations</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet._Automatic_.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyAutomatic'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#_Automatic_.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet._Automatic_.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialization method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of station</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.parsers.inmet.Automatic">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.parsers.inmet.</span></span><span class="sig-name descname"><span class="pre">Automatic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyAutomatic'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#Automatic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet.Automatic" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#plans.parsers.inmet._Automatic_" title="plans.parsers.inmet._Automatic_"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Automatic_</span></code></a></p>
+<p>Parser object for <code class="docutils literal notranslate"><span class="pre">INMET</span></code> Automatic Stations provided by any date range.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet.Automatic.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyAutomatic'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#Automatic.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet.Automatic.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialization method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of station</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.parsers.inmet.Automatic._metadata_util">
+<span class="sig-name descname"><span class="pre">_metadata_util</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/parsers/inmet.html#Automatic._metadata_util"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.parsers.inmet.Automatic._metadata_util" title="Link to this definition">#</a></dt>
+<dd><p>Utility method for naming conversions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>utility dictionaries</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict, dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="plans.parsers.flare.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">plans.parsers.flare</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="plans.parsers.snirh.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">plans.parsers.snirh</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._StationINMET_"><code class="docutils literal notranslate"><span class="pre">_StationINMET_</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._StationINMET_.__init__"><code class="docutils literal notranslate"><span class="pre">_StationINMET_.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._StationINMET_.get_metadata"><code class="docutils literal notranslate"><span class="pre">_StationINMET_.get_metadata()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._StationINMET_.update"><code class="docutils literal notranslate"><span class="pre">_StationINMET_.update()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._StationINMET_._metadata_util"><code class="docutils literal notranslate"><span class="pre">_StationINMET_._metadata_util()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._StationINMET_._standardize_metadata_fields"><code class="docutils literal notranslate"><span class="pre">_StationINMET_._standardize_metadata_fields()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._StationINMET_._get_columns_gls"><code class="docutils literal notranslate"><span class="pre">_StationINMET_._get_columns_gls()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._StationINMET_.get_glossary"><code class="docutils literal notranslate"><span class="pre">_StationINMET_.get_glossary()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._StationINMET_.fix_text"><code class="docutils literal notranslate"><span class="pre">_StationINMET_.fix_text()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._StationINMET_.read_metadata"><code class="docutils literal notranslate"><span class="pre">_StationINMET_.read_metadata()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._StationINMET_.load_metadata"><code class="docutils literal notranslate"><span class="pre">_StationINMET_.load_metadata()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._StationINMET_.read_data"><code class="docutils literal notranslate"><span class="pre">_StationINMET_.read_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._StationINMET_.load_data"><code class="docutils literal notranslate"><span class="pre">_StationINMET_.load_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._StationINMET_.export_data"><code class="docutils literal notranslate"><span class="pre">_StationINMET_.export_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._StationINMET_.export_metadata"><code class="docutils literal notranslate"><span class="pre">_StationINMET_.export_metadata()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._StationINMET_.export_glossary"><code class="docutils literal notranslate"><span class="pre">_StationINMET_.export_glossary()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._StationINMET_.export"><code class="docutils literal notranslate"><span class="pre">_StationINMET_.export()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._Conventional_"><code class="docutils literal notranslate"><span class="pre">_Conventional_</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._Conventional_.__init__"><code class="docutils literal notranslate"><span class="pre">_Conventional_.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._Conventional_._metadata_util"><code class="docutils literal notranslate"><span class="pre">_Conventional_._metadata_util()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet.ConventionalHourly"><code class="docutils literal notranslate"><span class="pre">ConventionalHourly</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet.ConventionalHourly.__init__"><code class="docutils literal notranslate"><span class="pre">ConventionalHourly.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet.ConventionalDaily"><code class="docutils literal notranslate"><span class="pre">ConventionalDaily</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet.ConventionalDaily.__init__"><code class="docutils literal notranslate"><span class="pre">ConventionalDaily.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._Automatic_"><code class="docutils literal notranslate"><span class="pre">_Automatic_</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet._Automatic_.__init__"><code class="docutils literal notranslate"><span class="pre">_Automatic_.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet.Automatic"><code class="docutils literal notranslate"><span class="pre">Automatic</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet.Automatic.__init__"><code class="docutils literal notranslate"><span class="pre">Automatic.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.parsers.inmet.Automatic._metadata_util"><code class="docutils literal notranslate"><span class="pre">Automatic._metadata_util()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/generated/plans.parsers.inmet.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023, Iporã Possantti.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

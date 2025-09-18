@@ -1,0 +1,1923 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>plans.datasets.spatial &#8212; plans 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/plans/datasets/spatial';</script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">plans 1.0.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../usage.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../usage.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">plans.datasets.spatial</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for plans.datasets.spatial</h1><div class="highlight"><pre>
+<span></span><span class="c1"># SPDX-License-Identifier: GPL-3.0-or-later</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2025 The Project Authors</span>
+<span class="c1"># See pyproject.toml for authors/maintainers.</span>
+<span class="c1"># See LICENSE for license details.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Handle spatial datasets (maps).</span>
+
+<span class="sd">Overview</span>
+<span class="sd">--------</span>
+
+<span class="sd"># todo [major docstring improvement] -- overview</span>
+<span class="sd">Mauris gravida ex quam, in porttitor lacus lobortis vitae.</span>
+<span class="sd">In a lacinia nisl. Pellentesque habitant morbi tristique senectus</span>
+<span class="sd">et netus et malesuada fames ac turpis egestas.</span>
+
+<span class="sd">Example</span>
+<span class="sd">-------</span>
+
+<span class="sd"># todo [major docstring improvement] -- examples</span>
+<span class="sd">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
+<span class="sd">Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,</span>
+<span class="sd">in porttitor lacus lobortis vitae. In a lacinia nisl.</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    import numpy as np</span>
+<span class="sd">    print(&quot;Hello World!&quot;)</span>
+
+<span class="sd">Mauris gravida ex quam, in porttitor lacus lobortis vitae.</span>
+<span class="sd">In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.</span>
+<span class="sd">In a lacinia nisl.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.core</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="c1"># -----------------------------------------</span>
+<span class="c1"># Derived Raster data structures</span>
+
+
+<div class="viewcode-block" id="Elevation">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Elevation">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Elevation</span><span class="p">(</span><span class="n">SciRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Elevation (DEM) raster map dataset.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Elevation.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Elevation.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;DEM&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize dataset</span>
+
+<span class="sd">        :param name: name of map</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;BrBG_r&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;Elevation&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;DEM&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Height above sea level&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_default</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Elevation.get_tpi">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Elevation.get_tpi">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tpi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell_radius</span><span class="p">):</span>
+        <span class="c1"># todo [DEV]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hi&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Elevation.get_tpi_landforms">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Elevation.get_tpi_landforms">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tpi_landforms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">radius_micro</span><span class="p">,</span> <span class="n">radius_macro</span><span class="p">):</span>
+        <span class="c1"># todo [DEV]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hi&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Slope">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Slope">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Slope</span><span class="p">(</span><span class="n">SciRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Slope raster map dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Slope.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Slope.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Slope&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize dataset</span>
+
+<span class="sd">        :param name: name of map</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_default</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;OrRd&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;Slope&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;SLP&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Slope of terrain&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;deg.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TWI">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.TWI">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TWI</span><span class="p">(</span><span class="n">SciRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TWI raster map dataset.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TWI.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.TWI.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TWI&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize dataset</span>
+
+<span class="sd">        :param name: name of map</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;YlGnBu&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;TWI&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;TWI&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Topographical Wetness Index&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;index units&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_default</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="HTWI">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.HTWI">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HTWI</span><span class="p">(</span><span class="n">SciRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    HTWI (HAND-TWI) raster map dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="HTWI.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.HTWI.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;HTWI&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize dataset</span>
+
+<span class="sd">        :param name: name of map</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;YlGnBu&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;HTWI&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;HTWI&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;HAND-enhanced Topographical Wetness Index&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;index units&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_default</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="HAND">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.HAND">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HAND</span><span class="p">(</span><span class="n">SciRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    HAND raster map dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="HAND.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.HAND.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;HAND&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize dataset</span>
+
+<span class="sd">        :param name: name of map</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;YlGnBu_r&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;HAND&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;HAND&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Height Above the Nearest Drainage&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_default</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DTO">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.DTO">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DTO</span><span class="p">(</span><span class="n">SciRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Distance to outlet raster map dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DTO.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.DTO.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;DTO&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize dataset</span>
+
+<span class="sd">        :param name: name of map</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;rainbow&quot;</span>  <span class="c1"># &quot;gist_rainbow_r&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;DTO&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;DTO&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Distance To Outlet&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;meters&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_default</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="FAC">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.FAC">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FAC</span><span class="p">(</span><span class="n">SciRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Flow Accumulation raster map dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FAC.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.FAC.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize dataset.</span>
+
+<span class="sd">        :param name: name of map</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;plasma_r&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;FlowAcc&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;FAC&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Flow Accumulation or Upstream Area&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;sq. meters&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_default</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="NDVI">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.NDVI">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NDVI</span><span class="p">(</span><span class="n">SciRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    NDVI raster map dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="NDVI.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.NDVI.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize dataset.</span>
+
+<span class="sd">        :param name: name of map</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param datetime: date of map in ``yyyy-mm-dd``</span>
+<span class="sd">        :type datetime: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;RdYlGn&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;NDVI&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;NDVI&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Normalized difference vegetation index&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;index units&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">datetime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_default</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="NDVI.set_data">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.NDVI.set_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cut_edges</span><span class="p">(</span><span class="n">upper</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">lower</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ET24h">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.ET24h">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ET24h</span><span class="p">(</span><span class="n">SciRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ET 24h raster map dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ET24h.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.ET24h.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize dataset.</span>
+
+<span class="sd">        :param name: name of map</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param date: date of map in ``yyyy-mm-dd``</span>
+<span class="sd">        :type date: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListedColormap</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;Daily Evapotranspiration&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;ET24h&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Daily Evapotranspiration&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;mm&quot;</span>
+        <span class="c1"># set custom cmap</span>
+        <span class="n">jet_big</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colormaps</span><span class="p">[</span><span class="s2">&quot;jet_r&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="n">ListedColormap</span><span class="p">(</span><span class="n">jet_big</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mi">256</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">date</span>
+        <span class="c1"># view specs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_default</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ET24h.set_data">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.ET24h.set_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cut_edges</span><span class="p">(</span><span class="n">upper</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Hydrology">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Hydrology">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Hydrology</span><span class="p">(</span><span class="n">SciRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Primitive hydrology raster map dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Hydrology.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Hydrology.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">varalias</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize dataset</span>
+
+<span class="sd">        :param name: name of map</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># initial setups</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_cmaps</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_vars</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="n">varalias</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">str_cmap_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vars_dc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varalias</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars_dc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varalias</span><span class="p">][</span><span class="s2">&quot;subtype&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmaps_dc</span><span class="p">[</span><span class="n">str_cmap_id</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars_dc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varalias</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">field_varname</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars_dc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varalias</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">field_description</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;mm&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">datetime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timescale</span> <span class="o">=</span> <span class="s2">&quot;annual&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range_default</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Hydrology._set_cmaps">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Hydrology._set_cmaps">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_cmaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets predefined colormaps for different types of scientific data.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListedColormap</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmaps_dc</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;flow surface&quot;</span><span class="p">:</span> <span class="s2">&quot;gist_earth_r&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;flow vapor&quot;</span><span class="p">:</span> <span class="n">ListedColormap</span><span class="p">(</span>
+                <span class="n">mpl</span><span class="o">.</span><span class="n">colormaps</span><span class="p">[</span><span class="s2">&quot;jet_r&quot;</span><span class="p">](</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mi">256</span><span class="p">))</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;flow subsurface&quot;</span><span class="p">:</span> <span class="s2">&quot;gist_earth_r&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;stock surface&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;stock subsurface&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;stock deficit&quot;</span><span class="p">:</span> <span class="s2">&quot;gist_earth&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Hydrology._set_vars">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Hydrology._set_vars">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># todo evaluate load this from csv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vars_dc</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;deficit&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_varname</span><span class="p">:</span> <span class="s2">&quot;Deficit&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Soil water potential&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;stock&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;subtype&quot;</span><span class="p">:</span> <span class="s2">&quot;deficit&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;r&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_varname</span><span class="p">:</span> <span class="s2">&quot;Runoff&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Combined overland flows&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;flow&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;subtype&quot;</span><span class="p">:</span> <span class="s2">&quot;surface&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;rie&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_varname</span><span class="p">:</span> <span class="s2">&quot;Runoff by Infiltration Excess&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Hortonian overland flow&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;flow&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;subtype&quot;</span><span class="p">:</span> <span class="s2">&quot;surface&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;rse&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_varname</span><span class="p">:</span> <span class="s2">&quot;Runoff by Saturation Excess&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Dunnean overland flow&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;flow&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;subtype&quot;</span><span class="p">:</span> <span class="s2">&quot;surface&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;ptf&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_varname</span><span class="p">:</span> <span class="s2">&quot;Throughfall&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Effective precipitation at the surface&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;flow&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;subtype&quot;</span><span class="p">:</span> <span class="s2">&quot;surface&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;inf&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_varname</span><span class="p">:</span> <span class="s2">&quot;Infiltration&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Water infiltration in soil&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;flow&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;subtype&quot;</span><span class="p">:</span> <span class="s2">&quot;subsurface&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;qv&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_varname</span><span class="p">:</span> <span class="s2">&quot;Recharge&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Recharge of groundwater&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;flow&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;subtype&quot;</span><span class="p">:</span> <span class="s2">&quot;subsurface&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;et&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_varname</span><span class="p">:</span> <span class="s2">&quot;Evapotranspiration&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Combined Evaporation and Transpiration flows&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;flow&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;subtype&quot;</span><span class="p">:</span> <span class="s2">&quot;vapor&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;evc&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_varname</span><span class="p">:</span> <span class="s2">&quot;Canopy evaporation&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Direct evaporation from canopy&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;flow&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;subtype&quot;</span><span class="p">:</span> <span class="s2">&quot;vapor&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;evs&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_varname</span><span class="p">:</span> <span class="s2">&quot;Surface evaporation&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Direct evaporation from soil surface&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;flow&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;subtype&quot;</span><span class="p">:</span> <span class="s2">&quot;vapor&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;tun&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_varname</span><span class="p">:</span> <span class="s2">&quot;Soil tranpiration&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Transpiration from the water moisture in the soil&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;flow&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;subtype&quot;</span><span class="p">:</span> <span class="s2">&quot;vapor&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;tgw&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_varname</span><span class="p">:</span> <span class="s2">&quot;Groundwater transpiration&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Transpiration from the saturated water zone&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;flow&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;subtype&quot;</span><span class="p">:</span> <span class="s2">&quot;vapor&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="HabQuality">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.HabQuality">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HabQuality</span><span class="p">(</span><span class="n">SciRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Habitat Quality raster map dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="HabQuality.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.HabQuality.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize dataset.</span>
+
+<span class="sd">        :param name: name of map</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param datetime: date of map in ``yyyy-mm-dd``</span>
+<span class="sd">        :type datetime: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;Habitat Quality&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;HQ&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Habitat Quality from the InVEST model&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;index units&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;RdYlGn&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">datetime</span>
+        <span class="c1"># view specs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span>
+        <span class="c1"># customize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;vmin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;vmax&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="HabQuality.get_biodiversity_area">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.HabQuality.get_biodiversity_area">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_biodiversity_area</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_a</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Raster</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a raster of Biodiversity Area</span>
+<span class="sd">        :param b_a: model parameter</span>
+<span class="sd">        :type b_a: float</span>
+<span class="sd">        :return: Raster object of biodiversity area</span>
+<span class="sd">        :rtype: Raster</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellsize</span>
+        <span class="n">grid_ba</span> <span class="o">=</span> <span class="n">b_a</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">/</span> <span class="mi">10000</span>
+        <span class="c1"># instantiate output</span>
+        <span class="n">output_raster</span> <span class="o">=</span> <span class="n">EBA</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">datetime</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="n">q_a</span><span class="o">=</span><span class="n">b_a</span><span class="p">)</span>
+        <span class="c1"># set raster</span>
+        <span class="n">output_raster</span><span class="o">.</span><span class="n">set_raster_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">raster_metadata</span><span class="p">)</span>
+        <span class="n">output_raster</span><span class="o">.</span><span class="n">prj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prj</span>
+        <span class="c1"># set grid</span>
+        <span class="n">output_raster</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">grid</span><span class="o">=</span><span class="n">grid_ba</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output_raster</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="HabDegradation">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.HabDegradation">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HabDegradation</span><span class="p">(</span><span class="n">SciRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Habitat Degradation raster map dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="HabDegradation.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.HabDegradation.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize dataset.</span>
+
+<span class="sd">        :param name: name of map</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param datetime: date of map in ``yyyy-mm-dd``</span>
+<span class="sd">        :type datetime: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;Habitat Degradation&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;HDeg&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Habitat Degradation from the InVEST model&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;index units&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;YlOrRd&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">datetime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;vmin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;vmax&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.7</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="EBA">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.EBA">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EBA</span><span class="p">(</span><span class="n">SciRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Equivalent Biodiversity Area raster map dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EBA.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.EBA.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">q_a</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize dataset.</span>
+
+<span class="sd">        :param name: name of map</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param datetime: date of map in ``yyyy-mm-dd``</span>
+<span class="sd">        :type datetime: str</span>
+<span class="sd">        :param q_a: habitat quality reference</span>
+<span class="sd">        :type q_a: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;YlGn&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;Equivalent Biodiversity Area&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;EBA&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Equivalent Biodiversity Area in ha equivalents&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;ha&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">datetime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eba_global</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="EBA.set_data">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.EBA.set_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EBA</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eba_global</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+
+
+<span class="c1"># -----------------------------------------</span>
+<span class="c1"># Quali Raster data structures</span>
+
+
+<div class="viewcode-block" id="Basins">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Basins">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Basins</span><span class="p">(</span><span class="n">QualiRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Basins map dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Basins.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Basins.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;BasinsMap&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;uint32&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;Basin&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;Bs&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Ids map of basins&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;basin ID&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Basins.get_upstream_ids">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Basins.get_upstream_ids">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_upstream_ids</span><span class="p">(</span><span class="n">basin_id</span><span class="p">,</span> <span class="n">topology_df</span><span class="p">,</span> <span class="n">visited</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recursive utility function for listing all upstream basins</span>
+
+<span class="sd">        :param basin_id: basin id to start</span>
+<span class="sd">        :type basin_id: int</span>
+<span class="sd">        :param topology_df: dataframe with topology. expected to have Id and Downstream_Id columns</span>
+<span class="sd">        :type topology_df: pandas.DataFrame</span>
+<span class="sd">        :param visited: visited id (default=None)</span>
+<span class="sd">        :type visited: list or None</span>
+<span class="sd">        :return: upstream ids</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">visited</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">visited</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">_df</span> <span class="o">=</span> <span class="n">topology_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;Downstream_Id == </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">basin_id</span><span class="p">))</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_df</span><span class="p">)):</span>
+                <span class="n">next_id</span> <span class="o">=</span> <span class="n">_df</span><span class="p">[</span><span class="s2">&quot;Id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">visited</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">next_id</span><span class="p">)</span>
+                <span class="n">visited</span> <span class="o">=</span> <span class="n">Basins</span><span class="o">.</span><span class="n">get_upstream_ids</span><span class="p">(</span>
+                    <span class="n">basin_id</span><span class="o">=</span><span class="n">next_id</span><span class="p">,</span> <span class="n">topology_df</span><span class="o">=</span><span class="n">topology_df</span><span class="p">,</span> <span class="n">visited</span><span class="o">=</span><span class="n">visited</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">visited</span></div>
+
+
+<div class="viewcode-block" id="Basins.get_basin_aoi">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Basins.get_basin_aoi">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_basin_aoi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">basin_id</span><span class="p">):</span>
+        <span class="c1"># set aoi map</span>
+        <span class="n">aoi</span> <span class="o">=</span> <span class="n">AOI</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">basin_id</span><span class="p">))</span>
+        <span class="n">aoi</span><span class="o">.</span><span class="n">prj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prj</span>
+        <span class="n">aoi</span><span class="o">.</span><span class="n">set_raster_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">raster_metadata</span><span class="p">)</span>
+        <span class="c1"># get grid</span>
+        <span class="n">lst_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">basin_id</span><span class="p">]</span>
+        <span class="n">grd_aoi</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="n">basin_id</span><span class="p">)</span>
+        <span class="c1"># get extra upstream basins</span>
+        <span class="n">upstream_ids</span> <span class="o">=</span> <span class="n">Basins</span><span class="o">.</span><span class="n">get_upstream_ids</span><span class="p">(</span>
+            <span class="n">basin_id</span><span class="o">=</span><span class="n">basin_id</span><span class="p">,</span> <span class="n">topology_df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">table</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">upstream_ids</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">up_id</span> <span class="ow">in</span> <span class="n">upstream_ids</span><span class="p">:</span>
+                <span class="n">grd_aoi</span> <span class="o">=</span> <span class="n">grd_aoi</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="n">up_id</span><span class="p">))</span>
+
+        <span class="n">grd_aoi</span> <span class="o">=</span> <span class="n">grd_aoi</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span>
+        <span class="n">aoi</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">grid</span><span class="o">=</span><span class="n">grd_aoi</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">aoi</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="LULC">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.LULC">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LULC</span><span class="p">(</span><span class="n">QualiRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Land Use and Land Cover map dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LULC.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.LULC.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize :class:`LULC`` map</span>
+
+<span class="sd">        :param name: name of map</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param datetime: date of map in ``yyyy-mm-dd``</span>
+<span class="sd">        :type datetime: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;tab20b&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;Land Use and Land Cover&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;LULC&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Classes of Land Use and Land Cover&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;classes ID&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">datetime</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="LULCChange">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.LULCChange">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LULCChange</span><span class="p">(</span><span class="n">QualiRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Land Use and Land Cover Change map dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LULCChange.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.LULCChange.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">date_start</span><span class="p">,</span> <span class="n">date_end</span><span class="p">,</span> <span class="n">name_lulc</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize :class:`LULCChange`` map</span>
+
+<span class="sd">        :param name: name of map</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param date_start: date of map in ``yyyy-mm-dd``</span>
+<span class="sd">        :type date_start: str</span>
+<span class="sd">        :param date_end: date of map in ``yyyy-mm-dd``</span>
+<span class="sd">        :type date_end: str</span>
+<span class="sd">        :param name_lulc: name of lulc incoming map</span>
+<span class="sd">        :type name_lulc: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;tab20b&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;LULC Change&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;LULCC&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Change of Land Use and Land Cover&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;Change ID&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_start</span> <span class="o">=</span> <span class="n">date_start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_end</span> <span class="o">=</span> <span class="n">date_end</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">date_end</span>
+        <span class="n">df_aux</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_id</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="mi">1</span><span class="p">,</span>
+                    <span class="mi">2</span><span class="p">,</span>
+                    <span class="mi">3</span><span class="p">,</span>
+                <span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Retraction&quot;</span><span class="p">,</span> <span class="s2">&quot;Stable&quot;</span><span class="p">,</span> <span class="s2">&quot;Expansion&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_alias</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Rtr&quot;</span><span class="p">,</span> <span class="s2">&quot;Stb&quot;</span><span class="p">,</span> <span class="s2">&quot;Exp&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_color</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;tab:purple&quot;</span><span class="p">,</span> <span class="s2">&quot;tab:orange&quot;</span><span class="p">,</span> <span class="s2">&quot;tab:red&quot;</span><span class="p">],</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_table</span><span class="p">(</span><span class="n">dataframe</span><span class="o">=</span><span class="n">df_aux</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Lithology">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Lithology">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Lithology</span><span class="p">(</span><span class="n">QualiRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Lithology map dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Lithology.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Lithology.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;LitoMap&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize :class:`Lithology`` map</span>
+
+<span class="sd">        :param name:</span>
+<span class="sd">        :type name:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;tab20c&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;Litological Domains&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;Lito&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Litological outgcrop domains&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;types ID&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Soils">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Soils">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Soils</span><span class="p">(</span><span class="n">QualiRaster</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Soils map dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Soils.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Soils.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;SoilsMap&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;tab20c&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;Soil Types&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;Soils&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Types of Soils and Substrate&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;types ID&quot;</span></div>
+
+
+<div class="viewcode-block" id="Soils.set_hydro_soils">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.Soils.set_hydro_soils">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_hydro_soils</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_lito</span><span class="p">,</span> <span class="n">map_hand</span><span class="p">,</span> <span class="n">map_slope</span><span class="p">,</span> <span class="n">n_hand</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_slope</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set hydrological soils based on lithology, Hand and Slope maps.</span>
+
+<span class="sd">        :param map_lito: Lithology raster map</span>
+<span class="sd">        :type map_lito: :class:`datasets.Lithology`</span>
+<span class="sd">        :param map_hand: HAND raster map</span>
+<span class="sd">        :type map_hand: :class:`datasets.HAND`</span>
+<span class="sd">        :param map_slope: Slope raster map</span>
+<span class="sd">        :type map_slope: :class:`datasets.Slope`</span>
+<span class="sd">        :param n_hand: HAND threshold for alluvial definition</span>
+<span class="sd">        :type n_hand: float</span>
+<span class="sd">        :param n_slope: Slope threshold for colluvial definition</span>
+<span class="sd">        :type n_slope: float</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># process grid</span>
+        <span class="n">grd_soils</span> <span class="o">=</span> <span class="n">map_lito</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1"># this assumes that there is less than 10 lito classes:</span>
+        <span class="n">grd_slopes</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="p">(</span><span class="n">map_slope</span><span class="o">.</span><span class="n">data</span> <span class="o">&gt;</span> <span class="n">n_slope</span><span class="p">)</span>
+        <span class="c1"># append colluvial (+10)</span>
+        <span class="n">grd_soils</span> <span class="o">=</span> <span class="n">grd_soils</span> <span class="o">+</span> <span class="n">grd_slopes</span>
+        <span class="c1"># append alluvial</span>
+        <span class="n">grd_soils</span> <span class="o">=</span> <span class="n">grd_soils</span> <span class="o">*</span> <span class="p">(</span><span class="n">map_hand</span><span class="o">.</span><span class="n">data</span> <span class="o">&gt;</span> <span class="n">n_hand</span><span class="p">)</span>
+        <span class="n">n_all_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">grd_soils</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">grd_alluvial</span> <span class="o">=</span> <span class="n">n_all_id</span> <span class="o">*</span> <span class="p">(</span><span class="n">map_hand</span><span class="o">.</span><span class="n">data</span> <span class="o">&lt;=</span> <span class="n">n_hand</span><span class="p">)</span>
+        <span class="n">grd_soils</span> <span class="o">=</span> <span class="n">grd_soils</span> <span class="o">+</span> <span class="n">grd_alluvial</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">grid</span><span class="o">=</span><span class="n">grd_soils</span><span class="p">)</span>
+
+        <span class="c1"># edit table</span>
+        <span class="c1"># get table copy from lito</span>
+        <span class="n">df_table_res</span> <span class="o">=</span> <span class="n">map_lito</span><span class="o">.</span><span class="n">table</span><span class="p">[[</span><span class="s2">&quot;Id&quot;</span><span class="p">,</span> <span class="s2">&quot;Alias&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;Color&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">df_table_col</span> <span class="o">=</span> <span class="n">map_lito</span><span class="o">.</span><span class="n">table</span><span class="p">[[</span><span class="s2">&quot;Id&quot;</span><span class="p">,</span> <span class="s2">&quot;Alias&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;Color&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1">#</span>
+        <span class="n">df_table_res</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Residual &quot;</span> <span class="o">+</span> <span class="n">df_table_res</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">]</span>
+        <span class="n">df_table_res</span><span class="p">[</span><span class="s2">&quot;Alias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;R&quot;</span> <span class="o">+</span> <span class="n">df_table_res</span><span class="p">[</span><span class="s2">&quot;Alias&quot;</span><span class="p">]</span>
+        <span class="c1">#</span>
+        <span class="n">df_table_col</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Colluvial &quot;</span> <span class="o">+</span> <span class="n">df_table_col</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">]</span>
+        <span class="n">df_table_col</span><span class="p">[</span><span class="s2">&quot;Alias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span> <span class="o">+</span> <span class="n">df_table_col</span><span class="p">[</span><span class="s2">&quot;Alias&quot;</span><span class="p">]</span>
+        <span class="n">df_table_col</span><span class="p">[</span><span class="s2">&quot;Id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">+</span> <span class="n">df_table_col</span><span class="p">[</span><span class="s2">&quot;Id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="c1"># new soil table</span>
+        <span class="n">df_table_all</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;Id&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">n_all_id</span><span class="p">],</span> <span class="s2">&quot;Alias&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Alv&quot;</span><span class="p">],</span> <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Alluvial&quot;</span><span class="p">],</span> <span class="s2">&quot;Color&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;tan&quot;</span><span class="p">]}</span>
+        <span class="p">)</span>
+        <span class="c1"># append</span>
+        <span class="n">df_new</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_table_res</span><span class="p">,</span> <span class="n">df_table_col</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">df_new</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_new</span><span class="p">,</span> <span class="n">df_table_all</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># set table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_table</span><span class="p">(</span><span class="n">dataframe</span><span class="o">=</span><span class="n">df_new</span><span class="p">)</span>
+        <span class="c1"># set colors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_random_colors</span><span class="p">()</span>
+        <span class="c1"># set more attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prj</span> <span class="o">=</span> <span class="n">map_lito</span><span class="o">.</span><span class="n">prj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_raster_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">map_lito</span><span class="o">.</span><span class="n">raster_metadata</span><span class="p">)</span>
+
+        <span class="c1"># reclassify</span>
+        <span class="n">df_new_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">df_new_table</span><span class="p">[</span><span class="s2">&quot;Id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_new_table</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="n">dict_ids</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Old_Id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="p">[</span><span class="s2">&quot;Id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="s2">&quot;New_Id&quot;</span><span class="p">:</span> <span class="n">df_new_table</span><span class="p">[</span><span class="s2">&quot;Id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reclassify</span><span class="p">(</span><span class="n">dict_ids</span><span class="o">=</span><span class="n">dict_ids</span><span class="p">,</span> <span class="n">df_new_table</span><span class="o">=</span><span class="n">df_new_table</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="AOI">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.AOI">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AOI</span><span class="p">(</span><span class="n">QualiHard</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    AOI map dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AOI.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.AOI.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;AOIMap&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;Area Of Interest&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;AOI&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Boolean map an Area of Interest&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;classes ID&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_table</span><span class="p">(</span><span class="n">dataframe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_table</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="AOI.update">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.AOI.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Refresh all mutable attributes based on data (includins paths).</span>
+<span class="sd">        Expected to be incremented downstream.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="c1"># refresh all mutable attributes</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># data size</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_area</span><span class="p">()</span>
+
+        <span class="c1"># ... continues in downstream objects ... #</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="AOI.get_table">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.AOI.get_table">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a sample DataFrame representing an AOI classification table.</span>
+
+<span class="sd">        :return: A DataFrame with sample AOI classification data.</span>
+<span class="sd">        :rtype: :class:`pandas.DataFrame`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df_aux</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_id</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_alias</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;AOI&quot;</span><span class="p">,</span> <span class="s2">&quot;EZ&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Area of Interest&quot;</span><span class="p">,</span> <span class="s2">&quot;Exclusion Zone&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_color</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;magenta&quot;</span><span class="p">,</span> <span class="s2">&quot;silver&quot;</span><span class="p">],</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">df_aux</span></div>
+
+
+<div class="viewcode-block" id="AOI.set_area">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.AOI.set_area">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellsize</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="AOI.get_metadata">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.AOI.get_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a dictionary with object metadata.</span>
+<span class="sd">        Expected to increment superior methods.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            Metadata does **not** necessarily inclue all object attributes.</span>
+
+<span class="sd">        :return: dictionary with all metadata</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># ------------ call super ----------- #</span>
+        <span class="n">dict_meta</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()</span>
+
+        <span class="c1"># customize local metadata:</span>
+        <span class="n">dict_meta_local</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_area</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="c1"># update</span>
+        <span class="n">dict_meta</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dict_meta_local</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dict_meta</span></div>
+
+
+<div class="viewcode-block" id="AOI.view">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.AOI.view">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">view</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">folder</span><span class="o">=</span><span class="s2">&quot;./output&quot;</span><span class="p">,</span>
+        <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">fig_format</span><span class="o">=</span><span class="s2">&quot;jpg&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot a basic pannel of raster map.</span>
+
+<span class="sd">        :param show: boolean to show plot instead of saving, defaults to False</span>
+<span class="sd">        :type show: bool</span>
+<span class="sd">        :param folder: path to output folder, defaults to ``./output``</span>
+<span class="sd">        :type folder: str</span>
+<span class="sd">        :param filename: name of file, defaults to None</span>
+<span class="sd">        :type filename: str</span>
+<span class="sd">        :param dpi: image resolution, defaults to 96</span>
+<span class="sd">        :type dpi: int</span>
+<span class="sd">        :param fig_format: image fig_format (ex: png or jpg). Default jpg</span>
+<span class="sd">        :type fig_format: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">map_aoi_aux</span> <span class="o">=</span> <span class="n">QualiRaster</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># set up</span>
+        <span class="n">map_aoi_aux</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">varname</span>
+        <span class="n">map_aoi_aux</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span>
+        <span class="n">map_aoi_aux</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span>
+        <span class="n">map_aoi_aux</span><span class="o">.</span><span class="n">set_table</span><span class="p">(</span><span class="n">dataframe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="p">)</span>
+        <span class="n">map_aoi_aux</span><span class="o">.</span><span class="n">view_specs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span>
+        <span class="n">map_aoi_aux</span><span class="o">.</span><span class="n">set_raster_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">raster_metadata</span><span class="p">)</span>
+        <span class="n">map_aoi_aux</span><span class="o">.</span><span class="n">prj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prj</span>
+        <span class="n">map_aoi_aux</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+        <span class="c1"># process grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insert_nodata</span><span class="p">()</span>
+        <span class="n">grd_new</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;byte&quot;</span><span class="p">)</span>
+        <span class="n">grd_new</span> <span class="o">=</span> <span class="n">grd_new</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_nodata</span><span class="p">()</span>
+        <span class="n">map_aoi_aux</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">grid</span><span class="o">=</span><span class="n">grd_new</span><span class="p">)</span>
+        <span class="c1"># this will call the view</span>
+
+        <span class="n">map_aoi_aux</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">folder</span>
+        <span class="n">map_aoi_aux</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="n">map_aoi_aux</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;fig_format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig_format</span>
+        <span class="n">map_aoi_aux</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;dpi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpi</span>
+
+        <span class="n">map_aoi_aux</span><span class="o">.</span><span class="n">view</span><span class="p">(</span>
+            <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">del</span> <span class="n">map_aoi_aux</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="LDD">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.LDD">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LDD</span><span class="p">(</span><span class="n">QualiHard</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    LDD - Local Drain Direction map dataset</span>
+<span class="sd">    convention:</span>
+
+<span class="sd">    7   8   9</span>
+<span class="sd">    4   5   6</span>
+<span class="sd">    1   2   3</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LDD.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.LDD.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;LDDMap&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;Local Drain Direction&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;LDD&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Direction of flux&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;direction ID&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_table</span><span class="p">(</span><span class="n">dataframe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_table</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;legend_ncol&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;legend_x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span></div>
+
+
+<div class="viewcode-block" id="LDD.get_table">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.LDD.get_table">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">df_aux</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_id</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_alias</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s2">&quot;1-SW&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;2-S&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;3-SE&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;4-W&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;5-C&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;6-E&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;7-NW&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;8-N&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;9-NE&quot;</span><span class="p">,</span>
+                <span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s2">&quot;South-west&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;South&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;South-east&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;West&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Center&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;East&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;North-west&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;North&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;North-east&quot;</span><span class="p">,</span>
+                <span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">field_color</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s2">&quot;olive&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;teal&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;orange&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;purple&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;green&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;orangered&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;red&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;goldenrod&quot;</span><span class="p">,</span>
+                <span class="p">],</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">df_aux</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="NDVISeries">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.NDVISeries">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NDVISeries</span><span class="p">(</span><span class="n">RasterSeries</span><span class="p">):</span>
+<div class="viewcode-block" id="NDVISeries.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.NDVISeries.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="c1"># instantiate raster sample</span>
+        <span class="n">rst_aux</span> <span class="o">=</span> <span class="n">NDVI</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">varname</span><span class="o">=</span><span class="n">rst_aux</span><span class="o">.</span><span class="n">varname</span><span class="p">,</span>
+            <span class="n">varalias</span><span class="o">=</span><span class="n">rst_aux</span><span class="o">.</span><span class="n">varalias</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="n">rst_aux</span><span class="o">.</span><span class="n">units</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">rst_aux</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># remove</span>
+        <span class="k">del</span> <span class="n">rst_aux</span></div>
+
+
+<div class="viewcode-block" id="NDVISeries.load_data">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.NDVISeries.load_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">file_data</span><span class="p">,</span> <span class="n">prj_file</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load a :class:`NDVI`` object from a raster file.</span>
+
+<span class="sd">        :param name: name attribute</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param datetime: :class:`Raster.date`` date attribute, defaults to None</span>
+<span class="sd">        :type datetime: str</span>
+<span class="sd">        :param file_data: path to ``.asc`` raster file</span>
+<span class="sd">        :type file_data: str</span>
+<span class="sd">        :param prj_file: path to ``.prj`` projection file</span>
+<span class="sd">        :type prj_file: str</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># create raster</span>
+        <span class="n">rst_aux</span> <span class="o">=</span> <span class="n">NDVI</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">datetime</span><span class="o">=</span><span class="n">datetime</span><span class="p">)</span>
+        <span class="c1"># read file</span>
+        <span class="n">rst_aux</span><span class="o">.</span><span class="n">load_asc</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">file_data</span><span class="p">)</span>
+        <span class="c1"># append to test_collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_object</span><span class="o">=</span><span class="n">rst_aux</span><span class="p">)</span>
+        <span class="c1"># load prj file</span>
+        <span class="n">rst_aux</span><span class="o">.</span><span class="n">load_prj</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">prj_file</span><span class="p">)</span>
+        <span class="c1"># delete aux</span>
+        <span class="k">del</span> <span class="n">rst_aux</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ETSeries">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.ETSeries">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ETSeries</span><span class="p">(</span><span class="n">RasterSeries</span><span class="p">):</span>
+<div class="viewcode-block" id="ETSeries.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.ETSeries.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="c1"># instantiate raster sample</span>
+        <span class="n">rst_aux</span> <span class="o">=</span> <span class="n">ET24h</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">varname</span><span class="o">=</span><span class="n">rst_aux</span><span class="o">.</span><span class="n">varname</span><span class="p">,</span>
+            <span class="n">varalias</span><span class="o">=</span><span class="n">rst_aux</span><span class="o">.</span><span class="n">varalias</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="n">rst_aux</span><span class="o">.</span><span class="n">units</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">rst_aux</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># remove</span>
+        <span class="k">del</span> <span class="n">rst_aux</span></div>
+
+
+<div class="viewcode-block" id="ETSeries.load_data">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.ETSeries.load_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">file_data</span><span class="p">,</span> <span class="n">prj_file</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load a :class:`ET24h`` object from a raster file.</span>
+
+<span class="sd">        :param name: name attribute</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param datetime: datetime attribute, defaults to None</span>
+<span class="sd">        :type datetime: str</span>
+<span class="sd">        :param file_data: path to raster file</span>
+<span class="sd">        :type file_data: str</span>
+<span class="sd">        :param prj_file: path to projection file</span>
+<span class="sd">        :type prj_file: str</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># create raster</span>
+        <span class="n">rst_aux</span> <span class="o">=</span> <span class="n">ET24h</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="n">datetime</span><span class="p">)</span>
+        <span class="c1"># read file</span>
+        <span class="n">rst_aux</span><span class="o">.</span><span class="n">load_asc</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">file_data</span><span class="p">)</span>
+        <span class="c1"># append to test_collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_object</span><span class="o">=</span><span class="n">rst_aux</span><span class="p">)</span>
+        <span class="c1"># load prj file</span>
+        <span class="n">rst_aux</span><span class="o">.</span><span class="n">load_prj</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">prj_file</span><span class="p">)</span>
+        <span class="c1"># delete aux</span>
+        <span class="k">del</span> <span class="n">rst_aux</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="AOICollection">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.AOICollection">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AOICollection</span><span class="p">(</span><span class="n">QualiRasterCollection</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A :class:`QualiRasterCollection`` for holding AOI maps</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AOICollection.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.AOICollection.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="c1"># instantiate raster sample</span>
+        <span class="n">rst_aux</span> <span class="o">=</span> <span class="n">AOI</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;dummy&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># remove</span>
+        <span class="k">del</span> <span class="n">rst_aux</span></div>
+
+
+<div class="viewcode-block" id="AOICollection.load_data">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.AOICollection.load_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">file_data</span><span class="p">,</span> <span class="n">file_prj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load a :class:`AOI`` object from raster file.</span>
+
+<span class="sd">        :param name: name attribute</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param file_data: path to raster file</span>
+<span class="sd">        :type file_data: str</span>
+<span class="sd">        :param file_prj: path to projection file</span>
+<span class="sd">        :type file_prj: str</span>
+<span class="sd">        :param file_table: path to table file</span>
+<span class="sd">        :type file_table: str</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># create raster</span>
+        <span class="n">rst_aux</span> <span class="o">=</span> <span class="n">AOI</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="c1"># read file</span>
+        <span class="n">rst_aux</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
+            <span class="n">file_data</span><span class="o">=</span><span class="n">file_data</span><span class="p">,</span>
+            <span class="n">file_prj</span><span class="o">=</span><span class="n">file_prj</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># append to test_collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">raster</span><span class="o">=</span><span class="n">rst_aux</span><span class="p">)</span>
+        <span class="c1"># delete aux</span>
+        <span class="k">del</span> <span class="n">rst_aux</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="LULCSeries">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.LULCSeries">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LULCSeries</span><span class="p">(</span><span class="n">QualiRasterSeries</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A :class:`QualiRasterSeries`` for holding Land Use and Land Cover maps</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LULCSeries.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.LULCSeries.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="c1"># instantiate raster sample</span>
+        <span class="n">rst_aux</span> <span class="o">=</span> <span class="n">LULC</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">varname</span><span class="o">=</span><span class="n">rst_aux</span><span class="o">.</span><span class="n">varname</span><span class="p">,</span>
+            <span class="n">varalias</span><span class="o">=</span><span class="n">rst_aux</span><span class="o">.</span><span class="n">varalias</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">rst_aux</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># remove</span>
+        <span class="k">del</span> <span class="n">rst_aux</span></div>
+
+
+<div class="viewcode-block" id="LULCSeries.load_data">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.LULCSeries.load_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">file_data</span><span class="p">,</span> <span class="n">file_prj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_table</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load a :class:`LULC`` object from raster file.</span>
+
+<span class="sd">        :param name: name attribute</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param datetime: date attribute</span>
+<span class="sd">        :type datetime: str</span>
+<span class="sd">        :param file_data: path to raster file</span>
+<span class="sd">        :type file_data: str</span>
+<span class="sd">        :param file_prj: path to projection file</span>
+<span class="sd">        :type file_prj: str</span>
+<span class="sd">        :param file_table: path to table file</span>
+<span class="sd">        :type file_table: str</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># create raster</span>
+        <span class="n">rst_aux</span> <span class="o">=</span> <span class="n">LULC</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">datetime</span><span class="o">=</span><span class="n">datetime</span><span class="p">)</span>
+        <span class="c1"># read file</span>
+        <span class="n">rst_aux</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
+            <span class="n">file_data</span><span class="o">=</span><span class="n">file_data</span><span class="p">,</span>
+            <span class="n">file_table</span><span class="o">=</span><span class="n">file_table</span><span class="p">,</span>
+            <span class="n">file_prj</span><span class="o">=</span><span class="n">file_prj</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># append to test_collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">raster</span><span class="o">=</span><span class="n">rst_aux</span><span class="p">)</span>
+        <span class="c1"># delete aux</span>
+        <span class="k">del</span> <span class="n">rst_aux</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="LULCSeries.get_lulcc">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.LULCSeries.get_lulcc">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_lulcc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_start</span><span class="p">,</span> <span class="n">date_end</span><span class="p">,</span> <span class="n">by_lulc_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the :class:`LULCChange`` of a given time interval and LULC class Id</span>
+
+<span class="sd">        :param date_start: start date of time interval</span>
+<span class="sd">        :type date_start: str</span>
+<span class="sd">        :param date_end: end date of time interval</span>
+<span class="sd">        :type date_end: str</span>
+<span class="sd">        :param by_lulc_id: LULC class Id</span>
+<span class="sd">        :type by_lulc_id: int</span>
+<span class="sd">        :return: map of LULC Change</span>
+<span class="sd">        :rtype: :class:`LULCChange`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># set up</span>
+        <span class="n">s_name_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">date_start</span><span class="p">][</span>
+            <span class="s2">&quot;Name&quot;</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span>
+            <span class="mi">0</span>
+        <span class="p">]</span>  <span class="c1">#</span>
+        <span class="n">s_name_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">date_end</span><span class="p">][</span><span class="s2">&quot;Name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span>
+            <span class="mi">0</span>
+        <span class="p">]</span>
+
+        <span class="c1"># compute lulc change grid</span>
+        <span class="n">grd_lulcc</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">s_name_end</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="n">by_lulc_id</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span>
+            <span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">s_name_start</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="n">by_lulc_id</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">grd_all</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">s_name_end</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="n">by_lulc_id</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span>
+            <span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">s_name_start</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="n">by_lulc_id</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">grd_all</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">grd_all</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">grd_lulcc</span> <span class="o">=</span> <span class="p">(</span><span class="n">grd_lulcc</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">grd_all</span>
+
+        <span class="c1"># get names</span>
+        <span class="n">s_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">s_name_lulc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="p">[</span><span class="s2">&quot;Id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">by_lulc_id</span><span class="p">][</span><span class="s2">&quot;Name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># instantiate</span>
+        <span class="n">map_lulc_change</span> <span class="o">=</span> <span class="n">LULCChange</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> of </span><span class="si">{}</span><span class="s2"> from </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">s_name</span><span class="p">,</span> <span class="n">s_name_lulc</span><span class="p">,</span> <span class="n">date_start</span><span class="p">,</span> <span class="n">date_end</span>
+            <span class="p">),</span>
+            <span class="n">name_lulc</span><span class="o">=</span><span class="n">s_name_lulc</span><span class="p">,</span>
+            <span class="n">date_start</span><span class="o">=</span><span class="n">date_start</span><span class="p">,</span>
+            <span class="n">date_end</span><span class="o">=</span><span class="n">date_end</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">map_lulc_change</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">grid</span><span class="o">=</span><span class="n">grd_lulcc</span><span class="p">)</span>
+        <span class="n">map_lulc_change</span><span class="o">.</span><span class="n">set_raster_metadata</span><span class="p">(</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">s_name_start</span><span class="p">]</span><span class="o">.</span><span class="n">raster_metadata</span>
+        <span class="p">)</span>
+        <span class="n">map_lulc_change</span><span class="o">.</span><span class="n">prj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">s_name_start</span><span class="p">]</span><span class="o">.</span><span class="n">prj</span>
+
+        <span class="k">return</span> <span class="n">map_lulc_change</span></div>
+
+
+<div class="viewcode-block" id="LULCSeries.get_lulcc_series">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.LULCSeries.get_lulcc_series">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_lulcc_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by_lulc_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the :class:`QualiRasterSeries`` of LULC Change for the entire LULC series for a given LULC Id</span>
+
+<span class="sd">        :param by_lulc_id: LULC class Id</span>
+<span class="sd">        :type by_lulc_id: int</span>
+<span class="sd">        :return: Series of LULC Change</span>
+<span class="sd">        :rtype: :class:`QualiRasterSeries`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">series_lulcc</span> <span class="o">=</span> <span class="n">QualiRasterSeries</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> - Change Series&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+            <span class="n">varname</span><span class="o">=</span><span class="s2">&quot;Land Use and Land Cover Change&quot;</span><span class="p">,</span>
+            <span class="n">varalias</span><span class="o">=</span><span class="s2">&quot;LULCC&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># loop in catalog</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">)):</span>
+            <span class="n">raster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_lulcc</span><span class="p">(</span>
+                <span class="n">date_start</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="n">date_end</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                <span class="n">by_lulc_id</span><span class="o">=</span><span class="n">by_lulc_id</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">series_lulcc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">raster</span><span class="o">=</span><span class="n">raster</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">series_lulcc</span></div>
+
+
+<div class="viewcode-block" id="LULCSeries.get_conversion_matrix">
+<a class="viewcode-back" href="../../../generated/plans.datasets.spatial.html#plans.datasets.spatial.LULCSeries.get_conversion_matrix">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_conversion_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_start</span><span class="p">,</span> <span class="n">date_end</span><span class="p">,</span> <span class="n">talk</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the conversion matrix, expansion matrix and retraction matrix for a given interval</span>
+
+<span class="sd">        :param date_start: start date of time interval</span>
+<span class="sd">        :type date_start: str</span>
+<span class="sd">        :param date_end: end date of time interval</span>
+<span class="sd">        :type date_end: str</span>
+<span class="sd">        :param talk: option for printing messages</span>
+<span class="sd">        :type talk: bool</span>
+<span class="sd">        :return: dict of outputs</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># get dates</span>
+        <span class="n">s_date_start</span> <span class="o">=</span> <span class="n">date_start</span>
+        <span class="n">s_date_end</span> <span class="o">=</span> <span class="n">date_end</span>
+        <span class="c1"># get raster names</span>
+        <span class="n">s_name_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">date_start</span><span class="p">][</span>
+            <span class="s2">&quot;Name&quot;</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span>
+            <span class="mi">0</span>
+        <span class="p">]</span>  <span class="c1">#</span>
+        <span class="n">s_name_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">date_end</span><span class="p">][</span><span class="s2">&quot;Name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span>
+            <span class="mi">0</span>
+        <span class="p">]</span>
+
+        <span class="c1"># compute export_areas</span>
+        <span class="n">df_areas_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">s_name_start</span><span class="p">]</span><span class="o">.</span><span class="n">get_areas</span><span class="p">()</span>
+        <span class="n">df_areas_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">s_name_end</span><span class="p">]</span><span class="o">.</span><span class="n">get_areas</span><span class="p">()</span>
+        <span class="c1"># deploy variables</span>
+        <span class="n">df_conv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">df_conv</span><span class="p">[</span><span class="s2">&quot;Date_start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_date_start</span>
+        <span class="n">df_conv</span><span class="p">[</span><span class="s2">&quot;Date_end&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_date_end</span>
+        <span class="n">df_conv</span><span class="p">[</span><span class="s2">&quot;Area_f_start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_areas_start</span><span class="p">[</span><span class="s2">&quot;Area_f&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">df_conv</span><span class="p">[</span><span class="s2">&quot;Area_f_end&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_areas_end</span><span class="p">[</span><span class="s2">&quot;Area_f&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">df_conv</span><span class="p">[</span><span class="s2">&quot;Area_km2_start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_areas_start</span><span class="p">[</span><span class="s2">&quot;Area_km2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">df_conv</span><span class="p">[</span><span class="s2">&quot;Area_km2_end&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_areas_end</span><span class="p">[</span><span class="s2">&quot;Area_km2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="n">lst_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_conv</span><span class="p">)):</span>
+            <span class="n">_alias</span> <span class="o">=</span> <span class="n">df_conv</span><span class="p">[</span><span class="s2">&quot;Alias&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">s_field</span> <span class="o">=</span> <span class="s2">&quot;to_</span><span class="si">{}</span><span class="s2">_f&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_alias</span><span class="p">)</span>
+            <span class="n">df_conv</span><span class="p">[</span><span class="n">s_field</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">lst_cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_field</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">talk</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;processing...&quot;</span><span class="p">)</span>
+
+        <span class="n">grd_conv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_conv</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_conv</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_conv</span><span class="p">)):</span>
+            <span class="n">_id</span> <span class="o">=</span> <span class="n">df_conv</span><span class="p">[</span><span class="s2">&quot;Id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="c1">#</span>
+            <span class="c1"># instantiate new LULC map</span>
+            <span class="n">map_lulc</span> <span class="o">=</span> <span class="n">LULC</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Conversion&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">=</span><span class="n">s_date_end</span><span class="p">)</span>
+            <span class="n">map_lulc</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">grid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">s_name_end</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">map_lulc</span><span class="o">.</span><span class="n">set_raster_metadata</span><span class="p">(</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">s_name_start</span><span class="p">]</span><span class="o">.</span><span class="n">raster_metadata</span>
+            <span class="p">)</span>
+            <span class="n">map_lulc</span><span class="o">.</span><span class="n">set_table</span><span class="p">(</span><span class="n">dataframe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">s_name_start</span><span class="p">]</span><span class="o">.</span><span class="n">table</span><span class="p">)</span>
+            <span class="n">map_lulc</span><span class="o">.</span><span class="n">prj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">s_name_start</span><span class="p">]</span><span class="o">.</span><span class="n">prj</span>
+            <span class="c1">#</span>
+            <span class="c1"># apply aoi</span>
+            <span class="n">grd_aoi</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">s_name_start</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="n">_id</span><span class="p">)</span>
+            <span class="n">map_lulc</span><span class="o">.</span><span class="n">apply_aoi_mask</span><span class="p">(</span><span class="n">grid_aoi</span><span class="o">=</span><span class="n">grd_aoi</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1">#</span>
+            <span class="c1"># bypass all-masked aois</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">map_lulc</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked</span><span class="p">:</span>
+                <span class="n">grd_conv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_conv</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">df_areas</span> <span class="o">=</span> <span class="n">map_lulc</span><span class="o">.</span><span class="n">get_areas</span><span class="p">()</span>
+                <span class="n">grd_conv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_areas</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_f&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">map_lulc</span><span class="o">.</span><span class="n">field_area</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="c1"># append to dataframe</span>
+        <span class="n">grd_conv</span> <span class="o">=</span> <span class="n">grd_conv</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_conv</span><span class="p">)):</span>
+            <span class="n">df_conv</span><span class="p">[</span><span class="n">lst_cols</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">grd_conv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="c1"># get expansion matrix</span>
+        <span class="n">grd_exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">grd_conv</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">grd_exp</span><span class="p">)):</span>
+            <span class="n">grd_exp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_conv</span><span class="p">[</span><span class="s2">&quot;Area_f_start&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">*</span> <span class="n">df_conv</span><span class="p">[</span><span class="n">lst_cols</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">grd_exp</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># get retraction matrix</span>
+        <span class="n">grd_rec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">grd_conv</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">grd_rec</span><span class="p">)):</span>
+            <span class="n">grd_rec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_conv</span><span class="p">[</span><span class="s2">&quot;Area_f_start&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">grd_conv</span><span class="o">.</span><span class="n">transpose</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">grd_rec</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;Dataframe&quot;</span><span class="p">:</span> <span class="n">df_conv</span><span class="p">,</span>
+            <span class="s2">&quot;Conversion_Matrix&quot;</span><span class="p">:</span> <span class="n">grd_conv</span><span class="p">,</span>
+            <span class="s2">&quot;Conversion_index&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">grd_conv</span><span class="p">)),</span>
+            <span class="s2">&quot;Expansion_Matrix&quot;</span><span class="p">:</span> <span class="n">grd_exp</span><span class="p">,</span>
+            <span class="s2">&quot;Retraction_Matrix&quot;</span><span class="p">:</span> <span class="n">grd_rec</span><span class="p">,</span>
+            <span class="s2">&quot;Date_start&quot;</span><span class="p">:</span> <span class="n">date_start</span><span class="p">,</span>
+            <span class="s2">&quot;Date_end&quot;</span><span class="p">:</span> <span class="n">date_end</span><span class="p">,</span>
+        <span class="p">}</span></div>
+</div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">&quot;seaborn-v0_8&quot;</span><span class="p">)</span>
+
+    <span class="n">s</span> <span class="o">=</span> <span class="n">Slope</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
+        <span class="n">asc_file</span><span class="o">=</span><span class="s2">&quot;C:/plans/docs/datasets/topo/slope.asc&quot;</span><span class="p">,</span>
+        <span class="n">prj_file</span><span class="o">=</span><span class="s2">&quot;C:/plans/docs/datasets/topo/slope.prj&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">TWI</span><span class="p">()</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
+        <span class="n">asc_file</span><span class="o">=</span><span class="s2">&quot;C:/plans/docs/datasets/topo/twi.asc&quot;</span><span class="p">,</span>
+        <span class="n">prj_file</span><span class="o">=</span><span class="s2">&quot;C:/plans/docs/datasets/topo/twi.prj&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023, Iporã Possantti.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
