@@ -1,0 +1,21 @@
+status_user;status_run;structure;name;title;folder;dtype;units
+input;;raster;dem;Elevation (digital elevation model);topography;float32;meters
+input;;raster;hand;Height Above Nearest Drainage;topography;float32;meters
+input;;raster;twi;Topographic Wetness Index;topography;float32;index
+intermediate;required;raster;tsi;Topographic Saturation Index;topography;uint8;index
+input;;raster;ldd;Local Drain Direction;topography;uint8;id
+input;required;raster;landuse_{datetime};Land Use and Land Cover;landuse/{scenario};uint8;id
+input;required;raster;soils;Soils;soils;uint8;id
+input;required;raster;litho;Lithology;soils;uint8;id
+input;required;raster;slope;Slope;topography;float32;degrees
+input;;raster;hillshade;Hill Shade;topography;uint8;unitless
+input;;raster;acc;Accumulated Flux;topography;float32;km^2
+input;required;attribute table;litho;Lithology;soils;;
+input;required;attribute table;soils;Soils;soils;;
+input;required;attribute table;landuse;Land Use and Land Cover;landuse/{scenario};;
+input;required;time series;climate;Climate Forcing;climate/{scenario};;
+intermediate;required;raster;dto;Distance To Outlet;topography;float32;meters
+input;;time series;q_obs;Observed Streamflow;basins;;
+input;required;raster;basin_{id};Basin Area;basins;uint8;unitless
+intermediate;required;table;path_area_hist;Path vs Area Histogram;basins;;
+;;;;;;;

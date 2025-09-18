@@ -4,6 +4,8 @@
 
 .. include:: ./_links.rst
 
+----
+
 .. _about:
 
 About
@@ -21,75 +23,52 @@ Contents
    :maxdepth: 1
 
    About <self>
-   gallery
-   theory
-   cases
+   about_gallery
+   about_cases
+   about_theory
 
 
-Overview
-***********************************************************************
+.. include:: ./includes/short_description.rst
 
-``plans`` is a tool that helps environmental managers and engineers plan
-`Nature-based Solutions for Water`_ at the hillslope scale.
+.. include:: ./figs/about.rst
 
-In a nutshell, it allows simulation and mapping
-of **hydrological processes** such as `surface runoff`_ and `infiltration`_ in a
-very useful spatial resolution. This feature is critical for the success of watershed conservation projects.
+In a nutshell, it allows assessment and simulation of of **hydrological processes** such as `overland flow`_, `infiltration`_ and `soil moisture`_ in a very useful spatial resolution, the **hillslope scale**.
 
-Hence, users of ``plans`` are required to provide **input data** of a given basin,
-like time series of rain and maps of topography and land use.
+``plans`` is based on the `TOPMODEL`_ approach for modeling hillslope hydrology. This approach allows a spatially explicit representation of **riparian wetland dynamics** (also known as the concept of *variable source area*).
 
-.. seealso::
+.. include:: ./figs/riparian_wetlands.rst
 
-   How to use ``plans`` is explained in more detail in :ref:`Usage <usage>`
+In this sense, ``plans`` is an alternative for tools like `SWAT`_ and `InVEST`_, since they do *not* represent this dynamics. Actually, most hydrological models represent hydrology only at the **catchment scale**, while TOPMODEL allows for a finer detail in mapping hydrological processes.
 
+Process representation at the hillslope scale makes the use of ``plans`` fit for the purpose of planning **watershed conservation projects**. Managers may use ``plans`` outputs to map the **infiltration potential** across the landscape, optimizing the spatial allocation of Nature-based solutions.
 
-.. _about_gallery:
+.. include:: ./figs/infiltration_pot.rst
 
-Gallery
-********************************************
+To run ``plans`` in a Area of Interest, users are required to provide a set of **input data**, like time series of rain and maps of topography and land use.
 
-.. include:: ./ipsum.rst
+.. admonition:: User Guide
+   :class: seealso
 
-Mapping infiltration potential:
+   Check out the :ref:`User Guide <usage>` for more details on how to use ``plans``
 
-.. figure:: figs/gallery/example1.gif
-    :align: left
-    :alt: Example 1
+.. admonition:: Gallery
+   :class: seealso
 
-Mapping riparian wetlands dynamics:
+   Check out the :ref:`Gallery <gallery>` page for more details on ``plans`` outputs
 
-.. figure:: figs/gallery/example2.gif
-    :align: left
-    :alt: Example 2
+.. admonition:: Study Cases
+   :class: seealso
 
-.. seealso::
+   Check out the :ref:`Study Cases <cases>` page for ``plans`` published applications
 
-   More details are presented in :ref:`Gallery <gallery>`
+.. admonition:: Theoretical Reference
+   :class: seealso
+
+   Check out the :ref:`Theoretical Reference <theory>` page for the scientific basis of ``plans``
 
 
-.. _about_theory:
-
-Theory
-********************************************
-
-.. include:: ./ipsum.rst
-
-.. seealso::
-
-   More details are presented in :ref:`Theory <theory>`
 
 
-.. _about_cases:
-
-Cases
-********************************************
-
-.. include:: ./ipsum.rst
-
-.. seealso::
-
-   More details are presented in :ref:`Cases <cases>`
 
 
 

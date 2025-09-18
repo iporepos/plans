@@ -35,9 +35,7 @@ Build docs and open index.html:
 
 
 """
-
-import os
-
+import shutil
 
 # IMPORTS
 # ***********************************************************************
@@ -48,10 +46,11 @@ import subprocess
 import webbrowser
 from pathlib import Path
 import glob
+import os
 
 # External imports
 # =======================================================================
-# None required
+import pandas as pd
 
 # Project-level imports
 # =======================================================================
@@ -63,9 +62,19 @@ import glob
 
 # CONSTANTS -- Project-level
 # =======================================================================
+
+# Folders
 DOCS_DIR = Path("docs")
+FIGS_DIR = DOCS_DIR / "figs"
+DOCS_DATA_DIR = DOCS_DIR / "data"
 BUILD_DIR = DOCS_DIR / "_build"
+GENERATED_DIR = DOCS_DIR / "generated"
+TEMPLATES_DIR = DOCS_DIR / "_templates"
+
+# Files
 INDEX_FILE = BUILD_DIR / "index.html"
+FIGS_DATA = DOCS_DATA_DIR / "figs.csv"
+FIGS_TEMPLATE = TEMPLATES_DIR / "fig.rst"
 
 
 # FUNCTIONS
@@ -81,8 +90,9 @@ def build_docs():
     This function runs the Sphinx build command with HTML output, then
     opens the generated index.html in the default web browser.
     """
-    # Clean generated files
+    # Clean generated files (in case of local build)
     delete_generated()
+
     # Run sphinx-build
     subprocess.run(
         ["sphinx-build", "-b", "html", str(DOCS_DIR), str(BUILD_DIR), "--write-all"],
@@ -91,21 +101,62 @@ def build_docs():
 
     # Open the generated index.html in the default web browser
     webbrowser.open(INDEX_FILE.resolve().as_uri())
-    print(f"Documentation built successfully! Opened {INDEX_FILE}")
+    # print(f"Documentation built successfully! Opened {INDEX_FILE}")
+    return None
+
+
+def build_figs():
+    """
+    Build figure ``rst`` files from template and ``csv`` listed urls.
+    After building, this function adds files to git vsc
+    """
+    df = parse_figs_df()
+    # Iterate over rows as dictionaries
+    for row_dc in df.to_dict(orient="records"):
+        make_fig(spec=row_dc)
+    # add created files to git vcs
+    subprocess.run(["git", "add", FIGS_DIR])
+    return None
 
 
 # FUNCTIONS -- Module-level
 # =======================================================================
 def delete_generated():
-    """
-    Delete all ``rst`` generated files prior to build.
-    """
-    ls_files = glob.glob("./generated/*.rst")
+    ls_files = glob.glob(str(GENERATED_DIR / "*.rst"))
     if len(ls_files) == 0:
         pass
     else:
         for f in ls_files:
+            print(f"deleted {f}")
             os.remove(f)
+    return None
+
+
+def parse_figs_df():
+    df = pd.read_csv(FIGS_DATA, sep=";")
+    df["caption"] = df["caption"].fillna("")
+    return df
+
+
+def make_fig(spec):
+    label = spec["label"]
+    file_fig = FIGS_DIR / f"{label}.rst"
+
+    # Read the template
+    text = FIGS_TEMPLATE.read_text(encoding="utf-8")
+
+    # Remove caption placeholder + leading spaces if empty
+    if not spec.get("caption"):
+        # keep template clean by removing the last blank line + {caption}
+        text = text.replace("\n   {caption}", "")
+    # handle if caption is the same as alt
+    elif spec["caption"] == "alt":
+        spec["caption"] = spec["alt"]
+
+    # Replace placeholders with values from the dict
+    filled = text.format_map(spec)
+    # Save to a new file
+    file_fig.write_text(filled, encoding="utf-8")
     return None
 
 
@@ -118,6 +169,10 @@ def delete_generated():
 # ***********************************************************************
 if __name__ == "__main__":
 
-    # Script section
+    # Build figures from csv file
+    # ===================================================================
+    build_figs()
+
+    # Build docs using sphinx
     # ===================================================================
     build_docs()

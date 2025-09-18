@@ -2,9 +2,11 @@
 
 .. include:: ./badge_source.rst
 
+----
+
 .. _cases:
 
-Cases
+Study Cases
 #######################################################################
 
 .. warning::
@@ -12,8 +14,6 @@ Cases
    This section is under development. Updates soon.
 
 
-For scientific and technical information about ``plans`` as a whole,
-see the following literature:
 
 *Possantti, I., Marques G. A modelling framework for nature-based solutions expansion planning considering the benefits to downstream urban water users. Environmental Modelling & Software. Volume 152, 105381, ISSN 1364-8152.* https://doi.org/10.1016/j.envsoft.2022.105381.
 

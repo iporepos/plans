@@ -114,7 +114,7 @@ autodoc_default_options = {
 }
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "__docs.rst"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "figs/*.rst", "includes/*.rst"]
 
 # HTML AND THEMES
 # ***********************************************************************

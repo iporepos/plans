@@ -4,6 +4,8 @@
 
 .. include:: ./_links.rst
 
+----
+
 .. _files-asc:
 
 ASCII format

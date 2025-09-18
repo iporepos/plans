@@ -16,10 +16,7 @@
 
 # plans
 
-``plans`` is a tool that helps water resources managers and engineers plan nature-based solutions for water at the hillslope scale.
-
-It is uses a simulation model for estimating *hydrological processes* such as [surface runoff](https://en.wikipedia.org/wiki/Surface_runoff) and [infiltration](https://en.wikipedia.org/wiki/Infiltration_(hydrology)) for a given area of interest. Model outputs include simulated hydrological processes in time (tables) and space (maps). Those results then can be used by water resource managers for effectively planning the expansion of [Nature-based Solutions for Water](https://www.undp.org/publications/nature-based-solutions-water) (*e.g.*, reforestation and soil-conservation agriculture).
-
+``plans`` is a simulation tool that helps water resources managers to plan the expansion of `Nature-based Solutions for Water`_ at the hillslope scale.
 
 > [!NOTE]
 > Check out the [documentation website](https://iporepos.github.io/plans/) for more info.
@@ -28,20 +25,22 @@ It is uses a simulation model for estimating *hydrological processes* such as [s
 
 ## Gallery
 
-<a example1>
-<img src="https://github.com/iporepos/plans-assets/blob/main/docs/gallery/example1.gif?raw=true">
-</a>
-
 Mapping riparian wetlands dynamics:
 
 <a example2>
 <img src="https://github.com/iporepos/plans-assets/blob/main/docs/gallery/example2.gif?raw=true">
 </a>
 
+Mapping infiltration potential:
+
+<a example1>
+<img src="https://github.com/iporepos/plans-assets/blob/main/docs/gallery/example1.gif?raw=true">
+</a>
+
 
 ---
 
-# Repository
+# Repository layout
 
 ```txt
 plans/
