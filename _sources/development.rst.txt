@@ -1,8 +1,4 @@
-.. a cool badge for the source. replace or remove if appropriate [CHANGE THIS]:
-
-.. include:: ./badge_source.rst
-
-----
+.. include:: ./includes/badge_source.rst
 
 .. _development:
 

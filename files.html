@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="./" >
+<html lang="en" data-content_root="./" data-theme="light">
 
   <head>
     <meta charset="utf-8" />
@@ -13,8 +13,8 @@
   
   
   <script data-cfasync="false">
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
   <!--
     this give us a css class that will be invisible only if js is disabled
@@ -48,15 +48,15 @@
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Data Structures" href="files_structure.html" />
-    <link rel="prev" title="User Guide" href="usage.html" />
+    <link rel="next" title="Data Structures" href="data_structures.html" />
+    <link rel="prev" title="User Guide" href="userguide.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
   </head>
   
   
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
 
   
   
@@ -143,7 +143,7 @@
 
 
 <li class="nav-item current active">
-  <a class="nav-link nav-internal" href="usage.html">
+  <a class="nav-link nav-internal" href="userguide.html">
     User Guide
   </a>
 </li>
@@ -250,7 +250,7 @@
 
 
 <li class="nav-item current active">
-  <a class="nav-link nav-internal" href="usage.html">
+  <a class="nav-link nav-internal" href="userguide.html">
     User Guide
   </a>
 </li>
@@ -297,19 +297,11 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Files</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="files_structure.html">Data Structures</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="files_structure.html">Data Structures</a></li>
-<li class="toctree-l3"><a class="reference internal" href="files_asc.html">ASCII format</a></li>
-</ul>
-</details></li>
-<li class="toctree-l2"><a class="reference internal" href="files_asc.html">ASCII format</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="files_catalog.html">Files Catalog</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="files_catalog.html">Self</a></li>
-</ul>
-</details></li>
+<li class="toctree-l2"><a class="reference internal" href="data_structures.html">Data Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="files_index.html">Files Index</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="projects.html">Projects</a></li>
@@ -354,7 +346,7 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="usage.html" class="nav-link">User Guide</a></li>
+    <li class="breadcrumb-item"><a href="userguide.html" class="nav-link">User Guide</a></li>
     
     <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Files</span></li>
   </ul>
@@ -375,900 +367,56 @@
                   
   <a class="reference external image-reference" href="https://github.com/iporepos/plans"><img alt="GitHub repository" src="https://img.shields.io/badge/GitHub-Source-black?logo=github" />
 </a>
-<hr class="docutils" />
 <section id="files">
 <span id="id1"></span><h1>Files<a class="headerlink" href="#files" title="Link to this heading">#</a></h1>
-<p>This is the input and output (I/O) files documentation of <code class="docutils literal notranslate"><span class="pre">plans</span></code>.</p>
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
 <p>This section is under active development.</p>
 </div>
-<p>I/O workflow is quite straight forward.
-All files are always formatted in only two ways:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">csv</span></code> for <a class="reference internal" href="files_structure.html#io-table"><span class="std std-ref">Table</span></a> structure;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tif</span></code> for <a class="reference internal" href="files_structure.html#io-raster"><span class="std std-ref">Raster map</span></a> structure.</p></li>
-</ul>
-<p>And there are two categories of files:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#io-input-files"><span class="std std-ref">Input Files</span></a>: required and optional data files for running <code class="docutils literal notranslate"><span class="pre">plans</span></code>;</p></li>
-<li><p><a class="reference internal" href="#io-output-files"><span class="std std-ref">Output Files</span></a>: intermediate and result data files.</p></li>
-</ul>
 <section id="contents">
 <h2>Contents<a class="headerlink" href="#contents" title="Link to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="files_structure.html">Data Structures</a></li>
-<li class="toctree-l1"><a class="reference internal" href="files_asc.html">ASCII format</a></li>
-<li class="toctree-l1"><a class="reference internal" href="files_catalog.html">Files Catalog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_structures.html">Data Structures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="files_index.html">Files Index</a></li>
 </ul>
+</div>
+</section>
+<section id="overview">
+<span id="files-overview"></span><h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>The file system in <code class="docutils literal notranslate"><span class="pre">plans</span></code> is quite straight-forward.</p>
+<p>All files are always formatted in only two ways:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">csv</span></code> format for <a class="reference internal" href="data_structures.html#io-table"><span class="std std-ref">Table</span></a> structure;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tif</span></code> format for <a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a> (map) structure.</p></li>
+</ul>
+<p>All files fall into three main I/O categories:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#io-input-files"><span class="std std-ref">Input Files</span></a>: required and optional data files that users must provide by themselves. Input files lives in the <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder of a project.</p></li>
+<li><p><a class="reference internal" href="#io-intermediate-files"><span class="std std-ref">Intermediate Files</span></a>: data files generated by <code class="docutils literal notranslate"><span class="pre">plans</span></code> as intermediate step to final processing. Users may also provide this files to skip intermediate steps. Like input files, intermediate files lives in the <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder of a project;</p></li>
+<li><p><a class="reference internal" href="#io-output-files"><span class="std std-ref">Output Files</span></a>: data files generated by <code class="docutils literal notranslate"><span class="pre">plans</span></code> as results of final processing. Output files lives under <code class="docutils literal notranslate"><span class="pre">outputs/</span></code> in the respective subfolder of the processing session.</p></li>
+</ol>
+<div class="seealso admonition">
+<p class="admonition-title">Data structures and formatting</p>
+<p>Check out the <a class="reference internal" href="data_structures.html#files-data-structures"><span class="std std-ref">Data Structures</span></a> page for more details on how to format input data.</p>
+</div>
+<div class="seealso admonition">
+<p class="admonition-title">Files Index</p>
+<p>Check out the <a class="reference internal" href="files_index.html#files-index"><span class="std std-ref">Files Index</span></a> page for the full list of files and specifications.</p>
 </div>
 </section>
 <section id="input-files">
 <span id="io-input-files"></span><h2>Input Files<a class="headerlink" href="#input-files" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida
-ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
-<section id="input-files-summary">
-<h3>Input files summary<a class="headerlink" href="#input-files-summary" title="Link to this heading">#</a></h3>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida
-ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
-</section>
-<section id="input-files-catalog">
-<h3>Input files catalog<a class="headerlink" href="#input-files-catalog" title="Link to this heading">#</a></h3>
-<section id="main-basin-area">
-<h4>Main Basin Area<a class="headerlink" href="#main-basin-area" title="Link to this heading">#</a></h4>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">basin.tif</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/basins</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
-</tr>
-<tr class="row-even"><td><p>Units</p></td>
-<td><p>unitless</p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Type</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">uint8</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="sub-basin-area">
-<h4>Sub-Basin Area<a class="headerlink" href="#sub-basin-area" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">basin_{code}.tif</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/basins</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
-</tr>
-<tr class="row-even"><td><p>Units</p></td>
-<td><p>unitless</p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Type</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">uint8</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="climate-forcing">
-<h4>Climate Forcing<a class="headerlink" href="#climate-forcing" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">climate_{scenario}.csv</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/climate</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-timeseries"><span class="std std-ref">Time Series</span></a></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Required Fields</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 20.0%" />
-<col style="width: 13.3%" />
-<col style="width: 66.7%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Units</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>datetime</p></td>
-<td><p>dt</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-<tr class="row-odd"><td><p>ppt</p></td>
-<td><p>mm/dt</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-<tr class="row-even"><td><p>tas</p></td>
-<td><p>ºC</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="digital-elevation-model">
-<h4>Digital Elevation Model<a class="headerlink" href="#digital-elevation-model" title="Link to this heading">#</a></h4>
-<p>Pellentesque habitant morbi tristique senectus
-et netus et malesuada fames ac turpis egestas. Morbi et tempor sem.
-Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">dem.tif</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
-</tr>
-<tr class="row-even"><td><p>Units</p></td>
-<td><p>meters</p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Type</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="distance-to-outlet">
-<h4>Distance To Outlet<a class="headerlink" href="#distance-to-outlet" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">dto.tif</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
-</tr>
-<tr class="row-even"><td><p>Units</p></td>
-<td><p>meters</p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Type</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="flow-accumulation">
-<h4>Flow Accumulation<a class="headerlink" href="#flow-accumulation" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">flowacc.tif</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
-</tr>
-<tr class="row-even"><td><p>Units</p></td>
-<td><p>m^2</p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Type</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="height-above-nearest-drainage">
-<h4>Height Above Nearest Drainage<a class="headerlink" href="#height-above-nearest-drainage" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">hand.tif</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
-</tr>
-<tr class="row-even"><td><p>Units</p></td>
-<td><p>meters</p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Type</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="hill-shade">
-<h4>Hill Shade<a class="headerlink" href="#hill-shade" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">hillshade.tif</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
-</tr>
-<tr class="row-even"><td><p>Units</p></td>
-<td><p>unitless</p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Type</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">uint8</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="local-drain-direction">
-<h4>Local Drain Direction<a class="headerlink" href="#local-drain-direction" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">ldd.tif</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
-</tr>
-<tr class="row-even"><td><p>Units</p></td>
-<td><p>id</p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Type</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">uint8</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="land-use-and-land-cover">
-<h4>Land Use and Land Cover<a class="headerlink" href="#land-use-and-land-cover" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">lulc_info.csv</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/lulc/{scenario}</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-attribute"><span class="std std-ref">Attribute Table</span></a></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Required Fields</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 20.0%" />
-<col style="width: 13.3%" />
-<col style="width: 66.7%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Units</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>datetime</p></td>
-<td><p>dt</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-<tr class="row-odd"><td><p>ppt</p></td>
-<td><p>mm/dt</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-<tr class="row-even"><td><p>tas</p></td>
-<td><p>ºC</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="id2">
-<h4>Land Use and Land Cover<a class="headerlink" href="#id2" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">lulc_{date}.tif</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/lulc/{scenario}</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-timequaliraster"><span class="std std-ref">Time Quali Raster</span></a></p></td>
-</tr>
-<tr class="row-even"><td><p>Units</p></td>
-<td><p>id</p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Type</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">uint8</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="model-info">
-<h4>Model Info<a class="headerlink" href="#model-info" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">model_info.csv</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/data</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-table"><span class="std std-ref">Table</span></a></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Required Fields</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 20.0%" />
-<col style="width: 13.3%" />
-<col style="width: 66.7%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Units</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>datetime</p></td>
-<td><p>dt</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-<tr class="row-odd"><td><p>ppt</p></td>
-<td><p>mm/dt</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-<tr class="row-even"><td><p>tas</p></td>
-<td><p>ºC</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="model-upscaled-parameters">
-<h4>Model Upscaled Parameters<a class="headerlink" href="#model-upscaled-parameters" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">parameters_{code}.csv</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/data</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-table"><span class="std std-ref">Table</span></a></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Required Fields</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 20.0%" />
-<col style="width: 13.3%" />
-<col style="width: 66.7%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Units</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>datetime</p></td>
-<td><p>dt</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-<tr class="row-odd"><td><p>ppt</p></td>
-<td><p>mm/dt</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-<tr class="row-even"><td><p>tas</p></td>
-<td><p>ºC</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="path-vs-area-histogram">
-<h4>Path vs Area Histogram<a class="headerlink" href="#path-vs-area-histogram" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">path_area_hist.csv</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/basins</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-table"><span class="std std-ref">Table</span></a></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Required Fields</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 20.0%" />
-<col style="width: 13.3%" />
-<col style="width: 66.7%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Units</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>datetime</p></td>
-<td><p>dt</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-<tr class="row-odd"><td><p>ppt</p></td>
-<td><p>mm/dt</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-<tr class="row-even"><td><p>tas</p></td>
-<td><p>ºC</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="observed-streamflow">
-<h4>Observed Streamflow<a class="headerlink" href="#observed-streamflow" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">q_obs.csv</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/basins</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-timeseries"><span class="std std-ref">Time Series</span></a></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Required Fields</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 20.0%" />
-<col style="width: 13.3%" />
-<col style="width: 66.7%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Units</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>datetime</p></td>
-<td><p>dt</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-<tr class="row-odd"><td><p>ppt</p></td>
-<td><p>mm/dt</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-<tr class="row-even"><td><p>tas</p></td>
-<td><p>ºC</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="slope">
-<h4>Slope<a class="headerlink" href="#slope" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis.
-Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">slope.tif</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-qualiraster"><span class="std std-ref">Quali Raster</span></a></p></td>
-</tr>
-<tr class="row-even"><td><p>Units</p></td>
-<td><p>degrees</p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Type</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="soils-map">
-<h4>Soils Map<a class="headerlink" href="#soils-map" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">soils.tif</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/soils</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
-</tr>
-<tr class="row-even"><td><p>Units</p></td>
-<td><p>id</p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Type</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">uint8</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="soils-info">
-<h4>Soils Info<a class="headerlink" href="#soils-info" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">soils_info.csv</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/soils</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-attribute"><span class="std std-ref">Attribute Table</span></a></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Required Fields</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 20.0%" />
-<col style="width: 13.3%" />
-<col style="width: 66.7%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Units</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>datetime</p></td>
-<td><p>dt</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-<tr class="row-odd"><td><p>ppt</p></td>
-<td><p>mm/dt</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-<tr class="row-even"><td><p>tas</p></td>
-<td><p>ºC</p></td>
-<td><p>Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="topographic-saturation-index">
-<h4>Topographic Saturation Index<a class="headerlink" href="#topographic-saturation-index" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">tsi.tif</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
-</tr>
-<tr class="row-even"><td><p>Units</p></td>
-<td><p>index</p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Type</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">uint8</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="topographic-wetness-index">
-<h4>Topographic Wetness Index<a class="headerlink" href="#topographic-wetness-index" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">twi.tif</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
-</tr>
-<tr class="row-even"><td><p>Units</p></td>
-<td><p>index</p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Type</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-<section id="upslope-area">
-<h4>Upslope Area<a class="headerlink" href="#upslope-area" title="Link to this heading">#</a></h4>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-<p><strong>Specifications</strong></p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 37.5%" />
-<col style="width: 62.5%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">uparea.tif</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Structure</p></td>
-<td><p><a class="reference internal" href="files_structure.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
-</tr>
-<tr class="row-even"><td><p>Units</p></td>
-<td><p>m^2</p></td>
-</tr>
-<tr class="row-odd"><td><p>Data Type</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Preview</strong></p>
-<p>{todo preview}</p>
-</section>
-</section>
 </section>
 <section id="intermediate-files">
-<span id="io-interm-files"></span><h2>Intermediate Files<a class="headerlink" href="#intermediate-files" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida
-ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
-<section id="intermediate-files-summary">
-<h3>Intermediate files summary<a class="headerlink" href="#intermediate-files-summary" title="Link to this heading">#</a></h3>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida
-ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
+<span id="io-intermediate-files"></span><h2>Intermediate Files<a class="headerlink" href="#intermediate-files" title="Link to this heading">#</a></h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 </section>
-<section id="intermediate-files-catalog">
-<h3>Intermediate files catalog<a class="headerlink" href="#intermediate-files-catalog" title="Link to this heading">#</a></h3>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida
-ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
-<p id="io-output-files">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida
-ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
-</section>
-<section id="output-files-summary">
-<h3>Output files summary<a class="headerlink" href="#output-files-summary" title="Link to this heading">#</a></h3>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida
-ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
-</section>
-<section id="output-files-catalog">
-<h3>Output files catalog<a class="headerlink" href="#output-files-catalog" title="Link to this heading">#</a></h3>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida
-ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
-</section>
+<section id="output-files">
+<span id="io-output-files"></span><h2>Output Files<a class="headerlink" href="#output-files" title="Link to this heading">#</a></h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 </section>
 </section>
 
@@ -1283,7 +431,7 @@ ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="usage.html"
+       href="userguide.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
@@ -1292,7 +440,7 @@ ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
       </div>
     </a>
     <a class="right-next"
-       href="files_structure.html"
+       href="data_structures.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
@@ -1320,41 +468,10 @@ ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contents">Contents</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#input-files">Input Files</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#input-files-summary">Input files summary</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#input-files-catalog">Input files catalog</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#main-basin-area">Main Basin Area</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sub-basin-area">Sub-Basin Area</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#climate-forcing">Climate Forcing</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#digital-elevation-model">Digital Elevation Model</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#distance-to-outlet">Distance To Outlet</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#flow-accumulation">Flow Accumulation</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#height-above-nearest-drainage">Height Above Nearest Drainage</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hill-shade">Hill Shade</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#local-drain-direction">Local Drain Direction</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#land-use-and-land-cover">Land Use and Land Cover</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Land Use and Land Cover</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#model-info">Model Info</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#model-upscaled-parameters">Model Upscaled Parameters</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#path-vs-area-histogram">Path vs Area Histogram</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#observed-streamflow">Observed Streamflow</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#slope">Slope</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#soils-map">Soils Map</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#soils-info">Soils Info</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#topographic-saturation-index">Topographic Saturation Index</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#topographic-wetness-index">Topographic Wetness Index</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#upslope-area">Upslope Area</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#intermediate-files">Intermediate Files</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#intermediate-files-summary">Intermediate files summary</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#intermediate-files-catalog">Intermediate files catalog</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#output-files-summary">Output files summary</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#output-files-catalog">Output files catalog</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#input-files">Input Files</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#intermediate-files">Intermediate Files</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#output-files">Output Files</a></li>
 </ul>
   </nav></div>
 
@@ -1392,7 +509,7 @@ ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
 
   <p class="copyright">
     
-      © Copyright 2023, Iporã Possantti.
+      © Copyright 2025, Iporã Possantti.
       <br/>
     
   </p>

@@ -1,6 +1,4 @@
-.. a cool badge for the source.
-
-.. include:: ./badge_source.rst
+.. include:: ./includes/badge_source.rst
 
 .. _theory:
 
@@ -12,4 +10,11 @@ Theoretical Reference
    This section is under development. Updates soon.
 
 
-.. include:: ./ipsum.rst
+.. include:: ./includes/ipsum.rst
+
+.. math::
+   :label: eq-pythagoras
+
+   a^2 + b^2 = c^2
+
+.. include:: ./includes/ipsum.rst

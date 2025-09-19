@@ -1,6 +1,4 @@
-.. a cool badge for the source.
-
-.. include:: ./badge_source.rst
+.. include:: ./includes/badge_source.rst
 
 .. include:: ./_links.rst
 
@@ -16,9 +14,9 @@ Contents
    :maxdepth: 1
 
    About <self>
-   about_gallery
-   about_cases
-   about_theory
+   gallery
+   cases
+   theory
 
 
 .. include:: ./includes/short_description.rst
@@ -42,7 +40,7 @@ To run ``plans`` in a Area of Interest, users are required to provide a set of *
 .. admonition:: User Guide
    :class: seealso
 
-   Check out the :ref:`User Guide <usage>` for more details on how to use ``plans``
+   Check out the :ref:`User Guide <userguide>` for more details on how to use ``plans``
 
 .. admonition:: Gallery
    :class: seealso
