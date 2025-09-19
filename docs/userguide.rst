@@ -74,20 +74,20 @@ The workflow of ``plans`` is based on the concept of **project**. That means tha
 
 Typically, to run ``plans`` users may go through the following steps (with some iteration):
 
-Setting up a project
-=======================================================================
+**Setting up a project**
+
 1. **Gather input data**. Collect observed and scenario data for an **Area Of Interest** (``AOI``).
 2. **Pre-process input data**. Files must fits into ``plans`` standards.
 3. **Organize input data**. ``plans`` expects data of the ``AOI`` to be organized in a **Project** (a standard file system).
 
-Processing data
-=======================================================================
+**Processing data**
+
 5. Use ``plans`` for **data assessments**.
 6. Use ``plans`` for **parameter estimation**.
 7. Use ``plans`` for **scenario simulation**.
 
-Post-processing
-=======================================================================
+**Post-processing**
+
 8. Use extra tools for more visualization and analysis of output data.
 
 
@@ -100,7 +100,7 @@ Setup
 
 Projects
 ========================================================================
-A *project* in ``plans`` is a standard file system that is considered the root for all operations in a given *session*. Folders and files names or patterns are pre-defined so ``plans`` automatically finds their existence for processing.
+A **project** in ``plans`` is a standard file system that is considered the root for all operations in a given *processing session*. Folders and files names or patterns are pre-defined so ``plans`` automatically finds their existence for processing.
 
 Once data is gathered, users are required to populate the folders of a project with standard files. For instance, rain data tables of a scenario must live in the ``climate`` folder. Topographical maps must go in the ``topo`` folder, etc.
 

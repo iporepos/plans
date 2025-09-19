@@ -22,29 +22,31 @@ This is the project reference documentation of ``plans``.
 
    {project}/
         ├── data/
+        │     ├── info.csv
+        │     ├── parameters.csv
+        │     │
         │     ├── basins/
         │     │     ├── basin.tif
-        │     │     ├── ...
-        │     │     └── path_area_hist.csv
+        │     │     ├── q_obs.csv
+        │     │     └── ...
         │     ├── climate/
         │     │     ├── climate_observed.csv
-        │     │     ├── ...
-        │     │     └── climate_scenario-x.csv
+        │     │     └── ...
         │     ├── lulc/
         │     │     ├── observed/
-        │     │     │     ├── lulc_2020-01-01.tif
+        │     │     │     ├── lulc_info.csv
+        │     │     │     ├── lulc_{date}.tif
         │     │     │     └── ...
-        │     │     └── scenario-z/
-        │     │           └── ...
-        │     ├── soils/
-        │     │     ├── soils.tif
-        │     │     └── soils_info.csv
-        │     ├── topo/
-        │     │     ├── hand.tif
-        │     │     ├── twi.tif
-        │     │     ├── ldd.tif
         │     │     └── ...
-        │     ├── info.csv
-        │     └── parameters.csv
+        │     ├── soils/
+        │     │     ├── soils_info.csv
+        │     │     └── soils.tif
+        │     └── topo/
+        │           ├── hand.tif
+        │           ├── twi.tif
+        │           ├── ldd.tif
+        │           └── ...
+        │
         └── outputs/
+              └── ...
 
