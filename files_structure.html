@@ -306,6 +306,10 @@
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="files_asc.html">ASCII format</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="files_catalog.html">Files Catalog</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="files_catalog.html">Self</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="projects.html">Projects</a></li>
@@ -374,7 +378,6 @@
                   
   <a class="reference external image-reference" href="https://github.com/iporepos/plans"><img alt="GitHub repository" src="https://img.shields.io/badge/GitHub-Source-black?logo=github" />
 </a>
-<hr class="docutils" />
 <section id="data-structures">
 <span id="files-data-structures"></span><h1>Data Structures<a class="headerlink" href="#data-structures" title="Link to this heading">#</a></h1>
 <p>Files used in <code class="docutils literal notranslate"><span class="pre">plans</span></code> are related to the following two primitive data structures:</p>
@@ -564,12 +567,12 @@ georreferenced in a given Coordinate Reference System (<code class="docutils lit
 <div class="important admonition">
 <p class="admonition-title">Grid shape must be the same</p>
 <blockquote>
-<div><p>Rule for multiple files implies that all Raster files in a given project must share the same grid shape (number or rows and columns).</p>
+<div><p>Rule for multiple files implies that all <code class="docutils literal notranslate"><span class="pre">Raster</span></code> files in a given project must share the same grid shape (number or rows and columns).</p>
 </div></blockquote>
 </div>
 <section id="geotiff-format">
 <span id="io-tif-file"></span><h4>GeoTIFF format<a class="headerlink" href="#geotiff-format" title="Link to this heading">#</a></h4>
-<p>The <a class="reference external" href="https://en.wikipedia.org/wiki/GeoTIFF">GeoTIFF</a> format is the standard Raster file in <code class="docutils literal notranslate"><span class="pre">plans</span></code>.
+<p>The <a class="reference external" href="https://en.wikipedia.org/wiki/GeoTIFF">GeoTIFF</a> format is the standard <code class="docutils literal notranslate"><span class="pre">Raster</span></code> file in <code class="docutils literal notranslate"><span class="pre">plans</span></code>.
 This is a well-known raster file distributed by most of dataset providers.</p>
 <p>The advantages of <code class="docutils literal notranslate"><span class="pre">GeoTIFF</span></code> is that it stores data and metadata together in the same file.
 <code class="docutils literal notranslate"><span class="pre">plans</span></code> parse <code class="docutils literal notranslate"><span class="pre">GeoTIFF</span></code> files using the <a class="reference external" href="https://rasterio.readthedocs.io/en/stable/index.html">Rasterio</a> libray.</p>
@@ -584,8 +587,7 @@ This is a well-known raster file distributed by most of dataset providers.</p>
 </section>
 <section id="time-raster">
 <span id="io-timeraster"></span><h4>Time Raster<a class="headerlink" href="#time-raster" title="Link to this heading">#</a></h4>
-<p>A <code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">Raster</span></code> in <code class="docutils literal notranslate"><span class="pre">plans</span></code> is a special kind of <a class="reference internal" href="#io-raster"><span class="std std-ref">Raster</span></a> file
-in which the data refers to a <strong>snapshot of the time line</strong>.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">Raster</span></code> in <code class="docutils literal notranslate"><span class="pre">plans</span></code> is a special kind of <a class="reference internal" href="#io-raster"><span class="std std-ref">Raster</span></a> file in which the data refers to a <strong>snapshot of the time line</strong>.</p>
 <p>Single Time Raster files must follow this general rules:</p>
 <ol class="arabic simple">
 <li><p>[mandatory] <a class="reference internal" href="#io-tif-file"><span class="std std-ref">GeoTIFF file</span></a>;</p></li>
@@ -612,17 +614,15 @@ They all can use the same <code class="docutils literal notranslate"><span class
 </section>
 <section id="quali-raster">
 <span id="io-qualiraster"></span><h4>Quali Raster<a class="headerlink" href="#quali-raster" title="Link to this heading">#</a></h4>
-<p>A Quali Raster in <code class="docutils literal notranslate"><span class="pre">plans</span></code> is a special kind of <a class="reference internal" href="#io-raster"><span class="std std-ref">Raster</span></a> file
-in which an auxiliary <a class="reference internal" href="#io-attribute"><span class="std std-ref">Attribute Table</span></a> must be provided too.</p>
-<p>Single Quali Raster files must follow this general rules:</p>
+<p>A Quali Raster in <code class="docutils literal notranslate"><span class="pre">plans</span></code> is a special kind of <a class="reference internal" href="#io-raster"><span class="std std-ref">Raster</span></a> file in which data is qualitative (classes or ids), and an auxiliary <a class="reference internal" href="#io-attribute"><span class="std std-ref">Attribute Table</span></a> must be provided.</p>
+<p>Single <code class="docutils literal notranslate"><span class="pre">Quali</span> <span class="pre">Raster</span></code> files must follow this general rules:</p>
 <ol class="arabic simple">
 <li><p>[mandatory] <a class="reference internal" href="#io-tif-file"><span class="std std-ref">GeoTIFF file</span></a>;</p></li>
 <li><p>[mandatory] <a class="reference internal" href="#io-attribute"><span class="std std-ref">Attribute Table</span></a> with the same name or prefix of <code class="docutils literal notranslate"><span class="pre">GeoTIFF</span></code>;</p></li>
 <li><p>[recommended] projected <code class="docutils literal notranslate"><span class="pre">CRS</span></code> so all cells are measured in meters;</p></li>
 </ol>
 <p>Same rules applies for multiple files.</p>
-<p>For instance, a <code class="docutils literal notranslate"><span class="pre">TimeRaster</span></code> for Land Use Land Cover only stores the <code class="docutils literal notranslate"><span class="pre">id</span></code>
-code for each land use class. More information and parameters must be stored in the auxiliar <code class="docutils literal notranslate"><span class="pre">Attribute</span> <span class="pre">Table</span></code>.</p>
+<p>For instance, a <code class="docutils literal notranslate"><span class="pre">Quali</span> <span class="pre">Raster</span></code> for Land Use Land Cover only stores the <code class="docutils literal notranslate"><span class="pre">id</span></code> code for each land use class. More information and parameters must be stored in the auxiliar <code class="docutils literal notranslate"><span class="pre">Attribute</span> <span class="pre">Table</span></code>.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">{</span>folder<span class="o">}</span>/
 <span class="w">   </span>├──<span class="w"> </span>lulc_2020.tif<span class="w">       </span><span class="c1"># Raster - Land Use in 2020</span>
 <span class="w">   </span>└──<span class="w"> </span>lulc.csv<span class="w">            </span><span class="c1"># Attribute Table</span>
@@ -643,6 +643,10 @@ They all can use the same <code class="docutils literal notranslate"><span class
 </div>
 </div></blockquote>
 </div>
+</section>
+<section id="time-quali-raster">
+<span id="io-timequaliraster"></span><h4>Time Quali Raster<a class="headerlink" href="#time-quali-raster" title="Link to this heading">#</a></h4>
+<p>A <code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">Quali</span> <span class="pre">Raster</span></code> in <code class="docutils literal notranslate"><span class="pre">plans</span></code> is a special kind of <a class="reference internal" href="#io-raster"><span class="std std-ref">Raster</span></a> file that arises when the map is both a <a class="reference internal" href="#io-timeraster"><span class="std std-ref">Time Raster</span></a> and a <a class="reference internal" href="#io-qualiraster"><span class="std std-ref">Quali Raster</span></a>. Land Use maps are the classical example, as shown above.</p>
 </section>
 </section>
 </section>
@@ -706,6 +710,7 @@ They all can use the same <code class="docutils literal notranslate"><span class
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#geotiff-format">GeoTIFF format</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#time-raster">Time Raster</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#quali-raster">Quali Raster</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#time-quali-raster">Time Quali Raster</a></li>
 </ul>
 </li>
 </ul>

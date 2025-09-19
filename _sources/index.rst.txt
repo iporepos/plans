@@ -4,8 +4,6 @@
 
 .. include:: ./figs/logo.rst
 
-----
-
 .. _home:
 
 Plans
