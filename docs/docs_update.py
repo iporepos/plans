@@ -118,7 +118,7 @@ DC_FILES_STRUCTURES = {
 
 # FUNCTIONS -- Project-level
 # =======================================================================
-def build_docs():
+def build_docs(open_docs=False):
     """
     Build Sphinx documentation and open the index.html file.
 
@@ -130,13 +130,21 @@ def build_docs():
 
     # Run sphinx-build
     subprocess.run(
-        ["sphinx-build", "-b", "html", str(DOCS_DIR), str(BUILD_DIR), "--write-all"],
+        [
+            "sphinx-build",
+            "-b",
+            "html",
+            "-v",
+            str(DOCS_DIR),
+            str(BUILD_DIR),
+            "--write-all",
+        ],
         check=True,
     )
-
-    # Open the generated index.html in the default web browser
-    webbrowser.open(INDEX_FILE.resolve().as_uri())
-    # print(f"Documentation built successfully! Opened {INDEX_FILE}")
+    if open_docs:
+        # Open the generated index.html in the default web browser
+        webbrowser.open(INDEX_FILE.resolve().as_uri())
+        # print(f"Documentation built successfully! Opened {INDEX_FILE}")
     return None
 
 
@@ -223,18 +231,19 @@ def make_fig(spec):
 
 def parse_ipsum():
     text = IPSUM_FILE.read_text(encoding="utf-8")
-    print(type(text))
+    # print(type(text))
     return text
 
 
 def parse_files_df():
     df = pd.read_csv(SRC_DATA_FILES, sep=";")
     df = df.dropna(subset="name")
+    df = df.sort_values(by="name")
     return df
 
 
-def make_file_entry(spec):
-    print(spec["name"])
+def make_file_entry(spec, verbose=False):
+
     # get abstract from file
     spec["abstract"] = parse_abstract(name=spec["name"])
 
@@ -250,8 +259,10 @@ def make_file_entry(spec):
     # structure link
     spec["structure link"] = ":ref:`{}<{}>`".format(structure.title(), tag)
 
-    pprint.pprint(spec)
-    print("\n")
+    if verbose:
+        print(spec["name"])
+        pprint.pprint(spec)
+        print("\n")
 
     spec["folder"] = "``{project}" + "/data/{}``".format(spec["folder"])
     spec["dtype"] = "``{}``".format(spec["dtype"])

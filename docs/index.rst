@@ -1,13 +1,13 @@
 .. include:: ./_links.rst
 
-.. include:: ./badge_source.rst
-
 .. include:: ./figs/logo.rst
 
 .. _home:
 
 Plans
 ############################################
+
+.. include:: ./includes/badge_source.rst
 
 Welcome to ``plans`` documentation page!
 
@@ -19,9 +19,10 @@ Contents
 
    Home <self>
    about
-   usage
+   userguide
    api
    development
+
 
 .. include:: ./includes/short_description.rst
 

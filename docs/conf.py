@@ -47,7 +47,7 @@ sys.path.insert(0, os.path.abspath("../src"))  # src layout
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "plans"
-copyright = "2023, Iporã Possantti"
+copyright = "2025, Iporã Possantti"
 author = "Iporã Possantti"
 release = "1.0.0"
 
@@ -65,6 +65,8 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
     # extra extensions
+    # -- LaTeX equations
+    "sphinx.ext.mathjax",
     # -- nice copy button for codeblocks
     "sphinx_copybutton",  # install by `python -m pip install sphinx-copybutton`
     # -- converter for markdown files in docs
@@ -148,5 +150,6 @@ External (requires installation):
 >> html_theme = "pydata_sphinx_theme" 
 
 """
-html_theme = "pydata_sphinx_theme"  # <-- [CHECK THIS] it might be not installed. use built-in 'classic' in case
+html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
+html_context = {"default_mode": "light"}

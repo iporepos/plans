@@ -1,6 +1,4 @@
-.. a cool badge for the source.
-
-.. include:: ./badge_source.rst
+.. include:: ./includes/badge_source.rst
 
 .. include:: ./_links.rst
 
@@ -23,32 +21,6 @@ Input files must be formatted in by **standard** way, otherwise the tool is not 
    :class: tip
 
    Open-source applications like `LibreOffice`_ and QGIS_ are very convenient to fit data into ``plans`` standards.
-
-.. _io-data-type:
-
-Contents
-***********************************************************************
-
-.. toctree::
-   :maxdepth: 1
-
-   Data Structures <self>
-   files_asc
-
-Data types
-============================================
-
-Data type is the encoding of data. While referring to input data, and for the sake of simplicity, ``plans`` follow this primitive classification:
-
-- ``str`` text string: common text characters;
-- ``int`` integer numbers: 2, 0, 1000;
-- ``float`` real numbers: 1.2, -3.44.
-
-.. admonition:: Detailed data types
-   :class: seealso
-
-   The data types listed above are very primitive. For instance, ``int`` can be ``int8`` or ``int64``, which yield a big difference in memory usage. See more on data types on [TODO].
-
 
 .. _io-table:
 
@@ -173,16 +145,23 @@ The other fields than ``datetime`` generally are real number fields that stores 
 Attribute Table
 --------------------------------------------
 
-An :ref:`Attribute Table<io-attribute>` is a special kind of :ref:`Table<io-table>` file that must have at least the following fields:
+An :ref:`Attribute Table<io-attribute>` is a special kind of :ref:`Table<io-table>` that stores extar information about maps.
 
-- ``id``: ``int`` Unique numeric code;
-- ``name``: ``str`` Unique name;
-- ``alias``: ``str`` Unique short nickname;
-- ``color``: ``str`` Color HEX code or name available in `Matplotlib`_;
+**Basic required fields**
+
+.. csv-table::
+   :header: "Name", "Description", "Data Type", "Units"
+   :widths: 10, 40, 15, 15
+
+   ``id``, "Unique numeric code", ``int``, index
+   ``name``, "Unique name", ``str``, n.a.
+   ``alias``, "Unique short nickname or label", ``str``, n.a.
+   ``color``, "Color HEX code or name available in `Matplotlib`_", ``str``, n.a.
+
 
 **Extra required fields** may be also needed, depending on each input data.
 
-Example of an Attribute Table:
+Example of an ``Attribute Table``:
 
 .. code-block:: text
 
@@ -197,25 +176,22 @@ Example of an Attribute Table:
 .. admonition:: ``plans`` is case-sensitive
    :class: warning
 
-    Upper case and lower case matters. ``Name`` is different than ``name``.
+   Upper case and lower case matters. ``Name`` is different than ``name``.
 
 
 .. admonition:: Add non-required fields
    :class: tip
 
-    Any other fields (columns) other than the required will be ignored so
-    you can add convenient and useful extra non-required fields.
-    For instance, here a ``description`` text field was added
-    for holding more information about each land use class:
+   Any other fields (columns) other than the required will be ignored so  you can add convenient and useful extra non-required fields. For instance, here a ``description`` text field was added for holding more information about each land use class:
 
-    .. code-block:: text
+   .. code-block:: text
 
-       id;     name; alias;    color;   ndvi_mean                          description
-        1;    Water;     W;     blue;       -0.9;              Lakes, rivers and ocean
-        2;   Forest;     F;    green;       0.87;     Forests (natural and cultivated)
-        3;    Crops;     C;  magenta;       0.42;            Conventional annual crops
-        4;  Pasture;     P;   orange;       0.76;  Conventional pasture and grasslands
-        5;    Urban;     U;   9AA7A3;       0.24;                      Developed areas
+      id;     name; alias;    color;   ndvi_mean                          description
+       1;    Water;     W;     blue;       -0.9;              Lakes, rivers and ocean
+       2;   Forest;     F;    green;       0.87;     Forests (natural and cultivated)
+       3;    Crops;     C;  magenta;       0.42;            Conventional annual crops
+       4;  Pasture;     P;   orange;       0.76;  Conventional pasture and grasslands
+       5;    Urban;     U;   9AA7A3;       0.24;                      Developed areas
 
 
 .. _io-raster:
@@ -240,7 +216,7 @@ Multiple Raster files must follow this general rules:
 .. admonition:: Grid shape must be the same
    :class: important
 
-    Rule for multiple files implies that all ``Raster`` files in a given project must share the same grid shape (number or rows and columns).
+   The rule for multiple files implies that all ``Raster`` files in a given project must share the same grid shape (number or rows and columns).
 
 
 .. _io-tif-file:
@@ -259,10 +235,6 @@ The advantages of ``GeoTIFF`` is that it stores data and metadata together in th
 
    More details about the `GeoTIFF file`_ is given in GDAL documentation.
 
-.. admonition:: Using ``ASCII`` format instead of ``GeoTIFF``
-   :class: seealso
-
-   If needed, users may use the :ref:`ASCII format<files-asc>` for Raster representation.
 
 .. _io-timeraster:
 
@@ -286,16 +258,8 @@ For instance, Land Use Land Cover is a spatial data that may require many Time R
    {folder}/
       ├── lulc_2020.tif       # Raster - Land Use in 2020
       ├── lulc_2021.tif       # Raster - Land Use in 2021
-      ├── lulc_2022.tif       # Raster - Land Use in 2022
-      └── lulc.csv            # Attribute Table
+      └── lulc_2022.tif       # Raster - Land Use in 2022
 
-
-.. admonition:: One ``Attribute Table`` can feed many maps
-   :class: note
-
-    The same ``Attribute Table`` file can supply the information required of many Raster maps.
-    For instance, consider a set of 3 Land Use Land Cover maps, for different years.
-    They all can use the same ``Attribute Table`` file:
 
 
 .. _io-qualiraster:
@@ -307,8 +271,8 @@ A Quali Raster in ``plans`` is a special kind of :ref:`Raster<io-raster>` file i
 
 Single ``Quali Raster`` files must follow this general rules:
 
-#. [mandatory] :ref:`GeoTIFF file<io-tif-file>`;
-#. [mandatory] :ref:`Attribute Table<io-attribute>` with the same name or prefix of ``GeoTIFF``;
+#. [mandatory] a :ref:`GeoTIFF file<io-tif-file>` for map data;
+#. [mandatory] an :ref:`Attribute Table<io-attribute>`;
 #. [recommended] projected ``CRS`` so all cells are measured in meters;
 
 Same rules applies for multiple files.
@@ -319,22 +283,22 @@ For instance, a ``Quali Raster`` for Land Use Land Cover only stores the ``id`` 
 
    {folder}/
       ├── lulc_2020.tif       # Raster - Land Use in 2020
-      └── lulc.csv            # Attribute Table
+      └── lulc_info.csv       # <-- Attribute Table
 
 .. admonition:: One ``Attribute Table`` can feed many maps
    :class: note
 
-    The same ``Attribute Table`` file can supply the information required of many Raster maps.
-    For instance, consider a set of 3 Land Use Land Cover maps, for different years.
-    They all can use the same ``Attribute Table`` file:
+   The same ``Attribute Table`` file can supply the information required of many ``Raster`` maps.
+   For instance, consider a set of 3 Land Use Land Cover maps, for different years.
+   They all can use the same ``Attribute Table`` file:
 
-    .. code-block:: bash
+   .. code-block:: bash
 
-       {folder}/
-           ├── lulc_2020.tif       # Raster - Land Use in 2020
-           ├── lulc_2021.tif       # Raster - Land Use in 2021
-           ├── lulc_2022.tif       # Raster - Land Use in 2022
-           └── lulc.csv            # Attribute Table
+      {folder}/
+          ├── lulc_2020.tif
+          ├── lulc_2021.tif
+          ├── lulc_2022.tif
+          └── lulc_info.csv       # <-- Attribute Table
 
 
 .. _io-timequaliraster:
@@ -343,3 +307,41 @@ Time Quali Raster
 --------------------------------------------
 
 A ``Time Quali Raster`` in ``plans`` is a special kind of :ref:`Raster<io-raster>` file that arises when the map is both a :ref:`Time Raster<io-timeraster>` and a :ref:`Quali Raster<io-qualiraster>`. Land Use maps are the classical example, as shown above.
+
+
+.. _io-data-type:
+
+Data Types
+============================================
+
+Data Type is the encoding of data at the hardware level. For beginners, one may understand data types by this primitive classification:
+
+- ``str`` text string: common text characters;
+- ``int`` integer numbers: 2, 0, 1000;
+- ``float`` real numbers: 1.2, -3.44.
+
+.. admonition:: Detailed data types
+   :class: important
+
+   The data types listed above are very primitive. For instance, ``int`` can be ``int8`` or ``int64``, which yield a big difference in memory usage. :ref:`See below<io-data-type-reference>` for a comprehensive reference.
+
+
+.. _io-data-type-nodata:
+
+NoData value convention
+--------------------------------------------
+
+A ``NoData`` value is a convention of what values in data means that there are actually *no data* (a data void). For tables, this is usually set as empty cells or some text like "N.A." (not-apply, etc). For raster maps, the ``GeoTIFF`` format has a built-in metadata that stores a ``NoData`` value.
+
+.. admonition:: Enforcement of ``NoData``
+   :class: warning
+
+   Users are *not* required to set ``NoData`` values, but the incoming values may be overwritten to ``plans`` standard convention.
+
+
+.. _io-data-type-reference:
+
+Data Types Reference
+--------------------------------------------
+
+.. include:: ./includes/ipsum.rst
