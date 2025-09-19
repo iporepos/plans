@@ -4,8 +4,6 @@
 
 .. include:: ./_links.rst
 
-----
-
 .. _files-data-structures:
 
 Data Structures
@@ -242,7 +240,7 @@ Multiple Raster files must follow this general rules:
 .. admonition:: Grid shape must be the same
    :class: important
 
-    Rule for multiple files implies that all Raster files in a given project must share the same grid shape (number or rows and columns).
+    Rule for multiple files implies that all ``Raster`` files in a given project must share the same grid shape (number or rows and columns).
 
 
 .. _io-tif-file:
@@ -250,7 +248,7 @@ Multiple Raster files must follow this general rules:
 GeoTIFF format
 --------------------------------------------
 
-The `GeoTIFF`_ format is the standard Raster file in ``plans``.
+The `GeoTIFF`_ format is the standard ``Raster`` file in ``plans``.
 This is a well-known raster file distributed by most of dataset providers.
 
 The advantages of ``GeoTIFF`` is that it stores data and metadata together in the same file.
@@ -271,8 +269,7 @@ The advantages of ``GeoTIFF`` is that it stores data and metadata together in th
 Time Raster
 --------------------------------------------
 
-A ``Time Raster`` in ``plans`` is a special kind of :ref:`Raster<io-raster>` file
-in which the data refers to a **snapshot of the time line**.
+A ``Time Raster`` in ``plans`` is a special kind of :ref:`Raster<io-raster>` file in which the data refers to a **snapshot of the time line**.
 
 Single Time Raster files must follow this general rules:
 
@@ -306,10 +303,9 @@ For instance, Land Use Land Cover is a spatial data that may require many Time R
 Quali Raster
 --------------------------------------------
 
-A Quali Raster in ``plans`` is a special kind of :ref:`Raster<io-raster>` file
-in which an auxiliary :ref:`Attribute Table<io-attribute>` must be provided too.
+A Quali Raster in ``plans`` is a special kind of :ref:`Raster<io-raster>` file in which data is qualitative (classes or ids), and an auxiliary :ref:`Attribute Table<io-attribute>` must be provided.
 
-Single Quali Raster files must follow this general rules:
+Single ``Quali Raster`` files must follow this general rules:
 
 #. [mandatory] :ref:`GeoTIFF file<io-tif-file>`;
 #. [mandatory] :ref:`Attribute Table<io-attribute>` with the same name or prefix of ``GeoTIFF``;
@@ -317,8 +313,7 @@ Single Quali Raster files must follow this general rules:
 
 Same rules applies for multiple files.
 
-For instance, a ``TimeRaster`` for Land Use Land Cover only stores the ``id``
-code for each land use class. More information and parameters must be stored in the auxiliar ``Attribute Table``.
+For instance, a ``Quali Raster`` for Land Use Land Cover only stores the ``id`` code for each land use class. More information and parameters must be stored in the auxiliar ``Attribute Table``.
 
 .. code-block:: bash
 
@@ -341,3 +336,10 @@ code for each land use class. More information and parameters must be stored in 
            ├── lulc_2022.tif       # Raster - Land Use in 2022
            └── lulc.csv            # Attribute Table
 
+
+.. _io-timequaliraster:
+
+Time Quali Raster
+--------------------------------------------
+
+A ``Time Quali Raster`` in ``plans`` is a special kind of :ref:`Raster<io-raster>` file that arises when the map is both a :ref:`Time Raster<io-timeraster>` and a :ref:`Quali Raster<io-qualiraster>`. Land Use maps are the classical example, as shown above.

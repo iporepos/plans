@@ -2,8 +2,6 @@
 
 .. include:: ./badge_source.rst
 
-----
-
 .. _gallery:
 
 Gallery

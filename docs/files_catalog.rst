@@ -4,17 +4,15 @@
 
 .. include:: ./_links.rst
 
-----
-
 .. _{files-catalog}:
 
-Main Title
+Files Catalog
 #######################################################################
 
 Overview
 ***********************************************************************
 
-.. include:: ./ipsum.rst
+.. include:: ./includes/ipsum.rst
 
 Contents
 ***********************************************************************
@@ -30,11 +28,4 @@ Input Files
 
 Hello World!
 
-.. include:: ./ipsum.rst
-
-Input Files
-***********************************************************************
-
-Hello World!
-
-.. include:: ./ipsum.rst
+.. include:: ./includes/ipsum.rst

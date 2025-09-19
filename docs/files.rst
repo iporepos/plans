@@ -38,6 +38,7 @@ Contents
    Files <self>
    files_structure
    files_asc
+   files_catalog
 
 
 .. _io-input-files:
@@ -56,55 +57,11 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 Nulla mollis tincidunt erat eget iaculis. Mauris gravida
 ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl.
 
-+-------------+------------------------+-------------------------------------------------------+
-| File        | Structure              | Description                                           |
-+=============+========================+=======================================================+
-| litho       | Qualitative Raster map | Map of lithological classes                           |
-+-------------+------------------------+-------------------------------------------------------+
-| soils       | Qualitative Raster map | Map of soil types                                     |
-+-------------+------------------------+-------------------------------------------------------+
-| dem         | Raster map             | Map of elevation (digital elevation model)            |
-+-------------+------------------------+-------------------------------------------------------+
-| acc         | Raster map             | Map of accumulated drainage area                      |
-+-------------+------------------------+-------------------------------------------------------+
-| slope       | Raster map             | Map of slope                                          |
-+-------------+------------------------+-------------------------------------------------------+
-| ldd         | Raster map             | Map of local drain direction (PC raster convention)   |
-+-------------+------------------------+-------------------------------------------------------+
-| twi         | Raster map             | Map of Topographical Wetness Index                    |
-+-------------+------------------------+-------------------------------------------------------+
-| hand        | Raster map             | Map of Height Above the Nearest Drainage              |
-+-------------+------------------------+-------------------------------------------------------+
-| basins      | Qualitative Raster map | Map of modelled basins                                |
-+-------------+------------------------+-------------------------------------------------------+
-| outlets     | Qualitative Raster map | Map of basin outlets                                  |
-+-------------+------------------------+-------------------------------------------------------+
-| stage_*     | Time series            | Time series of river stage                            |
-+-------------+------------------------+-------------------------------------------------------+
-| basins_info | Attribute table        | Relational table for basins                           |
-+-------------+------------------------+-------------------------------------------------------+
-| rain_zones  | Qualitative Raster map | Map of rain gauge zones                               |
-+-------------+------------------------+-------------------------------------------------------+
-| rain_*      | Time series            | Time series of rainfall                               |
-+-------------+------------------------+-------------------------------------------------------+
-| rain_info   | Attribute table        | Relational table for rain gauges                      |
-+-------------+------------------------+-------------------------------------------------------+
-| lulc_*      | Qualitative Raster map | Map of Land Use and Land Cover classes                |
-+-------------+------------------------+-------------------------------------------------------+
-| clim_*      | Time series            | Time series of climatic variables                     |
-+-------------+------------------------+-------------------------------------------------------+
-| clim_info   | Attribute table        | Relational table for climatic stations                |
-+-------------+------------------------+-------------------------------------------------------+
-| et_*        | Raster map             | Map of evapotranspiration estimated by remote-sensing |
-+-------------+------------------------+-------------------------------------------------------+
-| ndvi_*      | Raster map             | Map of the NDVI vegetation index                      |
-+-------------+------------------------+-------------------------------------------------------+
-
 
 Input files catalog
 ============================================
 
-.. include:: input_catalog.rst
+.. include:: ./includes/files_list.rst
 
 
 .. _io-interm-files:

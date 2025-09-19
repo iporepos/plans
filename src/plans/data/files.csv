@@ -1,21 +1,22 @@
-status_user;status_run;structure;name;title;folder;dtype;units
-input;;raster;dem;Elevation (digital elevation model);topography;float32;meters
-input;;raster;hand;Height Above Nearest Drainage;topography;float32;meters
-input;;raster;twi;Topographic Wetness Index;topography;float32;index
-intermediate;required;raster;tsi;Topographic Saturation Index;topography;uint8;index
-input;;raster;ldd;Local Drain Direction;topography;uint8;id
-input;required;raster;landuse_{datetime};Land Use and Land Cover;landuse/{scenario};uint8;id
-input;required;raster;soils;Soils;soils;uint8;id
-input;required;raster;litho;Lithology;soils;uint8;id
-input;required;raster;slope;Slope;topography;float32;degrees
-input;;raster;hillshade;Hill Shade;topography;uint8;unitless
-input;;raster;acc;Accumulated Flux;topography;float32;km^2
-input;required;attribute table;litho;Lithology;soils;;
-input;required;attribute table;soils;Soils;soils;;
-input;required;attribute table;landuse;Land Use and Land Cover;landuse/{scenario};;
-input;required;time series;climate;Climate Forcing;climate/{scenario};;
-intermediate;required;raster;dto;Distance To Outlet;topography;float32;meters
-input;;time series;q_obs;Observed Streamflow;basins;;
-input;required;raster;basin_{id};Basin Area;basins;uint8;unitless
-intermediate;required;table;path_area_hist;Path vs Area Histogram;basins;;
-;;;;;;;
+workflow;structure;name;title;folder;dtype;units
+input optional;raster;dem;Digital Elevation Model;topo;float32;meters
+input required;raster;hand;Height Above Nearest Drainage;topo;float32;meters
+input required;raster;twi;Topographic Wetness Index;topo;float32;index
+intermediate;raster;tsi;Topographic Saturation Index;topo;uint8;index
+input required;raster;ldd;Local Drain Direction;topo;uint8;id
+input required;time quali raster;lulc_{date};Land Use and Land Cover;lulc/{scenario};uint8;id
+input required;raster;soils;Soils Map;soils;uint8;id
+input optional;quali raster;slope;Slope;topo;float32;degrees
+input optional;raster;hillshade;Hill Shade;topo;uint8;unitless
+input optional;raster;flowacc;Flow Accumulation;topo;float32;m^2
+input required;attribute table;soils_info;Soils Info;soils;;
+input required;attribute table;lulc_info;Land Use and Land Cover;lulc/{scenario};;
+input required;time series;climate_{scenario};Climate Forcing;climate;;
+intermediate;raster;dto;Distance To Outlet;topo;float32;meters
+input optional;time series;q_obs;Observed Streamflow;basins;;
+input required;raster;basin;Main Basin Area;basins;uint8;unitless
+intermediate;table;path_area_hist;Path vs Area Histogram;basins;;
+input optional;raster;uparea;Upslope Area;topo;float32;m^2
+input required;table;parameters_{code};Model Upscaled Parameters;data;;
+input required;table;model_info;Model Info;data;;
+input optional;raster;basin_{code};Sub-Basin Area;basins;uint8;unitless

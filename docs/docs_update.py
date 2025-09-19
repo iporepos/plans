@@ -35,6 +35,7 @@ Build docs and open index.html:
 
 
 """
+import pprint
 import shutil
 
 # IMPORTS
@@ -42,11 +43,13 @@ import shutil
 
 # Native imports
 # =======================================================================
+import glob
+import os
+import re
 import subprocess
 import webbrowser
 from pathlib import Path
-import glob
-import os
+
 
 # External imports
 # =======================================================================
@@ -63,6 +66,8 @@ import pandas as pd
 # CONSTANTS -- Project-level
 # =======================================================================
 
+# Docs
+# -----------------------------------------------------------------------
 # Folders
 DOCS_DIR = Path("docs")
 FIGS_DIR = DOCS_DIR / "figs"
@@ -70,11 +75,41 @@ DOCS_DATA_DIR = DOCS_DIR / "data"
 BUILD_DIR = DOCS_DIR / "_build"
 GENERATED_DIR = DOCS_DIR / "generated"
 TEMPLATES_DIR = DOCS_DIR / "_templates"
+INCLUDES_DIR = DOCS_DIR / "includes"
+AUX_DIR = DOCS_DIR / "_aux"
 
 # Files
 INDEX_FILE = BUILD_DIR / "index.html"
 FIGS_DATA = DOCS_DATA_DIR / "figs.csv"
 FIGS_TEMPLATE = TEMPLATES_DIR / "fig.rst"
+IPSUM_FILE = INCLUDES_DIR / "ipsum.rst"
+LIST_FILE = INCLUDES_DIR / "files_list.rst"
+
+# Src
+# -----------------------------------------------------------------------
+# Folders
+SRC_DIR = Path("src/plans/")
+DATA_DIR = SRC_DIR / "data"
+# Files
+SRC_DATA_FILES = DATA_DIR / "files.csv"
+
+DC_FILES_STRUCTURES = {
+    "raster": {
+        "ext": "tif",
+        "template": TEMPLATES_DIR / "file_entry_raster.rst",
+        "raster": "io-raster",
+        "time raster": "io-timeseries",
+        "quali raster": "io-qualiraster",
+        "time quali raster": "io-timequaliraster",
+    },
+    "table": {
+        "ext": "csv",
+        "template": TEMPLATES_DIR / "file_entry_table.rst",
+        "table": "io-table",
+        "time series": "io-timeseries",
+        "attribute table": "io-attribute",
+    },
+}
 
 
 # FUNCTIONS
@@ -119,6 +154,24 @@ def build_figs():
     return None
 
 
+def build_catalog():
+    # clean up
+    delete_file_entries()
+
+    df = parse_files_df()
+    # Iterate over rows as dictionaries
+    for row_dc in df.to_dict(orient="records"):
+        make_file_entry(spec=row_dc)
+
+    # merge all entries
+    merge_file_entries()
+
+    # add created files to git vcs
+    subprocess.run(["git", "add", LIST_FILE])
+
+    return None
+
+
 # FUNCTIONS -- Module-level
 # =======================================================================
 def delete_generated():
@@ -130,6 +183,10 @@ def delete_generated():
             print(f"deleted {f}")
             os.remove(f)
     return None
+
+
+# Figs
+# -----------------------------------------------------------------------
 
 
 def parse_figs_df():
@@ -160,6 +217,105 @@ def make_fig(spec):
     return None
 
 
+# Files
+# -----------------------------------------------------------------------
+
+
+def parse_ipsum():
+    text = IPSUM_FILE.read_text(encoding="utf-8")
+    print(type(text))
+    return text
+
+
+def parse_files_df():
+    df = pd.read_csv(SRC_DATA_FILES, sep=";")
+    df = df.dropna(subset="name")
+    return df
+
+
+def make_file_entry(spec):
+    print(spec["name"])
+    # get abstract from file
+    spec["abstract"] = parse_abstract(name=spec["name"])
+
+    structure = spec["structure"]
+    if structure in list(DC_FILES_STRUCTURES["raster"].keys()):
+        structure_primitive = "raster"
+    else:
+        structure_primitive = "table"
+    # get extra info
+    spec["ext"] = DC_FILES_STRUCTURES[structure_primitive]["ext"]
+    file_template = DC_FILES_STRUCTURES[structure_primitive]["template"]
+    tag = DC_FILES_STRUCTURES[structure_primitive][structure]
+    # structure link
+    spec["structure link"] = ":ref:`{}<{}>`".format(structure.title(), tag)
+
+    pprint.pprint(spec)
+    print("\n")
+
+    spec["folder"] = "``{project}" + "/data/{}``".format(spec["folder"])
+    spec["dtype"] = "``{}``".format(spec["dtype"])
+    spec["preview"] = "{todo preview}"
+
+    # Read the template
+    text = file_template.read_text(encoding="utf-8")
+    # Replace placeholders with values from the dict
+    filled = text.format_map(spec)
+
+    # Save to a new file
+    file_entry = AUX_DIR / "{}.rst".format(spec["name"])
+    file_entry.write_text(filled, encoding="utf-8")
+
+    return None
+
+
+def merge_file_entries():
+    folder = AUX_DIR
+    rst_files = list(folder.glob("*.rst"))
+    output_file = LIST_FILE
+
+    # todo [develop] -- implement sorting
+
+    with open(output_file, "w", encoding="utf-8") as out:
+        for i, file in enumerate(rst_files):
+            text = file.read_text(encoding="utf-8").strip()
+            out.write(text)
+            # Add spacing between files
+            if i < len(rst_files) - 1:
+                out.write("\n\n\n")
+
+
+def parse_abstract(name):
+
+    rst_path = INCLUDES_DIR / "files_abstracts.rst"
+    text = Path(rst_path).read_text(encoding="utf-8")
+
+    # Match heading + underline/overline styles
+    pattern = rf"(?m)^(?P<title>{re.escape(name)})\n(?P<underline>[-=~`^\"'#*+]+)\n"
+    match = re.search(pattern, text)
+    if not match:
+        return parse_ipsum()
+
+    start = match.end()  # start of content after the heading
+    # Find the next heading (any title followed by underline of same length)
+    underline_len = len(match.group("underline"))
+    next_heading_pattern = rf"(?m)^\S.*\n[-=~`^\"'#*+]{{{underline_len},}}\n"
+    next_match = re.search(next_heading_pattern, text[start:])
+
+    if next_match:
+        end = start + next_match.start()
+    else:
+        end = len(text)
+
+    return text[start:end].strip()
+
+
+def delete_file_entries():
+    ls_files = os.listdir(AUX_DIR)
+    for f in ls_files:
+        os.remove(AUX_DIR / f)
+
+
 # CLASSES
 # ***********************************************************************
 # No classes needed for this module
@@ -172,6 +328,10 @@ if __name__ == "__main__":
     # Build figures from csv file
     # ===================================================================
     build_figs()
+
+    # Build catalog
+    # ===================================================================
+    build_catalog()
 
     # Build docs using sphinx
     # ===================================================================

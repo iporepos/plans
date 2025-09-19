@@ -4,8 +4,6 @@
 
 .. include:: ./_links.rst
 
-----
-
 .. _about:
 
 About
