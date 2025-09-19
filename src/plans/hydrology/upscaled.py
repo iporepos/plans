@@ -47,7 +47,9 @@ Print a message
 
 # External imports
 # =======================================================================
-# import {module}
+import numpy as np
+import pandas as pd
+
 # ... {develop}
 
 # Project-level imports

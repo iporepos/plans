@@ -1,22 +1,21 @@
-workflow;structure;name;title;folder;dtype;units
-input optional;raster;dem;Digital Elevation Model;topo;float32;meters
-input required;raster;hand;Height Above Nearest Drainage;topo;float32;meters
-input required;raster;twi;Topographic Wetness Index;topo;float32;index
-intermediate;raster;tsi;Topographic Saturation Index;topo;uint8;index
-input required;raster;ldd;Local Drain Direction;topo;uint8;id
-input required;time quali raster;lulc_{date};Land Use and Land Cover;lulc/{scenario};uint8;id
-input required;raster;soils;Soils Map;soils;uint8;id
-input optional;quali raster;slope;Slope;topo;float32;degrees
-input optional;raster;hillshade;Hill Shade;topo;uint8;unitless
-input optional;raster;flowacc;Flow Accumulation;topo;float32;m^2
-input required;attribute table;soils_info;Soils Info;soils;;
-input required;attribute table;lulc_info;Land Use and Land Cover;lulc/{scenario};;
-input required;time series;climate_{scenario};Climate Forcing;climate;;
-intermediate;raster;dto;Distance To Outlet;topo;float32;meters
-input optional;time series;q_obs;Observed Streamflow;basins;;
-input required;raster;basin;Main Basin Area;basins;uint8;unitless
-intermediate;table;path_area_hist;Path vs Area Histogram;basins;;
-input optional;raster;uparea;Upslope Area;topo;float32;m^2
-input required;table;parameters_{code};Model Upscaled Parameters;data;;
-input required;table;model_info;Model Info;data;;
-input optional;raster;basin_{code};Minor Basin Area;basins;uint8;unitless
+id;workflow;structure;name;title;folder;dtype;units
+;input - optional;raster;dem;Digital Elevation Model;{project}/data/topo;ufloat32;m
+;input - required;raster;hand;Height Above Nearest Drainage;{project}/data/topo;ufloat32;m
+;input - required;raster;twi;Topographic Wetness Index;{project}/data/topo;ufloat32;index
+;intermediate;raster;tsi;Topographic Saturation Index;{project}/data/topo;uint8;index
+;input - required;raster;ldd;Local Drain Direction;{project}/data/topo;uint8;id
+;input - required;raster;soils;Soils Map;{project}/data/soils;uint8;id
+;input - optional;quali raster;slope;Slope;{project}/data/topo;ufloat32;degrees
+;input - optional;raster;hillshade;Hill Shade;{project}/data/topo;uint8;unitless
+;input - optional;raster;flowacc;Flow Accumulation;{project}/data/topo;ufloat32;m^2
+;input - required;attribute table;soils_info;Soils Attributes;{project}/data/soils;;
+;input - required;attribute table;lulc_info;Land Use Attributes;{project}/data/lulc;;
+;input - optional;time series;climate;Climate Forcing;{project}/data/climate/{scenario};;
+;intermediate;raster;dto;Distance To Outlet;{project}/data/topo;ufloat32;m
+;input - optional;time series;q_obs;Observed Streamflow;{project}/data/basins/{basin};;
+;input - required;raster;basin;Basin Area;{project}/data/basins/{basin};uint8;unitless
+;intermediate;table;hist_dist_area;Histogram Distance vs Area;{project}/data/basins/{basin};;
+;input - optional;raster;uparea;Upslope Area;{project}/data/topo;ufloat32;m^2
+;input - required;table;parameters;Model Upscaled Parameters;{project}/data;;
+;input - required;table;project_info;Project Info Table;{project}/data;;
+;input - optional;time quali raster;lulc_{date};Land Use;{project}/data/lulc/{scenario};uint8;id

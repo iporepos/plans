@@ -92,6 +92,7 @@ SRC_DIR = Path("src/plans/")
 DATA_DIR = SRC_DIR / "data"
 # Files
 SRC_DATA_FILES = DATA_DIR / "files.csv"
+SRC_DATA_FIELDS = DATA_DIR / "fields.csv"
 
 DC_FILES_STRUCTURES = {
     "raster": {
@@ -165,6 +166,7 @@ def build_figs():
 def build_catalog():
     # clean up
     delete_file_entries()
+    delete_field_tables()
 
     df = parse_files_df()
     # Iterate over rows as dictionaries
@@ -176,6 +178,10 @@ def build_catalog():
 
     # add created files to git vcs
     subprocess.run(["git", "add", LIST_FILE])
+    subprocess.run(["git", "add", DOCS_DATA_DIR])
+
+    # clean up aux
+    delete_file_entries()
 
     return None
 
@@ -242,6 +248,33 @@ def parse_files_df():
     return df
 
 
+def parse_fields_df():
+    df = pd.read_csv(SRC_DATA_FIELDS, sep=";")
+    df = df.dropna(subset="name")
+    return df
+
+
+def filter_fields(df, file_name):
+    df = df.dropna(subset=file_name)
+    dc_cols = {
+        "name": "Name",
+        "units": "Units",
+        "dtype": "Data Type",
+        "description": "Description",
+    }
+    df = df[list(dc_cols.keys())]
+    df = df.rename(columns=dc_cols)
+    df["Data Type"] = "``" + df["Data Type"] + "``"
+    return df
+
+
+def get_fields_table(name):
+    df = parse_fields_df()
+    df = filter_fields(df, file_name=name)
+    df.to_csv(DOCS_DATA_DIR / f"fields_{name}.csv", sep=";", index=False)
+    return None
+
+
 def make_file_entry(spec, verbose=False):
 
     # get abstract from file
@@ -252,6 +285,9 @@ def make_file_entry(spec, verbose=False):
         structure_primitive = "raster"
     else:
         structure_primitive = "table"
+        # get fields
+        get_fields_table(name=spec["name"])
+
     # get extra info
     spec["ext"] = DC_FILES_STRUCTURES[structure_primitive]["ext"]
     file_template = DC_FILES_STRUCTURES[structure_primitive]["template"]
@@ -264,9 +300,9 @@ def make_file_entry(spec, verbose=False):
         pprint.pprint(spec)
         print("\n")
 
-    spec["folder"] = "``{project}" + "/data/{}``".format(spec["folder"])
+    spec["folder"] = "``{}``".format(spec["folder"])
     spec["dtype"] = "``{}``".format(spec["dtype"])
-    spec["preview"] = "{todo preview}"
+    spec["preview"] = "{>> todo preview}"
 
     # Read the template
     text = file_template.read_text(encoding="utf-8")
@@ -325,6 +361,12 @@ def delete_file_entries():
     ls_files = os.listdir(AUX_DIR)
     for f in ls_files:
         os.remove(AUX_DIR / f)
+
+
+def delete_field_tables():
+    ls_files = glob.glob(str(DOCS_DATA_DIR / "fields_*.csv"))
+    for f in ls_files:
+        os.remove(f)
 
 
 # CLASSES

@@ -6,8 +6,9 @@
 **Specifications**
 
 .. csv-table::
-   :widths: 30, 50
+   :widths: auto
 
+   Workflow, "{workflow}"
    File, "``{name}.{ext}``"
    Project Folder, "{folder}"
    Data Structure, "{structure link}"
@@ -15,12 +16,10 @@
 **Required Fields**
 
 .. csv-table::
-   :header: "Name", "Units", "Description"
-   :widths: 15, 10, 50
-
-   datetime, dt, "Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat."
-   ppt, mm/dt, "Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat."
-   tas, ºC, "Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat."
+   :file: ../data/fields_{name}.csv
+   :header-rows: 1
+   :widths: auto
+   :delim: ;
 
 
 **Preview**

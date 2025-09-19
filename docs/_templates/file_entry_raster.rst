@@ -6,8 +6,9 @@
 **Specifications**
 
 .. csv-table::
-   :widths: 30, 50
+   :widths: auto
 
+   Workflow, "{workflow}"
    File, "``{name}.{ext}``"
    Project Folder, "{folder}"
    Data Structure, "{structure link}"
