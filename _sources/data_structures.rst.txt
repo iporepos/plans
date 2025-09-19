@@ -328,15 +328,15 @@ Data Type is the encoding of data at the hardware level. For beginners, one may 
 
 .. _io-data-type-nodata:
 
-NoData value convention
+No-data value convention
 --------------------------------------------
 
-A ``NoData`` value is a convention of what values in data means that there are actually *no data* (a data void). For tables, this is usually set as empty cells or some text like "N.A." (not-apply, etc). For raster maps, the ``GeoTIFF`` format has a built-in metadata that stores a ``NoData`` value.
+A ``nodata`` value is a convention of what values in data means that there are actually *no data* (a data void). For tables, this is usually set as empty cells or some text like "N.A." (not-apply, etc). For raster maps, the ``GeoTIFF`` format has a built-in metadata that stores a ``nodata`` value.
 
-.. admonition:: Enforcement of ``NoData``
+.. admonition:: Enforcement of ``nodata``
    :class: warning
 
-   Users are *not* required to set ``NoData`` values, but the incoming values may be overwritten to ``plans`` standard convention.
+   Users are *not* required to set ``nodata`` values, but the incoming values may be overwritten to ``plans`` standard convention.
 
 
 .. _io-data-type-reference:
@@ -344,4 +344,26 @@ A ``NoData`` value is a convention of what values in data means that there are a
 Data Types Reference
 --------------------------------------------
 
-.. include:: ./includes/ipsum.rst
+.. csv-table:: Data Types Reference Table
+   :file: ./data/dtypes.csv
+   :header-rows: 1
+   :widths: auto
+   :delim: ;
+
+
+.. note::
+
+   Hi-order values in the above table are approximations. For example, the exact upper value of ``int32`` is 4,294,967,295.
+
+
+
+.. admonition:: NumPy Data Types
+   :class: seealso
+
+   Check out `NumPy Data Types`_ documentation page for mode details for data types in Python arrays.
+
+
+.. admonition:: GDAL Data Types
+   :class: seealso
+
+   Check out `GDAL Data Types`_ documentation page for mode details for data types in raster maps.

@@ -14,6 +14,8 @@
 
 .. _NumPy: https://numpy.org/
 
+.. _NumPy Data Types: https://numpy.org/doc/stable/user/basics.types.html
+
 .. _Pandas: https://pandas.pydata.org/
 
 .. _Matplotlib: https://matplotlib.org/
@@ -43,5 +45,7 @@
 .. _ASCII file: https://gdal.org/en/stable/drivers/raster/aaigrid.html
 
 .. _GeoTIFF file: https://gdal.org/en/stable/drivers/raster/gtiff.html
+
+.. _GDAL Data Types: https://gdal.org/en/stable/doxygen/gdal_8h.html
 
 .. _GeoTIFF: https://en.wikipedia.org/wiki/GeoTIFF
