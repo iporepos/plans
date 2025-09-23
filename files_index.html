@@ -373,23 +373,23 @@
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 <section id="basin-area">
 <span id="io-basin"></span><h2>Basin Area<a class="headerlink" href="#basin-area" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">basin</span></code> file is a mandatory raster file with binary values (1 for basin pixels, 0 otherwise) defining the area of interest. Users may provide multiple basin area under the same extension. This is done by files organized in subfolders, one for each basin being modeled.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>input - required</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">basin.tif</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/basins/{basin}</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-input-files-required"><span class="std std-ref">Required Input File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Units</p></td>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">basin.tif</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/basins/{basin}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pixel Units</p></td>
 <td><p>unitless</p></td>
 </tr>
 <tr class="row-even"><td><p>Data Type</p></td>
@@ -398,26 +398,26 @@
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
+<p><strong>View</strong></p>
 <p>{&gt;&gt; todo preview}</p>
 </section>
 <section id="climate-series">
 <span id="io-climate-series"></span><h2>Climate Series<a class="headerlink" href="#climate-series" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">climate_series</span></code> table is a time series file containing model forcing data such as precipitation and potential evapotranspiration. It can have a time step as fine as 15 minutes, but daily or hourly series are most common. This file is required for running the model.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>input - required</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">climate_series.csv</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/climate/{scenario}</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-input-files-required"><span class="std std-ref">Required Input File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-timeseries"><span class="std std-ref">Time Series</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">climate_series.csv</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/climate/{scenario}</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -450,30 +450,27 @@
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
-<p>{&gt;&gt; todo preview}</p>
+<p><strong>File Sample</strong></p>
 </section>
 <section id="digital-elevation-model">
 <span id="io-dem"></span><h2>Digital Elevation Model<a class="headerlink" href="#digital-elevation-model" title="Link to this heading">#</a></h2>
-<p>Pellentesque habitant morbi tristique senectus
-et netus et malesuada fames ac turpis egestas. Morbi et tempor sem.
-Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p><code class="docutils literal notranslate"><span class="pre">dem</span></code> is the digital elevation model (DEM) raster file. It is a raster file representing terrain height above sea level, in meters. While not mandatory, it is a valuable input for generating many derivative files such as slope, aspect, and flow accumulation. Users often preprocess DEMs to fill depressions and interpolate missing values, ensuring a hydrologically consistent surface for further analysis.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>input - optional</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">dem.tif</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-input-files-optional"><span class="std std-ref">Optional Input File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Units</p></td>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dem.tif</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pixel Units</p></td>
 <td><p>m</p></td>
 </tr>
 <tr class="row-even"><td><p>Data Type</p></td>
@@ -482,26 +479,26 @@ Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
+<p><strong>View</strong></p>
 <p>{&gt;&gt; todo preview}</p>
 </section>
 <section id="distance-vs-area-histogram">
 <span id="io-dist-area-hist"></span><h2>Distance vs Area Histogram<a class="headerlink" href="#distance-vs-area-histogram" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">dist_area_hist</span></code> intermediate table is an histogram relating flow path length (distance to outlet) to contributing area. It is generated by the model and used to compute unit hydrographs for flow routing.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>intermediate</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">dist_area_hist.csv</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/basins/{basin}</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-intermediate-files"><span class="std std-ref">Intermediate File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-table"><span class="std std-ref">Table</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dist_area_hist.csv</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/basins/{basin}</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -529,28 +526,27 @@ Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
-<p>{&gt;&gt; todo preview}</p>
+<p><strong>File Sample</strong></p>
 </section>
 <section id="distance-to-outlet">
 <span id="io-dto"></span><h2>Distance To Outlet<a class="headerlink" href="#distance-to-outlet" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p><code class="docutils literal notranslate"><span class="pre">dto</span></code> encodes the distance to outlet. It is a raster file computed by the model that records the flow path length from each pixel to the catchment outlet, using the <cite>ldd</cite> file for routing. It is an important variable for hydrograph generation, as it accounts for travel time differences across the basin.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>intermediate</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">dto.tif</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-intermediate-files"><span class="std std-ref">Intermediate File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Units</p></td>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dto.tif</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pixel Units</p></td>
 <td><p>m</p></td>
 </tr>
 <tr class="row-even"><td><p>Data Type</p></td>
@@ -559,28 +555,28 @@ Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
+<p><strong>View</strong></p>
 <p>{&gt;&gt; todo preview}</p>
 </section>
 <section id="flow-accumulation">
 <span id="io-flowacc"></span><h2>Flow Accumulation<a class="headerlink" href="#flow-accumulation" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p><code class="docutils literal notranslate"><span class="pre">flowacc</span></code> encodes Flow accumulation, an optional raster file indicating how much water or flow would accumulate at each pixel based on upslope contributions. It may be calculated as a discrete or fuzzy surface depending on the method. Flow accumulation is often used as an input for TWI calculations.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>input - optional</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">flowacc.tif</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-input-files-optional"><span class="std std-ref">Optional Input File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Units</p></td>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">flowacc.tif</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pixel Units</p></td>
 <td><p>m^2</p></td>
 </tr>
 <tr class="row-even"><td><p>Data Type</p></td>
@@ -589,28 +585,28 @@ Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
+<p><strong>View</strong></p>
 <p>{&gt;&gt; todo preview}</p>
 </section>
 <section id="height-above-nearest-drainage">
 <span id="io-hand"></span><h2>Height Above Nearest Drainage<a class="headerlink" href="#height-above-nearest-drainage" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p><code class="docutils literal notranslate"><span class="pre">hand</span></code> is the Height Above Nearest Drainage (HAND). It is raster file derived from combining the DEM with a drainage network, representing the elevation difference between each pixel and its nearest stream. Values are given in meters and depend strongly on the definition of the drainage network, which can significantly influence model results. HAND can be obtained from external sources or derived directly from a DEM using geoprocessing techniques.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>input - required</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">hand.tif</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-input-files-required"><span class="std std-ref">Required Input File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Units</p></td>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">hand.tif</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pixel Units</p></td>
 <td><p>m</p></td>
 </tr>
 <tr class="row-even"><td><p>Data Type</p></td>
@@ -619,28 +615,28 @@ Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
+<p><strong>View</strong></p>
 <p>{&gt;&gt; todo preview}</p>
 </section>
 <section id="hill-shade">
 <span id="io-hillshade"></span><h2>Hill Shade<a class="headerlink" href="#hill-shade" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p><code class="docutils literal notranslate"><span class="pre">hillshade</span></code> is an optional raster representing shaded relief, calculated from a DEM using parameters such as solar angle and azimuth. It is primarily used for visualization and can be combined with transparency layers to enhance the perception of terrain depth.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>input - optional</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">hillshade.tif</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-input-files-optional"><span class="std std-ref">Optional Input File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Units</p></td>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">hillshade.tif</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pixel Units</p></td>
 <td><p>unitless</p></td>
 </tr>
 <tr class="row-even"><td><p>Data Type</p></td>
@@ -649,28 +645,28 @@ Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
+<p><strong>View</strong></p>
 <p>{&gt;&gt; todo preview}</p>
 </section>
 <section id="local-drain-direction">
 <span id="io-ldd"></span><h2>Local Drain Direction<a class="headerlink" href="#local-drain-direction" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ldd</span></code> is the Local Drain Direction (LDD), a raster file encoding the flow direction of each pixel toward its downslope neighbor, following the PC-Raster convention. It provides essential information for routing water across the landscape and is used to determine flow paths and drainage network connectivity.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>input - required</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">ldd.tif</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-input-files-required"><span class="std std-ref">Required Input File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-qualiraster"><span class="std std-ref">Quali Raster</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Units</p></td>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ldd.tif</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pixel Units</p></td>
 <td><p>id</p></td>
 </tr>
 <tr class="row-even"><td><p>Data Type</p></td>
@@ -679,26 +675,26 @@ Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
+<p><strong>View</strong></p>
 <p>{&gt;&gt; todo preview}</p>
 </section>
 <section id="land-use-attributes">
 <span id="io-lulc-attributes"></span><h2>Land Use Attributes<a class="headerlink" href="#land-use-attributes" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">lulc_attribute</span></code> table links land use class IDs from the land use map to their names, descriptions, and parameter values. These attributes are used to represent vegetation, cover type, and land management effects in the model.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>input - required</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">lulc_attributes.csv</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/lulc</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-input-files-required"><span class="std std-ref">Required Input File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-attribute"><span class="std std-ref">Attribute Table</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lulc_attributes.csv</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/lulc</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -733,71 +729,78 @@ Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 <td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
 <td><p>Color</p></td>
 </tr>
-<tr class="row-even"><td><p>ck</p></td>
-<td><p>d</p></td>
+<tr class="row-even"><td><p>w_ck</p></td>
+<td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
-<td><p>Canopy residence time</p></td>
+<td><p>(downscaling weight) Canopy residence time</p></td>
 </tr>
-<tr class="row-odd"><td><p>ca</p></td>
-<td><p>mm</p></td>
+<tr class="row-odd"><td><p>w_ca</p></td>
+<td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
-<td><p>Activation level for canopy flow</p></td>
+<td><p>(downscaling weight) Activation level for canopy flow</p></td>
 </tr>
-<tr class="row-even"><td><p>sk</p></td>
-<td><p>d</p></td>
+<tr class="row-even"><td><p>w_sk</p></td>
+<td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
-<td><p>Surface residence time</p></td>
+<td><p>(downscaling weight) Surface residence time</p></td>
 </tr>
-<tr class="row-odd"><td><p>sofa</p></td>
-<td><p>mm</p></td>
+<tr class="row-odd"><td><p>w_sofa</p></td>
+<td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
-<td><p>Activation level for overland flow</p></td>
+<td><p>(downscaling weight) Activation level for overland flow</p></td>
 </tr>
-<tr class="row-even"><td><p>sofc</p></td>
-<td><p>mm</p></td>
+<tr class="row-even"><td><p>w_sofc</p></td>
+<td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
-<td><p>Fragmentation level for overland flow</p></td>
+<td><p>(downscaling weight) Fragmentation level for overland flow</p></td>
 </tr>
-<tr class="row-odd"><td><p>sufa</p></td>
-<td><p>mm</p></td>
+<tr class="row-odd"><td><p>w_sufa</p></td>
+<td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
-<td><p>Activation level for subsurface flow</p></td>
+<td><p>(downscaling weight) Activation level for subsurface flow</p></td>
 </tr>
-<tr class="row-even"><td><p>sufc</p></td>
-<td><p>mm</p></td>
+<tr class="row-even"><td><p>w_sufc</p></td>
+<td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
-<td><p>Fragmentation level for subsurface flow</p></td>
+<td><p>(downscaling weight) Fragmentation level for subsurface flow</p></td>
 </tr>
-<tr class="row-odd"><td><p>sufcap</p></td>
-<td><p>mm</p></td>
+<tr class="row-odd"><td><p>w_sufcap</p></td>
+<td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
-<td><p>Subsurface storage capacity</p></td>
+<td><p>(downscaling weight) Subsurface storage capacity</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
-<p>{&gt;&gt; todo preview}</p>
+<p><strong>File Sample</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>id;name;alias;color;w_ck;w_ca;w_sk;w_sofa;w_sofc;w_sufa;w_sufc;w_sufcap
+1;Forest;Fr;green;100;100;100;100;100;100;100;100
+2;Grass;Gr;tab:olive;80;80;80;80;80;80;80;80
+3;Crops;Cr;orange;30;30;30;30;30;30;30;30
+4;Urban;Ur;white;10;10;10;10;10;10;10;10
+5;Road;Rd;red;1;1;1;1;1;1;1;1
+</pre></div>
+</div>
 </section>
 <section id="land-use">
 <span id="io-lulc-date"></span><h2>Land Use<a class="headerlink" href="#land-use" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p><code class="docutils literal notranslate"><span class="pre">lulc_{date}</span></code> is a raster file with pixel IDs encoding land use and land cover (LULC) classes for a given date. Each class links to a land use attribute table that provides descriptions and parameters used in the model, influencing processes in the land phase of the hydrological cycle.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>input - required</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">lulc_{date}.tif</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/lulc/{scenario}</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-input-files-required"><span class="std std-ref">Required Input File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-timequaliraster"><span class="std std-ref">Time Quali Raster</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Units</p></td>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lulc_{date}.tif</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/lulc/{scenario}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pixel Units</p></td>
 <td><p>id</p></td>
 </tr>
 <tr class="row-even"><td><p>Data Type</p></td>
@@ -806,26 +809,26 @@ Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
+<p><strong>View</strong></p>
 <p>{&gt;&gt; todo preview}</p>
 </section>
-<section id="parameters-of-upscaled-model">
-<span id="io-parameters-info"></span><h2>Parameters of Upscaled Model<a class="headerlink" href="#parameters-of-upscaled-model" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<section id="parameters-info">
+<span id="io-parameters-info"></span><h2>Parameters Info<a class="headerlink" href="#parameters-info" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">parameters_info</span></code> table lists all model parameters and their set, lower, and upper values. These parameters represent effective, upscaled values for the catchment as a whole but can be downscaled to pixel level using weighting factors from soils, land use, and topographic saturation index. This table may also include information such as simulation time step and is useful for parameter sampling (e.g., Monte Carlo analysis).</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>input - required</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">parameters_info.csv</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-input-files-required"><span class="std std-ref">Required Input File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-infotable"><span class="std std-ref">Info Table</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">parameters_info.csv</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -848,7 +851,17 @@ Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 <tr class="row-odd"><td><p>value</p></td>
 <td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">misc</span></code></p></td>
-<td><p>Value set of field</p></td>
+<td><p>Set value of field</p></td>
+</tr>
+<tr class="row-even"><td><p>lower</p></td>
+<td><p>misc</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
+<td><p>Lower bound value of field</p></td>
+</tr>
+<tr class="row-odd"><td><p>upper</p></td>
+<td><p>misc</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
+<td><p>Upper bound value of field</p></td>
 </tr>
 </tbody>
 </table>
@@ -961,26 +974,47 @@ Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
-<p>{&gt;&gt; todo preview}</p>
+<p><strong>File Sample</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>field;value;lower;upper;description;units
+dt;20.0;5.0;30;Simulation time step;min
+c0;0.0;0.0;500;Canopy storage initial conditions;mm
+s0;10.0;0.0;1000;Surface storage initial conditions;mm
+v0;0.0;0.0;1000;Vadose zone initial conditions;mm
+g0;0.0;0.0;10000;Phreatic zone initial conditions;mm
+ck;0.2;0.01;365;Canopy residence time;d
+ca;10.0;0.0;500;Activation level for canopy flow;mm
+sk;1.0;0.01;365;Surface residence time;d
+sofa;5.0;0.0;1000;Activation level for overland flow;mm
+sofc;50.0;0.0;1000;Fragmentation level for overland flow;mm
+sufa;4.0;0.0;1000;Activation level for subsurface flow;mm
+sufc;1.0;0.0;1000;Fragmentation level for subsurface flow;mm
+sufcap;5.0;0.0;1000;Subsurface storage capacity;mm
+kv;500.0;0.0;500;Soil hydraulic conductivity;mm/d
+gk;5.0;0.01;365;Phreatic zone residence time;d
+gcap;80.0;0.0;10000;Phreatic zone storage capacity;mm
+dea;10.0;0.0;10000;Deficit activation level for ET;mm
+ecap;10.0;0.0;10000;ET capacity at capilar zone;mm
+kq;500.0;1.0;50000;Channel water celerity;m/d
+</pre></div>
+</div>
 </section>
-<section id="project-specifications">
-<span id="io-project-info"></span><h2>Project Specifications<a class="headerlink" href="#project-specifications" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<section id="project-info">
+<span id="io-project-info"></span><h2>Project Info<a class="headerlink" href="#project-info" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">project_info</span></code> table contains metadata describing the project, such as name, alias, source, and description. It can also list alternative parameter tables or folders to override defaults. If left empty, the model uses default project settings.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>input - required</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">project_info.csv</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-input-files-required"><span class="std std-ref">Required Input File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-infotable"><span class="std std-ref">Info Table</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">project_info.csv</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1003,7 +1037,7 @@ Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 <tr class="row-odd"><td><p>value</p></td>
 <td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">misc</span></code></p></td>
-<td><p>Value set of field</p></td>
+<td><p>Set value of field</p></td>
 </tr>
 </tbody>
 </table>
@@ -1056,26 +1090,35 @@ Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
-<p>{&gt;&gt; todo preview}</p>
+<p><strong>File Sample</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>field;value
+name;Testing Model
+alias;M001
+color;blue
+source;Ipo
+description;A testing model for rainfall-runoff
+file_parameters;
+folder_data;
+</pre></div>
+</div>
 </section>
-<section id="streamflow-data">
-<span id="io-qobs-series"></span><h2>Streamflow Data<a class="headerlink" href="#streamflow-data" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<section id="streamflow-series">
+<span id="io-qobs-series"></span><h2>Streamflow Series<a class="headerlink" href="#streamflow-series" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">qobs_series</span></code> series is a time series table located within each basin folder, containing observed streamflow values for that catchment. Values are given as specific discharge in millimeters per time step, requiring users to convert volumetric discharge data using the catchment area at the gauge station. While optional for running the model, this file is required for calibration, validation, and performance assessment.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>input - optional</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">qobs_series.csv</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/basins/{basin}</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-input-files-optional"><span class="std std-ref">Optional Input File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-timeseries"><span class="std std-ref">Time Series</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">qobs_series.csv</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/basins/{basin}</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1103,31 +1146,83 @@ Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
-<p>{&gt;&gt; todo preview}</p>
+<p><strong>File Sample</strong></p>
 </section>
-<section id="slope">
-<span id="io-slope"></span><h2>Slope<a class="headerlink" href="#slope" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis.
-Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl.</p>
+<section id="simulation-series">
+<span id="io-simulation"></span><h2>Simulation Series<a class="headerlink" href="#simulation-series" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">simulation</span></code> file is a table generated as output for each model run. It consolidates all simulated variables, including streamflow (observed and simulated), climate forcing data, and internal model states such as flows and storage variables. This file provides a complete record of model behavior over the simulation period and is essential for result analysis and calibration.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>input - optional</p></td>
+<td><p><a class="reference internal" href="files.html#io-output-files"><span class="std std-ref">Output File</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">slope.tif</span></code></p></td>
+<tr class="row-even"><td><p>Data Structure</p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-timeseries"><span class="std std-ref">Time Series</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">simulation.csv</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/outputs/{id}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Required Fields</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Data Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>datetime</p></td>
+<td><p>unitless</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Date-time label</p></td>
+</tr>
+<tr class="row-odd"><td><p>ppt</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
+<td><p>Precipitation</p></td>
+</tr>
+<tr class="row-even"><td><p>e_pot</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
+<td><p>Potential Evapotranspiration</p></td>
+</tr>
+<tr class="row-odd"><td><p>qobs</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
+<td><p>Streamflow observed at basin outlet</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>File Sample</strong></p>
+</section>
+<section id="slope">
+<span id="io-slope"></span><h2>Slope<a class="headerlink" href="#slope" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">slope</span></code> is an optional raster file representing the inclination of the terrain in degrees. It can be derived from the digital elevation model and is used to assess processes such as runoff and erosion. Users may provide it directly or compute it using standard geoprocessing techniques.</p>
+<p><strong>Specifications</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Workflow</p></td>
+<td><p><a class="reference internal" href="files.html#io-input-files-optional"><span class="std std-ref">Optional Input File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Units</p></td>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">slope.tif</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pixel Units</p></td>
 <td><p>degrees</p></td>
 </tr>
 <tr class="row-even"><td><p>Data Type</p></td>
@@ -1136,28 +1231,28 @@ In a lacinia nisl.</p>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
+<p><strong>View</strong></p>
 <p>{&gt;&gt; todo preview}</p>
 </section>
 <section id="soils">
 <span id="io-soils"></span><h2>Soils<a class="headerlink" href="#soils" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p><code class="docutils literal notranslate"><span class="pre">soils</span></code> is a raster file containing pixel IDs that represent soil classes. Each class is linked to an attribute table that stores parameters such as soil properties and model weights. This is a qualitative raster and is essential for encoding the land-phase hydrological characteristics used in the model.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>input - required</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">soils.tif</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/soils</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-input-files-required"><span class="std std-ref">Required Input File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-qualiraster"><span class="std std-ref">Quali Raster</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Units</p></td>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">soils.tif</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/soils</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pixel Units</p></td>
 <td><p>id</p></td>
 </tr>
 <tr class="row-even"><td><p>Data Type</p></td>
@@ -1166,26 +1261,26 @@ In a lacinia nisl.</p>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
+<p><strong>View</strong></p>
 <p>{&gt;&gt; todo preview}</p>
 </section>
 <section id="soils-attributes">
 <span id="io-soils-attributes"></span><h2>Soils Attributes<a class="headerlink" href="#soils-attributes" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">soils_attribute</span></code> table links soil class IDs from the soils map to their descriptive names and parameter values. These include model weights and other information necessary for representing soil properties in the model.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>input - required</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">soils_attributes.csv</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/soils</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-input-files-required"><span class="std std-ref">Required Input File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-attribute"><span class="std std-ref">Attribute Table</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">soils_attributes.csv</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/soils</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1220,56 +1315,62 @@ In a lacinia nisl.</p>
 <td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
 <td><p>Color</p></td>
 </tr>
-<tr class="row-even"><td><p>kv</p></td>
-<td><p>mm/d</p></td>
+<tr class="row-even"><td><p>w_kv</p></td>
+<td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
-<td><p>Soil hydraulic conductivity</p></td>
+<td><p>(downscaling weight) Soil hydraulic conductivity</p></td>
 </tr>
-<tr class="row-odd"><td><p>gk</p></td>
-<td><p>d</p></td>
+<tr class="row-odd"><td><p>w_gk</p></td>
+<td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
-<td><p>Phreatic zone residence time</p></td>
+<td><p>(downscaling weight) Phreatic zone residence time</p></td>
 </tr>
-<tr class="row-even"><td><p>gcap</p></td>
-<td><p>mm</p></td>
+<tr class="row-even"><td><p>w_gcap</p></td>
+<td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
-<td><p>Phreatic zone storage capacity</p></td>
+<td><p>(downscaling weight) Phreatic zone storage capacity</p></td>
 </tr>
-<tr class="row-odd"><td><p>dea</p></td>
-<td><p>mm</p></td>
+<tr class="row-odd"><td><p>w_dea</p></td>
+<td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
-<td><p>Deficit activation level for ET</p></td>
+<td><p>(downscaling weight) Deficit activation level for ET</p></td>
 </tr>
-<tr class="row-even"><td><p>ecap</p></td>
-<td><p>mm</p></td>
+<tr class="row-even"><td><p>w_ecap</p></td>
+<td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ufloat32</span></code></p></td>
-<td><p>ET capacity at capilar zone</p></td>
+<td><p>(downscaling weight) ET capacity at capilar zone</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
-<p>{&gt;&gt; todo preview}</p>
+<p><strong>File Sample</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>id;name;alias;color;w_kv;w_gk;w_gcap;w_dea;w_ecap
+1;Alluvial;Alu;teal;60;60;60;60;60
+2;Residual Sandstone;Sand;tan;100;100;100;100;100
+3;Residual Granite;Gran;violet;40;40;40;40;40
+4;Fill;Fill;grey;1;1;1;1;1
+</pre></div>
+</div>
 </section>
 <section id="topographic-saturation-index">
 <span id="io-tsi"></span><h2>Topographic Saturation Index<a class="headerlink" href="#topographic-saturation-index" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tsi</span></code> is the Topographic Saturation Index is a normalized, unitless index ranging from 0 to 1, representing the likelihood of saturation by combining HAND and TWI with weighted contributions. This file captures both catchment level effects and micro terrain influences, making it an important input for models simulating soil moisture and saturation dynamics.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>intermediate</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">tsi.tif</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-intermediate-files"><span class="std std-ref">Intermediate File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Units</p></td>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tsi.tif</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pixel Units</p></td>
 <td><p>index</p></td>
 </tr>
 <tr class="row-even"><td><p>Data Type</p></td>
@@ -1278,28 +1379,28 @@ In a lacinia nisl.</p>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
+<p><strong>View</strong></p>
 <p>{&gt;&gt; todo preview}</p>
 </section>
 <section id="topographic-wetness-index">
 <span id="io-twi"></span><h2>Topographic Wetness Index<a class="headerlink" href="#topographic-wetness-index" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p><code class="docutils literal notranslate"><span class="pre">twi</span></code> is the Topographic Wetness Index (TWI), a unitless index derived from a DEM that estimates the tendency of terrain to accumulate water, assuming shallow soils and a near-surface water table. It is widely used to describe terrain-driven hydrological processes, with higher values indicating wetter conditions. Users may compute it themselves or provide it as an optional file.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>input - required</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">twi.tif</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-input-files-required"><span class="std std-ref">Required Input File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Units</p></td>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">twi.tif</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pixel Units</p></td>
 <td><p>index</p></td>
 </tr>
 <tr class="row-even"><td><p>Data Type</p></td>
@@ -1308,28 +1409,28 @@ In a lacinia nisl.</p>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
+<p><strong>View</strong></p>
 <p>{&gt;&gt; todo preview}</p>
 </section>
 <section id="upslope-area">
 <span id="io-uparea"></span><h2>Upslope Area<a class="headerlink" href="#upslope-area" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p><code class="docutils literal notranslate"><span class="pre">uparea</span></code> is a raster file that records the exact contributing area draining into each pixel, from a single pixel up to the full catchment extent. Computing upslope area typically requires DEM preprocessing such as depression filling. This is an optional file but can improve model performance when supplied.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Workflow</p></td>
-<td><p>input - optional</p></td>
-</tr>
-<tr class="row-even"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">uparea.tif</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+<td><p><a class="reference internal" href="files.html#io-input-files-optional"><span class="std std-ref">Optional Input File</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Data Structure</p></td>
 <td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Units</p></td>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">uparea.tif</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/topo</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pixel Units</p></td>
 <td><p>m^2</p></td>
 </tr>
 <tr class="row-even"><td><p>Data Type</p></td>
@@ -1338,7 +1439,7 @@ In a lacinia nisl.</p>
 </tbody>
 </table>
 </div>
-<p><strong>Preview</strong></p>
+<p><strong>View</strong></p>
 <p>{&gt;&gt; todo preview}</p>
 </section>
 </section>
@@ -1401,9 +1502,10 @@ In a lacinia nisl.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#local-drain-direction">Local Drain Direction</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#land-use-attributes">Land Use Attributes</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#land-use">Land Use</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameters-of-upscaled-model">Parameters of Upscaled Model</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-specifications">Project Specifications</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#streamflow-data">Streamflow Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameters-info">Parameters Info</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-info">Project Info</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#streamflow-series">Streamflow Series</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simulation-series">Simulation Series</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#slope">Slope</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#soils">Soils</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#soils-attributes">Soils Attributes</a></li>

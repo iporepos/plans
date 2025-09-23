@@ -101,6 +101,11 @@ An :ref:`Information Table<io-attribute>` is a special kind of :ref:`Table<io-ta
    Extra required fields may be also needed, depending on each input file.
 
 
+**Required horizontal fields**
+
+A required horizontal field in ``Information Table`` is an **expected row** with set values for ``field`` and ``value``.
+
+
 **Example**
 
 .. code-block:: text
