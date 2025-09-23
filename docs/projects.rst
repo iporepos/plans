@@ -1,7 +1,4 @@
-.. a cool badge for the source.
-
-.. include:: ./includes/badge_source.rst
-
+.. include:: ./_links.rst
 
 .. _projects:
 
@@ -22,7 +19,7 @@ This is the project reference documentation of ``plans``.
 
    {project}/
         ├── data/
-        │     ├── info.csv
+        │     ├── project_info.csv
         │     ├── parameters.csv
         │     │
         │     ├── basins/

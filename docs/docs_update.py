@@ -98,17 +98,47 @@ DC_FILES_STRUCTURES = {
     "raster": {
         "ext": "tif",
         "template": TEMPLATES_DIR / "file_entry_raster.rst",
-        "raster": "io-raster",
-        "time raster": "io-timeseries",
-        "quali raster": "io-qualiraster",
-        "time quali raster": "io-timequaliraster",
+        "tag": "io-raster",
+    },
+    "time raster": {
+        "ext": "tif",
+        "template": TEMPLATES_DIR / "file_entry_raster.rst",
+        "tag": "io-timeraster",
+    },
+    "quali raster": {
+        "ext": "tif",
+        "template": TEMPLATES_DIR / "file_entry_raster.rst",
+        "tag": "io-qualiraster",
+    },
+    "time quali raster": {
+        "ext": "tif",
+        "template": TEMPLATES_DIR / "file_entry_raster.rst",
+        "tag": "io-timequaliraster",
     },
     "table": {
         "ext": "csv",
         "template": TEMPLATES_DIR / "file_entry_table.rst",
-        "table": "io-table",
-        "time series": "io-timeseries",
-        "attribute table": "io-attribute",
+        "tag": "io-table",
+    },
+    "table": {
+        "ext": "csv",
+        "template": TEMPLATES_DIR / "file_entry_table.rst",
+        "tag": "io-table",
+    },
+    "info table": {
+        "ext": "csv",
+        "template": TEMPLATES_DIR / "file_entry_infotable.rst",
+        "tag": "io-infotable",
+    },
+    "attribute table": {
+        "ext": "csv",
+        "template": TEMPLATES_DIR / "file_entry_table.rst",
+        "tag": "io-attribute",
+    },
+    "time series": {
+        "ext": "csv",
+        "template": TEMPLATES_DIR / "file_entry_table.rst",
+        "tag": "io-timeseries",
     },
 }
 
@@ -163,7 +193,7 @@ def build_figs():
     return None
 
 
-def build_catalog():
+def build_file_index():
     # clean up
     delete_file_entries()
     delete_field_tables()
@@ -254,8 +284,13 @@ def parse_fields_df():
     return df
 
 
-def filter_fields(df, file_name):
-    df = df.dropna(subset=file_name)
+def filter_files(df, workflow):
+    df = df.query("workflow == '{}'".format(workflow)).copy()
+    return df
+
+
+def filter_fields(df, file_name, query="x"):
+    df = df.query(f"{file_name} == '{query}'")
     dc_cols = {
         "name": "Name",
         "units": "Units",
@@ -268,10 +303,135 @@ def filter_fields(df, file_name):
     return df
 
 
+def add_extensions_table(df):
+    # handle extension
+    ls_ext = []
+    for i in range(len(df)):
+        structure = df["structure"].values[i]
+        if "raster" in structure:
+            ls_ext.append(DC_FILES_STRUCTURES["raster"]["ext"])
+        else:
+            ls_ext.append(DC_FILES_STRUCTURES["table"]["ext"])
+    df["ext"] = ls_ext[:]
+    return df
+
+
+def format_monospaced(df, field):
+    ls = []
+    for i in range(len(df)):
+        aux = df[field].values[i]
+        ls.append("``{}``".format(aux))
+    df[field] = ls[:]
+    return df[field]
+
+
+def format_math(df, field):
+    ls = []
+    for i in range(len(df)):
+        aux = df[field].values[i]
+        ls.append(":math:`{}`".format(aux))
+    df[field] = ls[:]
+    return df[field]
+
+
+def format_links(df, field, tags_dc):
+    ls = []
+    for i in range(len(df)):
+        aux = df[field].values[i]
+        ls.append(":ref:`{}<{}>`".format(aux.title(), tags_dc[aux]))
+    df[field] = ls[:]
+    return df[field]
+
+
+def format_files_table(df):
+    # extension
+    df = add_extensions_table(df)
+    df["file"] = df["name"] + "." + df["ext"]
+    # monospaced
+    df["file"] = format_monospaced(df, field="file")
+
+    # add links
+    links_dc = {}
+    for k in DC_FILES_STRUCTURES:
+        links_dc[k] = DC_FILES_STRUCTURES[k]["tag"]
+    df["structure"] = format_links(df, field="structure", tags_dc=links_dc)
+
+    links_dc = {}
+    for i in range(len(df)):
+        links_dc[df["title"].values[i]] = "io-{}".format(df["name"].values[i])
+    df["title"] = format_links(df, field="title", tags_dc=links_dc)
+
+    # filter columns
+    ls_cols = ["file", "title", "structure"]
+    df = df[ls_cols].copy()
+
+    # rename
+    dc_renames = {
+        "title": "Name",
+        "name": "File",
+    }
+    df = df.rename(columns=dc_renames)
+    # style
+    df.columns = [s.title() for s in list(df.columns)]
+
+    return df
+
+
+def get_system_table():
+    df = parse_fields_df()
+    df = df.dropna(subset="system")
+
+    dc_cols = {
+        "description": "Name",
+        "tex": "Symbol",
+        "name": "Field",
+        "units": "Units",
+        "subsystem": "Hydrology",
+        "system": "System",
+    }
+
+    df["name"] = format_monospaced(df, field="name")
+    df["tex"] = format_math(df, field="tex")
+
+    # print(df)
+    dc = {
+        "variable": "variables",
+        "parameter": "parameters",
+        "initial condition": "init",
+        "boundary condition": "bounds",
+    }
+    for k in dc:
+        df_q = df.query("category == '{}'".format(k))
+        df_q = df_q[list(dc_cols.keys())]
+        df_q = df_q.rename(columns=dc_cols)
+        df_q.to_csv(DOCS_DATA_DIR / "system_{}.csv".format(dc[k]), sep=";", index=False)
+
+    return None
+
+
 def get_fields_table(name):
     df = parse_fields_df()
     df = filter_fields(df, file_name=name)
     df.to_csv(DOCS_DATA_DIR / f"fields_{name}.csv", sep=";", index=False)
+    return None
+
+
+def get_hfields_table(name):
+    df = parse_fields_df()
+    df = filter_fields(df, file_name=name, query="h")
+    df.to_csv(DOCS_DATA_DIR / f"h_fields_{name}.csv", sep=";", index=False)
+    return None
+
+
+def get_files_tables():
+    df = parse_files_df()
+    ls_workflow = list(df["workflow"].unique())
+    for w in ls_workflow:
+        w2 = w.replace("-", "_")
+        w3 = w2.replace(" ", "")
+        df_q = filter_files(df, workflow=w)
+        df_q = format_files_table(df_q)
+        df_q.to_csv(DOCS_DATA_DIR / f"files_{w3}.csv", sep=";", index=False)
     return None
 
 
@@ -281,17 +441,17 @@ def make_file_entry(spec, verbose=False):
     spec["abstract"] = parse_abstract(name=spec["name"])
 
     structure = spec["structure"]
-    if structure in list(DC_FILES_STRUCTURES["raster"].keys()):
-        structure_primitive = "raster"
-    else:
-        structure_primitive = "table"
+    if "raster" not in structure:
         # get fields
         get_fields_table(name=spec["name"])
 
+    if structure == "info table":
+        get_hfields_table(name=spec["name"])
+
     # get extra info
-    spec["ext"] = DC_FILES_STRUCTURES[structure_primitive]["ext"]
-    file_template = DC_FILES_STRUCTURES[structure_primitive]["template"]
-    tag = DC_FILES_STRUCTURES[structure_primitive][structure]
+    spec["ext"] = DC_FILES_STRUCTURES[structure]["ext"]
+    file_template = DC_FILES_STRUCTURES[structure]["template"]
+    tag = DC_FILES_STRUCTURES[structure]["tag"]
     # structure link
     spec["structure link"] = ":ref:`{}<{}>`".format(structure.title(), tag)
 
@@ -384,7 +544,11 @@ if __name__ == "__main__":
 
     # Build catalog
     # ===================================================================
-    build_catalog()
+    # first get updated files tables
+    get_system_table()
+    get_files_tables()
+    # then generate the index
+    build_file_index()
 
     # Build docs using sphinx
     # ===================================================================

@@ -1,5 +1,3 @@
-.. include:: ./includes/badge_source.rst
-
 .. _api:
 
 API
