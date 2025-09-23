@@ -368,9 +368,7 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <a class="reference external image-reference" href="https://github.com/iporepos/plans"><img alt="GitHub repository" src="https://img.shields.io/badge/GitHub-Source-black?logo=github" />
-</a>
-<section id="data-structures">
+  <section id="data-structures">
 <span id="files-data-structures"></span><h1>Data Structures<a class="headerlink" href="#data-structures" title="Link to this heading">#</a></h1>
 <p>Files used in <code class="docutils literal notranslate"><span class="pre">plans</span></code> are related to the following two primitive data structures:</p>
 <ul class="simple">
@@ -386,15 +384,17 @@ A <a class="reference internal" href="#io-raster"><span class="std std-ref">Rast
 </div>
 <section id="table">
 <span id="io-table"></span><h2>Table<a class="headerlink" href="#table" title="Link to this heading">#</a></h2>
-<p>A <code class="docutils literal notranslate"><span class="pre">Table</span></code> in <code class="docutils literal notranslate"><span class="pre">plans</span></code> is a frame of data defined by rows and columns. Each column represents a <strong>field</strong> that must be <em>homogeneous</em>. This means that each field stores the same <a class="reference internal" href="#io-data-type"><span class="std std-ref">data type</span></a>. The first row stores the names of the fields. The subsequent rows stores the data itself.</p>
-<p>Tables must follow this general rules:</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">Table</span></code> in <code class="docutils literal notranslate"><span class="pre">plans</span></code> is a frame of data defined by <strong>rows</strong> and <strong>columns</strong>. Usually, the first row stores the <strong>names</strong> of the fields and the subsequent rows stores the data itself.</p>
+<p><strong>Structure rules</strong></p>
 <ol class="arabic simple">
-<li><p>[mandatory] file extension: <code class="docutils literal notranslate"><span class="pre">.csv</span></code>;</p></li>
-<li><p>[mandatory] homogeneous data type for on each column;</p></li>
-<li><p>[mandatory] column separator: semi-colon <code class="docutils literal notranslate"><span class="pre">;</span></code>;</p></li>
-<li><p>[mandatory] decimal separator for numbers: <code class="docutils literal notranslate"><span class="pre">.</span></code>.</p></li>
+<li><p>[required] file extension: <code class="docutils literal notranslate"><span class="pre">.csv</span></code></p></li>
+<li><p>[required] column separator: semi-colon <code class="docutils literal notranslate"><span class="pre">;</span></code></p></li>
+<li><p>[required] first row stores field names</p></li>
+<li><p>[required] decimal separator for numbers: <code class="docutils literal notranslate"><span class="pre">.</span></code></p></li>
+<li><p>[required] no-data convention: empty cell</p></li>
 </ol>
-<p>For example, in the following table <code class="docutils literal notranslate"><span class="pre">id</span></code> is an integer number field, <code class="docutils literal notranslate"><span class="pre">ndvi_mean</span></code> is a real number field and the remaining are text fields.</p>
+<p><strong>Example</strong></p>
+<p>In the following table <code class="docutils literal notranslate"><span class="pre">id</span></code> is an integer number <code class="docutils literal notranslate"><span class="pre">int</span></code> field, <code class="docutils literal notranslate"><span class="pre">ndvi_mean</span></code> is a real number <code class="docutils literal notranslate"><span class="pre">float</span></code> field and the remaining are text <code class="docutils literal notranslate"><span class="pre">str</span></code> fields.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>id;     name; alias;    color;  ndvi_mean
  1;    Water;     W;     blue;       -0.9
  2;   Forest;     F;    green;       0.87
@@ -404,81 +404,87 @@ A <a class="reference internal" href="#io-raster"><span class="std std-ref">Rast
 </pre></div>
 </div>
 <div class="warning admonition">
-<p class="admonition-title">Column names standards</p>
-<p>Field/column names may follow standards also, see below.</p>
-</div>
-<section id="time-series">
-<span id="io-timeseries"></span><h3>Time Series<a class="headerlink" href="#time-series" title="Link to this heading">#</a></h3>
-<p>A <a class="reference internal" href="#io-timeseries"><span class="std std-ref">Time Series</span></a> in <code class="docutils literal notranslate"><span class="pre">plans</span></code> is a special kind of <a class="reference internal" href="#io-table"><span class="std std-ref">Table</span></a> file that must have a <code class="docutils literal notranslate"><span class="pre">datetime</span></code> text field (preferably in the first column).</p>
-<p>Time Series must follow this rules:</p>
-<ol class="arabic simple">
-<li><p>[mandatory] <code class="docutils literal notranslate"><span class="pre">datetime</span></code> text field (preferably in the first column);</p></li>
-<li><p>[recommended] <code class="docutils literal notranslate"><span class="pre">datetime</span></code> formatted in <a class="reference external" href="https://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a>: <code class="docutils literal notranslate"><span class="pre">yyyy-mm-dd</span> <span class="pre">HH:MM:SS.SSS</span></code> (year, month, day, hour, minute and seconds).</p></li>
-<li><p>[recommended] homogeneous datetime frequency (every 15 min, hourly, daily, etc).</p></li>
-<li><p>[recommended] no gaps or voids in data.</p></li>
-</ol>
-<p>The other fields than <code class="docutils literal notranslate"><span class="pre">datetime</span></code> generally are real number fields that stores the state of <strong>variables</strong> like precipitation <code class="docutils literal notranslate"><span class="pre">ppt</span></code> and surface air temperature <code class="docutils literal notranslate"><span class="pre">tas</span></code>. Time Series files tends to have a large number of rows. The first 10 rows of a daily Time Series file looks like this:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>               datetime;  ppt;  tas
-2020-01-01 00:00:00.000;  0.0; 20.1
-2020-01-02 00:00:00.000;  5.1; 24.3
-2020-01-03 00:00:00.000;  0.0; 25.8
-2020-01-04 00:00:00.000; 12.9; 21.4
-2020-01-05 00:00:00.000;  0.0; 21.5
-2020-01-06 00:00:00.000;  0.0; 23.6
-2020-01-07 00:00:00.000;  8.6; 20.6
-2020-01-08 00:00:00.000;  4.7; 28.3
-2020-01-09 00:00:00.000;  0.0; 27.1
-                   ... ;  ...; ...
-</pre></div>
-</div>
-<div class="note admonition">
-<p class="admonition-title">Automatic fill of time information</p>
-<p>During processing, <code class="docutils literal notranslate"><span class="pre">plans</span></code> will fill <em>time</em> information (hours, minute and seconds) if only the <em>date</em> is passed (year, month and day), like in the above example.</p>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">Series</span></code> also have a <strong>datetime frequency</strong>. Recommended frequencies:</p>
-<ul class="simple">
-<li><p>15 minutes;</p></li>
-<li><p>20 minutes;</p></li>
-<li><p>30 minutes;</p></li>
-<li><p>Hourly;</p></li>
-<li><p>Daily.</p></li>
-</ul>
-<div class="warning admonition">
-<p class="admonition-title">Shorter and longer frequencies</p>
-<p>Shorter frequencies than 15 min are not recommended due to processing performance. Longer frequencies than 1 day are not recommended due to effective hydrological process representation.</p>
+<p class="admonition-title"><code class="docutils literal notranslate"><span class="pre">plans</span></code> is case-sensitive</p>
+<p>Upper case and lower case matters. <code class="docutils literal notranslate"><span class="pre">Name</span></code> is different than <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
 </div>
 <div class="important admonition">
-<p class="admonition-title">Small gaps and voids in Time Series</p>
-<p><code class="docutils literal notranslate"><span class="pre">plans</span></code> will try to fill or <strong>interpolate</strong> small gaps and voids in a given Time Series. However, be aware that this may cause unnoticed impacts on model outputs. A best practice is to interpolate and fill voids <em>prior</em> to the processing so users can understand what is going on.</p>
-<p>For instance, consider the following <code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">Series</span></code> that has a <strong>gap</strong> (missing Jan/3 and Jan/4 dates) and a <strong>void</strong> for <code class="docutils literal notranslate"><span class="pre">ppt</span></code> in Jan/8:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>               <span class="n">datetime</span><span class="p">;</span>  <span class="n">ppt</span><span class="p">;</span>  <span class="n">tas</span>
-<span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">20.1</span>
-<span class="hll"><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">5.1</span><span class="p">;</span> <span class="mf">24.3</span>
-</span><span class="hll"><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">05</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">21.5</span>
-</span><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">06</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">23.6</span>
-<span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">07</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">8.6</span><span class="p">;</span> <span class="mf">20.6</span>
-<span class="hll"><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">08</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>     <span class="p">;</span> <span class="mf">28.3</span>
-</span><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">09</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">27.1</span>
-</pre></div>
+<p class="admonition-title">Column names standards</p>
+<p>Field/column names may follow standards also</p>
 </div>
-<p>In this case, <code class="docutils literal notranslate"><span class="pre">plans</span></code> would interpolate temperature <code class="docutils literal notranslate"><span class="pre">tas</span></code> and fill with 0 the precipitation <code class="docutils literal notranslate"><span class="pre">ppt</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>               <span class="n">datetime</span><span class="p">;</span>  <span class="n">ppt</span><span class="p">;</span>  <span class="n">tas</span>
-<span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">20.1</span>
-<span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">5.1</span><span class="p">;</span> <span class="mf">24.3</span>
-<span class="hll"><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">23.3</span>
-</span><span class="hll"><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">04</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">22.4</span>
-</span><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">05</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">21.5</span>
-<span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">06</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">23.6</span>
-<span class="hll"><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">07</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">8.6</span><span class="p">;</span> <span class="mf">20.6</span>
-</span><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">08</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">28.3</span>
-<span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">09</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">27.1</span>
-</pre></div>
+<div class="important admonition">
+<p class="admonition-title">Data types</p>
+<p>See <a class="reference internal" href="#io-data-type"><span class="std std-ref">Data Types</span></a> section for more references on field formatting.</p>
 </div>
+<section id="information-table">
+<span id="io-infotable"></span><h3>Information Table<a class="headerlink" href="#information-table" title="Link to this heading">#</a></h3>
+<p>An <a class="reference internal" href="#io-attribute"><span class="std std-ref">Information Table</span></a> is a special kind of <a class="reference internal" href="#io-table"><span class="std std-ref">Table</span></a> that stores field information in a listed format.</p>
+<p><strong>Structure rules</strong></p>
+<ol class="arabic simple">
+<li><p>[required] file name signature: <code class="docutils literal notranslate"><span class="pre">{filename}_info</span></code></p></li>
+<li><p>[required] file extension: <code class="docutils literal notranslate"><span class="pre">.csv</span></code></p></li>
+<li><p>[required] column separator: semi-colon <code class="docutils literal notranslate"><span class="pre">;</span></code></p></li>
+<li><p>[required] first row stores field names</p></li>
+<li><p>[required] decimal separator for numbers: <code class="docutils literal notranslate"><span class="pre">.</span></code></p></li>
+<li><p>[required] no-data convention: empty cell</p></li>
+</ol>
+<p><strong>Basic required fields</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 12.5%" />
+<col style="width: 50.0%" />
+<col style="width: 18.8%" />
+<col style="width: 18.8%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Data Type</p></th>
+<th class="head"><p>Units</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">field</span></code></p></td>
+<td><p>Name of field</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>unitless</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">value</span></code></p></td>
+<td><p>Value set for field</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc</span></code></p></td>
+<td><p>n.a.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="important admonition">
+<p class="admonition-title">Extra required fields</p>
+<p>Extra required fields may be also needed, depending on each input file.</p>
+</div>
+<p><strong>Example</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>field;            value
+name;             Mill Creek Model
+alias;            MCM-M001
+color;            blue
+source;           Ipo
+description;      Rainfall-Runoff model
+file_parameters;
+folder_data;     ./data/inputs
+</pre></div>
 </div>
 </section>
 <section id="attribute-table">
 <span id="io-attribute"></span><h3>Attribute Table<a class="headerlink" href="#attribute-table" title="Link to this heading">#</a></h3>
-<p>An <a class="reference internal" href="#io-attribute"><span class="std std-ref">Attribute Table</span></a> is a special kind of <a class="reference internal" href="#io-table"><span class="std std-ref">Table</span></a> that stores extar information about maps.</p>
+<p>An <a class="reference internal" href="#io-attribute"><span class="std std-ref">Attribute Table</span></a> is a special kind of <a class="reference internal" href="#io-table"><span class="std std-ref">Table</span></a> that stores extra information about <a class="reference internal" href="#io-raster"><span class="std std-ref">Raster</span></a> maps. Each column represents a <strong>field</strong> that must be <em>homogeneous</em>. This means that each field stores the same <a class="reference internal" href="#io-data-type"><span class="std std-ref">data type</span></a>.</p>
+<p><strong>Structure rules</strong></p>
+<ol class="arabic simple">
+<li><p>[required] file name signature: <code class="docutils literal notranslate"><span class="pre">{filename}_attributes</span></code></p></li>
+<li><p>[required] file extension: <code class="docutils literal notranslate"><span class="pre">.csv</span></code></p></li>
+<li><p>[required] column separator: semi-colon <code class="docutils literal notranslate"><span class="pre">;</span></code></p></li>
+<li><p>[required] first row stores field names;</p></li>
+<li><p>[required] decimal separator for numbers: <code class="docutils literal notranslate"><span class="pre">.</span></code></p></li>
+<li><p>[required] no-data convention: empty cell</p></li>
+<li><p>[required] homogeneous data type for on each column</p></li>
+</ol>
 <p><strong>Basic required fields</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -518,8 +524,11 @@ A <a class="reference internal" href="#io-raster"><span class="std std-ref">Rast
 </tbody>
 </table>
 </div>
-<p><strong>Extra required fields</strong> may be also needed, depending on each input data.</p>
-<p>Example of an <code class="docutils literal notranslate"><span class="pre">Attribute</span> <span class="pre">Table</span></code>:</p>
+<div class="important admonition">
+<p class="admonition-title">Extra required fields</p>
+<p>Extra required fields may be also needed, depending on each input file.</p>
+</div>
+<p><strong>Example</strong></p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>id;     name; alias;    color;  ndvi_mean
  1;    Water;     W;     blue;       -0.9
  2;   Forest;     F;    green;       0.87
@@ -527,10 +536,6 @@ A <a class="reference internal" href="#io-raster"><span class="std std-ref">Rast
  4;  Pasture;     P;   orange;       0.76
  5;    Urban;     U;  #9AA7A3;       0.24
 </pre></div>
-</div>
-<div class="warning admonition">
-<p class="admonition-title"><code class="docutils literal notranslate"><span class="pre">plans</span></code> is case-sensitive</p>
-<p>Upper case and lower case matters. <code class="docutils literal notranslate"><span class="pre">Name</span></code> is different than <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
 </div>
 <div class="tip admonition">
 <p class="admonition-title">Add non-required fields</p>
@@ -545,32 +550,138 @@ A <a class="reference internal" href="#io-raster"><span class="std std-ref">Rast
 </div>
 </div>
 </section>
+<section id="time-series">
+<span id="io-timeseries"></span><h3>Time Series<a class="headerlink" href="#time-series" title="Link to this heading">#</a></h3>
+<p>A <a class="reference internal" href="#io-timeseries"><span class="std std-ref">Time Series</span></a> in <code class="docutils literal notranslate"><span class="pre">plans</span></code> is a special kind of <a class="reference internal" href="#io-table"><span class="std std-ref">Table</span></a> file that must have a <code class="docutils literal notranslate"><span class="pre">datetime</span></code> text field (preferably in the first column).</p>
+<p><strong>Structure rules</strong></p>
+<ol class="arabic simple">
+<li><p>[required] file name signature: <code class="docutils literal notranslate"><span class="pre">{filename}_series</span></code></p></li>
+<li><p>[required] file extension: <code class="docutils literal notranslate"><span class="pre">.csv</span></code></p></li>
+<li><p>[required] column separator: semi-colon <code class="docutils literal notranslate"><span class="pre">;</span></code></p></li>
+<li><p>[required] first row stores field names</p></li>
+<li><p>[required] decimal separator for numbers: <code class="docutils literal notranslate"><span class="pre">.</span></code></p></li>
+<li><p>[required] no-data convention: empty cell</p></li>
+<li><p>[required] homogeneous data type for on each column</p></li>
+<li><p>[required] <code class="docutils literal notranslate"><span class="pre">datetime</span></code> text field (preferably in the first column)</p></li>
+<li><p>[recommended] <code class="docutils literal notranslate"><span class="pre">datetime</span></code> formatted in <a class="reference external" href="https://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a>: <code class="docutils literal notranslate"><span class="pre">yyyy-mm-dd</span> <span class="pre">HH:MM:SS.SSS</span></code></p></li>
+<li><p>[recommended] homogeneous datetime frequency</p></li>
+<li><p>[recommended] no gaps or voids in data</p></li>
+</ol>
+<p><strong>Basic required fields</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 12.5%" />
+<col style="width: 50.0%" />
+<col style="width: 18.8%" />
+<col style="width: 18.8%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Data Type</p></th>
+<th class="head"><p>Units</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">datetime</span></code></p></td>
+<td><p>Date and time in <a class="reference external" href="https://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a>: <code class="docutils literal notranslate"><span class="pre">yyyy-mm-dd</span> <span class="pre">HH:MM:SS.SSS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>datetime</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="important admonition">
+<p class="admonition-title">Extra required fields</p>
+<p>Extra required fields may be also needed, depending on each input file.</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">Variable fields</p>
+<p>The other fields than <code class="docutils literal notranslate"><span class="pre">datetime</span></code> generally are fields that stores the state of <strong>variables</strong> like precipitation <code class="docutils literal notranslate"><span class="pre">ppt</span></code> and surface air temperature <code class="docutils literal notranslate"><span class="pre">tas</span></code>.</p>
+</div>
+<p><strong>Datetime frequency</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">Series</span></code> also have a homogeneous <strong>datetime frequency</strong>. Recommended frequencies:</p>
+<ul class="simple">
+<li><p>15 minutes</p></li>
+<li><p>20 minutes</p></li>
+<li><p>30 minutes</p></li>
+<li><p>Hourly</p></li>
+<li><p>Daily</p></li>
+</ul>
+<div class="warning admonition">
+<p class="admonition-title">Shorter and longer frequencies</p>
+<p>Shorter frequencies than 15 min are not recommended due to processing performance. Longer frequencies than 1 day are not recommended due to effective hydrological process representation.</p>
+</div>
+<p><strong>Example</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">Series</span></code> files tends to have a large number of rows. The first 10 rows of a daily <code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">Series</span></code> file looks like this:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>               datetime;  ppt;  tas
+2020-01-01 00:00:00.000;  0.0; 20.1
+2020-01-02 00:00:00.000;  5.1; 24.3
+2020-01-03 00:00:00.000;  0.0; 25.8
+2020-01-04 00:00:00.000; 12.9; 21.4
+2020-01-05 00:00:00.000;  0.0; 21.5
+2020-01-06 00:00:00.000;  0.0; 23.6
+2020-01-07 00:00:00.000;  8.6; 20.6
+2020-01-08 00:00:00.000;  4.7; 28.3
+2020-01-09 00:00:00.000;  0.0; 27.1
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">Automatic fill of time information</p>
+<p>During processing, <code class="docutils literal notranslate"><span class="pre">plans</span></code> will fill <em>time</em> information (hours, minute and seconds) if only the <em>date</em> is passed (year, month and day), like in the above example.</p>
+</div>
+<div class="important admonition">
+<p class="admonition-title">Small gaps and voids in <code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">Series</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">plans</span></code> will try to fill or <strong>interpolate</strong> small gaps and voids in a given <code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">Series</span></code>. However, be aware that this may cause unnoticed impacts on model outputs. A best practice is to interpolate and fill voids <em>prior</em> to the processing so users can understand what is going on.</p>
+<p>For instance, consider the following <code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">Series</span></code> that has a <strong>gap</strong> (missing Jan/3 and Jan/4 dates) and a <strong>void</strong> for <code class="docutils literal notranslate"><span class="pre">ppt</span></code> in Jan/8:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>               <span class="n">datetime</span><span class="p">;</span>  <span class="n">ppt</span><span class="p">;</span>  <span class="n">tas</span>
+<span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">20.1</span>
+<span class="hll"><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">5.1</span><span class="p">;</span> <span class="mf">24.3</span>
+</span><span class="hll"><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">05</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">21.5</span>
+</span><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">06</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">23.6</span>
+<span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">07</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">8.6</span><span class="p">;</span> <span class="mf">20.6</span>
+<span class="hll"><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">08</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>     <span class="p">;</span> <span class="mf">28.3</span>
+</span><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">09</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">27.1</span>
+</pre></div>
+</div>
+<p>In this case, <code class="docutils literal notranslate"><span class="pre">plans</span></code> would interpolate temperature <code class="docutils literal notranslate"><span class="pre">tas</span></code> and fill with 0 the precipitation <code class="docutils literal notranslate"><span class="pre">ppt</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>               <span class="n">datetime</span><span class="p">;</span>  <span class="n">ppt</span><span class="p">;</span>  <span class="n">tas</span>
+<span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">20.1</span>
+<span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">5.1</span><span class="p">;</span> <span class="mf">24.3</span>
+<span class="hll"><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">23.3</span>
+</span><span class="hll"><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">04</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">22.4</span>
+</span><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">05</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">21.5</span>
+<span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">06</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">23.6</span>
+<span class="hll"><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">07</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">8.6</span><span class="p">;</span> <span class="mf">20.6</span>
+</span><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">08</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">28.3</span>
+<span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">09</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">27.1</span>
+</pre></div>
+</div>
+</div>
+</section>
 </section>
 <section id="raster">
 <span id="io-raster"></span><h2>Raster<a class="headerlink" href="#raster" title="Link to this heading">#</a></h2>
-<p>A <strong>Raster</strong> in <code class="docutils literal notranslate"><span class="pre">plans</span></code> is a map of data defined by a matrix or grid of cells
-storing numbers (int or float) and encoded in way that it can be
-georreferenced in a given Coordinate Reference System (<code class="docutils literal notranslate"><span class="pre">CRS</span></code>).</p>
-<p>Single Raster files must follow this general rules:</p>
+<p>A <strong>Raster</strong> in <code class="docutils literal notranslate"><span class="pre">plans</span></code> is a map of data defined by a matrix or grid of cells storing numbers (int or float) and encoded in way that it can be georeferenced in a given Coordinate Reference System (<code class="docutils literal notranslate"><span class="pre">CRS</span></code>).</p>
+<p><strong>Structure rules</strong></p>
+<p>Rule set for a single file:</p>
 <ol class="arabic simple">
-<li><p>[mandatory] <a class="reference internal" href="#io-tif-file"><span class="std std-ref">GeoTIFF file</span></a> with <code class="docutils literal notranslate"><span class="pre">.tif</span></code> extension;</p></li>
-<li><p>[recommended] projected <code class="docutils literal notranslate"><span class="pre">CRS</span></code> so all cells are measured in meters;</p></li>
+<li><p>[required] <a class="reference internal" href="#io-tif-file"><span class="std std-ref">GeoTIFF</span></a> file with <code class="docutils literal notranslate"><span class="pre">.tif</span></code> extension</p></li>
+<li><p>[recommended] projected <code class="docutils literal notranslate"><span class="pre">CRS</span></code> so all cells are measured in meters</p></li>
 </ol>
-<p>Multiple Raster files must follow this general rules:</p>
+<p>Rule set for multiple files:</p>
 <ol class="arabic simple">
-<li><p>[mandatory] files are aligned for the same spatial extension;</p></li>
-<li><p>[mandatory] files are aligned for the same spatial resolution;</p></li>
+<li><p>[required] files are aligned for the same spatial extension</p></li>
+<li><p>[required] files are aligned for the same spatial resolution</p></li>
 </ol>
 <div class="important admonition">
-<p class="admonition-title">Grid shape must be the same</p>
-<p>The rule for multiple files implies that all <code class="docutils literal notranslate"><span class="pre">Raster</span></code> files in a given project must share the same grid shape (number or rows and columns).</p>
+<p class="admonition-title">Raster grid shape must be the same</p>
+<p>The rule set for multiple files implies that all <code class="docutils literal notranslate"><span class="pre">Raster</span></code> files in a given project must share the same grid shape (number or rows and columns).</p>
 </div>
-<section id="geotiff-format">
-<span id="io-tif-file"></span><h3>GeoTIFF format<a class="headerlink" href="#geotiff-format" title="Link to this heading">#</a></h3>
-<p>The <a class="reference external" href="https://en.wikipedia.org/wiki/GeoTIFF">GeoTIFF</a> format is the standard <code class="docutils literal notranslate"><span class="pre">Raster</span></code> file in <code class="docutils literal notranslate"><span class="pre">plans</span></code>.
-This is a well-known raster file distributed by most of dataset providers.</p>
-<p>The advantages of <code class="docutils literal notranslate"><span class="pre">GeoTIFF</span></code> is that it stores data and metadata together in the same file.
-<code class="docutils literal notranslate"><span class="pre">plans</span></code> parse <code class="docutils literal notranslate"><span class="pre">GeoTIFF</span></code> files using the <a class="reference external" href="https://rasterio.readthedocs.io/en/stable/index.html">Rasterio</a> libray.</p>
+<section id="io-tif-file">
+<span id="id1"></span><h3>GeoTIFF file<a class="headerlink" href="#io-tif-file" title="Link to this heading">#</a></h3>
+<p>The <a class="reference external" href="https://en.wikipedia.org/wiki/GeoTIFF">GeoTIFF</a> file is the standard <code class="docutils literal notranslate"><span class="pre">Raster</span></code> file in <code class="docutils literal notranslate"><span class="pre">plans</span></code>. This is a well-known raster file distributed by most of dataset providers.</p>
+<p>The advantages of <code class="docutils literal notranslate"><span class="pre">GeoTIFF</span></code> is that it stores data and metadata together in the same file. <code class="docutils literal notranslate"><span class="pre">plans</span></code> parse <code class="docutils literal notranslate"><span class="pre">GeoTIFF</span></code> files using the <a class="reference external" href="https://rasterio.readthedocs.io/en/stable/index.html">Rasterio</a> libray.</p>
 <div class="seealso admonition">
 <p class="admonition-title">GDAL reference</p>
 <p>More details about the <a class="reference external" href="https://gdal.org/en/stable/drivers/raster/gtiff.html">GeoTIFF file</a> is given in GDAL documentation.</p>
@@ -579,63 +690,76 @@ This is a well-known raster file distributed by most of dataset providers.</p>
 <section id="time-raster">
 <span id="io-timeraster"></span><h3>Time Raster<a class="headerlink" href="#time-raster" title="Link to this heading">#</a></h3>
 <p>A <code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">Raster</span></code> in <code class="docutils literal notranslate"><span class="pre">plans</span></code> is a special kind of <a class="reference internal" href="#io-raster"><span class="std std-ref">Raster</span></a> file in which the data refers to a <strong>snapshot of the time line</strong>.</p>
-<p>Single Time Raster files must follow this general rules:</p>
+<p><strong>Structure rules</strong></p>
+<p>Rule set for a single file:</p>
 <ol class="arabic simple">
-<li><p>[mandatory] <a class="reference internal" href="#io-tif-file"><span class="std std-ref">GeoTIFF file</span></a>;</p></li>
-<li><p>[mandatory] named with a date-time suffix separated by underscore <code class="docutils literal notranslate"><span class="pre">_</span></code>: <code class="docutils literal notranslate"><span class="pre">map_2021-09-02.tif</span></code>;</p></li>
-<li><p>[recommended] projected <code class="docutils literal notranslate"><span class="pre">CRS</span></code> so all cells are measured in meters;</p></li>
+<li><p>[required] <a class="reference internal" href="#io-tif-file"><span class="std std-ref">GeoTIFF</span></a> file with <code class="docutils literal notranslate"><span class="pre">.tif</span></code> extension</p></li>
+<li><p>[required] file name signature: <code class="docutils literal notranslate"><span class="pre">{filename}_{date}</span></code></p></li>
+<li><p>[recommended] projected <code class="docutils literal notranslate"><span class="pre">CRS</span></code> so all cells are measured in meters</p></li>
 </ol>
-<p>Same rules applies for multiple files.</p>
-<p>For instance, Land Use Land Cover is a spatial data that may require many Time Raster files:</p>
+<p>Rule set for multiple files:</p>
+<ol class="arabic simple">
+<li><p>[required] files are aligned for the same spatial extension</p></li>
+<li><p>[required] files are aligned for the same spatial resolution</p></li>
+</ol>
+<p><strong>Example</strong></p>
+<p>For instance, Land Use Land Cover is a spatial data that may require many <code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">Raster</span></code> files:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">{</span>folder<span class="o">}</span>/
-<span class="w">   </span>├──<span class="w"> </span>lulc_2020.tif<span class="w">       </span><span class="c1"># Raster - Land Use in 2020</span>
-<span class="w">   </span>├──<span class="w"> </span>lulc_2021.tif<span class="w">       </span><span class="c1"># Raster - Land Use in 2021</span>
-<span class="w">   </span>└──<span class="w"> </span>lulc_2022.tif<span class="w">       </span><span class="c1"># Raster - Land Use in 2022</span>
+<span class="w">   </span>├──<span class="w"> </span>lulc_2020-01-01.tif<span class="w">       </span><span class="c1"># Raster - Land Use in 2020</span>
+<span class="w">   </span>├──<span class="w"> </span>lulc_2021-01-01.tif<span class="w">       </span><span class="c1"># Raster - Land Use in 2021</span>
+<span class="w">   </span>└──<span class="w"> </span>lulc_2022-01-01.tif<span class="w">       </span><span class="c1"># Raster - Land Use in 2022</span>
 </pre></div>
 </div>
 </section>
 <section id="quali-raster">
 <span id="io-qualiraster"></span><h3>Quali Raster<a class="headerlink" href="#quali-raster" title="Link to this heading">#</a></h3>
 <p>A Quali Raster in <code class="docutils literal notranslate"><span class="pre">plans</span></code> is a special kind of <a class="reference internal" href="#io-raster"><span class="std std-ref">Raster</span></a> file in which data is qualitative (classes or ids), and an auxiliary <a class="reference internal" href="#io-attribute"><span class="std std-ref">Attribute Table</span></a> must be provided.</p>
-<p>Single <code class="docutils literal notranslate"><span class="pre">Quali</span> <span class="pre">Raster</span></code> files must follow this general rules:</p>
+<p><strong>Structure rules</strong></p>
+<p>Rule set for a single file:</p>
 <ol class="arabic simple">
-<li><p>[mandatory] a <a class="reference internal" href="#io-tif-file"><span class="std std-ref">GeoTIFF file</span></a> for map data;</p></li>
-<li><p>[mandatory] an <a class="reference internal" href="#io-attribute"><span class="std std-ref">Attribute Table</span></a>;</p></li>
-<li><p>[recommended] projected <code class="docutils literal notranslate"><span class="pre">CRS</span></code> so all cells are measured in meters;</p></li>
+<li><p>[required] <a class="reference internal" href="#io-tif-file"><span class="std std-ref">GeoTIFF</span></a> file with <code class="docutils literal notranslate"><span class="pre">.tif</span></code> extension</p></li>
+<li><p>[required] an auxiliar <a class="reference internal" href="#io-attribute"><span class="std std-ref">Attribute Table</span></a> with same name of <a class="reference internal" href="#io-tif-file"><span class="std std-ref">GeoTIFF</span></a></p></li>
+<li><p>[recommended] projected <code class="docutils literal notranslate"><span class="pre">CRS</span></code> so all cells are measured in meters</p></li>
 </ol>
-<p>Same rules applies for multiple files.</p>
+<p>Rule set for multiple files:</p>
+<ol class="arabic simple">
+<li><p>[required] files are aligned for the same spatial extension</p></li>
+<li><p>[required] files are aligned for the same spatial resolution</p></li>
+</ol>
+<p><strong>Example</strong></p>
 <p>For instance, a <code class="docutils literal notranslate"><span class="pre">Quali</span> <span class="pre">Raster</span></code> for Land Use Land Cover only stores the <code class="docutils literal notranslate"><span class="pre">id</span></code> code for each land use class. More information and parameters must be stored in the auxiliar <code class="docutils literal notranslate"><span class="pre">Attribute</span> <span class="pre">Table</span></code>.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">{</span>folder<span class="o">}</span>/
-<span class="w">   </span>├──<span class="w"> </span>lulc_2020.tif<span class="w">       </span><span class="c1"># Raster - Land Use in 2020</span>
-<span class="w">   </span>└──<span class="w"> </span>lulc_info.csv<span class="w">       </span><span class="c1"># &lt;-- Attribute Table</span>
+<span class="w">   </span>├──<span class="w"> </span>lulc_2020-01-01.tif<span class="w">       </span><span class="c1"># Raster - Land Use in 2020</span>
+<span class="w">   </span>└──<span class="w"> </span>lulc_attributes.csv<span class="w">       </span><span class="c1"># &lt;-- Attribute Table</span>
 </pre></div>
 </div>
 <div class="note admonition">
-<p class="admonition-title">One <code class="docutils literal notranslate"><span class="pre">Attribute</span> <span class="pre">Table</span></code> can feed many maps</p>
-<p>The same <code class="docutils literal notranslate"><span class="pre">Attribute</span> <span class="pre">Table</span></code> file can supply the information required of many <code class="docutils literal notranslate"><span class="pre">Raster</span></code> maps.
+<p class="admonition-title">One <code class="docutils literal notranslate"><span class="pre">Attribute</span> <span class="pre">Table</span></code> can feed multiple maps</p>
+<p>The same <code class="docutils literal notranslate"><span class="pre">Attribute</span> <span class="pre">Table</span></code> file can supply the information required of multiple <code class="docutils literal notranslate"><span class="pre">Raster</span></code> maps.
 For instance, consider a set of 3 Land Use Land Cover maps, for different years.
 They all can use the same <code class="docutils literal notranslate"><span class="pre">Attribute</span> <span class="pre">Table</span></code> file:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">{</span>folder<span class="o">}</span>/
-<span class="w">    </span>├──<span class="w"> </span>lulc_2020.tif
-<span class="w">    </span>├──<span class="w"> </span>lulc_2021.tif
-<span class="w">    </span>├──<span class="w"> </span>lulc_2022.tif
-<span class="w">    </span>└──<span class="w"> </span>lulc_info.csv<span class="w">       </span><span class="c1"># &lt;-- Attribute Table</span>
+<span class="w">    </span>├──<span class="w"> </span>lulc_2020-01-01.tif<span class="w">   </span><span class="c1"># &lt;-- multiple Rasters</span>
+<span class="w">    </span>├──<span class="w"> </span>lulc_2021-01-01.tif
+<span class="w">    </span>├──<span class="w"> </span>lulc_2022-01-01.tif
+<span class="w">    </span>└──<span class="w"> </span>lulc_attributes.csv<span class="w">   </span><span class="c1"># &lt;-- single Attribute Table</span>
 </pre></div>
 </div>
 </div>
 </section>
 <section id="time-quali-raster">
 <span id="io-timequaliraster"></span><h3>Time Quali Raster<a class="headerlink" href="#time-quali-raster" title="Link to this heading">#</a></h3>
-<p>A <code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">Quali</span> <span class="pre">Raster</span></code> in <code class="docutils literal notranslate"><span class="pre">plans</span></code> is a special kind of <a class="reference internal" href="#io-raster"><span class="std std-ref">Raster</span></a> file that arises when the map is both a <a class="reference internal" href="#io-timeraster"><span class="std std-ref">Time Raster</span></a> and a <a class="reference internal" href="#io-qualiraster"><span class="std std-ref">Quali Raster</span></a>. Land Use maps are the classical example, as shown above.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">Quali</span> <span class="pre">Raster</span></code> in <code class="docutils literal notranslate"><span class="pre">plans</span></code> is a special kind of <a class="reference internal" href="#io-raster"><span class="std std-ref">Raster</span></a> file that arises when the map is both a <a class="reference internal" href="#io-timeraster"><span class="std std-ref">Time Raster</span></a> and a <a class="reference internal" href="#io-qualiraster"><span class="std std-ref">Quali Raster</span></a>. Land Use maps are the classical example, as shown above. Rules overlap.</p>
 </section>
 </section>
 <section id="data-types">
 <span id="io-data-type"></span><h2>Data Types<a class="headerlink" href="#data-types" title="Link to this heading">#</a></h2>
-<p>Data Type is the encoding of data at the hardware level. For beginners, one may understand data types by this primitive classification:</p>
+<p><strong>Data Type</strong> is the encoding of data at the hardware level. For beginners, one may understand data types by this primitive classification:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code> text string: common text characters;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">int</span></code> integer numbers: 2, 0, 1000;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">float</span></code> real numbers: 1.2, -3.44.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code> text string: common text characters</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int</span></code> integer numbers: 2, 0, 1000</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">float</span></code> real numbers: 1.2, -3.44</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">misc</span></code> miscellaneous, undefined data type</p></li>
 </ul>
 <div class="important admonition">
 <p class="admonition-title">Detailed data types</p>
@@ -651,8 +775,8 @@ They all can use the same <code class="docutils literal notranslate"><span class
 </section>
 <section id="data-types-reference">
 <span id="io-data-type-reference"></span><h3>Data Types Reference<a class="headerlink" href="#data-types-reference" title="Link to this heading">#</a></h3>
-<div class="pst-scrollable-table-container"><table class="table" id="id1">
-<caption><span class="caption-text">Data Types Reference Table</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
+<div class="pst-scrollable-table-container"><table class="table" id="id2">
+<caption><span class="caption-text">Data Types Reference Table</span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Name</p></th>
 <th class="head"><p>Label</p></th>
@@ -827,12 +951,13 @@ They all can use the same <code class="docutils literal notranslate"><span class
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#table">Table</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#time-series">Time Series</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#information-table">Information Table</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#attribute-table">Attribute Table</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#time-series">Time Series</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#raster">Raster</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geotiff-format">GeoTIFF format</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#io-tif-file">GeoTIFF file</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#time-raster">Time Raster</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#quali-raster">Quali Raster</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#time-quali-raster">Time Quali Raster</a></li>

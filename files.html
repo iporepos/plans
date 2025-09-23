@@ -365,9 +365,7 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <a class="reference external image-reference" href="https://github.com/iporepos/plans"><img alt="GitHub repository" src="https://img.shields.io/badge/GitHub-Source-black?logo=github" />
-</a>
-<section id="files">
+  <section id="files">
 <span id="id1"></span><h1>Files<a class="headerlink" href="#files" title="Link to this heading">#</a></h1>
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
@@ -386,10 +384,10 @@
 <section id="overview">
 <span id="files-overview"></span><h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
 <p>The file system in <code class="docutils literal notranslate"><span class="pre">plans</span></code> is quite straight-forward.</p>
-<p>All files are always formatted in only two ways:</p>
+<p>All files are always formatted in two ways:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">csv</span></code> format for <a class="reference internal" href="data_structures.html#io-table"><span class="std std-ref">Table</span></a> structure;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tif</span></code> format for <a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a> (map) structure.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GeoTIFF</span></code> format for <a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a> (map) structure.</p></li>
 </ul>
 <p>All files fall into three main I/O categories:</p>
 <ol class="arabic simple">
@@ -408,15 +406,141 @@
 </section>
 <section id="input-files">
 <span id="io-input-files"></span><h2>Input Files<a class="headerlink" href="#input-files" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p>An <strong>Input File</strong> is a data file that users must provide by themselves. Input Files lives in under respective subfolders under the <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder of a project.</p>
+<section id="required-input-files">
+<span id="io-input-files-required"></span><h3>Required Input Files<a class="headerlink" href="#required-input-files" title="Link to this heading">#</a></h3>
+<p>A <strong>Required Input File</strong> is an Input File that are necessary for a viable simulation run of <code class="docutils literal notranslate"><span class="pre">plans</span></code>.
+In other words: it is impossible to run without the file.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>File</p></th>
+<th class="head"><p>Name</p></th>
+<th class="head"><p>Structure</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">basin.tif</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-basin"><span class="std std-ref">Basin Area</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">climate_series.csv</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-climate-series"><span class="std std-ref">Climate Series</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-timeseries"><span class="std std-ref">Time Series</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hand.tif</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-hand"><span class="std std-ref">Height Above Nearest Drainage</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ldd.tif</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-ldd"><span class="std std-ref">Local Drain Direction</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-qualiraster"><span class="std std-ref">Quali Raster</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lulc_attributes.csv</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-lulc-attributes"><span class="std std-ref">Land Use Attributes</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-attribute"><span class="std std-ref">Attribute Table</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lulc_{date}.tif</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-lulc-date"><span class="std std-ref">Land Use</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-timequaliraster"><span class="std std-ref">Time Quali Raster</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">parameters_info.csv</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-parameters-info"><span class="std std-ref">Parameters Of Upscaled Model</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-infotable"><span class="std std-ref">Info Table</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">project_info.csv</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-project-info"><span class="std std-ref">Project Specifications</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-infotable"><span class="std std-ref">Info Table</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">soils.tif</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-soils"><span class="std std-ref">Soils</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-qualiraster"><span class="std std-ref">Quali Raster</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">soils_attributes.csv</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-soils-attributes"><span class="std std-ref">Soils Attributes</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-attribute"><span class="std std-ref">Attribute Table</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">twi.tif</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-twi"><span class="std std-ref">Topographic Wetness Index</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="optional-input-files">
+<span id="io-input-files-optional"></span><h3>Optional Input Files<a class="headerlink" href="#optional-input-files" title="Link to this heading">#</a></h3>
+<p>An <strong>Optional Input File</strong> is an Input File that are used in <code class="docutils literal notranslate"><span class="pre">plans</span></code> for extra simulation or assessments. If not provided, <code class="docutils literal notranslate"><span class="pre">plans</span></code> may skip the extra simulation or parse default built-in data.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>File</p></th>
+<th class="head"><p>Name</p></th>
+<th class="head"><p>Structure</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dem.tif</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-dem"><span class="std std-ref">Digital Elevation Model</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">flowacc.tif</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-flowacc"><span class="std std-ref">Flow Accumulation</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hillshade.tif</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-hillshade"><span class="std std-ref">Hill Shade</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">qobs_series.csv</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-qobs-series"><span class="std std-ref">Streamflow Data</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-timeseries"><span class="std std-ref">Time Series</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">slope.tif</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-slope"><span class="std std-ref">Slope</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uparea.tif</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-uparea"><span class="std std-ref">Upslope Area</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 </section>
 <section id="intermediate-files">
 <span id="io-intermediate-files"></span><h2>Intermediate Files<a class="headerlink" href="#intermediate-files" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p>An <strong>Intermediate File</strong> is a data file that is generated by <code class="docutils literal notranslate"><span class="pre">plans</span></code> during <strong>setup processes</strong> prior to simulation or assessment <strong>main process</strong>. They are necessary for a viable simulation run of <code class="docutils literal notranslate"><span class="pre">plans</span></code>. Like Input Files, Intermediate File lives in under respective subfolders under the <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder of a project.</p>
+<div class="note admonition">
+<p class="admonition-title">Skipping setup processes</p>
+<p>Users can skip setup processes by providing Intermediate Files to a project, but it must be consistent with <code class="docutils literal notranslate"><span class="pre">plans</span></code> standards.</p>
+</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>File</p></th>
+<th class="head"><p>Name</p></th>
+<th class="head"><p>Structure</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dist_area_hist.csv</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-dist-area-hist"><span class="std std-ref">Distance Vs Area Histogram</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-table"><span class="std std-ref">Table</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dto.tif</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-dto"><span class="std std-ref">Distance To Outlet</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tsi.tif</span></code></p></td>
+<td><p><a class="reference internal" href="files_index.html#io-tsi"><span class="std std-ref">Topographic Saturation Index</span></a></p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section id="output-files">
 <span id="io-output-files"></span><h2>Output Files<a class="headerlink" href="#output-files" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p>An <strong>Output File</strong> is a data file generated by <code class="docutils literal notranslate"><span class="pre">plans</span></code> during simulation or assessment <strong>main process</strong>. Output Files lives in the respective process folder under <code class="docutils literal notranslate"><span class="pre">outputs/</span></code> of a project.</p>
 </section>
 </section>
 
@@ -469,7 +593,11 @@
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contents">Contents</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#input-files">Input Files</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#input-files">Input Files</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#required-input-files">Required Input Files</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-input-files">Optional Input Files</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#intermediate-files">Intermediate Files</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#output-files">Output Files</a></li>
 </ul>

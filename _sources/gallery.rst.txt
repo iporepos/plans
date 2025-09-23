@@ -1,7 +1,3 @@
-.. a cool badge for the source.
-
-.. include:: ./badge_source.rst
-
 .. _gallery:
 
 Gallery

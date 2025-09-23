@@ -1,5 +1,3 @@
-.. include:: ./includes/badge_source.rst
-
 .. include:: ./_links.rst
 
 .. _files-data-structures:
@@ -27,16 +25,19 @@ Input files must be formatted in by **standard** way, otherwise the tool is not 
 Table
 ============================================
 
-A ``Table`` in ``plans`` is a frame of data defined by rows and columns. Each column represents a **field** that must be *homogeneous*. This means that each field stores the same :ref:`data type<io-data-type>`. The first row stores the names of the fields. The subsequent rows stores the data itself.
+A ``Table`` in ``plans`` is a frame of data defined by **rows** and **columns**. Usually, the first row stores the **names** of the fields and the subsequent rows stores the data itself.
 
-Tables must follow this general rules:
+**Structure rules**
 
-#. [mandatory] file extension: ``.csv``;
-#. [mandatory] homogeneous data type for on each column;
-#. [mandatory] column separator: semi-colon ``;``;
-#. [mandatory] decimal separator for numbers: ``.``.
+#. [required] file extension: ``.csv``
+#. [required] column separator: semi-colon ``;``
+#. [required] first row stores field names
+#. [required] decimal separator for numbers: ``.``
+#. [required] no-data convention: empty cell
 
-For example, in the following table ``id`` is an integer number field, ``ndvi_mean`` is a real number field and the remaining are text fields.
+**Example**
+
+In the following table ``id`` is an integer number ``int`` field, ``ndvi_mean`` is a real number ``float`` field and the remaining are text ``str`` fields.
 
 .. code-block:: text
 
@@ -48,10 +49,130 @@ For example, in the following table ``id`` is an integer number field, ``ndvi_me
     5;    Urban;     U;   9AA7A3;       0.24
 
 
-.. admonition:: Column names standards
+.. admonition:: ``plans`` is case-sensitive
    :class: warning
 
-   Field/column names may follow standards also, see below.
+   Upper case and lower case matters. ``Name`` is different than ``name``.
+
+
+.. admonition:: Column names standards
+   :class: important
+
+   Field/column names may follow standards also
+
+
+.. admonition:: Data types
+   :class: important
+
+   See :ref:`Data Types<io-data-type>` section for more references on field formatting.
+
+
+.. _io-infotable:
+
+Information Table
+--------------------------------------------
+
+An :ref:`Information Table<io-attribute>` is a special kind of :ref:`Table<io-table>` that stores field information in a listed format.
+
+
+**Structure rules**
+
+#. [required] file name signature: ``{filename}_info``
+#. [required] file extension: ``.csv``
+#. [required] column separator: semi-colon ``;``
+#. [required] first row stores field names
+#. [required] decimal separator for numbers: ``.``
+#. [required] no-data convention: empty cell
+
+
+**Basic required fields**
+
+.. csv-table::
+   :header: "Name", "Description", "Data Type", "Units"
+   :widths: 10, 40, 15, 15
+
+   ``field``, "Name of field", ``str``, unitless
+   ``value``, "Value set for field", ``misc``, n.a.
+
+
+.. admonition:: Extra required fields
+   :class: important
+
+   Extra required fields may be also needed, depending on each input file.
+
+
+**Example**
+
+.. code-block:: text
+
+   field;            value
+   name;             Mill Creek Model
+   alias;            MCM-M001
+   color;            blue
+   source;           Ipo
+   description;      Rainfall-Runoff model
+   file_parameters;
+   folder_data;     ./data/inputs
+
+
+.. _io-attribute:
+
+Attribute Table
+--------------------------------------------
+
+An :ref:`Attribute Table<io-attribute>` is a special kind of :ref:`Table<io-table>` that stores extra information about :ref:`Raster<io-raster>` maps. Each column represents a **field** that must be *homogeneous*. This means that each field stores the same :ref:`data type<io-data-type>`.
+
+**Structure rules**
+
+#. [required] file name signature: ``{filename}_attributes``
+#. [required] file extension: ``.csv``
+#. [required] column separator: semi-colon ``;``
+#. [required] first row stores field names;
+#. [required] decimal separator for numbers: ``.``
+#. [required] no-data convention: empty cell
+#. [required] homogeneous data type for on each column
+
+**Basic required fields**
+
+.. csv-table::
+   :header: "Name", "Description", "Data Type", "Units"
+   :widths: 10, 40, 15, 15
+
+   ``id``, "Unique numeric code", ``int``, index
+   ``name``, "Unique name", ``str``, n.a.
+   ``alias``, "Unique short nickname or label", ``str``, n.a.
+   ``color``, "Color HEX code or name available in `Matplotlib`_", ``str``, n.a.
+
+.. admonition:: Extra required fields
+   :class: important
+
+   Extra required fields may be also needed, depending on each input file.
+
+**Example**
+
+.. code-block:: text
+
+   id;     name; alias;    color;  ndvi_mean
+    1;    Water;     W;     blue;       -0.9
+    2;   Forest;     F;    green;       0.87
+    3;    Crops;     C;  magenta;       0.42
+    4;  Pasture;     P;   orange;       0.76
+    5;    Urban;     U;  #9AA7A3;       0.24
+
+
+.. admonition:: Add non-required fields
+   :class: tip
+
+   Any other fields (columns) other than the required will be ignored so  you can add convenient and useful extra non-required fields. For instance, here a ``description`` text field was added for holding more information about each land use class:
+
+   .. code-block:: text
+
+      id;     name; alias;    color;   ndvi_mean                          description
+       1;    Water;     W;     blue;       -0.9;              Lakes, rivers and ocean
+       2;   Forest;     F;    green;       0.87;     Forests (natural and cultivated)
+       3;    Crops;     C;  magenta;       0.42;            Conventional annual crops
+       4;  Pasture;     P;   orange;       0.76;  Conventional pasture and grasslands
+       5;    Urban;     U;   9AA7A3;       0.24;                      Developed areas
 
 
 .. _io-timeseries:
@@ -61,14 +182,62 @@ Time Series
 
 A :ref:`Time Series<io-timeseries>` in ``plans`` is a special kind of :ref:`Table<io-table>` file that must have a ``datetime`` text field (preferably in the first column).
 
-Time Series must follow this rules:
 
-#. [mandatory] ``datetime`` text field (preferably in the first column);
-#. [recommended] ``datetime`` formatted in `ISO 8601`_: ``yyyy-mm-dd HH:MM:SS.SSS`` (year, month, day, hour, minute and seconds).
-#. [recommended] homogeneous datetime frequency (every 15 min, hourly, daily, etc).
-#. [recommended] no gaps or voids in data.
+**Structure rules**
 
-The other fields than ``datetime`` generally are real number fields that stores the state of **variables** like precipitation ``ppt`` and surface air temperature ``tas``. Time Series files tends to have a large number of rows. The first 10 rows of a daily Time Series file looks like this:
+#. [required] file name signature: ``{filename}_series``
+#. [required] file extension: ``.csv``
+#. [required] column separator: semi-colon ``;``
+#. [required] first row stores field names
+#. [required] decimal separator for numbers: ``.``
+#. [required] no-data convention: empty cell
+#. [required] homogeneous data type for on each column
+#. [required] ``datetime`` text field (preferably in the first column)
+#. [recommended] ``datetime`` formatted in `ISO 8601`_: ``yyyy-mm-dd HH:MM:SS.SSS``
+#. [recommended] homogeneous datetime frequency
+#. [recommended] no gaps or voids in data
+
+
+**Basic required fields**
+
+.. csv-table::
+   :header: "Name", "Description", "Data Type", "Units"
+   :widths: 10, 40, 15, 15
+
+   ``datetime``, "Date and time in `ISO 8601`_: ``yyyy-mm-dd HH:MM:SS.SSS``", ``str``, datetime
+
+
+.. admonition:: Extra required fields
+   :class: important
+
+   Extra required fields may be also needed, depending on each input file.
+
+
+.. admonition:: Variable fields
+   :class: note
+
+   The other fields than ``datetime`` generally are fields that stores the state of **variables** like precipitation ``ppt`` and surface air temperature ``tas``.
+
+
+**Datetime frequency**
+
+``Time Series`` also have a homogeneous **datetime frequency**. Recommended frequencies:
+
+- 15 minutes
+- 20 minutes
+- 30 minutes
+- Hourly
+- Daily
+
+.. admonition:: Shorter and longer frequencies
+   :class: warning
+
+   Shorter frequencies than 15 min are not recommended due to processing performance. Longer frequencies than 1 day are not recommended due to effective hydrological process representation.
+
+
+**Example**
+
+``Time Series`` files tends to have a large number of rows. The first 10 rows of a daily ``Time Series`` file looks like this:
 
 .. code-block:: text
 
@@ -82,7 +251,6 @@ The other fields than ``datetime`` generally are real number fields that stores 
    2020-01-07 00:00:00.000;  8.6; 20.6
    2020-01-08 00:00:00.000;  4.7; 28.3
    2020-01-09 00:00:00.000;  0.0; 27.1
-                      ... ;  ...; ...
 
 .. admonition:: Automatic fill of time information
    :class: note
@@ -90,24 +258,10 @@ The other fields than ``datetime`` generally are real number fields that stores 
    During processing, ``plans`` will fill *time* information (hours, minute and seconds) if only the *date* is passed (year, month and day), like in the above example.
 
 
-``Time Series`` also have a **datetime frequency**. Recommended frequencies:
-
-- 15 minutes;
-- 20 minutes;
-- 30 minutes;
-- Hourly;
-- Daily.
-
-.. admonition:: Shorter and longer frequencies
-   :class: warning
-
-   Shorter frequencies than 15 min are not recommended due to processing performance. Longer frequencies than 1 day are not recommended due to effective hydrological process representation.
-
-
-.. admonition:: Small gaps and voids in Time Series
+.. admonition:: Small gaps and voids in ``Time Series``
    :class: important
 
-   ``plans`` will try to fill or **interpolate** small gaps and voids in a given Time Series. However, be aware that this may cause unnoticed impacts on model outputs. A best practice is to interpolate and fill voids *prior* to the processing so users can understand what is going on.
+   ``plans`` will try to fill or **interpolate** small gaps and voids in a given ``Time Series``. However, be aware that this may cause unnoticed impacts on model outputs. A best practice is to interpolate and fill voids *prior* to the processing so users can understand what is going on.
 
    For instance, consider the following ``Time Series`` that has a **gap** (missing Jan/3 and Jan/4 dates) and a **void** for ``ppt`` in Jan/8:
 
@@ -140,95 +294,40 @@ The other fields than ``datetime`` generally are real number fields that stores 
        2020-01-09 00:00:00.000;  0.0; 27.1
 
 
-.. _io-attribute:
-
-Attribute Table
---------------------------------------------
-
-An :ref:`Attribute Table<io-attribute>` is a special kind of :ref:`Table<io-table>` that stores extar information about maps.
-
-**Basic required fields**
-
-.. csv-table::
-   :header: "Name", "Description", "Data Type", "Units"
-   :widths: 10, 40, 15, 15
-
-   ``id``, "Unique numeric code", ``int``, index
-   ``name``, "Unique name", ``str``, n.a.
-   ``alias``, "Unique short nickname or label", ``str``, n.a.
-   ``color``, "Color HEX code or name available in `Matplotlib`_", ``str``, n.a.
-
-
-**Extra required fields** may be also needed, depending on each input data.
-
-Example of an ``Attribute Table``:
-
-.. code-block:: text
-
-   id;     name; alias;    color;  ndvi_mean
-    1;    Water;     W;     blue;       -0.9
-    2;   Forest;     F;    green;       0.87
-    3;    Crops;     C;  magenta;       0.42
-    4;  Pasture;     P;   orange;       0.76
-    5;    Urban;     U;  #9AA7A3;       0.24
-
-
-.. admonition:: ``plans`` is case-sensitive
-   :class: warning
-
-   Upper case and lower case matters. ``Name`` is different than ``name``.
-
-
-.. admonition:: Add non-required fields
-   :class: tip
-
-   Any other fields (columns) other than the required will be ignored so  you can add convenient and useful extra non-required fields. For instance, here a ``description`` text field was added for holding more information about each land use class:
-
-   .. code-block:: text
-
-      id;     name; alias;    color;   ndvi_mean                          description
-       1;    Water;     W;     blue;       -0.9;              Lakes, rivers and ocean
-       2;   Forest;     F;    green;       0.87;     Forests (natural and cultivated)
-       3;    Crops;     C;  magenta;       0.42;            Conventional annual crops
-       4;  Pasture;     P;   orange;       0.76;  Conventional pasture and grasslands
-       5;    Urban;     U;   9AA7A3;       0.24;                      Developed areas
-
 
 .. _io-raster:
 
 Raster
 ============================================
 
-A **Raster** in ``plans`` is a map of data defined by a matrix or grid of cells
-storing numbers (int or float) and encoded in way that it can be
-georreferenced in a given Coordinate Reference System (``CRS``).
+A **Raster** in ``plans`` is a map of data defined by a matrix or grid of cells storing numbers (int or float) and encoded in way that it can be georeferenced in a given Coordinate Reference System (``CRS``).
 
-Single Raster files must follow this general rules:
+**Structure rules**
 
-#. [mandatory] :ref:`GeoTIFF file<io-tif-file>` with ``.tif`` extension;
-#. [recommended] projected ``CRS`` so all cells are measured in meters;
+Rule set for a single file:
 
-Multiple Raster files must follow this general rules:
+#. [required] :ref:`GeoTIFF<io-tif-file>` file with ``.tif`` extension
+#. [recommended] projected ``CRS`` so all cells are measured in meters
 
-#. [mandatory] files are aligned for the same spatial extension;
-#. [mandatory] files are aligned for the same spatial resolution;
+Rule set for multiple files:
 
-.. admonition:: Grid shape must be the same
+#. [required] files are aligned for the same spatial extension
+#. [required] files are aligned for the same spatial resolution
+
+.. admonition:: Raster grid shape must be the same
    :class: important
 
-   The rule for multiple files implies that all ``Raster`` files in a given project must share the same grid shape (number or rows and columns).
+   The rule set for multiple files implies that all ``Raster`` files in a given project must share the same grid shape (number or rows and columns).
 
 
 .. _io-tif-file:
 
-GeoTIFF format
+GeoTIFF file
 --------------------------------------------
 
-The `GeoTIFF`_ format is the standard ``Raster`` file in ``plans``.
-This is a well-known raster file distributed by most of dataset providers.
+The `GeoTIFF`_ file is the standard ``Raster`` file in ``plans``. This is a well-known raster file distributed by most of dataset providers.
 
-The advantages of ``GeoTIFF`` is that it stores data and metadata together in the same file.
-``plans`` parse ``GeoTIFF`` files using the `Rasterio`_ libray.
+The advantages of ``GeoTIFF`` is that it stores data and metadata together in the same file. ``plans`` parse ``GeoTIFF`` files using the `Rasterio`_ libray.
 
 .. admonition:: GDAL reference
    :class: seealso
@@ -243,22 +342,29 @@ Time Raster
 
 A ``Time Raster`` in ``plans`` is a special kind of :ref:`Raster<io-raster>` file in which the data refers to a **snapshot of the time line**.
 
-Single Time Raster files must follow this general rules:
+**Structure rules**
 
-#. [mandatory] :ref:`GeoTIFF file<io-tif-file>`;
-#. [mandatory] named with a date-time suffix separated by underscore ``_``: ``map_2021-09-02.tif``;
-#. [recommended] projected ``CRS`` so all cells are measured in meters;
+Rule set for a single file:
 
-Same rules applies for multiple files.
+#. [required] :ref:`GeoTIFF<io-tif-file>` file with ``.tif`` extension
+#. [required] file name signature: ``{filename}_{date}``
+#. [recommended] projected ``CRS`` so all cells are measured in meters
 
-For instance, Land Use Land Cover is a spatial data that may require many Time Raster files:
+Rule set for multiple files:
+
+#. [required] files are aligned for the same spatial extension
+#. [required] files are aligned for the same spatial resolution
+
+**Example**
+
+For instance, Land Use Land Cover is a spatial data that may require many ``Time Raster`` files:
 
 .. code-block:: bash
 
    {folder}/
-      ├── lulc_2020.tif       # Raster - Land Use in 2020
-      ├── lulc_2021.tif       # Raster - Land Use in 2021
-      └── lulc_2022.tif       # Raster - Land Use in 2022
+      ├── lulc_2020-01-01.tif       # Raster - Land Use in 2020
+      ├── lulc_2021-01-01.tif       # Raster - Land Use in 2021
+      └── lulc_2022-01-01.tif       # Raster - Land Use in 2022
 
 
 
@@ -269,36 +375,43 @@ Quali Raster
 
 A Quali Raster in ``plans`` is a special kind of :ref:`Raster<io-raster>` file in which data is qualitative (classes or ids), and an auxiliary :ref:`Attribute Table<io-attribute>` must be provided.
 
-Single ``Quali Raster`` files must follow this general rules:
+**Structure rules**
 
-#. [mandatory] a :ref:`GeoTIFF file<io-tif-file>` for map data;
-#. [mandatory] an :ref:`Attribute Table<io-attribute>`;
-#. [recommended] projected ``CRS`` so all cells are measured in meters;
+Rule set for a single file:
 
-Same rules applies for multiple files.
+#. [required] :ref:`GeoTIFF<io-tif-file>` file with ``.tif`` extension
+#. [required] an auxiliar :ref:`Attribute Table<io-attribute>` with same name of :ref:`GeoTIFF<io-tif-file>`
+#. [recommended] projected ``CRS`` so all cells are measured in meters
+
+Rule set for multiple files:
+
+#. [required] files are aligned for the same spatial extension
+#. [required] files are aligned for the same spatial resolution
+
+**Example**
 
 For instance, a ``Quali Raster`` for Land Use Land Cover only stores the ``id`` code for each land use class. More information and parameters must be stored in the auxiliar ``Attribute Table``.
 
 .. code-block:: bash
 
    {folder}/
-      ├── lulc_2020.tif       # Raster - Land Use in 2020
-      └── lulc_info.csv       # <-- Attribute Table
+      ├── lulc_2020-01-01.tif       # Raster - Land Use in 2020
+      └── lulc_attributes.csv       # <-- Attribute Table
 
-.. admonition:: One ``Attribute Table`` can feed many maps
+.. admonition:: One ``Attribute Table`` can feed multiple maps
    :class: note
 
-   The same ``Attribute Table`` file can supply the information required of many ``Raster`` maps.
+   The same ``Attribute Table`` file can supply the information required of multiple ``Raster`` maps.
    For instance, consider a set of 3 Land Use Land Cover maps, for different years.
    They all can use the same ``Attribute Table`` file:
 
    .. code-block:: bash
 
       {folder}/
-          ├── lulc_2020.tif
-          ├── lulc_2021.tif
-          ├── lulc_2022.tif
-          └── lulc_info.csv       # <-- Attribute Table
+          ├── lulc_2020-01-01.tif   # <-- multiple Rasters
+          ├── lulc_2021-01-01.tif
+          ├── lulc_2022-01-01.tif
+          └── lulc_attributes.csv   # <-- single Attribute Table
 
 
 .. _io-timequaliraster:
@@ -306,7 +419,7 @@ For instance, a ``Quali Raster`` for Land Use Land Cover only stores the ``id`` 
 Time Quali Raster
 --------------------------------------------
 
-A ``Time Quali Raster`` in ``plans`` is a special kind of :ref:`Raster<io-raster>` file that arises when the map is both a :ref:`Time Raster<io-timeraster>` and a :ref:`Quali Raster<io-qualiraster>`. Land Use maps are the classical example, as shown above.
+A ``Time Quali Raster`` in ``plans`` is a special kind of :ref:`Raster<io-raster>` file that arises when the map is both a :ref:`Time Raster<io-timeraster>` and a :ref:`Quali Raster<io-qualiraster>`. Land Use maps are the classical example, as shown above. Rules overlap.
 
 
 .. _io-data-type:
@@ -314,11 +427,12 @@ A ``Time Quali Raster`` in ``plans`` is a special kind of :ref:`Raster<io-raster
 Data Types
 ============================================
 
-Data Type is the encoding of data at the hardware level. For beginners, one may understand data types by this primitive classification:
+**Data Type** is the encoding of data at the hardware level. For beginners, one may understand data types by this primitive classification:
 
-- ``str`` text string: common text characters;
-- ``int`` integer numbers: 2, 0, 1000;
-- ``float`` real numbers: 1.2, -3.44.
+- ``str`` text string: common text characters
+- ``int`` integer numbers: 2, 0, 1000
+- ``float`` real numbers: 1.2, -3.44
+- ``misc`` miscellaneous, undefined data type
 
 .. admonition:: Detailed data types
    :class: important

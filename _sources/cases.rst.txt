@@ -1,4 +1,4 @@
-.. include:: ./includes/badge_source.rst
+.. include:: ./_links.rst
 
 .. _cases:
 
