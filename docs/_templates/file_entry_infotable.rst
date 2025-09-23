@@ -10,10 +10,11 @@
 .. csv-table::
    :widths: auto
 
-   Workflow, "{workflow}"
+   Workflow, "{workflow link}"
+   Data Structure, "{structure link}"
    File, "``{name}.{ext}``"
    Project Folder, "{folder}"
-   Data Structure, "{structure link}"
+
 
 **Required Fields**
 
@@ -31,6 +32,8 @@
    :widths: auto
    :delim: ;
 
-**Preview**
+**File Sample**
 
-{preview}
+.. literalinclude:: ./data/samples/{name}.csv
+   :language: text
+

@@ -382,15 +382,15 @@ def get_system_table():
     df = df.dropna(subset="system")
 
     dc_cols = {
-        "description": "Name",
         "tex": "Symbol",
-        "name": "Field",
+        "name": "Name",
         "units": "Units",
+        "description": "Description",
         "subsystem": "Hydrology",
         "system": "System",
     }
 
-    df["name"] = format_monospaced(df, field="name")
+    # df["name"] = format_monospaced(df, field="name")
     df["tex"] = format_math(df, field="tex")
 
     # print(df)
@@ -411,8 +411,18 @@ def get_system_table():
 
 def get_fields_table(name):
     df = parse_fields_df()
-    df = filter_fields(df, file_name=name)
-    df.to_csv(DOCS_DATA_DIR / f"fields_{name}.csv", sep=";", index=False)
+    df1 = filter_fields(df, file_name=name, query="x")
+    ls_weights = ["lulc_attributes", "soils_attributes"]
+    if name in ls_weights:
+        df2 = filter_fields(df, file_name=name, query="w")
+        df2["Name"] = "w_" + df2["Name"]
+        df2["Description"] = "(downscaling weight) " + df2["Description"]
+        df2["Units"] = "unitless"
+        df_o = pd.concat([df1, df2]).copy()
+    else:
+        df_o = df1.copy()
+
+    df_o.to_csv(DOCS_DATA_DIR / f"fields_{name}.csv", sep=";", index=False)
     return None
 
 
@@ -435,8 +445,19 @@ def get_files_tables():
     return None
 
 
-def make_file_entry(spec, verbose=False):
+def update_default_parameters():
+    df = parse_fields_df()
+    df_p = pd.read_csv(DOCS_DATA_DIR / "samples/parameters_info.csv", sep=";")
+    df_p = df_p[["field", "value", "lower", "upper"]].copy()
+    ls_filter = ["name", "description", "units"]
+    df_f = df[ls_filter].copy()
+    df_f.rename(columns={"name": "field"}, inplace=True)
+    df_p = pd.merge(left=df_p, right=df_f, on="field", how="left")
+    df_p.to_csv(DOCS_DATA_DIR / "samples/parameters_info.csv", sep=";", index=False)
+    return None
 
+
+def make_file_entry(spec, verbose=False):
     # get abstract from file
     spec["abstract"] = parse_abstract(name=spec["name"])
 
@@ -454,6 +475,24 @@ def make_file_entry(spec, verbose=False):
     tag = DC_FILES_STRUCTURES[structure]["tag"]
     # structure link
     spec["structure link"] = ":ref:`{}<{}>`".format(structure.title(), tag)
+
+    # workflow link
+    dc_workflow1 = {
+        "input - optional": "Optional Input File",
+        "input - required": "Required Input File",
+        "intermediate": "Intermediate File",
+        "output": "Output File",
+    }
+    dc_workflow2 = {
+        "input - optional": "io-input-files-optional",
+        "input - required": "io-input-files-required",
+        "intermediate": "io-intermediate-files",
+        "output": "io-output-files",
+    }
+
+    spec["workflow link"] = ":ref:`{}<{}>`".format(
+        dc_workflow1[spec["workflow"]], dc_workflow2[spec["workflow"]]
+    )
 
     if verbose:
         print(spec["name"])
@@ -538,18 +577,21 @@ def delete_field_tables():
 # ***********************************************************************
 if __name__ == "__main__":
 
-    # Build figures from csv file
-    # ===================================================================
-    build_figs()
+    b_run = True
+    if b_run:
+        # Build figures from csv file
+        # ===================================================================
+        build_figs()
 
-    # Build catalog
-    # ===================================================================
-    # first get updated files tables
-    get_system_table()
-    get_files_tables()
-    # then generate the index
-    build_file_index()
+        # Build catalog
+        # ===================================================================
+        # first get updated files tables
+        update_default_parameters()
+        get_system_table()
+        get_files_tables()
+        # then generate the index
+        build_file_index()
 
-    # Build docs using sphinx
-    # ===================================================================
-    build_docs()
+        # Build docs using sphinx
+        # ===================================================================
+        build_docs()

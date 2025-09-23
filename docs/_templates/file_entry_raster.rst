@@ -10,14 +10,14 @@
 .. csv-table::
    :widths: auto
 
-   Workflow, "{workflow}"
+   Workflow, "{workflow link}"
+   Data Structure, "{structure link}"
    File, "``{name}.{ext}``"
    Project Folder, "{folder}"
-   Data Structure, "{structure link}"
-   Units, "{units}"
+   Pixel Units, "{units}"
    Data Type, "{dtype}"
 
-**Preview**
+**View**
 
 {preview}
 

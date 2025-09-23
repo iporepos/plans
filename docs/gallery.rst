@@ -8,7 +8,7 @@ Gallery
    This section is under development. Updates soon.
 
 
-.. include:: ./ipsum.rst
+.. include:: ./includes/ipsum.rst
 
 
 .. include:: ./figs/infiltration_pot.rst
