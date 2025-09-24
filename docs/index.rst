@@ -1,28 +1,11 @@
 .. include:: ./_links.rst
 
-.. include:: ./figs/logo.rst
-
 .. _home:
 
-Plans
+plans
 ############################################
 
-.. include:: ./includes/badge_source.rst
-
-Welcome to ``plans`` documentation page!
-
-Contents
-********************************************
-
-.. toctree::
-   :maxdepth: 1
-
-   Home <self>
-   about
-   userguide
-   api
-   development
-
+Welcome to ``plans`` documentation!
 
 .. include:: ./includes/short_description.rst
 
@@ -31,7 +14,29 @@ Contents
 .. include:: ./figs/riparian_wetlands.rst
 
 
-
 .. warning::
 
    This project is under active development, so most features are still being tested.
+
+
+.. admonition:: More about ``plans``
+   :class: seealso
+
+   Read more in :ref:`about`.
+
+
+.. admonition:: User Guide
+   :class: seealso
+
+   Check out the :ref:`userguide`.
+
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   Home <self>
+   about
+   userguide
+   api
+   development

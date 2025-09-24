@@ -36,6 +36,8 @@ Print a message
 
 
 """
+import os
+
 # IMPORTS
 # ***********************************************************************
 # import modules from other libs
@@ -85,31 +87,81 @@ HELLO = "Hello World!"  # example
 
 # FUNCTIONS -- Project-level
 # =======================================================================
-def get_climate_series():
-    trange = pd.date_range(start="2020-12-01", end="2021-04-01", freq="h")
-    vct_z = np.zeros(shape=np.shape(trange))
-    vct_ppt = vct_z.copy()
-    day = 30 * 24
-    vct_ppt[day] = 50
-    vct_ppt[2 * day] = 50
-
-    vct_ppt2 = gaussian_filter(input=vct_ppt, sigma=3)
-
-    vct_epot = vct_z.copy() + (50 / len(vct_z))
-    df = pd.DataFrame({"datetime": trange, "ppt": vct_ppt2, "e_pot": vct_epot})
-    print(df)
-    print(df["ppt"].sum())
-    print(df["e_pot"].sum())
-    plt.plot(df["datetime"], df["ppt"])
-    plt.show()
-
-    df.to_csv(DATA_DIR / "climate_bcmk01/climate_series.csv", sep=";", index=False)
+def get_climate_series(
+    dataset, scenario, ppt_params, epot_params, start="2020-12-01", end="2021-04-01"
+):
+    # get t range
+    trange = pd.date_range(start=start, end=end, freq="h")
+    # get ppt and e_pot
+    ppt = get_ppt(
+        date_index=trange,
+        values=ppt_params["values"],
+        sigmas=ppt_params["sigmas"],
+        days=ppt_params["days"],
+    )
+    epot = get_epot(
+        date_index=trange,
+        total_value=epot_params["value"],
+    )
+    df = pd.DataFrame({"datetime": trange, "ppt": ppt, "epot": epot})
+    os.makedirs(f"{dataset}/data/climate/{scenario}", exist_ok=True)
+    df.to_csv(
+        DATA_DIR / f"{dataset}/data/climate/{scenario}/climate_series.csv",
+        sep=";",
+        index=False,
+    )
+    return None
 
 
 # ... {develop}
 
 # FUNCTIONS -- Module-level
 # =======================================================================
+
+
+def get_ppt(date_index, values, sigmas, days):
+    vct_zeros = np.zeros(shape=np.shape(date_index))
+    vct_ppt = vct_zeros.copy()
+    ls_vectors = []
+    for i in range(len(values)):
+        lcl_vector = vct_zeros.copy()
+        lcl_vector[24 * days[i]] = values[i]
+        lcl_vector = gaussian_filter(input=lcl_vector, sigma=sigmas[i])
+        vct_ppt = vct_ppt + lcl_vector.copy()
+
+    return vct_ppt
+
+
+def get_epot(date_index, total_value, peak_hour=15, period_hours=24):
+    """
+    Generate a sinusoidal series with one cycle per day.
+
+    :param date_index: Time index (e.g., hourly data range).
+    :type date_index: pandas.DatetimeIndex
+    :param total_value: total accumulated value.
+    :type total_value: float
+    :param peak_hour: Hour of the day when the wave reaches its maximum. Defaults to 12.
+    :type peak_hour: int or float, optional
+    :param period_hours: Duration of one full cycle, normally 24 for daily. Defaults to 24.
+    :type period_hours: int or float, optional
+
+    :return: Sinusoidal values aligned with ``date_index``.
+    :rtype: pandas.Series
+    """
+    # fractional hour of day
+    hours = date_index.hour + date_index.minute / 60 + date_index.second / 3600
+
+    # shift so that maximum occurs at peak_hour
+    radians = 2 * np.pi * (hours - peak_hour) / period_hours
+
+    # build wave
+    mean_value = total_value / len(date_index)
+    amplitude = mean_value / 5
+    values = mean_value + amplitude * np.cos(radians)
+
+    return values
+
+
 # ... {develop}
 
 
@@ -134,7 +186,11 @@ if __name__ == "__main__":
     print("Hello world!")
     # ... {develop}
 
-    get_climate_series()
+    ppt_params = {"values": [50, 50], "sigmas": [3, 4], "days": [30, 60]}
+    epot_params = {"value": 50}
+    get_climate_series(
+        dataset="climate_bcmk01", ppt_params=ppt_params, epot_params=epot_params
+    )
 
     # Script subsection
     # -------------------------------------------------------------------

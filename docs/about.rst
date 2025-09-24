@@ -1,21 +1,11 @@
 .. include:: ./_links.rst
 
+.. include:: ./includes/warning_development.rst
+
 .. _about:
 
 About
 ######################################################################
-
-Contents
-***********************************************************************
-
-.. toctree::
-   :maxdepth: 1
-
-   About <self>
-   gallery
-   cases
-   theory
-
 
 .. include:: ./includes/short_description.rst
 
@@ -56,6 +46,14 @@ To run ``plans`` in a Area of Interest, users are required to provide a set of *
    Check out the :ref:`Theoretical Reference <theory>` page for the scientific basis of ``plans``
 
 
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   About <self>
+   gallery
+   cases
+   theory
 
 
 

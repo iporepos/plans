@@ -10,12 +10,12 @@ description;Brief description;unitless;str;;;;;h;;;;;;;
 file_parameters;(optional) System path to user-defined parameters file;unitless;str;;;;;h;;;;;;;
 folder_data;(optional) System path to user-defined data folder;unitless;str;;;;;h;;;;;;;
 datetime;Date-time label;unitless;str;variable;t;time;;;;x;x;;;;x
-ppt;Precipitation;mm/{dt};ufloat32;variable;P;flow;canopy;;;x;;;;;x
-e_pot;Potential Evapotranspiration;mm/{dt};ufloat32;variable;E_{\text{pot}};flow;canopy;;;x;;;;;x
+ppt;Precipitation;mm/{dt};ufloat32;variable;P;flow;input;;;x;;;;;x
+epot;Potential Evapotranspiration;mm/{dt};ufloat32;variable;E_{\text{pot}};flow;output;;;x;;;;;x
 dt;Simulation time step;min;ufloat32;parameter;\Delta t;time;;;h;;;;;;
 c0;Canopy storage initial conditions;mm;ufloat32;initial condition;C_{0};storage;canopy;;h;;;;;;
 s0;Surface storage initial conditions;mm;ufloat32;initial condition;S_{0};storage;surface;;h;;;;;;
-v0;Vadose zone initial conditions;mm;ufloat32;initial condition;V_{0};storage;vadoze zone;;h;;;;;;
+v0;Vadose zone initial conditions;mm;ufloat32;initial condition;V_{0};storage;vadose zone;;h;;;;;;
 g0;Phreatic zone initial conditions;mm;ufloat32;initial condition;G_{0};storage;phreatic zone;;h;;;;;;
 ck;Canopy residence time;d;ufloat32;parameter;C_{k};storage;canopy;;h;;;w;;;
 ca;Activation level for canopy flow;mm;ufloat32;parameter;C_{a};storage;canopy;;h;;;w;;;
@@ -25,14 +25,37 @@ sofc;Fragmentation level for overland flow;mm;ufloat32;parameter;S_{of, c};stora
 sufa;Activation level for subsurface flow;mm;ufloat32;parameter;S_{uf, a};storage;surface;;h;;;w;;;
 sufc;Fragmentation level for subsurface flow;mm;ufloat32;parameter;S_{uf, c};storage;surface;;h;;;w;;;
 sufcap;Subsurface storage capacity;mm;ufloat32;parameter;S_{uf, cap};storage;surface;;h;;;w;;;
-kv;Soil hydraulic conductivity;mm/d;ufloat32;parameter;K_{V};flow;vadoze zone;;h;;;;w;;
+kv;Soil hydraulic conductivity;mm/d;ufloat32;parameter;K_{V};flow;vadose zone;;h;;;;w;;
 gk;Phreatic zone residence time;d;ufloat32;parameter;G_{k};storage;phreatic zone;;h;;;;w;;
 gcap;Phreatic zone storage capacity;mm;ufloat32;parameter;G_{cap};storage;phreatic zone;;h;;;;w;;
-dea;Deficit activation level for ET;mm;ufloat32;parameter;D_{e, a};flow;phreatic zone;;h;;;;w;;
-ecap;ET capacity at capilar zone;mm;ufloat32;parameter;G_{e, cap};storage;vadoze zone;;h;;;;w;;
+dea;Deficit activation level for ET (root zone);mm;ufloat32;parameter;D_{e, a};flow;phreatic zone;;h;;;w;;;
+ecap;ET capacity of capilar zone;mm;ufloat32;parameter;G_{e, cap};storage;vadose zone;;h;;;;w;;
 kq;Channel water celerity;m/d;ufloat32;parameter;K_{Q};flow;channels;;h;;;;;;
 qobs;Streamflow observed at basin outlet;mm/{dt};ufloat32;variable;Q_{\text{obs}};flow;channels;;;;x;;;;x
 distance;Distance to basin outlet;m;ufloat32;boundary condition;X;flow;channels;;;;;;;x;
-area_fraction;Area fraction of basin;unitless;ufloat32;boundary condition;A;flow;channels;;;;;;;x;
+f_area;Area fraction of basin;unitless;ufloat32;boundary condition;A;flow;channels;;;;;;;x;
 lower;Lower bound value of field;misc;ufloat32;;;;;;x;;;;;;
 upper;Upper bound value of field;misc;ufloat32;;;;;;x;;;;;;
+hand_w;Weight for HAND in TSI superposition;unitless;ufloat32;parameter;H_{w};storage;phreatic zone;;h;;;;;;
+hand_max;HAND upper threshold in TSI superposition;m;ufloat32;parameter;\hat{H};storage;phreatic zone;;h;;;;;;
+e;Evapotranspiration flow (ET);mm/{dt};ufloat32;variable;E;flow;output;;;;;;;;x
+ec;Canopy evaporation flow;mm/{dt};ufloat32;variable;E_{c};flow;output;;;;;;;;x
+es;Surface evaporation flow;mm/{dt};ufloat32;variable;E_{s};flow;output;;;;;;;;x
+eg;Phreatic zone transpiration flow;mm/{dt};ufloat32;variable;E_{g};flow;output;;;;;;;;x
+c;Canopy storage level;mm;ufloat32;variable;C;storage;canopy;;;;;;;;x
+s;Surface storage level;mm;ufloat32;variable;S;storage;surface;;;;;;;;x
+v;Vadose zone storage level;mm;ufloat32;variable;V;storage;vadose zone;;;;;;;;x
+g;Phreatic zone level;mm;ufloat32;variable;G;storage;phreatic zone;;;;;;;;x
+psf;Canopy stem flow;mm/{dt};ufloat32;variable;P_{sf};flow;canopy;;;;;;;;x
+ptf;Canopy spill flow (throughfall);mm/{dt};ufloat32;variable;P_{tf};flow;canopy;;;;;;;;x
+qof;Overland flow (runoff or surface spill);mm/{dt};ufloat32;variable;Q_{of};flow;surface;;;;;;;;x
+quf;Underland flow (subsurface or macropore flow);mm/{dt};ufloat32;variable;Q_{uf};flow;surface;;;;;;;;x
+qhf;Hillslope flow (qof + quf);mm/{dt};ufloat32;variable;Q_{hf};flow;surface;;;;;;;;x
+qcf;Channel flow at basin outlet (routed qhf);mm/{dt};ufloat32;variable;Q_{cf};flow;channels;;;;;;;;x
+qbf;Groundwater base flow;mm/{dt};ufloat32;variable;Q_{bf};flow;phreatic zone;;;;;;;;x
+qif;Infiltration flow (drainage to mineral soil);mm/{dt};ufloat32;variable;Q_{if};flow;surface;;;;;;;;x
+qvf;Recharge flow (percolation to phreatic zone);mm/{dt};ufloat32;variable;Q_{vf};flow;vadose zone;;;;;;;;x
+d;Soil saturation deficit (gcap - g);mm;ufloat32;variable;D;storage;phreatic zone;;;;;;;;x
+dv;Vadose zone saturation deficit (d - v);mm;ufloat32;variable;D_{v};storage;vadose zone;;;;;;;;x
+ps;Surface effective precipitation (psf + ptf);mm/{dt};ufloat32;variable;P_{s};flow;surface;;;;;;;;x
+q;Streamflow or discharge at basin outlet;mm/{dt};ufloat32;variable;Q;flow;output;;;;;;;;x

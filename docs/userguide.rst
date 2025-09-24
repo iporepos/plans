@@ -1,25 +1,11 @@
 .. include:: ./_links.rst
 
+.. include:: ./includes/warning_development.rst
+
 .. _userguide:
 
 User Guide
 #######################################################################
-
-.. attention::
-
-   This section is under active development.
-
-
-Contents
-***********************************************************************
-
-.. toctree::
-   :maxdepth: 1
-
-   User Guide <self>
-   files
-   projects
-
 
 .. _quickview:
 
@@ -63,7 +49,7 @@ On `Jupyter`_ or `Colab`_, run this command on a cell:
 This installation is also enough for installing all dependencies needed for running ``plans``.
 
 
-.. _workflow:
+.. _user guide workflow:
 
 Workflow
 ***********************************************************************
@@ -89,12 +75,12 @@ Typically, to run ``plans`` users may go through the following steps (with some 
 8. Use extra tools for more visualization and analysis of output data.
 
 
-.. _setup:
+.. _user guide setup:
 
 Setup
 ***********************************************************************
 
-.. _project:
+.. _user guide project:
 
 Projects
 ========================================================================
@@ -108,7 +94,7 @@ Once data is gathered, users are required to populate the folders of a project w
    Check out the :ref:`Projects <projects>` page for more details on how to setup projects.
 
 
-.. _data:
+.. _user guide data:
 
 Input data
 ========================================================================
@@ -119,3 +105,10 @@ Required input data are basically two types of files: **tables** and **raster ma
 
    Check out the :ref:`Files <files>` page for more details on how to setup input data.
 
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   files
+   projects

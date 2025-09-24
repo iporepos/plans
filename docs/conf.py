@@ -28,18 +28,8 @@ myrepo/
 │        └── module.py  
 └── docs/   
 use >> sys.path.insert(0, os.path.abspath("../src")) 
-
-for flat layout 
-myrepo/  
-├──myrepo/  
-│   ├── __init__.py  
-│   └── module.py  
-└── docs/  
-use >> sys.path.insert(0, os.path.abspath(".."))  
-
 """
 sys.path.insert(0, os.path.abspath("../src"))  # src layout
-# sys.path.insert(0, os.path.abspath(".."))   # flat layout
 
 
 # REPO PROJECT INFO
@@ -153,3 +143,16 @@ External (requires installation):
 html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
 html_context = {"default_mode": "light"}
+html_logo = (
+    "https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true"
+)
+
+
+html_theme_options = {
+    "github_url": "https://github.com/iporepos/plans",
+    "logo": {
+        "text": "plans",
+    },
+    "navbar_start": ["navbar-logo"],
+    "navbar_end": ["theme-switcher", "navbar-icon-links"],
+}
