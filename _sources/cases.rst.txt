@@ -1,13 +1,11 @@
 .. include:: ./_links.rst
 
+.. include:: ./includes/warning_development.rst
+
 .. _cases:
 
 Study Cases
 #######################################################################
-
-.. warning::
-
-   This section is under development. Updates soon.
 
 
 

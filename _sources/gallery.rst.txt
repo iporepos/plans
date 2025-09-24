@@ -1,3 +1,7 @@
+.. include:: ./_links.rst
+
+.. include:: ./includes/warning_development.rst
+
 .. _gallery:
 
 Gallery

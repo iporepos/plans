@@ -5,9 +5,44 @@
 Theoretical Reference
 #######################################################################
 
-.. warning::
+.. include:: ./includes/warning_development.rst
 
-   This section is under development. Updates soon.
+.. _theory introduction:
+
+Introduction
+=======================================================================
+
+.. include:: ./includes/ipsum.rst
+
+.. _theory model structure:
+
+Model Structure
+=======================================================================
+
+.. include:: ./includes/ipsum.rst
+
+.. admonition:: System components reference
+   :class: seealso
+
+   Check out the full reference for variables and parameters at the :ref:`system` page.
+
+.. include:: ./includes/ipsum.rst
+
+.. include:: ./figs/model_structure.rst
+
+.. include:: ./includes/ipsum.rst
+
+.. _theory model equations:
+
+Model Equations
+=======================================================================
+
+.. include:: ./includes/ipsum.rst
+
+.. admonition:: System components reference
+   :class: seealso
+
+   Check out the full reference for variables and parameters at the :ref:`system` page.
 
 
 .. include:: ./includes/ipsum.rst
@@ -18,54 +53,14 @@ Theoretical Reference
    a^2 + b^2 = c^2
 
 
-System Reference
+References
 =======================================================================
 
 .. include:: ./includes/ipsum.rst
 
-Variables
------------------------------------------------------------------------
 
-.. include:: ./includes/ipsum.rst
+.. toctree::
+   :maxdepth: 1
+   :hidden:
 
-.. csv-table::
-   :file: ./data/system_variables.csv
-   :header-rows: 1
-   :widths: auto
-   :delim: ;
-
-
-Parameters
------------------------------------------------------------------------
-
-.. include:: ./includes/ipsum.rst
-
-.. csv-table::
-   :file: ./data/system_parameters.csv
-   :header-rows: 1
-   :widths: auto
-   :delim: ;
-
-
-Initial Conditions
------------------------------------------------------------------------
-
-.. include:: ./includes/ipsum.rst
-
-.. csv-table::
-   :file: ./data/system_init.csv
-   :header-rows: 1
-   :widths: auto
-   :delim: ;
-
-
-Boundary Conditions
------------------------------------------------------------------------
-
-.. include:: ./includes/ipsum.rst
-
-.. csv-table::
-   :file: ./data/system_bounds.csv
-   :header-rows: 1
-   :widths: auto
-   :delim: ;
+   system

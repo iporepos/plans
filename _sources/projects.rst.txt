@@ -1,16 +1,13 @@
 .. include:: ./_links.rst
 
+.. include:: ./includes/warning_development.rst
+
 .. _projects:
 
 Projects
 #######################################################################
 
 This is the project reference documentation of ``plans``.
-
-.. attention::
-
-   This section is being developed. Updates soon.
-
 
 .. include:: ./includes/ipsum.rst
 
