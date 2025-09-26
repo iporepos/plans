@@ -15,10 +15,10 @@ This page provides a complete reference of all files used in ``plans``. Each fil
    Check out the :ref:`api` page a full reference of code documentation.
 
 
-.. admonition:: System components reference
+.. admonition:: System components index
    :class: seealso
 
-   Check out the full reference for variables and parameters at the :ref:`system` page.
+   Check out the full reference for variables and parameters at the :ref:`system-index` page.
 
 
 .. include:: ./includes/files_list.rst

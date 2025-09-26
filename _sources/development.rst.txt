@@ -1,4 +1,4 @@
-.. include:: ./includes/badge_source.rst
+.. include:: ./includes/warning_development.rst
 
 .. _development:
 
