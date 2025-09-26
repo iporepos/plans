@@ -479,12 +479,12 @@ The ``qobs_series`` series is a time series table located within each basin fold
    :language: text
 
 
-.. _io-simulation:
+.. _io-simulation_series:
 
 Simulation Series
 ------------------------------------------------------------
 
-The ``simulation`` file is a table generated as output for each model run. It consolidates all simulated variables, including streamflow (observed and simulated), climate forcing data, and internal model states such as flows and storage variables. This file provides a complete record of model behavior over the simulation period and is essential for result analysis and calibration.
+The ``simulation_series`` file is a table generated as output for each model run. It consolidates all simulated variables, including streamflow (observed and simulated), climate forcing data, and internal model states such as flows and storage variables. This file provides a complete record of model behavior over the simulation period and is essential for result analysis and calibration.
 
 **Specifications**
 
@@ -493,14 +493,14 @@ The ``simulation`` file is a table generated as output for each model run. It co
 
    Workflow, ":ref:`Output File<io-output-files>`"
    Data Structure, ":ref:`Time Series<io-timeseries>`"
-   File, "``simulation.csv``"
+   File, "``simulation_series.csv``"
    Project Folder, "``{project}/outputs/{id}``"
 
 
 **Required Fields**
 
 .. csv-table::
-   :file: ../data/fields_simulation.csv
+   :file: ../data/fields_simulation_series.csv
    :header-rows: 1
    :widths: auto
    :delim: ;
@@ -508,7 +508,7 @@ The ``simulation`` file is a table generated as output for each model run. It co
 
 **File Sample**
 
-.. literalinclude:: ./data/samples/simulation.csv
+.. literalinclude:: ./data/samples/simulation_series.csv
    :language: text
 
 

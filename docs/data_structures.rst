@@ -1,4 +1,4 @@
-.. include:: ./_links.rst
+.. include:: ./includes/external_links.rst
 
 .. include:: ./includes/warning_development.rst
 

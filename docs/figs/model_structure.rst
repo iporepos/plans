@@ -1,6 +1,7 @@
 .. figure:: https://github.com/iporepos/plans-assets/blob/main/docs/figs/model_structure.jpg?raw=true
    :align: center
-   :alt: Model structure
+   :alt: ``plans`` model column structure
    :target: https://github.com/iporepos/plans-assets/blob/main/docs/figs/model_structure.jpg?raw=true
+   :width: 75 %
 
-   Model structure
+   ``plans`` model column structure

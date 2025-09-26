@@ -49,3 +49,5 @@
 .. _GDAL Data Types: https://gdal.org/en/stable/doxygen/gdal_8h.html
 
 .. _GeoTIFF: https://en.wikipedia.org/wiki/GeoTIFF
+
+.. _System Dynamics: https://en.wikipedia.org/wiki/System_dynamics

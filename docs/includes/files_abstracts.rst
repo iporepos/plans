@@ -234,10 +234,10 @@ project_info
 The ``project_info`` table contains metadata describing the project, such as name, alias, source, and description. It can also list alternative parameter tables or folders to override defaults. If left empty, the model uses default project settings.
 
 
-simulation
+simulation_series
 ===============================
 
-The ``simulation`` file is a table generated as output for each model run. It consolidates all simulated variables, including streamflow (observed and simulated), climate forcing data, and internal model states such as flows and storage variables. This file provides a complete record of model behavior over the simulation period and is essential for result analysis and calibration.
+The ``simulation_series`` file is a table generated as output for each model run. It consolidates all simulated variables, including streamflow (observed and simulated), climate forcing data, and internal model states such as flows and storage variables. This file provides a complete record of model behavior over the simulation period and is essential for result analysis and calibration.
 
 
 qobs_series

@@ -2,5 +2,6 @@
    :align: center
    :alt: The role of ``plans`` in watershed management
    :target: https://github.com/iporepos/plans-assets/blob/main/docs/figs/about.jpg?raw=true
+   :width: 100 %
 
    The role of ``plans`` in watershed management
