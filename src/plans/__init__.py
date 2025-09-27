@@ -38,3 +38,7 @@ Print a message
 """
 # EXPOSE MODULES FROM PACKAGE
 # ***********************************************************************
+
+
+def plans_add(num1, num2):
+    return num1 + num2

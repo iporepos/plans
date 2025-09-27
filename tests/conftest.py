@@ -134,7 +134,7 @@ def testprint(s):
 def make_output():
     # todo docstring
     testprint("making output dir")
-    os.mkdirs(OUTPUT_DIR, exist_ok=True)
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
     return None
 
 

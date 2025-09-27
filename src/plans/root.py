@@ -115,22 +115,22 @@ class MbaE:
     .. code-block:: python
 
         # MbaE instantiation
-        m0 = MbaE(name="Algo", alias="al")
+        mb = MbaE(name="Algo", alias="al")
 
     Retrieve metadata (not all attributes)
 
     .. code-block:: python
 
         # Retrieve metadata (not all attributes)
-        d = m0.get_metadata()
-        print(d)
+        dc = mb.get_metadata()
+        print(dc)
 
     Retrieve metadata in a :class:`pandas.DataFrame`
 
     .. code-block:: python
 
         # Retrieve metadata in a :class:`pandas.DataFrame`
-        df = m0.get_metadata_df()
+        df = mb.get_metadata_df()
         print(df.to_string(index=False))
 
     Set new values for metadata
@@ -138,21 +138,22 @@ class MbaE:
     .. code-block:: python
 
         # Set new values for metadata
-        d2 = {"Name": "Algo2", "Alias": "al2"}
-        m0.set(dict_setter=d2)
+        dc = {"Name": "Algo2", "Alias": "al2"}
+        mb.set(dict_setter=dc)
 
     Boot attributes from csv file:
 
     .. code-block:: python
 
         # Boot attributes from csv file:
-        m0.boot(bootfile="/content/metadata.csv")
+        mb.boot(bootfile="path/to/bootfile.csv")
 
 
     """
 
     def __init__(self, name="MyMbaE", alias=None):
-        """Initialize the ``MbaE`` object.
+        """
+        Initialize the ``MbaE`` object.
 
         :param name: unique object name
         :type name: str
@@ -186,7 +187,9 @@ class MbaE:
         # ... continues in downstream objects ... #
 
     def __str__(self):
-        """The ``MbaE`` string"""
+        """
+        The ``MbaE`` string
+        """
         str_type = str(type(self))
         str_df_metadata = self.get_metadata_df().to_string(index=False)
         str_out = "[{} ({})]\n{} ({}):\t{}\n{}".format(
@@ -218,7 +221,7 @@ class MbaE:
         self.field_alias = "alias"
 
         # Bootfile fields
-        self.field_bootfile_attribute = "attribute"
+        self.field_bootfile_attribute = "field"
         self.field_bootfile_value = "value"
         # ... continues in downstream objects ... #
 
@@ -244,7 +247,7 @@ class MbaE:
         """
         Get a :class:`pandas.DataFrame` created from the metadata dictionary.
 
-        :return: :class:`pandas.DataFrame` with ``Attribute`` and ``Value``
+        :return: a :class:`pandas.DataFrame` with listed metadata
         :rtype: :class:`pandas.DataFrame`
         """
         dict_metadata = self.get_metadata()
@@ -276,23 +279,20 @@ class MbaE:
         :param bootfile: file path to ``csv`` table with booting information.
         :type bootfile: str
 
-
-
         **Notes**
 
         Expected ``bootfile`` format:
 
         .. code-block:: text
 
-            Attribute;Value
-            Name;ResTia
-            Alias;Ra
+            field;value
+            name;ResTia
+            alias;Ra
             ...;...
-
 
         """
         # ---------- update file attributes ---------- #
-        self.bootfile = Path(bootfile[:])
+        self.bootfile = Path(bootfile)
         self.folder_bootfile = os.path.dirname(bootfile)
 
         # get expected fields
@@ -904,9 +904,9 @@ class DataSet(MbaE):
         # -------------- implement loading logic -------------- #
         default_columns = {
             #'DateTime': 'datetime64[1s]',
-            "P": float,
-            "RM": float,
-            "TempDB": float,
+            "p": float,
+            "rm": float,
+            "tas": float,
         }
         # -------------- call loading function -------------- #
         self.data = pd.read_csv(
@@ -1555,17 +1555,6 @@ class RecordTable(DataSet):
         """
         return self.columns_base + self.columns_data
 
-    def _get_timestamp(self):
-        """
-        Return a string timestamp
-
-        :return: full timestamp text %Y-%m0-%d %H:%M:%S
-        :rtype: str
-        """
-        # compute timestamp
-        _now = datetime.datetime.now()
-        return str(_now.strftime("%Y-%m0-%d %H:%M:%S"))
-
     def _last_id_int(self):
         """
         Compute the last ID integer in the record data table.
@@ -1740,7 +1729,7 @@ class RecordTable(DataSet):
 
         # handle timestamp
         if self.field_rectimestamp not in list_input_cols:
-            input_df[self.field_rectimestamp] = self._get_timestamp()
+            input_df[self.field_rectimestamp] = RecordTable.get_timestamp()
 
         # handle timestamp
         if self.field_recstatus not in list_input_cols:
@@ -1765,7 +1754,8 @@ class RecordTable(DataSet):
             return df_merged
 
     def insert_record(self, dict_rec):
-        """Insert a record in the RT
+        """
+        Insert a record in the RT
 
         :param dict_rec: inputs record dictionary
         :type dict_rec: dict
@@ -1782,7 +1772,7 @@ class RecordTable(DataSet):
         # create index
         dict_rec_filter[self.field_recid] = self._next_recid()
         # compute timestamp
-        dict_rec_filter[self.field_rectimestamp] = self._get_timestamp()
+        dict_rec_filter[self.field_rectimestamp] = RecordTable.get_timestamp()
         # set active
         dict_rec_filter[self.field_recstatus] = "On"
 
@@ -1796,7 +1786,8 @@ class RecordTable(DataSet):
         return None
 
     def edit_record(self, rec_id, dict_rec, filter_dict=True):
-        """Edit RT record
+        """
+        Edit RT record
 
         :param rec_id: record id
         :type rec_id: str
@@ -1813,7 +1804,7 @@ class RecordTable(DataSet):
         else:
             dict_rec_filter = dict_rec
         # include timestamp for edit operation
-        dict_rec_filter[self.field_rectimestamp] = self._get_timestamp()
+        dict_rec_filter[self.field_rectimestamp] = RecordTable.get_timestamp()
 
         # get data
         df = self.data.copy()
@@ -1835,7 +1826,8 @@ class RecordTable(DataSet):
         return None
 
     def archive_record(self, rec_id):
-        """Archive a record in the RT, that is ``RecStatus`` = ``Off``
+        """
+        Archive a record in the RT, that is ``RecStatus`` = ``Off``
 
         :param rec_id: record id
         :type rec_id: str
@@ -1847,7 +1839,8 @@ class RecordTable(DataSet):
         return None
 
     def get_record(self, rec_id):
-        """Get a record dict by id
+        """
+        Get a record dict by id
 
         :param rec_id: record id
         :type rec_id: str
@@ -1863,7 +1856,8 @@ class RecordTable(DataSet):
         return dict_rec
 
     def get_record_df(self, rec_id):
-        """Get a record :class:`pandas.DataFrame` by id
+        """
+        Get a record :class:`pandas.DataFrame` by id
 
         :param rec_id: record id
         :type rec_id: str
@@ -1882,7 +1876,8 @@ class RecordTable(DataSet):
     def load_record_data(
         self, file_record_data, input_field="Field", input_value="Value"
     ):
-        """Load record data from a ``csv`` file to a dict
+        """
+        Load record data from a ``csv`` file to a dict
 
         .. note::
 
@@ -1916,7 +1911,8 @@ class RecordTable(DataSet):
         return dict_rec
 
     def export_record(self, rec_id, filename=None, folder_export=None):
-        """Export a record from the table to a ``csv`` file.
+        """
+        Export a record from the table to a ``csv`` file.
 
         :param rec_id: record id
         :type rec_id: str
@@ -1941,8 +1937,21 @@ class RecordTable(DataSet):
 
     # ----------------- STATIC METHODS ----------------- #
     @staticmethod
+    def get_timestamp():
+        """
+        Return a string timestamp
+
+        :return: full timestamp text %Y-%m0-%d %H:%M:%S
+        :rtype: str
+        """
+        # compute timestamp
+        _now = datetime.datetime.now()
+        return str(_now.strftime("%Y-%m0-%d %H:%M:%S"))
+
+    @staticmethod
     def timedelta_disagg(timedelta):
-        """Util static method for dissaggregation of time delta
+        """
+        Util static method for dissaggregation of time delta
 
         :param timedelta: TimeDelta object from pandas
         :type timedelta: :class:`pandas.TimeDelta`
@@ -1965,7 +1974,8 @@ class RecordTable(DataSet):
 
     @staticmethod
     def timedelta_to_str(timedelta, dct_struct):
-        """Util static method for string conversion of timedelta
+        """
+        Util static method for string conversion of timedelta
 
         :param timedelta: TimeDelta object from pandas
         :type timedelta: :class:`pandas.TimeDelta`
@@ -1982,7 +1992,8 @@ class RecordTable(DataSet):
 
     @staticmethod
     def running_time(start_datetimes, kind="raw"):
-        """Util static method for computing the runnning time for a list of starting dates
+        """
+        Util static method for computing the runnning time for a list of starting dates
 
         :param start_datetimes: List of starting dates
         :type start_datetimes: list
@@ -2010,221 +2021,6 @@ class RecordTable(DataSet):
         return running_time
 
 
-class Budget(RecordTable):
-
-    def __init__(self, name="MyBudget", alias="Bud"):
-        super().__init__(name=name, alias=alias)
-
-        # ------------- specifics attributes ------------- #
-        self.total_revenue = None
-        self.total_expenses = None
-        self.total_net = None
-        self.summary_ascend = False
-
-    def _set_fields(self):
-        """Set fields names."""
-        # ------------ call super ----------- #
-        super()._set_fields()
-        # set temporary util fields
-        self.sign_field = "Sign"
-        self.value_signed = "Value_Signed"
-        # ... continues in downstream objects ... #
-
-    def _set_data_columns(self):
-        """Set specifics data columns names.
-        Base Dummy Method. Expected to be incremented in superior methods.
-
-        """
-        # Main data columns
-        self.columns_data_main = [
-            "Type",
-            "Status",
-            "Contract",
-            "Name",
-            "Value",
-        ]
-        # Extra data columns
-        self.columns_data_extra = [
-            # Status extra
-            "Date_Due",
-            "Date_Exe",
-            # Name extra
-            # tags
-            "Tags",
-            # Values extra
-            # Payment details
-            "Method",
-            "Protocol",
-        ]
-        # File columns
-        self.columns_data_files = [
-            "File_Receipt",
-            "File_Invoice",
-            "File_NF",
-        ]
-        # concat all lists
-        self.columns_data = (
-            self.columns_data_main + self.columns_data_extra + self.columns_data_files
-        )
-
-        # variations
-        self.columns_data_status = self.columns_data_main + [
-            self.columns_data_extra[0],
-            self.columns_data_extra[1],
-        ]
-
-        # ... continues in downstream objects ... #
-
-    def _set_operator(self):
-        """Private method for Budget operator"""
-
-        # ------------- define sub routines here ------------- #
-        def func_file_status():
-            return FileSys.check_file_status(files=self.data["File"].values)
-
-        def func_update_status():
-            # filter relevante data
-            df = self.data[["Status", "Method", "Date_Due"]].copy()
-            # Convert 'Date_Due' to datetime format
-            df["Date_Due"] = pd.to_datetime(self.data["Date_Due"])
-            # Get the current date
-            current_dt = datetime.datetime.now()
-
-            # Update 'Status' for records with 'Automatic' method and 'Expected' status based on the condition
-            condition = (
-                (df["Method"] == "Automatic")
-                & (df["Status"] == "Expected")
-                & (df["Date_Due"] <= current_dt)
-            )
-            df.loc[condition, "Status"] = "Executed"
-
-            # return values
-            return df["Status"].values
-
-        # todo implement all operations
-        # ---------------- the operator ---------------- #
-
-        self.operator = {
-            "Status": func_update_status,
-        }
-
-    def _get_total_expenses(self, filter=True):
-        filtered_df = self._filter_prospected_cancelled() if filter else self.data
-        _n = filtered_df[filtered_df["Type"] == "Expense"]["Value_Signed"].sum()
-        return round(_n, 3)
-
-    def _get_total_revenue(self, filter=True):
-        filtered_df = self._filter_prospected_cancelled() if filter else self.data
-        _n = filtered_df[filtered_df["Type"] == "Revenue"]["Value_Signed"].sum()
-        return round(_n, 3)
-
-    def _filter_prospected_cancelled(self):
-        return self.data[
-            (self.data["Status"] != "Prospected") & (self.data["Status"] != "Cancelled")
-        ]
-
-    def update(self):
-        super().update()
-        if self.data is not None:
-            self.total_revenue = self._get_total_revenue(filter=True)
-            self.total_expenses = self._get_total_expenses(filter=True)
-            self.total_net = self.total_revenue + self.total_expenses
-            if self.total_net > 0:
-                self.summary_ascend = False
-            else:
-                self.summary_ascend = True
-
-        # ... continues in downstream objects ... #
-        return None
-
-    def set_data(self, input_df):
-        """Set RecordTable data from incoming :class:`pandas.DataFrame`.
-        Expected to be incremented downstream.
-
-        :param input_df: incoming :class:`pandas.DataFrame`
-        :type input_df: :class:`pandas.DataFrame`
-
-
-        """
-        super().set_data(input_df=input_df)
-        # convert to numeric
-        self.data["Value"] = pd.to_numeric(self.data["Value"])
-        # compute temporary field
-
-        # sign and value_signed
-        self.data["Sign"] = self.data["Type"].apply(
-            lambda x: 1 if x == "Revenue" else -1
-        )
-        self.data["Value_Signed"] = self.data["Sign"] * self.data["Value"]
-
-    @staticmethod
-    def parse_annual_budget(self, year, budget_df, freq_field="Freq"):
-        start_date = "{}-01-01".format(year)
-        end_date = "{}-01-01".format(int(year) + 1)
-
-        annual_budget = pd.DataFrame()
-
-        for _, row in budget_df.iterrows():
-            # Generate date range based on frequency
-            dates = pd.date_range(start=start_date, end=end_date, freq=row["Freq"])
-
-            # Replicate the row for each date
-            replicated_data = pd.DataFrame(
-                {col: [row[col]] * len(dates) for col in df.columns}
-            )
-            replicated_data["Date"] = dates
-
-            # Append to the expanded budget
-            annual_budget = pd.concat(
-                [annual_budget, replicated_data], ignore_index=True
-            )
-
-        return annual_budget
-
-    def get_summary_by_type(self):
-        summary = pd.DataFrame(
-            {
-                "Total_Expenses": [self.total_expenses],
-                "Total_Revenue": [self.total_revenue],
-                "Total_Net": [self.total_net],
-            }
-        )
-        summary = summary.apply(
-            lambda x: x.sort_values(ascending=self.summary_ascend), axis=1
-        )
-        return summary
-
-    def get_summary_by_status(self, filter=True):
-        filtered_df = self._filter_prospected_cancelled() if filter else self.data
-        return (
-            filtered_df.groupby("Status")["Value_Signed"]
-            .sum()
-            .sort_values(ascending=self.summary_ascend)
-        )
-
-    def get_summary_by_contract(self, filter=True):
-        filtered_df = self._filter_prospected_cancelled() if filter else self.data
-        return (
-            filtered_df.groupby("Contract")["Value_Signed"]
-            .sum()
-            .sort_values(ascending=self.summary_ascend)
-        )
-
-    def get_summary_by_tags(self, filter=True):
-        filtered_df = self._filter_prospected_cancelled() if filter else self.data
-        tags_summary = (
-            filtered_df.groupby("Tags")["Value_Signed"]
-            .sum()
-            .sort_values(ascending=self.summary_ascend)
-        )
-        tags_summary = tags_summary.sort()
-        separate_tags_summary = (
-            filtered_df["Tags"].str.split(expand=True).stack().value_counts()
-        )
-        print(type(separate_tags_summary))
-        return tags_summary, separate_tags_summary
-
-
 class FileSys(DataSet):
     """
     The core ``FileSys`` base class. Handles files and folder organization,
@@ -2242,7 +2038,7 @@ class FileSys(DataSet):
 
     """
 
-    def __init__(self, folder_base, name="MyFS", alias="FS0"):
+    def __init__(self, name="MyFS", alias="FS0"):
         """
         Initialize the ``FileSys`` object.
 
@@ -2255,7 +2051,7 @@ class FileSys(DataSet):
 
         """
         # prior attributes
-        self.folder_base = folder_base
+        self.folder_base = None
 
         # ------------ call super ----------- #
         super().__init__(name=name, alias=alias)
@@ -2264,7 +2060,7 @@ class FileSys(DataSet):
         self.object_alias = "FS"
 
         # ------------ set mutables ----------- #
-        self.folder_main = os.path.join(self.folder_base, self.name)
+        self.folder_root = None
         self._set_view_specs()
 
         # ... continues in downstream objects ... #
@@ -2274,30 +2070,16 @@ class FileSys(DataSet):
         super()._set_fields()
 
         # Attribute fields
-        self.folder_base_field = "Folder_Base"
+        self.field_folder_base = "folder_base"
 
         # ... continues in downstream objects ... #
 
-    def _set_view_specs(self):
-        self.view_specs = {
-            "folder": self.folder_data,
-            "filename": self.name,
-            "fig_format": "jpg",
-            "dpi": 300,
-            "title": self.name,
-            "width": 5 * 1.618,
-            "height": 5 * 1.618,
-            # todo include more view specs
-        }
-        return None
-
-    #
     def get_metadata(self):
         # ------------ call super ----------- #
         dict_meta = super().get_metadata()
 
         # customize local metadata:
-        dict_meta_local = {self.folder_base_field: self.folder_base}
+        dict_meta_local = {self.field_folder_base: self.folder_base}
 
         # update
         dict_meta.update(dict_meta_local)
@@ -2306,92 +2088,14 @@ class FileSys(DataSet):
 
         # remove color
         dict_meta.pop(self.field_color)
-        # remove source
-        dict_meta.pop(self.field_source)
 
         return dict_meta
 
-    def get_structure(self):
-        """
-        Get ``FileSys`` structure dictionary.
-
-        :return: structure dictionary
-        :rtype: dict
-        """
-        # get pandas DataFrame
-        df = self.data.copy()
-
-        # Initialize the nested dictionary
-        dict_structure = {}
-
-        # Iterate over the rows of the DataFrame
-        for index, row in df.iterrows():
-            current_dict = dict_structure
-
-            # Split the folder path into individual folder names
-            folders = row["Folder"].split("/")
-
-            # Iterate over the folders to create the nested structure
-            for folder in folders:
-                current_dict = current_dict.setdefault(folder, {})
-
-            # If a file is present, add it to the nested structure
-            if pd.notna(row["File"]):
-                current_dict[row["File"]] = [
-                    row["Format"],
-                    row["File_Source"] if pd.notna(row["File_Source"]) else "",
-                    row["Folder_Source"] if pd.notna(row["Folder_Source"]) else "",
-                ]
-        return dict_structure
-
-    def get_status(self, folder_name):
-        # todo dosctring
-        dict_status = {}
-        # get full folder path
-        folder = self.folder_main + "/" + folder_name
-        # filter expected files
-        df = self.data.copy()
-        df = df.query("Folder == '{}'".format(folder_name))
-        df = df.dropna(subset=["File"])
-        if len(df) == 0:
-            return None
-        else:
-            dict_status["Folder"] = df.copy()
-            dict_status["Files"] = {}
-            dict_files = {}
-            for i in range(len(df)):
-                # get file name
-                lcl_file_name = df["File"].values[i]
-                dict_files[lcl_file_name] = {}
-                # get file format
-                lcl_file_format = df["Format"].values[i]
-                # get extensions:
-                dict_extensions = self.get_extensions()
-                #
-                list_lcl_extensions = dict_extensions[lcl_file_format]
-                # print(list_lcl_extensions)
-                for ext in list_lcl_extensions:
-                    lcl_path = os.path.join(folder, lcl_file_name + "." + ext)
-                    list_files = glob.glob(lcl_path)
-                    lst_filenames_found = [os.path.basename(f) for f in list_files]
-                    dict_files[lcl_file_name][ext] = lst_filenames_found
-            for k in dict_files:
-                # Convert each list in the dictionary to a pandas Series and then create a DataFrame
-                _df = pd.DataFrame(
-                    {key: pd.Series(value) for key, value in dict_files[k].items()}
-                )
-                if len(_df) == 0:
-                    for c in _df.columns:
-                        _df[c] = [None]
-                _df = _df.fillna("missing")
-                dict_status["Files"][k] = _df.copy()
-
-            return dict_status
-
     def update(self):
         super().update()
-        # set main folder
-        self.folder_main = os.path.join(self.folder_base, self.name)
+        # reset main folder
+        if self.folder_base is not None:
+            self.folder_root = os.path.join(self.folder_base, self.name)
         # ... continues in downstream objects ... #
 
     def setter(self, dict_setter, load_data=True):
@@ -2403,7 +2107,8 @@ class FileSys(DataSet):
 
         # ---------- set basic attributes --------- #
         # set base folder
-        self.folder_base = dict_setter[self.folder_base_field]
+        self.folder_base = dict_setter[self.field_folder_base]
+        self.file_data = dict_setter[self.field_file_data]
 
         # -------------- set data logic here -------------- #
         if load_data:
@@ -2415,23 +2120,25 @@ class FileSys(DataSet):
         # ... continues in downstream objects ... #
 
     def load_data(self, file_data):
-        """Load data from file.
-
-        :param file_data: file path to data.
-        :type file_data: str
-
-
-        """
         # -------------- overwrite relative path inputs -------------- #
         file_data = os.path.abspath(file_data)
+        self.file_data = file_data[:]
 
         # -------------- implement loading logic -------------- #
-
+        default_columns = {
+            "folder": str,
+            "file": str,
+            "file_template": str,
+        }
         # -------------- call loading function -------------- #
-        self.data = pd.read_csv(file_data, sep=self.file_csv_sep)
+        self.data = pd.read_csv(
+            self.file_data,
+            sep=self.file_csv_sep,
+            dtype=default_columns,
+            usecols=list(default_columns.keys()),
+        )
 
         # -------------- post-loading logic -------------- #
-
         return None
 
     def setup(self):
@@ -2443,72 +2150,93 @@ class FileSys(DataSet):
             This method overwrites all existing default files.
 
         """
-        # update structure
-        self.structure = self.get_structure()
+        self.setup_root_folder()
+        self.setup_subfolders()
+        self.setup_templates()
+        return None
 
+    def setup_root_folder(self):
+        """
+        Make the root folder for file system. Skip if exists.
+        """
         # make main dir
-        self.make_dir(str_path=self.folder_main)
+        os.makedirs(self.folder_root, exist_ok=True)
+        return None
 
-        # fill structure
-        FileSys.fill(dict_struct=self.structure, folder=self.folder_main)
+    def setup_subfolders(self):
+        """
+        Make all subfolders expected in the file system. Skip if exists.
+        """
+        # fill folders
+        for i in range(len(self.data)):
+            folder_sub = Path(self.folder_root) / self.data["folder"].values[i]
+            os.makedirs(folder_sub, exist_ok=True)
+        return None
 
-    def backup(
-        self,
-        location_dir,
-        version_id="v-0-0",
-    ):  # todo docstring
-        dst_dir = os.path.join(location_dir, self.name + "_" + version_id)
-        FileSys.archive_folder(src_dir=self.folder_main, dst_dir=dst_dir)
+    def setup_templates(self):
+        """
+        Copy all template files to default files in the file system.
+
+        .. danger::
+
+            This method overwrites all existing default files.
+
+        """
+        df = self.data.copy()
+        df.dropna(subset="file_template", inplace=True)
+        for i in range(len(df)):
+            src_file = df["file_template"].values[i]
+            src_file = os.path.abspath(src_file)
+            dst_file = (
+                self.folder_root
+                + "/"
+                + df["folder"].values[i]
+                + "/"
+                + df["file"].values[i]
+            )
+            shutil.copy(src=src_file, dst=dst_file)
+        return None
+
+    def backup(self, dst_folder, version_id=None):
+        """
+        Backup project in a zip code
+
+        :param dst_folder: path to destination folder
+        :type dst_folder: str or Path
+        :param version_id: suffix label for versioning. if None, a timestamp is created.
+        :type version_id: str
+        """
+
+        # compute timestamp
+        if version_id is None:
+            version_id = str(datetime.datetime.now().strftime("%Y-%m0-%d %H:%M:%S"))
+            version_id = version_id.replace("-", "")
+            version_id = version_id.replace(":", "")
+            version_id = version_id.replace(" ", "")
+
+        dst_dir = os.path.join(dst_folder, self.name + "_" + version_id)
+        FileSys.archive_folder(src_dir=self.folder_root, dst_dir=dst_dir)
         return None
 
     # ----------------- STATIC METHODS ----------------- #
     @staticmethod
     def archive_folder(src_dir, dst_dir):
-        """archive to a zip folder
+        """
+        Archive to a zip folder
 
         :param src_dir: source directory
         :type src_dir: str
         :param dst_dir: destination directory
         :type dst_dir: str
-
-
         """
         # Create a zip archive from the directory
         shutil.make_archive(dst_dir, "zip", src_dir)
         return None
 
     @staticmethod
-    def get_extensions():
-        list_basics = [
-            "pdf",
-            "docx",
-            "xlsx",
-            "bib",
-            "tex",
-            "svg",
-            "png",
-            "jpg",
-            "txt",
-            "csv",
-            "qml",
-            "tif",
-            "gpkg",
-        ]
-        dict_extensions = {e: [e] for e in list_basics}
-        dict_aliases = {
-            "table": ["csv"],
-            "raster": ["asc", "prj", "qml"],
-            "qraster": ["asc", "prj", "csv", "qml"],
-            "fig": ["jpg"],
-            "vfig": ["svg"],
-            "receipt": ["pdf", "jpg"],
-        }
-        dict_extensions.update(dict_aliases)
-        return dict_extensions
-
-    @staticmethod
     def check_file_status(files):
-        """Static method for file existing checkup
+        """
+        Static method for file existing checkup
 
         :param files: iterable with file paths
         :type files: list
@@ -2524,23 +2252,9 @@ class FileSys(DataSet):
         return list_status
 
     @staticmethod
-    def make_dir(str_path):
-        """Util function for making a diretory
-
-        :param str_path: path to dir
-        :type str_path: str
-
-
-        """
-        if os.path.isdir(str_path):
-            pass
-        else:
-            os.mkdir(str_path)
-        return None
-
-    @staticmethod
     def copy_batch(dst_pattern, src_pattern):
-        """Util static method for batch-copying pattern-based files.
+        """
+        Util static method for batch-copying pattern-based files.
 
         .. note::
 
@@ -2575,648 +2289,23 @@ class FileSys(DataSet):
         return None
 
     @staticmethod
-    def fill(dict_struct, folder, handle_files=True):
-        """Recursive function for filling the ``FileSys`` structure
-
-        :param dict_struct: dicitonary of directory structure
-        :type dict_struct: dict
-
-        :param folder: path to local folder
-        :type folder: str
-
-
-
+    def get_file_size_mb(file_path):
         """
-
-        def handle_file(dst_name, lst_specs, dst_folder):
-            """Sub routine for handling expected files in the FileSys structure.
-
-            :param dst_name: destination filename
-            :type dst_name: str
-            :param lst_specs: list for expected file specifications
-            :type lst_specs: list
-            :param dst_folder: destination folder
-            :type dst_folder: str
-
-
-            """
-            dict_exts = FileSys.get_extensions()
-            lst_exts = dict_exts[lst_specs[0]]
-            src_name = lst_specs[1]
-            src_dir = lst_specs[2]
-
-            # there is a sourcing directory
-            if os.path.isdir(src_dir):
-                # extension loop:
-                for extension in lst_exts:
-                    # source
-                    src_file = src_name + "." + extension
-                    src_filepath = os.path.join(src_dir, src_file)
-                    # destination
-                    dst_file = dst_name + "." + extension
-                    dst_filepath = os.path.join(dst_folder, dst_file)
-                    #
-                    # there might be a sourced file
-                    if os.path.isfile(src_filepath):
-                        shutil.copy(src=src_filepath, dst=dst_filepath)
-                    elif "*" in src_name:
-                        # is a pattern file
-                        FileSys.copy_batch(
-                            src_pattern=src_filepath, dst_pattern=dst_filepath
-                        )
-                    else:
-                        pass
-
-            return None
-
-        # structure loop:
-        for k in dict_struct:
-            # get current folder or file
-            _d = folder + "/" + str(k)
-
-            # [case 1] bottom is a folder
-            if isinstance(dict_struct[k], dict):
-                # make a dir
-                FileSys.make_dir(str_path=_d)
-                # now move down:
-                FileSys.fill(
-                    dict_struct=dict_struct[k], folder=_d, handle_files=handle_files
-                )
-
-            # bottom is an expected file
-            else:
-                if handle_files:
-                    print("HEY")
-                    handle_file(dst_name=k, lst_specs=dict_struct[k], dst_folder=folder)
-
-        return None
-
-
-# --------- DEPRECATED ---------
-
-
-class _Note0(MbaE):
-    """
-    DEPRECATED CLASS
-    """
-
-    def __init__(self, name="MyNote", alias="Nt1"):
-
-        # attributes
-        self.title = None
-        self.tags_head = None
-        self.tags_etc = None
-        self.related_head = None
-        self.related_etc = None
-        self.summary = None
-        self.timestamp = None
-
-        # file paths
-        self.file_note = None
-        # note dict
-        self.note_dict = None
-
-        super().__init__(name=name, alias=alias)
-        # ... continues in downstream objects ... #
-
-    def _set_fields(self):
-        """Set fields names"""
-        super()._set_fields()
-        # Attribute fields
-        self.title_field = "title"
-        self.tags_head_field = "tags_head"
-        self.tags_etc_field = "tags_etc"
-        self.related_head_field = "related_head"
-        self.related_etc_field = "related_etc"
-        self.summary_field = "summary"
-        self.timestamp_field = "timestamp"
-        self.file_note_field = "file_note"
-
-        # Metadata fields
-
-        # ... continues in downstream objects ... #
-
-    def get_metadata(self):
-        """Get a dictionary with object metadata.
-
-
-        .. note::
-
-            Metadata does **not** necessarily inclue all object attributes.
-
-        :return: dictionary with all metadata
-        :rtype: dict
-        """
-        # ------------ call super ----------- #
-        dict_meta = super().get_metadata()
-
-        # customize local metadata:
-        dict_meta_local = {
-            self.title_field: self.title,
-            self.summary_field: self.summary,
-            self.timestamp_field: self.timestamp,
-            self.tags_head_field: self.tags_head,
-            self.tags_etc_field: self.tags_etc,
-            self.related_head_field: self.related_head,
-            self.related_etc_field: self.related_etc,
-            self.file_note_field: self.file_note,
-        }
-        # update
-        dict_meta.update(dict_meta_local)
-        return dict_meta
-
-    def load(self):
-        self.note_dict = Note.parse_note(file_path=self.file_note)
-        self.update()
-
-    def update(self):
-
-        # get first section name
-        # Warning: assume it is the first item
-        self.title = next(iter(self.note_dict))
-
-        # patterns
-
-        # Create a copy of the original dictionary
-        new_dict = self.note_dict.copy()
-        # Remove the specified key from the new dictionary
-        del new_dict[self.title]
-
-        # head tags
-        self.tags_head = Note.list_by_pattern(
-            md_dict={self.title: self.note_dict[self.title]}, patt_type="tag"
-        )
-        # head related:
-        self.related_head = Note.list_by_pattern(
-            md_dict={self.title: self.note_dict[self.title]}, patt_type="related"
-        )
-        # etc tags:
-        self.tags_etc = Note.list_by_pattern(md_dict=new_dict, patt_type="tag")
-
-        self.related_etc = Note.list_by_pattern(md_dict=new_dict, patt_type="related")
-
-        # summary
-        lst_summaries = Note.list_by_intro(
-            md_dict={self.title: self.note_dict[self.title]}, intro_type="summary"
-        )
-        self.summary = lst_summaries[0]
-
-        # datetime
-        lst_datetimes = Note.list_by_intro(
-            md_dict={self.title: self.note_dict[self.title]}, intro_type="timestamp"
-        )
-        self.timestamp = lst_datetimes[0]
-
-    @staticmethod
-    def list_by_pattern(md_dict, patt_type="tag"):
-        """Retrieve a list of patterns from the note dictionary.
-
-        :param md_dict: Dictionary containing note sections.
-        :type md_dict: dict
-        :param patt_type: Type of pattern to search for, either "tag" or "related". Defaults to "tag".
-        :type patt_type: str
-        :return: List of found patterns or None if no patterns are found.
-        :rtype: list or None
-        """
-
-        if patt_type == "tag":
-            pattern = re.compile(r"#\w+")
-        elif patt_type == "related":
-            pattern = re.compile(r"\[\[.*?\]\]")
-        else:
-            pattern = re.compile(r"#\w+")
-
-        patts = []
-        # run over all sections
-        for s in md_dict:
-            content = md_dict[s]["Content"]
-            for line in content:
-                patts.extend(pattern.findall(line))
-
-        if len(patts) == 0:
-            patts = None
-
-        return patts
-
-    @staticmethod
-    def list_by_intro(md_dict, intro_type="summary"):
-        """List introduction contents based on the specified type.
-
-        :param md_dict: Dictionary containing note sections.
-        :type md_dict: dict
-        :param intro_type: Type of introduction to search for, currently supports "summary". Defaults to "summary".
-        :type intro_type: str
-        :return: List of found introductions or None if no introductions are found.
-        :rtype: list or None
-        """
-        if intro_type == "summary":
-            pattern = r"\*\*Summary:\*\*\s*(.*)"
-        elif intro_type == "timestamp":
-            pattern = r"created in:\s*(.*)"
-        # develop more options
-
-        summaries = []
-        # run over all sections
-        for s in md_dict:
-            content = md_dict[s]["Content"]
-            for line in content:
-                match = re.search(pattern, line)
-                if match:
-                    summaries.append(match.group(1))
-        if len(summaries) == 0:
-            summaries = None
-        return summaries
-
-    @staticmethod
-    def parse_note(file_path):
-        """Parse a Markdown file into a dictionary structure.
-
-        :param file_path: Path to the Markdown file.
-        :type file_path: str
-        :return: Dictionary representing the note structure.
-        :rtype: dict
-        """
-
-        with open(file_path, "r", encoding="utf-8") as file:
-            lines = file.readlines()
-
-        markdown_dict = {}
-        current_section = None
-        parent_section = None
-        section_stack = []
-
-        section_pattern = re.compile(r"^(#+)\s+(.*)")
-
-        for line in lines:
-            match = section_pattern.match(line)
-            if match:
-                level = len(match.group(1))
-                section_title = match.group(2).strip()
-
-                if current_section is not None:
-                    markdown_dict[current_section]["Content"] = section_content
-
-                while section_stack and section_stack[-1][1] >= level:
-                    section_stack.pop()
-
-                parent_section = section_stack[-1][0] if section_stack else None
-                current_section = section_title
-                section_stack.append((current_section, level))
-                markdown_dict[current_section] = {
-                    "Parent Section": parent_section,
-                    "Content": [],
-                }
-                section_content = []
-            else:
-                section_content.append(line.strip())
-
-        if current_section is not None:
-            markdown_dict[current_section]["Content"] = section_content
-
-        return markdown_dict
-
-    @staticmethod
-    def to_md(md_dict, output_dir, filename):
-        """Convert a note dictionary to a Markdown file and save it to the specified directory.
-
-        :param md_dict: Dictionary containing note sections.
-        :type md_dict: dict
-        :param output_dir: Directory where the output Markdown file will be saved.
-        :type output_dir: str
-        :param filename: Name of the output Markdown file (without extension).
-        :type filename: str
-
-
-        """
-
-        def write_section(file, section, level=1):
-            # Write the section header
-            file.write(f"{'#' * level} {section}\n")
-
-            # Write the section content
-            for line in md_dict[section]["Content"]:
-                file.write(line + "\n")
-
-            # Find and write subsections
-            subsections = [
-                key for key in md_dict if md_dict[key]["Parent Section"] == section
-            ]
-            for subsection in subsections:
-                # recursive step:
-                write_section(file, subsection, level + 1)
-
-        # Find top-level sections (sections with no parent)
-        top_sections = [
-            key for key in md_dict if md_dict[key]["Parent Section"] is None
-        ]
-
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-
-        output_file = os.path.join(output_dir, f"{filename}.md")
-
-        with open(output_file, "w", encoding="utf-8") as file:
-            for section in top_sections:
-                write_section(file, section)
-        return output_file
-
-    @staticmethod
-    def find_and_replace(note_file, old, new, line_n=None):
-        # Load the Markdown file
-        with open(note_file, "r", encoding="utf-8") as file:
-            lines = file.readlines()
-
-        # Find and replace old by new strings
-        if line_n is None:
-            # Replace in all lines
-            lines = [line.replace(old, new) for line in lines]
-        else:
-            # Replace only in the specified line number
-            if 0 <= line_n < len(lines):
-                lines[line_n] = lines[line_n].replace(old, new)
-
-        # Overwrite the file
-        with open(note_file, "w", encoding="utf-8") as file:
-            file.writelines(lines)
-
-
-class _Note1(MbaE):
-
-    def __init__(self, name="MyNote", alias="Nt1"):
-        # set attributes
-        self.file_note = None
-        self.metadata = None
-        self.data = None
-        super().__init__(name=name, alias=alias)
-        # ... continues in downstream objects ... #
-
-    def _set_fields(self):
-        """Set fields names"""
-        super()._set_fields()
-        # Attribute fields
-        self.file_note_field = "file_note"
-
-        # Metadata fields
-
-        # ... continues in downstream objects ... #
-
-    def get_metadata(self):
-        """Get a dictionary with object metadata.
-
-
-        .. note::
-
-            Metadata does **not** necessarily inclue all object attributes.
-
-        :return: dictionary with all metadata
-        :rtype: dict
-        """
-        # ------------ call super ----------- #
-        dict_meta = super().get_metadata()
-
-        # customize local metadata:
-        dict_meta_local = {
-            self.file_note_field: self.file_note,
-        }
-        # update
-        dict_meta.update(dict_meta_local)
-        return dict_meta
-
-    def load_metadata(self):
-        self.metadata = Note.parse_metadata(self.file_note)
-
-    def load_data(self):
-        self.data = Note.parse_note(self.file_note)
-
-    def load(self):
-        self.load_metadata()
-        self.load_data()
-
-    def save(self):
-        self.to_file(file_path=self.file_note)
-
-    def to_file(self, file_path, cleanup=True):
-        """Export Note to markdown
+        Util for getting the file size in MB
 
         :param file_path: path to file
         :type file_path: str
-        :return:
-        :rtype:
+        :return: file size in MB
+        :rtype: float
         """
-        ls_metadata = Note.metadata_to_list(self.metadata)
-        # clear "None" values
-        for i in range(len(ls_metadata)):
-            ls_metadata[i] = ls_metadata[i].replace("None", "")
+        # Get the file size in bytes
+        file_size_bytes = os.path.getsize(file_path)
+        # Convert bytes to megabytes
+        file_size_mb = file_size_bytes / (1024 * 1024)
+        return file_size_mb
 
-        ls_data = Note.data_to_list(self.data)
-        for l in ls_data:
-            ls_metadata.append(l[:])
-        ls_all = [line + "\n" for line in ls_metadata]
-        with open(file_path, "w", encoding="utf-8") as file:
-            file.writelines(ls_all)
 
-        # clean up excessive lines
-        if cleanup:
-            Note.remove_excessive_blank_lines(file_path)
-
-    @staticmethod
-    def remove_excessive_blank_lines(file_path):
-        with open(file_path, "r", encoding="utf-8") as file:
-            lines = file.readlines()
-
-        cleaned_lines = []
-        previous_line_blank = False
-
-        for line in lines:
-            if line.strip() == "":
-                if not previous_line_blank:
-                    cleaned_lines.append(line)
-                    previous_line_blank = True
-            else:
-                cleaned_lines.append(line)
-                previous_line_blank = False
-
-        with open(file_path, "w", encoding="utf-8") as file:
-            file.writelines(cleaned_lines)
-
-    @staticmethod
-    def parse_metadata(note_file):
-        """Extracts YAML metadata from the header of a Markdown file.
-
-        :param note_file: str, path to the Markdown file
-        :return: dict, extracted YAML metadata
-        """
-        with open(note_file, "r", encoding="utf-8") as file:
-            content = file.read()
-
-        # Regular expression to match the YAML header
-        yaml_header_regex = r"^---\s*\n(.*?)\n---\s*\n"
-
-        # Search for the YAML header in the content
-        match = re.search(yaml_header_regex, content, re.DOTALL)
-
-        if match:
-            yaml_content = match.group(1)
-            return Note.parse_yaml(yaml_content)
-        else:
-            return None
-
-    @staticmethod
-    def parse_yaml(yaml_content):
-        """Parses YAML content into a dictionary.
-
-        :param yaml_content: str, YAML content as string
-        :return: dict, parsed YAML content
-        """
-        metadata = {}
-        lines = yaml_content.split("\n")
-        current_key = None
-        current_list = None
-
-        for line in lines:
-            if line.strip() == "":
-                continue
-            if ":" in line:
-                key, value = line.split(":", 1)
-                key = key.strip()
-                value = value.strip()
-                if value == "":  # start of a list
-                    current_key = key
-                    current_list = []
-                    metadata[current_key] = current_list
-                else:
-                    if key == "tags":
-                        metadata[key] = [
-                            v.strip() for v in value.split("-") if v.strip()
-                        ]
-                    else:
-                        metadata[key] = value
-            elif current_list is not None and line.strip().startswith("-"):
-                current_list.append(line.strip()[1:].strip())
-
-        # fix empty lists
-        for e in metadata:
-            if len(metadata[e]) == 0:
-                metadata[e] = None
-
-        # fix text fields
-        for e in metadata:
-            if metadata[e]:
-                size = len(metadata[e]) - 1
-                if metadata[e][0] == '"' and metadata[e][size] == '"':
-                    # slice it
-                    metadata[e] = metadata[e][1:size]
-
-        return metadata
-
-    @staticmethod
-    def metadata_to_list(metadata_dict):
-        ls_metadata = []
-        ls_metadata.append("---")
-        for e in metadata_dict:
-            if isinstance(metadata_dict[e], list):
-                ls_metadata.append("{}:".format(e))
-                for i in metadata_dict[e]:
-                    ls_metadata.append(" - {}".format(i))
-            else:
-                aux0 = metadata_dict[e]
-                if aux0 is None:
-                    aux0 = ""
-                aux1 = "{}: {}".format(e, aux0)
-                ls_metadata.append(aux1)
-        ls_metadata.append("---")
-
-        return ls_metadata
-
-    @staticmethod
-    def data_to_list(data_dict):
-        ls_out = []
-        for h in data_dict:
-            level = data_dict[h]["Level"]
-            # section header
-            ls_out.append("\n{} {}\n".format("#" * level, h))
-            # content
-            for line in data_dict[h]["Content"]:
-                ls_out.append(line)
-        return ls_out
-
-    @staticmethod
-    def parse_note(file_path):
-        """Parse a Markdown file into a dictionary structure, skipping any YAML header.
-
-        :param file_path: Path to the Markdown file.
-        :type file_path: str
-        :return: Dictionary representing the note structure.
-        :rtype: dict
-        """
-        with open(file_path, "r", encoding="utf-8") as file:
-            lines = file.readlines()
-
-        # Skip YAML header if present
-        if lines[0].strip() == "---":
-            yaml_end_index = lines.index("---\n", 1) + 1
-            lines = lines[yaml_end_index:]
-
-        sections = {}
-        current_section = None
-        parent_section = None
-
-        for line in lines:
-            header_match = re.match(r"^(#{1,6})\s+(.*)", line)
-            if header_match:
-                level = len(header_match.group(1))
-                section_name = header_match.group(2).strip()
-
-                # Determine parent section
-                parent_section = None
-                for section in reversed(sections.keys()):
-                    if sections[section]["Level"] < level:
-                        parent_section = section
-                        break
-
-                sections[section_name] = {
-                    "Parent": parent_section,
-                    "Content": [],
-                    "Level": level,
-                }
-                current_section = section_name
-            elif current_section:
-                sections[current_section]["Content"].append(line.strip())
-
-        # Remove the 'Level' key from the final output
-        return sections
-
-    @staticmethod
-    def list_by_pattern(md_dict, patt_type="tag"):
-        """Retrieve a list of patterns from the note dictionary.
-
-        :param md_dict: Dictionary containing note sections.
-        :type md_dict: dict
-        :param patt_type: Type of pattern to search for, either "tag" or "related". Defaults to "tag".
-        :type patt_type: str
-        :return: List of found patterns or None if no patterns are found.
-        :rtype: list or None
-        """
-
-        if patt_type == "tag":
-            pattern = re.compile(r"#\w+")
-        elif patt_type == "related":
-            pattern = re.compile(r"\[\[.*?\]\]")
-        else:
-            pattern = re.compile(r"#\w+")
-
-        patts = []
-        # run over all sections
-        for s in md_dict:
-            content = md_dict[s]["Content"]
-            for line in content:
-                patts.extend(pattern.findall(line))
-
-        if len(patts) == 0:
-            patts = None
-
-        return patts
-
+# --------- DEPRECATED ---------
 
 if __name__ == "__main__":
     print("hello world!")

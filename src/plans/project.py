@@ -33,75 +33,49 @@ In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.
 In a lacinia nisl.
 """
 
+# IMPORTS
+# ***********************************************************************
+# import modules from other libs
+
+# Native imports
+# =======================================================================
 import os
+
+# ... {develop}
+
+# External imports
+# =======================================================================
 import pandas as pd
+
+# ... {develop}
+
+# Project-level imports
+# =======================================================================
 from plans.root import FileSys
 
+# ... {develop}
 
-def get_file_size_mb(file_path):
-    """Util for getting the file size in MB
 
-    :param file_path: path to file
-    :type file_path: str
-    :return: file size in MB
-    :rtype: float
-    """
-    # Get the file size in bytes
-    file_size_bytes = os.path.getsize(file_path)
-    # Convert bytes to megabytes
-    file_size_mb = file_size_bytes / (1024 * 1024)
-    return file_size_mb
+# CONSTANTS
+# ***********************************************************************
+# define constants in uppercase
+
+
+# FUNCTIONS
+# ***********************************************************************
+
+
+# CLASSES
+# ***********************************************************************
+
+# CLASSES -- Project-level
+# =======================================================================
 
 
 class Project(FileSys):
 
     def __init__(self, root, name):
         super().__init__(folder_base=root, name=name, alias=None)
-
-        self.structure = {
-            "inputs": {
-                "topo": {
-                    "_aux": {0: 0},
-                    "htwi": {0: 0},
-                },
-                "lulc": {
-                    "obs": {
-                        "_aux": {0: 0},
-                    },
-                    "bsl": {
-                        "_aux": {0: 0},
-                    },
-                    "bau": {
-                        "_aux": {0: 0},
-                    },
-                },
-                "clim": {
-                    "obs": {
-                        "_aux": {0: 0},
-                    },
-                    "bsl": {
-                        "_aux": {0: 0},
-                    },
-                    "bau": {
-                        "_aux": {0: 0},
-                    },
-                },
-                "basins": {
-                    "_aux": {0: 0},
-                },
-                "soils": {
-                    "_aux": {0: 0},
-                },
-            },
-            "outputs": {0: 0},
-        }
-        self.make_dir(str_path=self.folder_main)
-        self.fill(
-            dict_struct=self.structure, folder=self.folder_main, handle_files=False
-        )
-
-        # load standard data
-        # self.load_data()
 
     def load_data(self):
         """
@@ -214,11 +188,22 @@ class Project_(FileSys):
         return None
 
 
+# ... {develop}
+
+# CLASSES -- Module-level
+# =======================================================================
+# ... {develop}
+
+
+# SCRIPT
+# ***********************************************************************
+# standalone behaviour as a script
 if __name__ == "__main__":
-    # import matplotlib.pyplot as plt
-    # plt.style.use("seaborn-v0_8")
+    # Script section
+    # ===================================================================
+    print("Hello world!")
+    # ... {develop}
 
-    p = Project(name="arles", folder_base="C:/data")
-
-    print(p)
-    p.setup()
+    # Script subsection
+    # -------------------------------------------------------------------
+    # ... {develop}
