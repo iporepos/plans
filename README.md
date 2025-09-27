@@ -8,7 +8,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17142043.svg)](https://doi.org/10.5281/zenodo.17142043)
 
 <a logo>
-<img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.png?raw=true" height="130" width="130">
+<img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" height="130" width="130">
 </a>
 
 
