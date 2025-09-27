@@ -362,6 +362,9 @@
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
     
+    
+    <li class="breadcrumb-item"><a href="../plans.html" class="nav-link">plans</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">plans.root</span></li>
   </ul>
 </nav>
@@ -499,22 +502,22 @@
 <span class="sd">    .. code-block:: python</span>
 
 <span class="sd">        # MbaE instantiation</span>
-<span class="sd">        m0 = MbaE(name=&quot;Algo&quot;, alias=&quot;al&quot;)</span>
+<span class="sd">        mb = MbaE(name=&quot;Algo&quot;, alias=&quot;al&quot;)</span>
 
 <span class="sd">    Retrieve metadata (not all attributes)</span>
 
 <span class="sd">    .. code-block:: python</span>
 
 <span class="sd">        # Retrieve metadata (not all attributes)</span>
-<span class="sd">        d = m0.get_metadata()</span>
-<span class="sd">        print(d)</span>
+<span class="sd">        dc = mb.get_metadata()</span>
+<span class="sd">        print(dc)</span>
 
 <span class="sd">    Retrieve metadata in a :class:`pandas.DataFrame`</span>
 
 <span class="sd">    .. code-block:: python</span>
 
 <span class="sd">        # Retrieve metadata in a :class:`pandas.DataFrame`</span>
-<span class="sd">        df = m0.get_metadata_df()</span>
+<span class="sd">        df = mb.get_metadata_df()</span>
 <span class="sd">        print(df.to_string(index=False))</span>
 
 <span class="sd">    Set new values for metadata</span>
@@ -522,15 +525,15 @@
 <span class="sd">    .. code-block:: python</span>
 
 <span class="sd">        # Set new values for metadata</span>
-<span class="sd">        d2 = {&quot;Name&quot;: &quot;Algo2&quot;, &quot;Alias&quot;: &quot;al2&quot;}</span>
-<span class="sd">        m0.set(dict_setter=d2)</span>
+<span class="sd">        dc = {&quot;Name&quot;: &quot;Algo2&quot;, &quot;Alias&quot;: &quot;al2&quot;}</span>
+<span class="sd">        mb.set(dict_setter=dc)</span>
 
 <span class="sd">    Boot attributes from csv file:</span>
 
 <span class="sd">    .. code-block:: python</span>
 
 <span class="sd">        # Boot attributes from csv file:</span>
-<span class="sd">        m0.boot(bootfile=&quot;/content/metadata.csv&quot;)</span>
+<span class="sd">        mb.boot(bootfile=&quot;path/to/bootfile.csv&quot;)</span>
 
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -538,7 +541,8 @@
 <div class="viewcode-block" id="MbaE.__init__">
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.MbaE.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyMbaE&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the ``MbaE`` object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the ``MbaE`` object.</span>
 
 <span class="sd">        :param name: unique object name</span>
 <span class="sd">        :type name: str</span>
@@ -573,7 +577,9 @@
         <span class="c1"># ... continues in downstream objects ... #</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The ``MbaE`` string&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The ``MbaE`` string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">str_type</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="n">str_df_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_df</span><span class="p">()</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">str_out</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)]</span><span class="se">\n</span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">):</span><span class="se">\t</span><span class="si">{}</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -610,7 +616,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">field_alias</span> <span class="o">=</span> <span class="s2">&quot;alias&quot;</span>
 
         <span class="c1"># Bootfile fields</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">field_bootfile_attribute</span> <span class="o">=</span> <span class="s2">&quot;attribute&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_bootfile_attribute</span> <span class="o">=</span> <span class="s2">&quot;field&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">field_bootfile_value</span> <span class="o">=</span> <span class="s2">&quot;value&quot;</span></div>
 
         <span class="c1"># ... continues in downstream objects ... #</span>
@@ -642,7 +648,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a :class:`pandas.DataFrame` created from the metadata dictionary.</span>
 
-<span class="sd">        :return: :class:`pandas.DataFrame` with ``Attribute`` and ``Value``</span>
+<span class="sd">        :return: a :class:`pandas.DataFrame` with listed metadata</span>
 <span class="sd">        :rtype: :class:`pandas.DataFrame`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dict_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()</span>
@@ -680,23 +686,20 @@
 <span class="sd">        :param bootfile: file path to ``csv`` table with booting information.</span>
 <span class="sd">        :type bootfile: str</span>
 
-
-
 <span class="sd">        **Notes**</span>
 
 <span class="sd">        Expected ``bootfile`` format:</span>
 
 <span class="sd">        .. code-block:: text</span>
 
-<span class="sd">            Attribute;Value</span>
-<span class="sd">            Name;ResTia</span>
-<span class="sd">            Alias;Ra</span>
+<span class="sd">            field;value</span>
+<span class="sd">            name;ResTia</span>
+<span class="sd">            alias;Ra</span>
 <span class="sd">            ...;...</span>
-
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># ---------- update file attributes ---------- #</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bootfile</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bootfile</span><span class="p">[:])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bootfile</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bootfile</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">folder_bootfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">bootfile</span><span class="p">)</span>
 
         <span class="c1"># get expected fields</span>
@@ -1359,9 +1362,9 @@
         <span class="c1"># -------------- implement loading logic -------------- #</span>
         <span class="n">default_columns</span> <span class="o">=</span> <span class="p">{</span>
             <span class="c1">#&#39;DateTime&#39;: &#39;datetime64[1s]&#39;,</span>
-            <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-            <span class="s2">&quot;RM&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-            <span class="s2">&quot;TempDB&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="s2">&quot;rm&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="s2">&quot;tas&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="c1"># -------------- call loading function -------------- #</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
@@ -2089,20 +2092,6 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_base</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_data</span></div>
 
 
-<div class="viewcode-block" id="RecordTable._get_timestamp">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.RecordTable._get_timestamp">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a string timestamp</span>
-
-<span class="sd">        :return: full timestamp text %Y-%m0-%d %H:%M:%S</span>
-<span class="sd">        :rtype: str</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># compute timestamp</span>
-        <span class="n">_now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">_now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m0-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">))</span></div>
-
-
 <div class="viewcode-block" id="RecordTable._last_id_int">
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.RecordTable._last_id_int">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">_last_id_int</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2306,7 +2295,7 @@
 
         <span class="c1"># handle timestamp</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_rectimestamp</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">list_input_cols</span><span class="p">:</span>
-            <span class="n">input_df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_rectimestamp</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_timestamp</span><span class="p">()</span>
+            <span class="n">input_df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_rectimestamp</span><span class="p">]</span> <span class="o">=</span> <span class="n">RecordTable</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">()</span>
 
         <span class="c1"># handle timestamp</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_recstatus</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">list_input_cols</span><span class="p">:</span>
@@ -2334,7 +2323,8 @@
 <div class="viewcode-block" id="RecordTable.insert_record">
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.RecordTable.insert_record">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">insert_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_rec</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Insert a record in the RT</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Insert a record in the RT</span>
 
 <span class="sd">        :param dict_rec: inputs record dictionary</span>
 <span class="sd">        :type dict_rec: dict</span>
@@ -2351,7 +2341,7 @@
         <span class="c1"># create index</span>
         <span class="n">dict_rec_filter</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_recid</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_recid</span><span class="p">()</span>
         <span class="c1"># compute timestamp</span>
-        <span class="n">dict_rec_filter</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_rectimestamp</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_timestamp</span><span class="p">()</span>
+        <span class="n">dict_rec_filter</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_rectimestamp</span><span class="p">]</span> <span class="o">=</span> <span class="n">RecordTable</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">()</span>
         <span class="c1"># set active</span>
         <span class="n">dict_rec_filter</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_recstatus</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;On&quot;</span>
 
@@ -2368,7 +2358,8 @@
 <div class="viewcode-block" id="RecordTable.edit_record">
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.RecordTable.edit_record">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">edit_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec_id</span><span class="p">,</span> <span class="n">dict_rec</span><span class="p">,</span> <span class="n">filter_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Edit RT record</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Edit RT record</span>
 
 <span class="sd">        :param rec_id: record id</span>
 <span class="sd">        :type rec_id: str</span>
@@ -2385,7 +2376,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dict_rec_filter</span> <span class="o">=</span> <span class="n">dict_rec</span>
         <span class="c1"># include timestamp for edit operation</span>
-        <span class="n">dict_rec_filter</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_rectimestamp</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_timestamp</span><span class="p">()</span>
+        <span class="n">dict_rec_filter</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_rectimestamp</span><span class="p">]</span> <span class="o">=</span> <span class="n">RecordTable</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">()</span>
 
         <span class="c1"># get data</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -2410,7 +2401,8 @@
 <div class="viewcode-block" id="RecordTable.archive_record">
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.RecordTable.archive_record">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">archive_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec_id</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Archive a record in the RT, that is ``RecStatus`` = ``Off``</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Archive a record in the RT, that is ``RecStatus`` = ``Off``</span>
 
 <span class="sd">        :param rec_id: record id</span>
 <span class="sd">        :type rec_id: str</span>
@@ -2425,7 +2417,8 @@
 <div class="viewcode-block" id="RecordTable.get_record">
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.RecordTable.get_record">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec_id</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a record dict by id</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a record dict by id</span>
 
 <span class="sd">        :param rec_id: record id</span>
 <span class="sd">        :type rec_id: str</span>
@@ -2444,7 +2437,8 @@
 <div class="viewcode-block" id="RecordTable.get_record_df">
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.RecordTable.get_record_df">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_record_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec_id</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a record :class:`pandas.DataFrame` by id</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a record :class:`pandas.DataFrame` by id</span>
 
 <span class="sd">        :param rec_id: record id</span>
 <span class="sd">        :type rec_id: str</span>
@@ -2466,7 +2460,8 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">load_record_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">file_record_data</span><span class="p">,</span> <span class="n">input_field</span><span class="o">=</span><span class="s2">&quot;Field&quot;</span><span class="p">,</span> <span class="n">input_value</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load record data from a ``csv`` file to a dict</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load record data from a ``csv`` file to a dict</span>
 
 <span class="sd">        .. note::</span>
 
@@ -2503,7 +2498,8 @@
 <div class="viewcode-block" id="RecordTable.export_record">
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.RecordTable.export_record">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">export_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec_id</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">folder_export</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export a record from the table to a ``csv`` file.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Export a record from the table to a ``csv`` file.</span>
 
 <span class="sd">        :param rec_id: record id</span>
 <span class="sd">        :type rec_id: str</span>
@@ -2528,11 +2524,27 @@
 
 
     <span class="c1"># ----------------- STATIC METHODS ----------------- #</span>
+<div class="viewcode-block" id="RecordTable.get_timestamp">
+<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.RecordTable.get_timestamp">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_timestamp</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a string timestamp</span>
+
+<span class="sd">        :return: full timestamp text %Y-%m0-%d %H:%M:%S</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># compute timestamp</span>
+        <span class="n">_now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">_now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m0-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">))</span></div>
+
+
 <div class="viewcode-block" id="RecordTable.timedelta_disagg">
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.RecordTable.timedelta_disagg">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">timedelta_disagg</span><span class="p">(</span><span class="n">timedelta</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Util static method for dissaggregation of time delta</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Util static method for dissaggregation of time delta</span>
 
 <span class="sd">        :param timedelta: TimeDelta object from pandas</span>
 <span class="sd">        :type timedelta: :class:`pandas.TimeDelta`</span>
@@ -2558,7 +2570,8 @@
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.RecordTable.timedelta_to_str">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">timedelta_to_str</span><span class="p">(</span><span class="n">timedelta</span><span class="p">,</span> <span class="n">dct_struct</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Util static method for string conversion of timedelta</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Util static method for string conversion of timedelta</span>
 
 <span class="sd">        :param timedelta: TimeDelta object from pandas</span>
 <span class="sd">        :type timedelta: :class:`pandas.TimeDelta`</span>
@@ -2578,7 +2591,8 @@
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.RecordTable.running_time">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">running_time</span><span class="p">(</span><span class="n">start_datetimes</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;raw&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Util static method for computing the runnning time for a list of starting dates</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Util static method for computing the runnning time for a list of starting dates</span>
 
 <span class="sd">        :param start_datetimes: List of starting dates</span>
 <span class="sd">        :type start_datetimes: list</span>
@@ -2608,266 +2622,6 @@
 
 
 
-<div class="viewcode-block" id="Budget">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.Budget">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Budget</span><span class="p">(</span><span class="n">RecordTable</span><span class="p">):</span>
-
-<div class="viewcode-block" id="Budget.__init__">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.Budget.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyBudget&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;Bud&quot;</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
-
-        <span class="c1"># ------------- specifics attributes ------------- #</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">total_revenue</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">total_expenses</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">total_net</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">summary_ascend</span> <span class="o">=</span> <span class="kc">False</span></div>
-
-
-<div class="viewcode-block" id="Budget._set_fields">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.Budget._set_fields">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set fields names.&quot;&quot;&quot;</span>
-        <span class="c1"># ------------ call super ----------- #</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_fields</span><span class="p">()</span>
-        <span class="c1"># set temporary util fields</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sign_field</span> <span class="o">=</span> <span class="s2">&quot;Sign&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">value_signed</span> <span class="o">=</span> <span class="s2">&quot;Value_Signed&quot;</span></div>
-
-        <span class="c1"># ... continues in downstream objects ... #</span>
-
-<div class="viewcode-block" id="Budget._set_data_columns">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.Budget._set_data_columns">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_data_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set specifics data columns names.</span>
-<span class="sd">        Base Dummy Method. Expected to be incremented in superior methods.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Main data columns</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">columns_data_main</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;Type&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Status&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Contract&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Name&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Value&quot;</span><span class="p">,</span>
-        <span class="p">]</span>
-        <span class="c1"># Extra data columns</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">columns_data_extra</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="c1"># Status extra</span>
-            <span class="s2">&quot;Date_Due&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Date_Exe&quot;</span><span class="p">,</span>
-            <span class="c1"># Name extra</span>
-            <span class="c1"># tags</span>
-            <span class="s2">&quot;Tags&quot;</span><span class="p">,</span>
-            <span class="c1"># Values extra</span>
-            <span class="c1"># Payment details</span>
-            <span class="s2">&quot;Method&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Protocol&quot;</span><span class="p">,</span>
-        <span class="p">]</span>
-        <span class="c1"># File columns</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">columns_data_files</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;File_Receipt&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;File_Invoice&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;File_NF&quot;</span><span class="p">,</span>
-        <span class="p">]</span>
-        <span class="c1"># concat all lists</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">columns_data</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">columns_data_main</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_data_extra</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_data_files</span>
-        <span class="p">)</span>
-
-        <span class="c1"># variations</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">columns_data_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_data_main</span> <span class="o">+</span> <span class="p">[</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">columns_data_extra</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">columns_data_extra</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-        <span class="p">]</span></div>
-
-
-        <span class="c1"># ... continues in downstream objects ... #</span>
-
-<div class="viewcode-block" id="Budget._set_operator">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.Budget._set_operator">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Private method for Budget operator&quot;&quot;&quot;</span>
-
-        <span class="c1"># ------------- define sub routines here ------------- #</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">func_file_status</span><span class="p">():</span>
-            <span class="k">return</span> <span class="n">FileSys</span><span class="o">.</span><span class="n">check_file_status</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;File&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="nf">func_update_status</span><span class="p">():</span>
-            <span class="c1"># filter relevante data</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[[</span><span class="s2">&quot;Status&quot;</span><span class="p">,</span> <span class="s2">&quot;Method&quot;</span><span class="p">,</span> <span class="s2">&quot;Date_Due&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="c1"># Convert &#39;Date_Due&#39; to datetime format</span>
-            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Date_Due&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Date_Due&quot;</span><span class="p">])</span>
-            <span class="c1"># Get the current date</span>
-            <span class="n">current_dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-
-            <span class="c1"># Update &#39;Status&#39; for records with &#39;Automatic&#39; method and &#39;Expected&#39; status based on the condition</span>
-            <span class="n">condition</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Method&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Automatic&quot;</span><span class="p">)</span>
-                <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Expected&quot;</span><span class="p">)</span>
-                <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Date_Due&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">current_dt</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">condition</span><span class="p">,</span> <span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Executed&quot;</span>
-
-            <span class="c1"># return values</span>
-            <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-
-        <span class="c1"># todo implement all operations</span>
-        <span class="c1"># ---------------- the operator ---------------- #</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;Status&quot;</span><span class="p">:</span> <span class="n">func_update_status</span><span class="p">,</span>
-        <span class="p">}</span></div>
-
-
-<div class="viewcode-block" id="Budget._get_total_expenses">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.Budget._get_total_expenses">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_total_expenses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="n">filtered_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_prospected_cancelled</span><span class="p">()</span> <span class="k">if</span> <span class="nb">filter</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
-        <span class="n">_n</span> <span class="o">=</span> <span class="n">filtered_df</span><span class="p">[</span><span class="n">filtered_df</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Expense&quot;</span><span class="p">][</span><span class="s2">&quot;Value_Signed&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">_n</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Budget._get_total_revenue">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.Budget._get_total_revenue">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_total_revenue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="n">filtered_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_prospected_cancelled</span><span class="p">()</span> <span class="k">if</span> <span class="nb">filter</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
-        <span class="n">_n</span> <span class="o">=</span> <span class="n">filtered_df</span><span class="p">[</span><span class="n">filtered_df</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Revenue&quot;</span><span class="p">][</span><span class="s2">&quot;Value_Signed&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">_n</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Budget._filter_prospected_cancelled">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.Budget._filter_prospected_cancelled">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_filter_prospected_cancelled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;Prospected&quot;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;Cancelled&quot;</span><span class="p">)</span>
-        <span class="p">]</span></div>
-
-
-<div class="viewcode-block" id="Budget.update">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.Budget.update">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">total_revenue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_total_revenue</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">total_expenses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_total_expenses</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">total_net</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_revenue</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_expenses</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_net</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">summary_ascend</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">summary_ascend</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="c1"># ... continues in downstream objects ... #</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
-
-
-<div class="viewcode-block" id="Budget.set_data">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.Budget.set_data">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">set_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_df</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set RecordTable data from incoming :class:`pandas.DataFrame`.</span>
-<span class="sd">        Expected to be incremented downstream.</span>
-
-<span class="sd">        :param input_df: incoming :class:`pandas.DataFrame`</span>
-<span class="sd">        :type input_df: :class:`pandas.DataFrame`</span>
-
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">input_df</span><span class="o">=</span><span class="n">input_df</span><span class="p">)</span>
-        <span class="c1"># convert to numeric</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Value&quot;</span><span class="p">])</span>
-        <span class="c1"># compute temporary field</span>
-
-        <span class="c1"># sign and value_signed</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Sign&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">&quot;Revenue&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Value_Signed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Sign&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Value&quot;</span><span class="p">]</span></div>
-
-
-<div class="viewcode-block" id="Budget.parse_annual_budget">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.Budget.parse_annual_budget">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">parse_annual_budget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">budget_df</span><span class="p">,</span> <span class="n">freq_field</span><span class="o">=</span><span class="s2">&quot;Freq&quot;</span><span class="p">):</span>
-        <span class="n">start_date</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-01-01&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
-        <span class="n">end_date</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-01-01&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">year</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-
-        <span class="n">annual_budget</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-
-        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">budget_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-            <span class="c1"># Generate date range based on frequency</span>
-            <span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end_date</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;Freq&quot;</span><span class="p">])</span>
-
-            <span class="c1"># Replicate the row for each date</span>
-            <span class="n">replicated_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-                <span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="n">col</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">}</span>
-            <span class="p">)</span>
-            <span class="n">replicated_data</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dates</span>
-
-            <span class="c1"># Append to the expanded budget</span>
-            <span class="n">annual_budget</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">annual_budget</span><span class="p">,</span> <span class="n">replicated_data</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span>
-            <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">annual_budget</span></div>
-
-
-<div class="viewcode-block" id="Budget.get_summary_by_type">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.Budget.get_summary_by_type">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_summary_by_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">summary</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-            <span class="p">{</span>
-                <span class="s2">&quot;Total_Expenses&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">total_expenses</span><span class="p">],</span>
-                <span class="s2">&quot;Total_Revenue&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">total_revenue</span><span class="p">],</span>
-                <span class="s2">&quot;Total_Net&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">total_net</span><span class="p">],</span>
-            <span class="p">}</span>
-        <span class="p">)</span>
-        <span class="n">summary</span> <span class="o">=</span> <span class="n">summary</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">summary_ascend</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">summary</span></div>
-
-
-<div class="viewcode-block" id="Budget.get_summary_by_status">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.Budget.get_summary_by_status">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_summary_by_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="n">filtered_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_prospected_cancelled</span><span class="p">()</span> <span class="k">if</span> <span class="nb">filter</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="n">filtered_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;Status&quot;</span><span class="p">)[</span><span class="s2">&quot;Value_Signed&quot;</span><span class="p">]</span>
-            <span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-            <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">summary_ascend</span><span class="p">)</span>
-        <span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Budget.get_summary_by_contract">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.Budget.get_summary_by_contract">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_summary_by_contract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="n">filtered_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_prospected_cancelled</span><span class="p">()</span> <span class="k">if</span> <span class="nb">filter</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="n">filtered_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;Contract&quot;</span><span class="p">)[</span><span class="s2">&quot;Value_Signed&quot;</span><span class="p">]</span>
-            <span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-            <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">summary_ascend</span><span class="p">)</span>
-        <span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Budget.get_summary_by_tags">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.Budget.get_summary_by_tags">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_summary_by_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="n">filtered_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_prospected_cancelled</span><span class="p">()</span> <span class="k">if</span> <span class="nb">filter</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
-        <span class="n">tags_summary</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">filtered_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;Tags&quot;</span><span class="p">)[</span><span class="s2">&quot;Value_Signed&quot;</span><span class="p">]</span>
-            <span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-            <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">summary_ascend</span><span class="p">)</span>
-        <span class="p">)</span>
-        <span class="n">tags_summary</span> <span class="o">=</span> <span class="n">tags_summary</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-        <span class="n">separate_tags_summary</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">filtered_df</span><span class="p">[</span><span class="s2">&quot;Tags&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
-        <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">separate_tags_summary</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">tags_summary</span><span class="p">,</span> <span class="n">separate_tags_summary</span></div>
-</div>
-
-
-
 <div class="viewcode-block" id="FileSys">
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FileSys</span><span class="p">(</span><span class="n">DataSet</span><span class="p">):</span>
@@ -2889,7 +2643,7 @@
 
 <div class="viewcode-block" id="FileSys.__init__">
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder_base</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyFS&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;FS0&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyFS&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;FS0&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the ``FileSys`` object.</span>
 
@@ -2902,7 +2656,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># prior attributes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">folder_base</span> <span class="o">=</span> <span class="n">folder_base</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder_base</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># ------------ call super ----------- #</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
@@ -2911,7 +2665,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">object_alias</span> <span class="o">=</span> <span class="s2">&quot;FS&quot;</span>
 
         <span class="c1"># ------------ set mutables ----------- #</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">folder_main</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder_root</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span></div>
 
 
@@ -2924,28 +2678,11 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_fields</span><span class="p">()</span>
 
         <span class="c1"># Attribute fields</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">folder_base_field</span> <span class="o">=</span> <span class="s2">&quot;Folder_Base&quot;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_folder_base</span> <span class="o">=</span> <span class="s2">&quot;folder_base&quot;</span></div>
 
 
         <span class="c1"># ... continues in downstream objects ... #</span>
 
-<div class="viewcode-block" id="FileSys._set_view_specs">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys._set_view_specs">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_view_specs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;folder&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">folder_data</span><span class="p">,</span>
-            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s2">&quot;fig_format&quot;</span><span class="p">:</span> <span class="s2">&quot;jpg&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;dpi&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
-            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mi">5</span> <span class="o">*</span> <span class="mf">1.618</span><span class="p">,</span>
-            <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="mi">5</span> <span class="o">*</span> <span class="mf">1.618</span><span class="p">,</span>
-            <span class="c1"># todo include more view specs</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
-
-
-    <span class="c1">#</span>
 <div class="viewcode-block" id="FileSys.get_metadata">
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys.get_metadata">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2953,7 +2690,7 @@
         <span class="n">dict_meta</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()</span>
 
         <span class="c1"># customize local metadata:</span>
-        <span class="n">dict_meta_local</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_base_field</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">folder_base</span><span class="p">}</span>
+        <span class="n">dict_meta_local</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">field_folder_base</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">folder_base</span><span class="p">}</span>
 
         <span class="c1"># update</span>
         <span class="n">dict_meta</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dict_meta_local</span><span class="p">)</span>
@@ -2962,101 +2699,17 @@
 
         <span class="c1"># remove color</span>
         <span class="n">dict_meta</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_color</span><span class="p">)</span>
-        <span class="c1"># remove source</span>
-        <span class="n">dict_meta</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_source</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">dict_meta</span></div>
-
-
-<div class="viewcode-block" id="FileSys.get_structure">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys.get_structure">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get ``FileSys`` structure dictionary.</span>
-
-<span class="sd">        :return: structure dictionary</span>
-<span class="sd">        :rtype: dict</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># get pandas DataFrame</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-
-        <span class="c1"># Initialize the nested dictionary</span>
-        <span class="n">dict_structure</span> <span class="o">=</span> <span class="p">{}</span>
-
-        <span class="c1"># Iterate over the rows of the DataFrame</span>
-        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-            <span class="n">current_dict</span> <span class="o">=</span> <span class="n">dict_structure</span>
-
-            <span class="c1"># Split the folder path into individual folder names</span>
-            <span class="n">folders</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;Folder&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-
-            <span class="c1"># Iterate over the folders to create the nested structure</span>
-            <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="n">folders</span><span class="p">:</span>
-                <span class="n">current_dict</span> <span class="o">=</span> <span class="n">current_dict</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="p">{})</span>
-
-            <span class="c1"># If a file is present, add it to the nested structure</span>
-            <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;File&quot;</span><span class="p">]):</span>
-                <span class="n">current_dict</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;File&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">row</span><span class="p">[</span><span class="s2">&quot;Format&quot;</span><span class="p">],</span>
-                    <span class="n">row</span><span class="p">[</span><span class="s2">&quot;File_Source&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;File_Source&quot;</span><span class="p">])</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                    <span class="n">row</span><span class="p">[</span><span class="s2">&quot;Folder_Source&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;Folder_Source&quot;</span><span class="p">])</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="p">]</span>
-        <span class="k">return</span> <span class="n">dict_structure</span></div>
-
-
-<div class="viewcode-block" id="FileSys.get_status">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys.get_status">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder_name</span><span class="p">):</span>
-        <span class="c1"># todo dosctring</span>
-        <span class="n">dict_status</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="c1"># get full folder path</span>
-        <span class="n">folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">folder_main</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">folder_name</span>
-        <span class="c1"># filter expected files</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;Folder == &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder_name</span><span class="p">))</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;File&quot;</span><span class="p">])</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">dict_status</span><span class="p">[</span><span class="s2">&quot;Folder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="n">dict_status</span><span class="p">[</span><span class="s2">&quot;Files&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">dict_files</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)):</span>
-                <span class="c1"># get file name</span>
-                <span class="n">lcl_file_name</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;File&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="n">dict_files</span><span class="p">[</span><span class="n">lcl_file_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="c1"># get file format</span>
-                <span class="n">lcl_file_format</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Format&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="c1"># get extensions:</span>
-                <span class="n">dict_extensions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_extensions</span><span class="p">()</span>
-                <span class="c1">#</span>
-                <span class="n">list_lcl_extensions</span> <span class="o">=</span> <span class="n">dict_extensions</span><span class="p">[</span><span class="n">lcl_file_format</span><span class="p">]</span>
-                <span class="c1"># print(list_lcl_extensions)</span>
-                <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="n">list_lcl_extensions</span><span class="p">:</span>
-                    <span class="n">lcl_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">lcl_file_name</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">ext</span><span class="p">)</span>
-                    <span class="n">list_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">lcl_path</span><span class="p">)</span>
-                    <span class="n">lst_filenames_found</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">list_files</span><span class="p">]</span>
-                    <span class="n">dict_files</span><span class="p">[</span><span class="n">lcl_file_name</span><span class="p">][</span><span class="n">ext</span><span class="p">]</span> <span class="o">=</span> <span class="n">lst_filenames_found</span>
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">dict_files</span><span class="p">:</span>
-                <span class="c1"># Convert each list in the dictionary to a pandas Series and then create a DataFrame</span>
-                <span class="n">_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-                    <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">dict_files</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-                <span class="p">)</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_df</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-                        <span class="n">_df</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
-                <span class="n">_df</span> <span class="o">=</span> <span class="n">_df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">&quot;missing&quot;</span><span class="p">)</span>
-                <span class="n">dict_status</span><span class="p">[</span><span class="s2">&quot;Files&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-
-            <span class="k">return</span> <span class="n">dict_status</span></div>
 
 
 <div class="viewcode-block" id="FileSys.update">
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys.update">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-        <span class="c1"># set main folder</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">folder_main</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+        <span class="c1"># reset main folder</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">folder_base</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">folder_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
 
         <span class="c1"># ... continues in downstream objects ... #</span>
 
@@ -3071,7 +2724,8 @@
 
         <span class="c1"># ---------- set basic attributes --------- #</span>
         <span class="c1"># set base folder</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">folder_base</span> <span class="o">=</span> <span class="n">dict_setter</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_base_field</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder_base</span> <span class="o">=</span> <span class="n">dict_setter</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_folder_base</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_data</span> <span class="o">=</span> <span class="n">dict_setter</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_file_data</span><span class="p">]</span>
 
         <span class="c1"># -------------- set data logic here -------------- #</span>
         <span class="k">if</span> <span class="n">load_data</span><span class="p">:</span>
@@ -3086,23 +2740,25 @@
 <div class="viewcode-block" id="FileSys.load_data">
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys.load_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_data</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load data from file.</span>
-
-<span class="sd">        :param file_data: file path to data.</span>
-<span class="sd">        :type file_data: str</span>
-
-
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># -------------- overwrite relative path inputs -------------- #</span>
         <span class="n">file_data</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">file_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_data</span> <span class="o">=</span> <span class="n">file_data</span><span class="p">[:]</span>
 
         <span class="c1"># -------------- implement loading logic -------------- #</span>
-
+        <span class="n">default_columns</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;folder&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">&quot;file_template&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="p">}</span>
         <span class="c1"># -------------- call loading function -------------- #</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_data</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_csv_sep</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_data</span><span class="p">,</span>
+            <span class="n">sep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_csv_sep</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">default_columns</span><span class="p">,</span>
+            <span class="n">usecols</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">default_columns</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+        <span class="p">)</span>
 
         <span class="c1"># -------------- post-loading logic -------------- #</span>
-
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
@@ -3117,25 +2773,84 @@
 <span class="sd">            This method overwrites all existing default files.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># update structure</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_structure</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_root_folder</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_subfolders</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_templates</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
+
+<div class="viewcode-block" id="FileSys.setup_root_folder">
+<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys.setup_root_folder">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_root_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make the root folder for file system. Skip if exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># make main dir</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">make_dir</span><span class="p">(</span><span class="n">str_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_main</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_root</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
-        <span class="c1"># fill structure</span>
-        <span class="n">FileSys</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">dict_struct</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_main</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FileSys.setup_subfolders">
+<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys.setup_subfolders">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_subfolders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make all subfolders expected in the file system. Skip if exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># fill folders</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)):</span>
+            <span class="n">folder_sub</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_root</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">folder_sub</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="FileSys.setup_templates">
+<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys.setup_templates">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copy all template files to default files in the file system.</span>
+
+<span class="sd">        .. danger::</span>
+
+<span class="sd">            This method overwrites all existing default files.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s2">&quot;file_template&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)):</span>
+            <span class="n">src_file</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;file_template&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">src_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">src_file</span><span class="p">)</span>
+            <span class="n">dst_file</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">folder_root</span>
+                <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+                <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+                <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;file&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">src_file</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">dst_file</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="FileSys.backup">
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys.backup">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">backup</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">location_dir</span><span class="p">,</span>
-        <span class="n">version_id</span><span class="o">=</span><span class="s2">&quot;v-0-0&quot;</span><span class="p">,</span>
-    <span class="p">):</span>  <span class="c1"># todo docstring</span>
-        <span class="n">dst_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">location_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">version_id</span><span class="p">)</span>
-        <span class="n">FileSys</span><span class="o">.</span><span class="n">archive_folder</span><span class="p">(</span><span class="n">src_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_main</span><span class="p">,</span> <span class="n">dst_dir</span><span class="o">=</span><span class="n">dst_dir</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">backup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dst_folder</span><span class="p">,</span> <span class="n">version_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Backup project in a zip code</span>
+
+<span class="sd">        :param dst_folder: path to destination folder</span>
+<span class="sd">        :type dst_folder: str or Path</span>
+<span class="sd">        :param version_id: suffix label for versioning. if None, a timestamp is created.</span>
+<span class="sd">        :type version_id: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># compute timestamp</span>
+        <span class="k">if</span> <span class="n">version_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">version_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m0-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">))</span>
+            <span class="n">version_id</span> <span class="o">=</span> <span class="n">version_id</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">version_id</span> <span class="o">=</span> <span class="n">version_id</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">version_id</span> <span class="o">=</span> <span class="n">version_id</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="n">dst_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dst_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">version_id</span><span class="p">)</span>
+        <span class="n">FileSys</span><span class="o">.</span><span class="n">archive_folder</span><span class="p">(</span><span class="n">src_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_root</span><span class="p">,</span> <span class="n">dst_dir</span><span class="o">=</span><span class="n">dst_dir</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
@@ -3144,57 +2859,25 @@
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys.archive_folder">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">archive_folder</span><span class="p">(</span><span class="n">src_dir</span><span class="p">,</span> <span class="n">dst_dir</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;archive to a zip folder</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Archive to a zip folder</span>
 
 <span class="sd">        :param src_dir: source directory</span>
 <span class="sd">        :type src_dir: str</span>
 <span class="sd">        :param dst_dir: destination directory</span>
 <span class="sd">        :type dst_dir: str</span>
-
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Create a zip archive from the directory</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">make_archive</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">,</span> <span class="s2">&quot;zip&quot;</span><span class="p">,</span> <span class="n">src_dir</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="FileSys.get_extensions">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys.get_extensions">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_extensions</span><span class="p">():</span>
-        <span class="n">list_basics</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;pdf&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;docx&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;xlsx&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;bib&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;tex&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;svg&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;png&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;jpg&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;txt&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;csv&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;qml&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;tif&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;gpkg&quot;</span><span class="p">,</span>
-        <span class="p">]</span>
-        <span class="n">dict_extensions</span> <span class="o">=</span> <span class="p">{</span><span class="n">e</span><span class="p">:</span> <span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">list_basics</span><span class="p">}</span>
-        <span class="n">dict_aliases</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;table&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;csv&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;raster&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;asc&quot;</span><span class="p">,</span> <span class="s2">&quot;prj&quot;</span><span class="p">,</span> <span class="s2">&quot;qml&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;qraster&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;asc&quot;</span><span class="p">,</span> <span class="s2">&quot;prj&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;qml&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;fig&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;jpg&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;vfig&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;svg&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;receipt&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;jpg&quot;</span><span class="p">],</span>
-        <span class="p">}</span>
-        <span class="n">dict_extensions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dict_aliases</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dict_extensions</span></div>
-
-
 <div class="viewcode-block" id="FileSys.check_file_status">
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys.check_file_status">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_file_status</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Static method for file existing checkup</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Static method for file existing checkup</span>
 
 <span class="sd">        :param files: iterable with file paths</span>
 <span class="sd">        :type files: list</span>
@@ -3210,29 +2893,12 @@
         <span class="k">return</span> <span class="n">list_status</span></div>
 
 
-<div class="viewcode-block" id="FileSys.make_dir">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys.make_dir">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">make_dir</span><span class="p">(</span><span class="n">str_path</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Util function for making a diretory</span>
-
-<span class="sd">        :param str_path: path to dir</span>
-<span class="sd">        :type str_path: str</span>
-
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">str_path</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">str_path</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
-
-
 <div class="viewcode-block" id="FileSys.copy_batch">
 <a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys.copy_batch">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">copy_batch</span><span class="p">(</span><span class="n">dst_pattern</span><span class="p">,</span> <span class="n">src_pattern</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Util static method for batch-copying pattern-based files.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Util static method for batch-copying pattern-based files.</span>
 
 <span class="sd">        .. note::</span>
 
@@ -3267,734 +2933,28 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="FileSys.fill">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys.fill">[docs]</a>
+<div class="viewcode-block" id="FileSys.get_file_size_mb">
+<a class="viewcode-back" href="../../generated/plans.root.html#plans.root.FileSys.get_file_size_mb">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">fill</span><span class="p">(</span><span class="n">dict_struct</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">handle_files</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recursive function for filling the ``FileSys`` structure</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_file_size_mb</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Util for getting the file size in MB</span>
 
-<span class="sd">        :param dict_struct: dicitonary of directory structure</span>
-<span class="sd">        :type dict_struct: dict</span>
-
-<span class="sd">        :param folder: path to local folder</span>
-<span class="sd">        :type folder: str</span>
-
-
-
+<span class="sd">        :param file_path: path to file</span>
+<span class="sd">        :type file_path: str</span>
+<span class="sd">        :return: file size in MB</span>
+<span class="sd">        :rtype: float</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="nf">handle_file</span><span class="p">(</span><span class="n">dst_name</span><span class="p">,</span> <span class="n">lst_specs</span><span class="p">,</span> <span class="n">dst_folder</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Sub routine for handling expected files in the FileSys structure.</span>
-
-<span class="sd">            :param dst_name: destination filename</span>
-<span class="sd">            :type dst_name: str</span>
-<span class="sd">            :param lst_specs: list for expected file specifications</span>
-<span class="sd">            :type lst_specs: list</span>
-<span class="sd">            :param dst_folder: destination folder</span>
-<span class="sd">            :type dst_folder: str</span>
-
-
-<span class="sd">            &quot;&quot;&quot;</span>
-            <span class="n">dict_exts</span> <span class="o">=</span> <span class="n">FileSys</span><span class="o">.</span><span class="n">get_extensions</span><span class="p">()</span>
-            <span class="n">lst_exts</span> <span class="o">=</span> <span class="n">dict_exts</span><span class="p">[</span><span class="n">lst_specs</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
-            <span class="n">src_name</span> <span class="o">=</span> <span class="n">lst_specs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">src_dir</span> <span class="o">=</span> <span class="n">lst_specs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-
-            <span class="c1"># there is a sourcing directory</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">src_dir</span><span class="p">):</span>
-                <span class="c1"># extension loop:</span>
-                <span class="k">for</span> <span class="n">extension</span> <span class="ow">in</span> <span class="n">lst_exts</span><span class="p">:</span>
-                    <span class="c1"># source</span>
-                    <span class="n">src_file</span> <span class="o">=</span> <span class="n">src_name</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">extension</span>
-                    <span class="n">src_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">src_dir</span><span class="p">,</span> <span class="n">src_file</span><span class="p">)</span>
-                    <span class="c1"># destination</span>
-                    <span class="n">dst_file</span> <span class="o">=</span> <span class="n">dst_name</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">extension</span>
-                    <span class="n">dst_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dst_folder</span><span class="p">,</span> <span class="n">dst_file</span><span class="p">)</span>
-                    <span class="c1">#</span>
-                    <span class="c1"># there might be a sourced file</span>
-                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">src_filepath</span><span class="p">):</span>
-                        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">src_filepath</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">dst_filepath</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="n">src_name</span><span class="p">:</span>
-                        <span class="c1"># is a pattern file</span>
-                        <span class="n">FileSys</span><span class="o">.</span><span class="n">copy_batch</span><span class="p">(</span>
-                            <span class="n">src_pattern</span><span class="o">=</span><span class="n">src_filepath</span><span class="p">,</span> <span class="n">dst_pattern</span><span class="o">=</span><span class="n">dst_filepath</span>
-                        <span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">pass</span>
-
-            <span class="k">return</span> <span class="kc">None</span>
-
-        <span class="c1"># structure loop:</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">dict_struct</span><span class="p">:</span>
-            <span class="c1"># get current folder or file</span>
-            <span class="n">_d</span> <span class="o">=</span> <span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-
-            <span class="c1"># [case 1] bottom is a folder</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dict_struct</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="c1"># make a dir</span>
-                <span class="n">FileSys</span><span class="o">.</span><span class="n">make_dir</span><span class="p">(</span><span class="n">str_path</span><span class="o">=</span><span class="n">_d</span><span class="p">)</span>
-                <span class="c1"># now move down:</span>
-                <span class="n">FileSys</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span>
-                    <span class="n">dict_struct</span><span class="o">=</span><span class="n">dict_struct</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">folder</span><span class="o">=</span><span class="n">_d</span><span class="p">,</span> <span class="n">handle_files</span><span class="o">=</span><span class="n">handle_files</span>
-                <span class="p">)</span>
-
-            <span class="c1"># bottom is an expected file</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">handle_files</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;HEY&quot;</span><span class="p">)</span>
-                    <span class="n">handle_file</span><span class="p">(</span><span class="n">dst_name</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">lst_specs</span><span class="o">=</span><span class="n">dict_struct</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">dst_folder</span><span class="o">=</span><span class="n">folder</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="c1"># Get the file size in bytes</span>
+        <span class="n">file_size_bytes</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="c1"># Convert bytes to megabytes</span>
+        <span class="n">file_size_mb</span> <span class="o">=</span> <span class="n">file_size_bytes</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">file_size_mb</span></div>
 </div>
 
 
 
 <span class="c1"># --------- DEPRECATED ---------</span>
-
-
-<div class="viewcode-block" id="_Note0">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note0">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">_Note0</span><span class="p">(</span><span class="n">MbaE</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    DEPRECATED CLASS</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-<div class="viewcode-block" id="_Note0.__init__">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note0.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyNote&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;Nt1&quot;</span><span class="p">):</span>
-
-        <span class="c1"># attributes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tags_head</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tags_etc</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">related_head</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">related_etc</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">summary</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="c1"># file paths</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">file_note</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="c1"># note dict</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">note_dict</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span></div>
-
-        <span class="c1"># ... continues in downstream objects ... #</span>
-
-<div class="viewcode-block" id="_Note0._set_fields">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note0._set_fields">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set fields names&quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_fields</span><span class="p">()</span>
-        <span class="c1"># Attribute fields</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">title_field</span> <span class="o">=</span> <span class="s2">&quot;title&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tags_head_field</span> <span class="o">=</span> <span class="s2">&quot;tags_head&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tags_etc_field</span> <span class="o">=</span> <span class="s2">&quot;tags_etc&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">related_head_field</span> <span class="o">=</span> <span class="s2">&quot;related_head&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">related_etc_field</span> <span class="o">=</span> <span class="s2">&quot;related_etc&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">summary_field</span> <span class="o">=</span> <span class="s2">&quot;summary&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp_field</span> <span class="o">=</span> <span class="s2">&quot;timestamp&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">file_note_field</span> <span class="o">=</span> <span class="s2">&quot;file_note&quot;</span></div>
-
-
-        <span class="c1"># Metadata fields</span>
-
-        <span class="c1"># ... continues in downstream objects ... #</span>
-
-<div class="viewcode-block" id="_Note0.get_metadata">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note0.get_metadata">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a dictionary with object metadata.</span>
-
-
-<span class="sd">        .. note::</span>
-
-<span class="sd">            Metadata does **not** necessarily inclue all object attributes.</span>
-
-<span class="sd">        :return: dictionary with all metadata</span>
-<span class="sd">        :rtype: dict</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># ------------ call super ----------- #</span>
-        <span class="n">dict_meta</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()</span>
-
-        <span class="c1"># customize local metadata:</span>
-        <span class="n">dict_meta_local</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">title_field</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">summary_field</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">timestamp_field</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tags_head_field</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags_head</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tags_etc_field</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags_etc</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">related_head_field</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_head</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">related_etc_field</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">related_etc</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">file_note_field</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_note</span><span class="p">,</span>
-        <span class="p">}</span>
-        <span class="c1"># update</span>
-        <span class="n">dict_meta</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dict_meta_local</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dict_meta</span></div>
-
-
-<div class="viewcode-block" id="_Note0.load">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note0.load">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">note_dict</span> <span class="o">=</span> <span class="n">Note</span><span class="o">.</span><span class="n">parse_note</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_note</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="_Note0.update">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note0.update">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-        <span class="c1"># get first section name</span>
-        <span class="c1"># Warning: assume it is the first item</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">note_dict</span><span class="p">))</span>
-
-        <span class="c1"># patterns</span>
-
-        <span class="c1"># Create a copy of the original dictionary</span>
-        <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">note_dict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="c1"># Remove the specified key from the new dictionary</span>
-        <span class="k">del</span> <span class="n">new_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">]</span>
-
-        <span class="c1"># head tags</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tags_head</span> <span class="o">=</span> <span class="n">Note</span><span class="o">.</span><span class="n">list_by_pattern</span><span class="p">(</span>
-            <span class="n">md_dict</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">note_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">]},</span> <span class="n">patt_type</span><span class="o">=</span><span class="s2">&quot;tag&quot;</span>
-        <span class="p">)</span>
-        <span class="c1"># head related:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">related_head</span> <span class="o">=</span> <span class="n">Note</span><span class="o">.</span><span class="n">list_by_pattern</span><span class="p">(</span>
-            <span class="n">md_dict</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">note_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">]},</span> <span class="n">patt_type</span><span class="o">=</span><span class="s2">&quot;related&quot;</span>
-        <span class="p">)</span>
-        <span class="c1"># etc tags:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tags_etc</span> <span class="o">=</span> <span class="n">Note</span><span class="o">.</span><span class="n">list_by_pattern</span><span class="p">(</span><span class="n">md_dict</span><span class="o">=</span><span class="n">new_dict</span><span class="p">,</span> <span class="n">patt_type</span><span class="o">=</span><span class="s2">&quot;tag&quot;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">related_etc</span> <span class="o">=</span> <span class="n">Note</span><span class="o">.</span><span class="n">list_by_pattern</span><span class="p">(</span><span class="n">md_dict</span><span class="o">=</span><span class="n">new_dict</span><span class="p">,</span> <span class="n">patt_type</span><span class="o">=</span><span class="s2">&quot;related&quot;</span><span class="p">)</span>
-
-        <span class="c1"># summary</span>
-        <span class="n">lst_summaries</span> <span class="o">=</span> <span class="n">Note</span><span class="o">.</span><span class="n">list_by_intro</span><span class="p">(</span>
-            <span class="n">md_dict</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">note_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">]},</span> <span class="n">intro_type</span><span class="o">=</span><span class="s2">&quot;summary&quot;</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">summary</span> <span class="o">=</span> <span class="n">lst_summaries</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-        <span class="c1"># datetime</span>
-        <span class="n">lst_datetimes</span> <span class="o">=</span> <span class="n">Note</span><span class="o">.</span><span class="n">list_by_intro</span><span class="p">(</span>
-            <span class="n">md_dict</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">note_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">]},</span> <span class="n">intro_type</span><span class="o">=</span><span class="s2">&quot;timestamp&quot;</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="n">lst_datetimes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
-
-
-<div class="viewcode-block" id="_Note0.list_by_pattern">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note0.list_by_pattern">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">list_by_pattern</span><span class="p">(</span><span class="n">md_dict</span><span class="p">,</span> <span class="n">patt_type</span><span class="o">=</span><span class="s2">&quot;tag&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve a list of patterns from the note dictionary.</span>
-
-<span class="sd">        :param md_dict: Dictionary containing note sections.</span>
-<span class="sd">        :type md_dict: dict</span>
-<span class="sd">        :param patt_type: Type of pattern to search for, either &quot;tag&quot; or &quot;related&quot;. Defaults to &quot;tag&quot;.</span>
-<span class="sd">        :type patt_type: str</span>
-<span class="sd">        :return: List of found patterns or None if no patterns are found.</span>
-<span class="sd">        :rtype: list or None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="n">patt_type</span> <span class="o">==</span> <span class="s2">&quot;tag&quot;</span><span class="p">:</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;#\w+&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">patt_type</span> <span class="o">==</span> <span class="s2">&quot;related&quot;</span><span class="p">:</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\[\[.*?\]\]&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;#\w+&quot;</span><span class="p">)</span>
-
-        <span class="n">patts</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># run over all sections</span>
-        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">md_dict</span><span class="p">:</span>
-            <span class="n">content</span> <span class="o">=</span> <span class="n">md_dict</span><span class="p">[</span><span class="n">s</span><span class="p">][</span><span class="s2">&quot;Content&quot;</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
-                <span class="n">patts</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">patts</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="k">return</span> <span class="n">patts</span></div>
-
-
-<div class="viewcode-block" id="_Note0.list_by_intro">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note0.list_by_intro">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">list_by_intro</span><span class="p">(</span><span class="n">md_dict</span><span class="p">,</span> <span class="n">intro_type</span><span class="o">=</span><span class="s2">&quot;summary&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List introduction contents based on the specified type.</span>
-
-<span class="sd">        :param md_dict: Dictionary containing note sections.</span>
-<span class="sd">        :type md_dict: dict</span>
-<span class="sd">        :param intro_type: Type of introduction to search for, currently supports &quot;summary&quot;. Defaults to &quot;summary&quot;.</span>
-<span class="sd">        :type intro_type: str</span>
-<span class="sd">        :return: List of found introductions or None if no introductions are found.</span>
-<span class="sd">        :rtype: list or None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">intro_type</span> <span class="o">==</span> <span class="s2">&quot;summary&quot;</span><span class="p">:</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\*\*Summary:\*\*\s*(.*)&quot;</span>
-        <span class="k">elif</span> <span class="n">intro_type</span> <span class="o">==</span> <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;created in:\s*(.*)&quot;</span>
-        <span class="c1"># develop more options</span>
-
-        <span class="n">summaries</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># run over all sections</span>
-        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">md_dict</span><span class="p">:</span>
-            <span class="n">content</span> <span class="o">=</span> <span class="n">md_dict</span><span class="p">[</span><span class="n">s</span><span class="p">][</span><span class="s2">&quot;Content&quot;</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
-                <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-                    <span class="n">summaries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">summaries</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">summaries</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">summaries</span></div>
-
-
-<div class="viewcode-block" id="_Note0.parse_note">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note0.parse_note">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">parse_note</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse a Markdown file into a dictionary structure.</span>
-
-<span class="sd">        :param file_path: Path to the Markdown file.</span>
-<span class="sd">        :type file_path: str</span>
-<span class="sd">        :return: Dictionary representing the note structure.</span>
-<span class="sd">        :rtype: dict</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
-
-        <span class="n">markdown_dict</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">current_section</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">parent_section</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">section_stack</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="n">section_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^(#+)\s+(.*)&quot;</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
-            <span class="n">match</span> <span class="o">=</span> <span class="n">section_pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-                <span class="n">level</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-                <span class="n">section_title</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-
-                <span class="k">if</span> <span class="n">current_section</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">markdown_dict</span><span class="p">[</span><span class="n">current_section</span><span class="p">][</span><span class="s2">&quot;Content&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">section_content</span>
-
-                <span class="k">while</span> <span class="n">section_stack</span> <span class="ow">and</span> <span class="n">section_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">level</span><span class="p">:</span>
-                    <span class="n">section_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-
-                <span class="n">parent_section</span> <span class="o">=</span> <span class="n">section_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">section_stack</span> <span class="k">else</span> <span class="kc">None</span>
-                <span class="n">current_section</span> <span class="o">=</span> <span class="n">section_title</span>
-                <span class="n">section_stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">current_section</span><span class="p">,</span> <span class="n">level</span><span class="p">))</span>
-                <span class="n">markdown_dict</span><span class="p">[</span><span class="n">current_section</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="s2">&quot;Parent Section&quot;</span><span class="p">:</span> <span class="n">parent_section</span><span class="p">,</span>
-                    <span class="s2">&quot;Content&quot;</span><span class="p">:</span> <span class="p">[],</span>
-                <span class="p">}</span>
-                <span class="n">section_content</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">section_content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-
-        <span class="k">if</span> <span class="n">current_section</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">markdown_dict</span><span class="p">[</span><span class="n">current_section</span><span class="p">][</span><span class="s2">&quot;Content&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">section_content</span>
-
-        <span class="k">return</span> <span class="n">markdown_dict</span></div>
-
-
-<div class="viewcode-block" id="_Note0.to_md">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note0.to_md">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_md</span><span class="p">(</span><span class="n">md_dict</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a note dictionary to a Markdown file and save it to the specified directory.</span>
-
-<span class="sd">        :param md_dict: Dictionary containing note sections.</span>
-<span class="sd">        :type md_dict: dict</span>
-<span class="sd">        :param output_dir: Directory where the output Markdown file will be saved.</span>
-<span class="sd">        :type output_dir: str</span>
-<span class="sd">        :param filename: Name of the output Markdown file (without extension).</span>
-<span class="sd">        :type filename: str</span>
-
-
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="nf">write_section</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-            <span class="c1"># Write the section header</span>
-            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;#&#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">level</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">section</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-
-            <span class="c1"># Write the section content</span>
-            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">md_dict</span><span class="p">[</span><span class="n">section</span><span class="p">][</span><span class="s2">&quot;Content&quot;</span><span class="p">]:</span>
-                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-
-            <span class="c1"># Find and write subsections</span>
-            <span class="n">subsections</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">md_dict</span> <span class="k">if</span> <span class="n">md_dict</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;Parent Section&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">section</span>
-            <span class="p">]</span>
-            <span class="k">for</span> <span class="n">subsection</span> <span class="ow">in</span> <span class="n">subsections</span><span class="p">:</span>
-                <span class="c1"># recursive step:</span>
-                <span class="n">write_section</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">subsection</span><span class="p">,</span> <span class="n">level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-
-        <span class="c1"># Find top-level sections (sections with no parent)</span>
-        <span class="n">top_sections</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">md_dict</span> <span class="k">if</span> <span class="n">md_dict</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;Parent Section&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="p">]</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
-
-        <span class="n">output_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.md&quot;</span><span class="p">)</span>
-
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">top_sections</span><span class="p">:</span>
-                <span class="n">write_section</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">section</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">output_file</span></div>
-
-
-<div class="viewcode-block" id="_Note0.find_and_replace">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note0.find_and_replace">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">find_and_replace</span><span class="p">(</span><span class="n">note_file</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">line_n</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># Load the Markdown file</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">note_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
-
-        <span class="c1"># Find and replace old by new strings</span>
-        <span class="k">if</span> <span class="n">line_n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># Replace in all lines</span>
-            <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Replace only in the specified line number</span>
-            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">line_n</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
-                <span class="n">lines</span><span class="p">[</span><span class="n">line_n</span><span class="p">]</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">line_n</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
-
-        <span class="c1"># Overwrite the file</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">note_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">file</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
-</div>
-
-
-
-<div class="viewcode-block" id="_Note1">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note1">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">_Note1</span><span class="p">(</span><span class="n">MbaE</span><span class="p">):</span>
-
-<div class="viewcode-block" id="_Note1.__init__">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note1.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyNote&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;Nt1&quot;</span><span class="p">):</span>
-        <span class="c1"># set attributes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">file_note</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span></div>
-
-        <span class="c1"># ... continues in downstream objects ... #</span>
-
-<div class="viewcode-block" id="_Note1._set_fields">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note1._set_fields">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set fields names&quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_fields</span><span class="p">()</span>
-        <span class="c1"># Attribute fields</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">file_note_field</span> <span class="o">=</span> <span class="s2">&quot;file_note&quot;</span></div>
-
-
-        <span class="c1"># Metadata fields</span>
-
-        <span class="c1"># ... continues in downstream objects ... #</span>
-
-<div class="viewcode-block" id="_Note1.get_metadata">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note1.get_metadata">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a dictionary with object metadata.</span>
-
-
-<span class="sd">        .. note::</span>
-
-<span class="sd">            Metadata does **not** necessarily inclue all object attributes.</span>
-
-<span class="sd">        :return: dictionary with all metadata</span>
-<span class="sd">        :rtype: dict</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># ------------ call super ----------- #</span>
-        <span class="n">dict_meta</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()</span>
-
-        <span class="c1"># customize local metadata:</span>
-        <span class="n">dict_meta_local</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">file_note_field</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_note</span><span class="p">,</span>
-        <span class="p">}</span>
-        <span class="c1"># update</span>
-        <span class="n">dict_meta</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dict_meta_local</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dict_meta</span></div>
-
-
-<div class="viewcode-block" id="_Note1.load_metadata">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note1.load_metadata">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">load_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Note</span><span class="o">.</span><span class="n">parse_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_note</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="_Note1.load_data">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note1.load_data">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">Note</span><span class="o">.</span><span class="n">parse_note</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_note</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="_Note1.load">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note1.load">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">load_metadata</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="_Note1.save">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note1.save">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_note</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="_Note1.to_file">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note1.to_file">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">cleanup</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export Note to markdown</span>
-
-<span class="sd">        :param file_path: path to file</span>
-<span class="sd">        :type file_path: str</span>
-<span class="sd">        :return:</span>
-<span class="sd">        :rtype:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ls_metadata</span> <span class="o">=</span> <span class="n">Note</span><span class="o">.</span><span class="n">metadata_to_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
-        <span class="c1"># clear &quot;None&quot; values</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ls_metadata</span><span class="p">)):</span>
-            <span class="n">ls_metadata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ls_metadata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-
-        <span class="n">ls_data</span> <span class="o">=</span> <span class="n">Note</span><span class="o">.</span><span class="n">data_to_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">ls_data</span><span class="p">:</span>
-            <span class="n">ls_metadata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">[:])</span>
-        <span class="n">ls_all</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">ls_metadata</span><span class="p">]</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">file</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">ls_all</span><span class="p">)</span>
-
-        <span class="c1"># clean up excessive lines</span>
-        <span class="k">if</span> <span class="n">cleanup</span><span class="p">:</span>
-            <span class="n">Note</span><span class="o">.</span><span class="n">remove_excessive_blank_lines</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="_Note1.remove_excessive_blank_lines">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note1.remove_excessive_blank_lines">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">remove_excessive_blank_lines</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
-
-        <span class="n">cleaned_lines</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">previous_line_blank</span> <span class="o">=</span> <span class="kc">False</span>
-
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">previous_line_blank</span><span class="p">:</span>
-                    <span class="n">cleaned_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-                    <span class="n">previous_line_blank</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">cleaned_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-                <span class="n">previous_line_blank</span> <span class="o">=</span> <span class="kc">False</span>
-
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">file</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">cleaned_lines</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="_Note1.parse_metadata">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note1.parse_metadata">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">parse_metadata</span><span class="p">(</span><span class="n">note_file</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extracts YAML metadata from the header of a Markdown file.</span>
-
-<span class="sd">        :param note_file: str, path to the Markdown file</span>
-<span class="sd">        :return: dict, extracted YAML metadata</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">note_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">content</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-
-        <span class="c1"># Regular expression to match the YAML header</span>
-        <span class="n">yaml_header_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^---\s*\n(.*?)\n---\s*\n&quot;</span>
-
-        <span class="c1"># Search for the YAML header in the content</span>
-        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">yaml_header_regex</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-            <span class="n">yaml_content</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">Note</span><span class="o">.</span><span class="n">parse_yaml</span><span class="p">(</span><span class="n">yaml_content</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
-
-
-<div class="viewcode-block" id="_Note1.parse_yaml">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note1.parse_yaml">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">parse_yaml</span><span class="p">(</span><span class="n">yaml_content</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parses YAML content into a dictionary.</span>
-
-<span class="sd">        :param yaml_content: str, YAML content as string</span>
-<span class="sd">        :return: dict, parsed YAML content</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">lines</span> <span class="o">=</span> <span class="n">yaml_content</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">current_key</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">current_list</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-                <span class="k">continue</span>
-            <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
-                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>  <span class="c1"># start of a list</span>
-                    <span class="n">current_key</span> <span class="o">=</span> <span class="n">key</span>
-                    <span class="n">current_list</span> <span class="o">=</span> <span class="p">[]</span>
-                    <span class="n">metadata</span><span class="p">[</span><span class="n">current_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_list</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;tags&quot;</span><span class="p">:</span>
-                        <span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                            <span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-                        <span class="p">]</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-            <span class="k">elif</span> <span class="n">current_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">):</span>
-                <span class="n">current_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-
-        <span class="c1"># fix empty lists</span>
-        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="n">e</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">metadata</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="c1"># fix text fields</span>
-        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">metadata</span><span class="p">[</span><span class="n">e</span><span class="p">]:</span>
-                <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="n">e</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
-                <span class="k">if</span> <span class="n">metadata</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&quot;&#39;</span> <span class="ow">and</span> <span class="n">metadata</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="n">size</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">:</span>
-                    <span class="c1"># slice it</span>
-                    <span class="n">metadata</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="n">size</span><span class="p">]</span>
-
-        <span class="k">return</span> <span class="n">metadata</span></div>
-
-
-<div class="viewcode-block" id="_Note1.metadata_to_list">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note1.metadata_to_list">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">metadata_to_list</span><span class="p">(</span><span class="n">metadata_dict</span><span class="p">):</span>
-        <span class="n">ls_metadata</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">ls_metadata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">metadata_dict</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata_dict</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="n">ls_metadata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">metadata_dict</span><span class="p">[</span><span class="n">e</span><span class="p">]:</span>
-                    <span class="n">ls_metadata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; - </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">aux0</span> <span class="o">=</span> <span class="n">metadata_dict</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">aux0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">aux0</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-                <span class="n">aux1</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">aux0</span><span class="p">)</span>
-                <span class="n">ls_metadata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aux1</span><span class="p">)</span>
-        <span class="n">ls_metadata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">ls_metadata</span></div>
-
-
-<div class="viewcode-block" id="_Note1.data_to_list">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note1.data_to_list">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">data_to_list</span><span class="p">(</span><span class="n">data_dict</span><span class="p">):</span>
-        <span class="n">ls_out</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">data_dict</span><span class="p">:</span>
-            <span class="n">level</span> <span class="o">=</span> <span class="n">data_dict</span><span class="p">[</span><span class="n">h</span><span class="p">][</span><span class="s2">&quot;Level&quot;</span><span class="p">]</span>
-            <span class="c1"># section header</span>
-            <span class="n">ls_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;#&quot;</span> <span class="o">*</span> <span class="n">level</span><span class="p">,</span> <span class="n">h</span><span class="p">))</span>
-            <span class="c1"># content</span>
-            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data_dict</span><span class="p">[</span><span class="n">h</span><span class="p">][</span><span class="s2">&quot;Content&quot;</span><span class="p">]:</span>
-                <span class="n">ls_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ls_out</span></div>
-
-
-<div class="viewcode-block" id="_Note1.parse_note">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note1.parse_note">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">parse_note</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse a Markdown file into a dictionary structure, skipping any YAML header.</span>
-
-<span class="sd">        :param file_path: Path to the Markdown file.</span>
-<span class="sd">        :type file_path: str</span>
-<span class="sd">        :return: Dictionary representing the note structure.</span>
-<span class="sd">        :rtype: dict</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
-
-        <span class="c1"># Skip YAML header if present</span>
-        <span class="k">if</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;---&quot;</span><span class="p">:</span>
-            <span class="n">yaml_end_index</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-            <span class="n">lines</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">yaml_end_index</span><span class="p">:]</span>
-
-        <span class="n">sections</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">current_section</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">parent_section</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
-            <span class="n">header_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^(#{1,6})\s+(.*)&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">header_match</span><span class="p">:</span>
-                <span class="n">level</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">header_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-                <span class="n">section_name</span> <span class="o">=</span> <span class="n">header_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-
-                <span class="c1"># Determine parent section</span>
-                <span class="n">parent_section</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">sections</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-                    <span class="k">if</span> <span class="n">sections</span><span class="p">[</span><span class="n">section</span><span class="p">][</span><span class="s2">&quot;Level&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">level</span><span class="p">:</span>
-                        <span class="n">parent_section</span> <span class="o">=</span> <span class="n">section</span>
-                        <span class="k">break</span>
-
-                <span class="n">sections</span><span class="p">[</span><span class="n">section_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="s2">&quot;Parent&quot;</span><span class="p">:</span> <span class="n">parent_section</span><span class="p">,</span>
-                    <span class="s2">&quot;Content&quot;</span><span class="p">:</span> <span class="p">[],</span>
-                    <span class="s2">&quot;Level&quot;</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span>
-                <span class="p">}</span>
-                <span class="n">current_section</span> <span class="o">=</span> <span class="n">section_name</span>
-            <span class="k">elif</span> <span class="n">current_section</span><span class="p">:</span>
-                <span class="n">sections</span><span class="p">[</span><span class="n">current_section</span><span class="p">][</span><span class="s2">&quot;Content&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-
-        <span class="c1"># Remove the &#39;Level&#39; key from the final output</span>
-        <span class="k">return</span> <span class="n">sections</span></div>
-
-
-<div class="viewcode-block" id="_Note1.list_by_pattern">
-<a class="viewcode-back" href="../../generated/plans.root.html#plans.root._Note1.list_by_pattern">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">list_by_pattern</span><span class="p">(</span><span class="n">md_dict</span><span class="p">,</span> <span class="n">patt_type</span><span class="o">=</span><span class="s2">&quot;tag&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve a list of patterns from the note dictionary.</span>
-
-<span class="sd">        :param md_dict: Dictionary containing note sections.</span>
-<span class="sd">        :type md_dict: dict</span>
-<span class="sd">        :param patt_type: Type of pattern to search for, either &quot;tag&quot; or &quot;related&quot;. Defaults to &quot;tag&quot;.</span>
-<span class="sd">        :type patt_type: str</span>
-<span class="sd">        :return: List of found patterns or None if no patterns are found.</span>
-<span class="sd">        :rtype: list or None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="n">patt_type</span> <span class="o">==</span> <span class="s2">&quot;tag&quot;</span><span class="p">:</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;#\w+&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">patt_type</span> <span class="o">==</span> <span class="s2">&quot;related&quot;</span><span class="p">:</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\[\[.*?\]\]&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;#\w+&quot;</span><span class="p">)</span>
-
-        <span class="n">patts</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># run over all sections</span>
-        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">md_dict</span><span class="p">:</span>
-            <span class="n">content</span> <span class="o">=</span> <span class="n">md_dict</span><span class="p">[</span><span class="n">s</span><span class="p">][</span><span class="s2">&quot;Content&quot;</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
-                <span class="n">patts</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">patts</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="k">return</span> <span class="n">patts</span></div>
-</div>
-
-
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hello world!&quot;</span><span class="p">)</span>

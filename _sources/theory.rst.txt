@@ -68,71 +68,45 @@ This example represents the long-term water balance for an entire catchment, whi
 Linear storage
 ----------------------------------------------------------------------
 
-Linear storage is a fundamental concept in system dynamics and in hydrology.
-Early works, such as Horton (1933), proposed that groundwater behaves like a
-linear reservoir: it drains in proportion to the current storage level.
+Linear storage is a fundamental concept in system dynamics and in hydrology. Early works, such as Horton (1933), proposed that groundwater behaves like a linear reservoir: it drains in proportion to the current storage level.
 
-A simple way to visualize this is to imagine a water bucket with a small hole
-at the bottom. The bucket drains continuously, and the discharge rate is
-proportional to the water level inside. As the storage empties, the discharge
-gradually decreases, eventually approaching zero as time tends to infinity.
+A simple way to visualize this is to imagine a water bucket with a small hole at the bottom. The bucket drains continuously, and the discharge rate is proportional to the water level inside. As the storage empties, the discharge gradually decreases, eventually approaching zero as time tends to infinity.
 
-This behavior can be described by a simple differential equation, where the
-outflow is proportional to the storage. The parameter :math:`k` is known as
-the *residence time* and controls how quickly or slowly the storage drains.
+This behavior can be described by a simple differential equation, where the outflow is proportional to the storage. The parameter :math:`k` is known as the *residence time* and controls how quickly or slowly the storage drains.
 
 .. math::
    :label: eq-linear-storage
 
    Q(t) = \frac{1}{k} \cdot S(t)
 
-In this equation, :math:`Q(t)` is the outflow at time :math:`t`, :math:`S(t)`
-is the current storage, and :math:`k` is the residence time. A small value of
-:math:`k` results in faster drainage, while a larger :math:`k` leads to slower
-drainage. Although this equation can be solved analytically for a single
-storage, in practice it is often embedded within a numerical scheme, like the
-Euler Method, that accounts for multiple inflows, outflows, and other interacting storages.
+In this equation, :math:`Q(t)` is the outflow at time :math:`t`, :math:`S(t)` is the current storage, and :math:`k` is the residence time. A small value of :math:`k` results in faster drainage, while a larger :math:`k` leads to slower drainage. Although this equation can be solved analytically for a single storage, in practice it is often embedded within a numerical scheme, like the Euler Method, that accounts for multiple inflows, outflows, and other interacting storages.
 
 Recession curves
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When solved analytically for an isolated storage with no additional inflows,
-the solution yields an exponential decay, or **recession curve**:
+When solved analytically for an isolated storage with no additional inflows, the solution yields an exponential decay, or **recession curve**:
 
 .. math::
    :label: eq-recession-curve
 
    Q(t) = Q_0 \cdot e^{-t/k}
 
-Here, :math:`Q_0` is the initial discharge at the beginning of the
-recession. This equation describes how discharge decreases exponentially over
-time, converging asymptotically toward zero.
+Here, :math:`Q_0` is the initial discharge at the beginning of the recession. This equation describes how discharge decreases exponentially over time, converging asymptotically toward zero.
 
-Horton (1933) noted that this behavior closely matches the observed recession
-curves of rivers during periods of no
-rainfall and negligible evapotranspiration. These curves provide valuable
-information about the catchment’s storage properties, allowing estimates of
-parameters such as :math:`Q_0` and the effective storage capacity of the
-catchment.
+Horton (1933) noted that this behavior closely matches the observed recession curves of rivers during periods of no rainfall and negligible evapotranspiration. These curves provide valuable information about the catchment’s storage properties, allowing estimates of parameters such as :math:`Q_0` and the effective storage capacity of the catchment.
 
-In practice, these are effective values representing the average
-conditions of the soils and aquifers that contribute to baseflow at the
-gauging section.
+In practice, these are effective values representing the average conditions of the soils and aquifers that contribute to baseflow at the gauging section.
 
 
 Macropores and fast subsurface flows
 ----------------------------------------------------------------------
 
-Although linear storage provides a good first approximation for groundwater
-drainage, early studies showed that it does not represent all forms of flow
-from soils to streams. In many forested catchments, a significant portion of
-stream response can be attributed to fast subsurface flow through macropores
+Although linear storage provides a good first approximation for groundwater drainage, early studies showed that it does not represent all forms of flow
+from soils to streams. In many forested catchments, a significant portion of stream response can be attributed to fast subsurface flow through macropores
 and highly conductive soil layers.
 
-These macropores, often formed by root channels, decayed organic material, or
-soil cracks, create preferential flow paths that transmit water rapidly downslope.
-As a result, streams may rise quickly after rainfall events even when there is
-no direct overland flow and no significant recharge to deep groundwater.
+These macropores, often formed by root channels, decayed organic material, or soil cracks, create preferential flow paths that transmit water rapidly downslope.
+As a result, streams may rise quickly after rainfall events even when there is no direct overland flow and no significant recharge to deep groundwater.
 This process is particularly important in forest hydrology and in hillslopes
 with well-developed organic layers, where macropore flow can dominate the
 hydrological response.
