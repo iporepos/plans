@@ -382,11 +382,11 @@ def get_system_table():
     df = df.dropna(subset="system")
 
     dc_cols = {
-        "tex": "Symbol",
         "name": "Name",
-        "units": "Units",
+        "tex": "Symbol",
         "description": "Description",
-        "subsystem": "Hydrology",
+        # "subsystem": "Hydrology",
+        "units": "Units",
         "system": "System",
     }
 
@@ -404,6 +404,7 @@ def get_system_table():
         df_q = df.query("category == '{}'".format(k))
         df_q = df_q[list(dc_cols.keys())]
         df_q = df_q.rename(columns=dc_cols)
+        df_q = df_q.sort_values(by="Name").copy()
         df_q.to_csv(DOCS_DATA_DIR / "system_{}.csv".format(dc[k]), sep=";", index=False)
 
     return None

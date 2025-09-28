@@ -74,8 +74,36 @@ from plans.root import FileSys
 
 class Project(FileSys):
 
-    def __init__(self, root, name):
-        super().__init__(folder_base=root, name=name, alias=None)
+    def __init__(self):
+        super().__init__(name="PlansProject", alias=None)
+
+    def get_metadata(self):
+        # ------------ call super ----------- #
+        dict_meta = super().get_metadata()
+
+        # removals
+
+        dict_meta.pop(self.field_size)
+        dict_meta.pop(self.field_file_data)
+
+        return dict_meta
+
+    def setter(self, dict_setter, load_data=False):
+        # ignores
+        dict_setter[self.field_size] = None
+        dict_setter[self.field_file_data] = None
+
+        # -------------- super -------------- #
+        super().setter(dict_setter=dict_setter, load_data=False)
+
+        # ---------- set basic attributes --------- #
+        # set base folder
+        self.folder_base = dict_setter[self.field_folder_base]
+
+        # -------------- update other mutables -------------- #
+        self.update()
+
+        # ... continues in downstream objects ... #
 
     def load_data(self):
         """
@@ -87,18 +115,40 @@ class Project(FileSys):
         :rtype: None
         """
         # -------------- overwrite relative path inputs -------------- #
-        file_data = os.path.abspath("./plans/iofiles.csv")
+        file_data = os.path.abspath("./src/plans/data/files.csv")
 
         # -------------- implement loading logic -------------- #
 
         # -------------- call loading function -------------- #
-        self.data = pd.read_csv(file_data, sep=self.file_csv_sep)
+        df = pd.read_csv(file_data, sep=self.file_csv_sep)
+        df = df[["folder", "name"]].copy()
+        df.rename(columns={"name": "file"}, inplace=True)
+        # handle modifications
+        df["folder"] = df["folder"].str.replace("{project}/", "")
+        df["folder"] = df["folder"].str.replace("outputs/{id}", "outputs")
+        # handle default folders
+        df["folder"] = df["folder"].str.replace(
+            "climate/{scenario}", "climate/observed"
+        )
+        df["folder"] = df["folder"].str.replace("lulc/{scenario}", "lulc/observed")
+        df["folder"] = df["folder"].str.replace("basins/{basin}", "basins/main")
+        df["file_template"] = None
+
+        self.data = df.copy()
 
         # -------------- post-loading logic -------------- #
+        """
         self.data = self.data[
             ["Folder", "File", "Format", "File_Source", "Folder_Source"]
         ].copy()
+        """
 
+        return None
+
+    def setup(self):
+        super().setup()
+        df = self.get_metadata_df()
+        df.to_csv(self.folder_root + "/project_info.csv", sep=";", index=False)
         return None
 
 

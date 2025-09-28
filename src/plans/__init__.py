@@ -38,6 +38,7 @@ Print a message
 """
 # EXPOSE MODULES FROM PACKAGE
 # ***********************************************************************
+from plans.project import Project
 
 
 def plans_add(num1, num2):

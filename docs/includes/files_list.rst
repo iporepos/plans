@@ -79,7 +79,7 @@ Digital Elevation Model
    File, "``dem.tif``"
    Project Folder, "``{project}/data/topo``"
    Pixel Units, "m"
-   Data Type, "``ufloat32``"
+   Data Type, "``float32``"
 
 **View**
 
@@ -150,7 +150,7 @@ Distance To Outlet
    File, "``dto.tif``"
    Project Folder, "``{project}/data/topo``"
    Pixel Units, "m"
-   Data Type, "``ufloat32``"
+   Data Type, "``float32``"
 
 **View**
 
@@ -182,7 +182,7 @@ Flow Accumulation
    File, "``flowacc.tif``"
    Project Folder, "``{project}/data/topo``"
    Pixel Units, "m^2"
-   Data Type, "``ufloat32``"
+   Data Type, "``float32``"
 
 **View**
 
@@ -212,7 +212,7 @@ Height Above Nearest Drainage
    File, "``hand.tif``"
    Project Folder, "``{project}/data/topo``"
    Pixel Units, "m"
-   Data Type, "``ufloat32``"
+   Data Type, "``float32``"
 
 **View**
 
@@ -535,7 +535,7 @@ Slope
    File, "``slope.tif``"
    Project Folder, "``{project}/data/topo``"
    Pixel Units, "degrees"
-   Data Type, "``ufloat32``"
+   Data Type, "``float32``"
 
 **View**
 
@@ -673,7 +673,7 @@ Topographic Wetness Index
    File, "``twi.tif``"
    Project Folder, "``{project}/data/topo``"
    Pixel Units, "index"
-   Data Type, "``ufloat32``"
+   Data Type, "``float32``"
 
 **View**
 
@@ -704,7 +704,7 @@ Upslope Area
    File, "``uparea.tif``"
    Project Folder, "``{project}/data/topo``"
    Pixel Units, "m^2"
-   Data Type, "``ufloat32``"
+   Data Type, "``float32``"
 
 **View**
 

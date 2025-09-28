@@ -1,4 +1,4 @@
-.. include:: ./includes/warning_development.rst
+.. include:: ./includes/external_links.rst
 
 .. include:: ./includes/warning_development.rst
 
@@ -17,23 +17,28 @@ This is the project reference documentation of ``plans``.
    {project}/
         ├── data/
         │     ├── project_info.csv
-        │     ├── parameters.csv
+        │     ├── parameters_info.csv
         │     │
         │     ├── basins/
-        │     │     ├── basin.tif
-        │     │     ├── q_obs.csv
+        │     │     ├── main/          # default basin
+        │     │     ├── {basin}/       # user-defined basin
+        │     │     │     ├── basin.tif
+        │     │     │     └── qobs_series.csv
         │     │     └── ...
         │     ├── climate/
-        │     │     ├── climate_observed.csv
+        │     │     ├── observed/      # default scenario
+        │     │     │     └── climate_series.csv
+        │     │     ├── {scenario}/    # user-defined scenarios
         │     │     └── ...
-        │     ├── lulc/
-        │     │     ├── observed/
-        │     │     │     ├── lulc_info.csv
+        │     ├── lulc/ (land use data)
+        │     │     ├── observed/      # default scenario
+        │     │     │     ├── lulc_attributes.csv
         │     │     │     ├── lulc_{date}.tif
         │     │     │     └── ...
+        │     │     ├── {scenario}/    # user-defined scenarios
         │     │     └── ...
         │     ├── soils/
-        │     │     ├── soils_info.csv
+        │     │     ├── soils_attributes.csv
         │     │     └── soils.tif
         │     └── topo/
         │           ├── hand.tif
