@@ -433,189 +433,163 @@
 <p>Variables represent the dynamic components of the hydrological system. They hold numerical values for storage levels, as well as the instantaneous flows at each time step of the model simulation. Together, they describe how the system evolves over time.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
-<tr class="row-odd"><th class="head"><p>Symbol</p></th>
-<th class="head"><p>Name</p></th>
-<th class="head"><p>Units</p></th>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Symbol</p></th>
 <th class="head"><p>Description</p></th>
-<th class="head"><p>Hydrology</p></th>
+<th class="head"><p>Units</p></th>
 <th class="head"><p>System</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(t\)</span></p></td>
-<td><p>datetime</p></td>
-<td><p>unitless</p></td>
+<tr class="row-even"><td><p>c</p></td>
+<td><p><span class="math notranslate nohighlight">\(C\)</span></p></td>
+<td><p>Canopy storage level</p></td>
+<td><p>mm</p></td>
+<td><p>storage</p></td>
+</tr>
+<tr class="row-odd"><td><p>d</p></td>
+<td><p><span class="math notranslate nohighlight">\(D\)</span></p></td>
+<td><p>Soil saturation deficit (gx - g)</p></td>
+<td><p>mm</p></td>
+<td><p>storage</p></td>
+</tr>
+<tr class="row-even"><td><p>datetime</p></td>
+<td><p><span class="math notranslate nohighlight">\(t\)</span></p></td>
 <td><p>Date-time label</p></td>
-<td></td>
+<td><p>unitless</p></td>
 <td><p>time</p></td>
 </tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(P\)</span></p></td>
-<td><p>ppt</p></td>
-<td><p>mm/{dt}</p></td>
-<td><p>Precipitation</p></td>
-<td><p>input</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(E_{\text{pot}}\)</span></p></td>
-<td><p>epot</p></td>
-<td><p>mm/{dt}</p></td>
-<td><p>Potential Evapotranspiration</p></td>
-<td><p>output</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(Q_{\text{obs}}\)</span></p></td>
-<td><p>qobs</p></td>
-<td><p>mm/{dt}</p></td>
-<td><p>Streamflow observed at basin outlet</p></td>
-<td><p>channels</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(E\)</span></p></td>
-<td><p>e</p></td>
-<td><p>mm/{dt}</p></td>
-<td><p>Evapotranspiration flow (ET)</p></td>
-<td><p>output</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(E_{c}\)</span></p></td>
-<td><p>ec</p></td>
-<td><p>mm/{dt}</p></td>
-<td><p>Canopy evaporation flow</p></td>
-<td><p>output</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(E_{s}\)</span></p></td>
-<td><p>es</p></td>
-<td><p>mm/{dt}</p></td>
-<td><p>Surface evaporation flow</p></td>
-<td><p>output</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(E_{g}\)</span></p></td>
-<td><p>eg</p></td>
-<td><p>mm/{dt}</p></td>
-<td><p>Phreatic zone transpiration flow</p></td>
-<td><p>output</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(C\)</span></p></td>
-<td><p>c</p></td>
-<td><p>mm</p></td>
-<td><p>Canopy storage level</p></td>
-<td><p>canopy</p></td>
-<td><p>storage</p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(S\)</span></p></td>
-<td><p>s</p></td>
-<td><p>mm</p></td>
-<td><p>Surface storage level</p></td>
-<td><p>surface</p></td>
-<td><p>storage</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(V\)</span></p></td>
-<td><p>v</p></td>
-<td><p>mm</p></td>
-<td><p>Vadose zone storage level</p></td>
-<td><p>vadose zone</p></td>
-<td><p>storage</p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(G\)</span></p></td>
-<td><p>g</p></td>
-<td><p>mm</p></td>
-<td><p>Phreatic zone level</p></td>
-<td><p>phreatic zone</p></td>
-<td><p>storage</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(P_{sf}\)</span></p></td>
-<td><p>psf</p></td>
-<td><p>mm/{dt}</p></td>
-<td><p>Canopy stem flow</p></td>
-<td><p>canopy</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(P_{tf}\)</span></p></td>
-<td><p>ptf</p></td>
-<td><p>mm/{dt}</p></td>
-<td><p>Canopy spill flow (throughfall)</p></td>
-<td><p>canopy</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(Q_{of}\)</span></p></td>
-<td><p>qof</p></td>
-<td><p>mm/{dt}</p></td>
-<td><p>Overland flow (runoff or surface spill)</p></td>
-<td><p>surface</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(Q_{uf}\)</span></p></td>
-<td><p>quf</p></td>
-<td><p>mm/{dt}</p></td>
-<td><p>Underland flow (subsurface or macropore flow)</p></td>
-<td><p>surface</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(Q_{hf}\)</span></p></td>
-<td><p>qhf</p></td>
-<td><p>mm/{dt}</p></td>
-<td><p>Hillslope flow (qof + quf)</p></td>
-<td><p>surface</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(Q_{cf}\)</span></p></td>
-<td><p>qcf</p></td>
-<td><p>mm/{dt}</p></td>
-<td><p>Channel flow at basin outlet (routed qhf)</p></td>
-<td><p>channels</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(Q_{bf}\)</span></p></td>
-<td><p>qbf</p></td>
-<td><p>mm/{dt}</p></td>
-<td><p>Groundwater base flow</p></td>
-<td><p>phreatic zone</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(Q_{if}\)</span></p></td>
-<td><p>qif</p></td>
-<td><p>mm/{dt}</p></td>
-<td><p>Infiltration flow (drainage to mineral soil)</p></td>
-<td><p>surface</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(Q_{vf}\)</span></p></td>
-<td><p>qvf</p></td>
-<td><p>mm/{dt}</p></td>
-<td><p>Recharge flow (percolation to phreatic zone)</p></td>
-<td><p>vadose zone</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(D\)</span></p></td>
-<td><p>d</p></td>
-<td><p>mm</p></td>
-<td><p>Soil saturation deficit (gcap - g)</p></td>
-<td><p>phreatic zone</p></td>
-<td><p>storage</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(D_{v}\)</span></p></td>
-<td><p>dv</p></td>
-<td><p>mm</p></td>
+<tr class="row-odd"><td><p>dv</p></td>
+<td><p><span class="math notranslate nohighlight">\(D_{v}\)</span></p></td>
 <td><p>Vadose zone saturation deficit (d - v)</p></td>
-<td><p>vadose zone</p></td>
+<td><p>mm</p></td>
 <td><p>storage</p></td>
 </tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(P_{s}\)</span></p></td>
-<td><p>ps</p></td>
+<tr class="row-even"><td><p>e</p></td>
+<td><p><span class="math notranslate nohighlight">\(E\)</span></p></td>
+<td><p>Evapotranspiration flow (ET)</p></td>
 <td><p>mm/{dt}</p></td>
-<td><p>Surface effective precipitation (psf + ptf)</p></td>
-<td><p>surface</p></td>
 <td><p>flow</p></td>
 </tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(Q\)</span></p></td>
-<td><p>q</p></td>
+<tr class="row-odd"><td><p>ec</p></td>
+<td><p><span class="math notranslate nohighlight">\(E_{c}\)</span></p></td>
+<td><p>Canopy evaporation flow</p></td>
 <td><p>mm/{dt}</p></td>
-<td><p>Streamflow or discharge at basin outlet</p></td>
-<td><p>output</p></td>
 <td><p>flow</p></td>
+</tr>
+<tr class="row-even"><td><p>eg</p></td>
+<td><p><span class="math notranslate nohighlight">\(E_{g}\)</span></p></td>
+<td><p>Phreatic zone transpiration flow</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-odd"><td><p>epot</p></td>
+<td><p><span class="math notranslate nohighlight">\(E_{\text{pot}}\)</span></p></td>
+<td><p>Potential Evapotranspiration</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-even"><td><p>es</p></td>
+<td><p><span class="math notranslate nohighlight">\(E_{s}\)</span></p></td>
+<td><p>Surface evaporation flow</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-odd"><td><p>g</p></td>
+<td><p><span class="math notranslate nohighlight">\(G\)</span></p></td>
+<td><p>Phreatic zone level</p></td>
+<td><p>mm</p></td>
+<td><p>storage</p></td>
+</tr>
+<tr class="row-even"><td><p>ppt</p></td>
+<td><p><span class="math notranslate nohighlight">\(P\)</span></p></td>
+<td><p>Precipitation</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-odd"><td><p>ps</p></td>
+<td><p><span class="math notranslate nohighlight">\(P_{s}\)</span></p></td>
+<td><p>Surface effective precipitation (psf + ptf)</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-even"><td><p>psf</p></td>
+<td><p><span class="math notranslate nohighlight">\(P_{sf}\)</span></p></td>
+<td><p>Canopy stem flow</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-odd"><td><p>ptf</p></td>
+<td><p><span class="math notranslate nohighlight">\(P_{tf}\)</span></p></td>
+<td><p>Canopy spill flow (throughfall)</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-even"><td><p>q</p></td>
+<td><p><span class="math notranslate nohighlight">\(Q\)</span></p></td>
+<td><p>Streamflow or discharge at basin outlet</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-odd"><td><p>qb</p></td>
+<td><p><span class="math notranslate nohighlight">\(Q_{b}\)</span></p></td>
+<td><p>Groundwater base flow</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-even"><td><p>qc</p></td>
+<td><p><span class="math notranslate nohighlight">\(Q_{c}\)</span></p></td>
+<td><p>Channel flow at basin outlet (routed qh)</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-odd"><td><p>qh</p></td>
+<td><p><span class="math notranslate nohighlight">\(Q_{h}\)</span></p></td>
+<td><p>Hillslope flow (qo + qu)</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-even"><td><p>qn</p></td>
+<td><p><span class="math notranslate nohighlight">\(Q_{n}\)</span></p></td>
+<td><p>Infiltration flow (drainage to mineral soil)</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-odd"><td><p>qo</p></td>
+<td><p><span class="math notranslate nohighlight">\(Q_{o}\)</span></p></td>
+<td><p>Overland flow (runoff)</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-even"><td><p>qobs</p></td>
+<td><p><span class="math notranslate nohighlight">\(Q_{\text{obs}}\)</span></p></td>
+<td><p>Streamflow observed at basin outlet</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-odd"><td><p>qu</p></td>
+<td><p><span class="math notranslate nohighlight">\(Q_{u}\)</span></p></td>
+<td><p>Underland flow (subsurface flow)</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-even"><td><p>qv</p></td>
+<td><p><span class="math notranslate nohighlight">\(Q_{v}\)</span></p></td>
+<td><p>Recharge flow (percolation to phreatic zone)</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-odd"><td><p>s</p></td>
+<td><p><span class="math notranslate nohighlight">\(S\)</span></p></td>
+<td><p>Surface storage level</p></td>
+<td><p>mm</p></td>
+<td><p>storage</p></td>
+</tr>
+<tr class="row-even"><td><p>v</p></td>
+<td><p><span class="math notranslate nohighlight">\(V\)</span></p></td>
+<td><p>Vadose zone storage level</p></td>
+<td><p>mm</p></td>
+<td><p>storage</p></td>
 </tr>
 </tbody>
 </table>
@@ -626,132 +600,114 @@
 <p>Parameters control the behavior of the system. They can influence storage levels and flows, but unlike variables, they remain constant throughout the simulation. Parameters define the conditions under which the model operates and can be adjusted to reproduce observed behavior or to fine-tune the system for a desired outcome.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
-<tr class="row-odd"><th class="head"><p>Symbol</p></th>
-<th class="head"><p>Name</p></th>
-<th class="head"><p>Units</p></th>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Symbol</p></th>
 <th class="head"><p>Description</p></th>
-<th class="head"><p>Hydrology</p></th>
+<th class="head"><p>Units</p></th>
 <th class="head"><p>System</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\Delta t\)</span></p></td>
-<td><p>dt</p></td>
-<td><p>min</p></td>
+<tr class="row-even"><td><p>ca</p></td>
+<td><p><span class="math notranslate nohighlight">\(C_{a}\)</span></p></td>
+<td><p>Activation level for canopy flow</p></td>
+<td><p>mm</p></td>
+<td><p>storage</p></td>
+</tr>
+<tr class="row-odd"><td><p>ck</p></td>
+<td><p><span class="math notranslate nohighlight">\(C_{k}\)</span></p></td>
+<td><p>Canopy residence time</p></td>
+<td><p>d</p></td>
+<td><p>storage</p></td>
+</tr>
+<tr class="row-even"><td><p>dea</p></td>
+<td><p><span class="math notranslate nohighlight">\(D_{e, a}\)</span></p></td>
+<td><p>Deficit activation level for ET (root zone)</p></td>
+<td><p>mm</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-odd"><td><p>dt</p></td>
+<td><p><span class="math notranslate nohighlight">\(\Delta t\)</span></p></td>
 <td><p>Simulation time step</p></td>
-<td></td>
+<td><p>min</p></td>
 <td><p>time</p></td>
 </tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(C_{k}\)</span></p></td>
-<td><p>ck</p></td>
-<td><p>d</p></td>
-<td><p>Canopy residence time</p></td>
-<td><p>canopy</p></td>
-<td><p>storage</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(C_{a}\)</span></p></td>
-<td><p>ca</p></td>
-<td><p>mm</p></td>
-<td><p>Activation level for canopy flow</p></td>
-<td><p>canopy</p></td>
-<td><p>storage</p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(S_{k}\)</span></p></td>
-<td><p>sk</p></td>
-<td><p>d</p></td>
-<td><p>Surface residence time</p></td>
-<td><p>surface</p></td>
-<td><p>storage</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(S_{of, a}\)</span></p></td>
-<td><p>sofa</p></td>
-<td><p>mm</p></td>
-<td><p>Activation level for overland flow</p></td>
-<td><p>surface</p></td>
-<td><p>storage</p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(S_{of, c}\)</span></p></td>
-<td><p>sofc</p></td>
-<td><p>mm</p></td>
-<td><p>Fragmentation level for overland flow</p></td>
-<td><p>surface</p></td>
-<td><p>storage</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(S_{uf, a}\)</span></p></td>
-<td><p>sufa</p></td>
-<td><p>mm</p></td>
-<td><p>Activation level for subsurface flow</p></td>
-<td><p>surface</p></td>
-<td><p>storage</p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(S_{uf, c}\)</span></p></td>
-<td><p>sufc</p></td>
-<td><p>mm</p></td>
-<td><p>Fragmentation level for subsurface flow</p></td>
-<td><p>surface</p></td>
-<td><p>storage</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(S_{uf, cap}\)</span></p></td>
-<td><p>sufcap</p></td>
-<td><p>mm</p></td>
-<td><p>Subsurface storage capacity</p></td>
-<td><p>surface</p></td>
-<td><p>storage</p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(K_{V}\)</span></p></td>
-<td><p>kv</p></td>
-<td><p>mm/d</p></td>
-<td><p>Soil hydraulic conductivity</p></td>
-<td><p>vadose zone</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(G_{k}\)</span></p></td>
-<td><p>gk</p></td>
-<td><p>d</p></td>
-<td><p>Phreatic zone residence time</p></td>
-<td><p>phreatic zone</p></td>
-<td><p>storage</p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(G_{cap}\)</span></p></td>
-<td><p>gcap</p></td>
-<td><p>mm</p></td>
-<td><p>Phreatic zone storage capacity</p></td>
-<td><p>phreatic zone</p></td>
-<td><p>storage</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(D_{e, a}\)</span></p></td>
-<td><p>dea</p></td>
-<td><p>mm</p></td>
-<td><p>Deficit activation level for ET (root zone)</p></td>
-<td><p>phreatic zone</p></td>
-<td><p>flow</p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(G_{e, cap}\)</span></p></td>
-<td><p>ecap</p></td>
-<td><p>mm</p></td>
+<tr class="row-even"><td><p>ex</p></td>
+<td><p><span class="math notranslate nohighlight">\(\hat{G_{e}}\)</span></p></td>
 <td><p>ET capacity of capilar zone</p></td>
-<td><p>vadose zone</p></td>
+<td><p>mm</p></td>
 <td><p>storage</p></td>
 </tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(K_{Q}\)</span></p></td>
-<td><p>kq</p></td>
-<td><p>m/d</p></td>
+<tr class="row-odd"><td><p>gk</p></td>
+<td><p><span class="math notranslate nohighlight">\(G_{k}\)</span></p></td>
+<td><p>Phreatic zone residence time</p></td>
+<td><p>d</p></td>
+<td><p>storage</p></td>
+</tr>
+<tr class="row-even"><td><p>gx</p></td>
+<td><p><span class="math notranslate nohighlight">\(\hat{G}\)</span></p></td>
+<td><p>Phreatic zone storage capacity</p></td>
+<td><p>mm</p></td>
+<td><p>storage</p></td>
+</tr>
+<tr class="row-odd"><td><p>hw</p></td>
+<td><p><span class="math notranslate nohighlight">\(H_{w}\)</span></p></td>
+<td><p>Weight for HAND in TSI superposition</p></td>
+<td><p>unitless</p></td>
+<td><p>storage</p></td>
+</tr>
+<tr class="row-even"><td><p>hx</p></td>
+<td><p><span class="math notranslate nohighlight">\(\hat{H}\)</span></p></td>
+<td><p>HAND upper threshold in TSI superposition</p></td>
+<td><p>m</p></td>
+<td><p>storage</p></td>
+</tr>
+<tr class="row-odd"><td><p>kq</p></td>
+<td><p><span class="math notranslate nohighlight">\(K_{Q}\)</span></p></td>
 <td><p>Channel water celerity</p></td>
-<td><p>channels</p></td>
+<td><p>m/d</p></td>
 <td><p>flow</p></td>
 </tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(H_{w}\)</span></p></td>
-<td><p>hand_w</p></td>
-<td><p>unitless</p></td>
-<td><p>Weight for HAND in TSI superposition</p></td>
-<td><p>phreatic zone</p></td>
+<tr class="row-even"><td><p>kv</p></td>
+<td><p><span class="math notranslate nohighlight">\(K_{V}\)</span></p></td>
+<td><p>Soil hydraulic conductivity</p></td>
+<td><p>mm/d</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-odd"><td><p>sk</p></td>
+<td><p><span class="math notranslate nohighlight">\(S_{k}\)</span></p></td>
+<td><p>Surface residence time</p></td>
+<td><p>d</p></td>
 <td><p>storage</p></td>
 </tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\hat{H}\)</span></p></td>
-<td><p>hand_max</p></td>
-<td><p>m</p></td>
-<td><p>HAND upper threshold in TSI superposition</p></td>
-<td><p>phreatic zone</p></td>
+<tr class="row-even"><td><p>soa</p></td>
+<td><p><span class="math notranslate nohighlight">\(S_{o, a}\)</span></p></td>
+<td><p>Activation level for overland flow</p></td>
+<td><p>mm</p></td>
+<td><p>storage</p></td>
+</tr>
+<tr class="row-odd"><td><p>soc</p></td>
+<td><p><span class="math notranslate nohighlight">\(S_{o, c}\)</span></p></td>
+<td><p>Fragmentation level for overland flow</p></td>
+<td><p>mm</p></td>
+<td><p>storage</p></td>
+</tr>
+<tr class="row-even"><td><p>sua</p></td>
+<td><p><span class="math notranslate nohighlight">\(S_{u, a}\)</span></p></td>
+<td><p>Activation level for subsurface flow</p></td>
+<td><p>mm</p></td>
+<td><p>storage</p></td>
+</tr>
+<tr class="row-odd"><td><p>suc</p></td>
+<td><p><span class="math notranslate nohighlight">\(S_{u, c}\)</span></p></td>
+<td><p>Fragmentation level for subsurface flow</p></td>
+<td><p>mm</p></td>
+<td><p>storage</p></td>
+</tr>
+<tr class="row-even"><td><p>sux</p></td>
+<td><p><span class="math notranslate nohighlight">\(\hat{S_{u}}\)</span></p></td>
+<td><p>Subsurface storage capacity</p></td>
+<td><p>mm</p></td>
 <td><p>storage</p></td>
 </tr>
 </tbody>
@@ -763,41 +719,36 @@
 <p>Initial Conditions define the starting values of storage variables at the first time step of the simulation. They serve as the starting point from which the system evolves, allowing the model to compute changes and update states over the entire simulation period.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
-<tr class="row-odd"><th class="head"><p>Symbol</p></th>
-<th class="head"><p>Name</p></th>
-<th class="head"><p>Units</p></th>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Symbol</p></th>
 <th class="head"><p>Description</p></th>
-<th class="head"><p>Hydrology</p></th>
+<th class="head"><p>Units</p></th>
 <th class="head"><p>System</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(C_{0}\)</span></p></td>
-<td><p>c0</p></td>
-<td><p>mm</p></td>
+<tr class="row-even"><td><p>c0</p></td>
+<td><p><span class="math notranslate nohighlight">\(C_{0}\)</span></p></td>
 <td><p>Canopy storage initial conditions</p></td>
-<td><p>canopy</p></td>
+<td><p>mm</p></td>
 <td><p>storage</p></td>
 </tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(S_{0}\)</span></p></td>
-<td><p>s0</p></td>
-<td><p>mm</p></td>
-<td><p>Surface storage initial conditions</p></td>
-<td><p>surface</p></td>
-<td><p>storage</p></td>
-</tr>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(V_{0}\)</span></p></td>
-<td><p>v0</p></td>
-<td><p>mm</p></td>
-<td><p>Vadose zone initial conditions</p></td>
-<td><p>vadose zone</p></td>
-<td><p>storage</p></td>
-</tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(G_{0}\)</span></p></td>
-<td><p>g0</p></td>
-<td><p>mm</p></td>
+<tr class="row-odd"><td><p>g0</p></td>
+<td><p><span class="math notranslate nohighlight">\(G_{0}\)</span></p></td>
 <td><p>Phreatic zone initial conditions</p></td>
-<td><p>phreatic zone</p></td>
+<td><p>mm</p></td>
+<td><p>storage</p></td>
+</tr>
+<tr class="row-even"><td><p>s0</p></td>
+<td><p><span class="math notranslate nohighlight">\(S_{0}\)</span></p></td>
+<td><p>Surface storage initial conditions</p></td>
+<td><p>mm</p></td>
+<td><p>storage</p></td>
+</tr>
+<tr class="row-odd"><td><p>v0</p></td>
+<td><p><span class="math notranslate nohighlight">\(V_{0}\)</span></p></td>
+<td><p>Vadose zone initial conditions</p></td>
+<td><p>mm</p></td>
 <td><p>storage</p></td>
 </tr>
 </tbody>
@@ -809,27 +760,24 @@
 <p>Boundary Conditions define the structural and contextual setup of the system. They determine how the model interacts with its surroundings, such as the configuration of a drainage network for routing procedures. Different boundary arrangements lead to different simulation outcomes, making them a critical input for running the model.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
-<tr class="row-odd"><th class="head"><p>Symbol</p></th>
-<th class="head"><p>Name</p></th>
-<th class="head"><p>Units</p></th>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Symbol</p></th>
 <th class="head"><p>Description</p></th>
-<th class="head"><p>Hydrology</p></th>
+<th class="head"><p>Units</p></th>
 <th class="head"><p>System</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(X\)</span></p></td>
-<td><p>distance</p></td>
-<td><p>m</p></td>
+<tr class="row-even"><td><p>distance</p></td>
+<td><p><span class="math notranslate nohighlight">\(X\)</span></p></td>
 <td><p>Distance to basin outlet</p></td>
-<td><p>channels</p></td>
+<td><p>m</p></td>
 <td><p>flow</p></td>
 </tr>
-<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(A\)</span></p></td>
-<td><p>f_area</p></td>
-<td><p>unitless</p></td>
+<tr class="row-odd"><td><p>f_area</p></td>
+<td><p><span class="math notranslate nohighlight">\(A\)</span></p></td>
 <td><p>Area fraction of basin</p></td>
-<td><p>channels</p></td>
+<td><p>unitless</p></td>
 <td><p>flow</p></td>
 </tr>
 </tbody>

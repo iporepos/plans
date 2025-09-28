@@ -463,9 +463,43 @@
 
 <div class="viewcode-block" id="Project.__init__">
 <a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">folder_base</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;PlansProject&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="Project.get_metadata">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.get_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ------------ call super ----------- #</span>
+        <span class="n">dict_meta</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()</span>
+
+        <span class="c1"># removals</span>
+
+        <span class="n">dict_meta</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_size</span><span class="p">)</span>
+        <span class="n">dict_meta</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_file_data</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dict_meta</span></div>
+
+
+<div class="viewcode-block" id="Project.setter">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.setter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_setter</span><span class="p">,</span> <span class="n">load_data</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># ignores</span>
+        <span class="n">dict_setter</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_size</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">dict_setter</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_file_data</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># -------------- super -------------- #</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setter</span><span class="p">(</span><span class="n">dict_setter</span><span class="o">=</span><span class="n">dict_setter</span><span class="p">,</span> <span class="n">load_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># ---------- set basic attributes --------- #</span>
+        <span class="c1"># set base folder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder_base</span> <span class="o">=</span> <span class="n">dict_setter</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_folder_base</span><span class="p">]</span>
+
+        <span class="c1"># -------------- update other mutables -------------- #</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+
+        <span class="c1"># ... continues in downstream objects ... #</span>
 
 <div class="viewcode-block" id="Project.load_data">
 <a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.load_data">[docs]</a>
@@ -479,18 +513,43 @@
 <span class="sd">        :rtype: None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># -------------- overwrite relative path inputs -------------- #</span>
-        <span class="n">file_data</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s2">&quot;./plans/iofiles.csv&quot;</span><span class="p">)</span>
+        <span class="n">file_data</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s2">&quot;./src/plans/data/files.csv&quot;</span><span class="p">)</span>
 
         <span class="c1"># -------------- implement loading logic -------------- #</span>
 
         <span class="c1"># -------------- call loading function -------------- #</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_data</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_csv_sep</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_data</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_csv_sep</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;folder&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># handle modifications</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{project}</span><span class="s2">/&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;outputs/</span><span class="si">{id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;outputs&quot;</span><span class="p">)</span>
+        <span class="c1"># handle default folders</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+            <span class="s2">&quot;climate/</span><span class="si">{scenario}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;climate/observed&quot;</span>
+        <span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;lulc/</span><span class="si">{scenario}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;lulc/observed&quot;</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;basins/</span><span class="si">{basin}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;basins/main&quot;</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;file_template&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="c1"># -------------- post-loading logic -------------- #</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span>
-            <span class="p">[</span><span class="s2">&quot;Folder&quot;</span><span class="p">,</span> <span class="s2">&quot;File&quot;</span><span class="p">,</span> <span class="s2">&quot;Format&quot;</span><span class="p">,</span> <span class="s2">&quot;File_Source&quot;</span><span class="p">,</span> <span class="s2">&quot;Folder_Source&quot;</span><span class="p">]</span>
-        <span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        self.data = self.data[</span>
+<span class="sd">            [&quot;Folder&quot;, &quot;File&quot;, &quot;Format&quot;, &quot;File_Source&quot;, &quot;Folder_Source&quot;]</span>
+<span class="sd">        ].copy()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Project.setup">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.setup">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_df</span><span class="p">()</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_root</span> <span class="o">+</span> <span class="s2">&quot;/project_info.csv&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 </div>
 
