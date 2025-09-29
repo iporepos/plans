@@ -4,13 +4,13 @@ input - required;raster;Height Above Nearest Drainage;hand;{project}/data/topo;f
 input - required;raster;Topographic Wetness Index;twi;{project}/data/topo;float32;index
 intermediate;raster;Topographic Saturation Index;tsi;{project}/data/topo;uint8;index
 input - required;quali raster;Local Drain Direction;ldd;{project}/data/topo;uint8;id
-input - required;quali raster;Soils;soils;{project}/data/soils;uint8;id
+input - required;quali raster;Soils Map;soils;{project}/data/soils;uint8;id
 input - optional;raster;Slope;slope;{project}/data/topo;float32;degrees
 input - optional;raster;Hill Shade;hillshade;{project}/data/topo;uint8;unitless
 input - optional;raster;Flow Accumulation;flowacc;{project}/data/topo;float32;m^2
 input - required;attribute table;Soils Attributes;soils_attributes;{project}/data/soils;;
-input - required;attribute table;Land Use Attributes;lulc_attributes;{project}/data/lulc/{scenario};;
-input - required;time series;Climate Series;climate_series;{project}/data/climate/{scenario};;
+input - required;attribute table;Land Use Attributes;lulc_attributes;{project}/data/lulc/{lulc-scenario};;
+input - required;time series;Climate Series;climate_series;{project}/data/climate/{climate-scenario};;
 intermediate;raster;Distance To Outlet;dto;{project}/data/topo;float32;m
 input - optional;time series;Streamflow Series;qobs_series;{project}/data/basins/{basin};;
 input - required;raster;Basin Area;basin;{project}/data/basins/{basin};uint8;unitless
@@ -18,5 +18,9 @@ intermediate;table;Distance vs Area Histogram;dist_area_hist;{project}/data/basi
 input - optional;raster;Upslope Area;uparea;{project}/data/topo;float32;m^2
 input - required;info table;Parameters Info;parameters_info;{project}/data;;
 input - required;info table;Project Info;project_info;{project}/data;;
-input - required;time quali raster;Land Use;lulc_{date};{project}/data/lulc/{scenario};uint8;id
+input - required;time quali raster;Land Use Map;lulc_{date};{project}/data/lulc/{lulc-scenario};uint8;id
 output;time series;Simulation Series;simulation_series;{project}/outputs/{id};;
+intermediate;time raster;Land Use Parameter Map;lulc_{date}_{parameter};{project}/data/lulc/{lulc-scenario};float32;misc
+intermediate;raster;Soils Parameter Map;soils_{parameter};{project}/data/soils;float32;misc
+intermediate;time series;Climate and Land Use Series;climate_{lulc-scenario}_lulc_series;{project}/data/climate/{climate-scenario};;
+intermediate;time series;Land Use Series;lulc_series;{project}/data/lulc/{lulc-scenario};;

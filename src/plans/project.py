@@ -15,22 +15,7 @@ Mauris gravida ex quam, in porttitor lacus lobortis vitae.
 In a lacinia nisl. Pellentesque habitant morbi tristique senectus
 et netus et malesuada fames ac turpis egestas.
 
-Example
--------
 
-# todo [major docstring improvement] -- examples
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,
-in porttitor lacus lobortis vitae. In a lacinia nisl.
-
-.. code-block:: python
-
-    import numpy as np
-    print("Hello World!")
-
-Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl.
 """
 
 # IMPORTS
@@ -39,7 +24,11 @@ In a lacinia nisl.
 
 # Native imports
 # =======================================================================
-import os
+import os, sys
+import datetime
+import subprocess
+import time
+from pathlib import Path
 
 # ... {develop}
 
@@ -52,6 +41,7 @@ import pandas as pd
 # Project-level imports
 # =======================================================================
 from plans.root import FileSys
+from plans.root import RecordTable
 
 # ... {develop}
 
@@ -63,6 +53,148 @@ from plans.root import FileSys
 
 # FUNCTIONS
 # ***********************************************************************
+def new_project(specs):
+    """
+    Create a new Project from a specification dictionary.
+
+    :param specs: Dictionary containing project specifications.
+
+        **Required keys**:
+
+        - ``folder_base`` (*str*): Path where the project folder will be created.
+        - ``name`` (*str*): Name of the project.
+
+        **Optional keys**:
+
+        - ``alias`` (*str*): Alternative identifier. Defaults to ``None``.
+        - ``source`` (*str*): Source reference. Defaults to empty string.
+        - ``description`` (*str*): Project description. Defaults to empty string.
+
+    :type specs: dict
+    :raises ValueError: If any required key is missing.
+    :returns: A new `:class:`plans.Project` instance initialized with the given specifications.
+    :rtype: :class:`plans.Project`
+
+
+    **Examples**
+
+    Import ``plans``
+
+    .. code-block:: python
+
+        import plans
+
+    Create a new ``plans.Project``. First setup details.
+
+    .. code-block:: python
+
+        # setup specs dictionary
+        project_specs = {
+            "folder_base": "path/to/base/folder",
+            "name": "newProject",
+            "alias": "NPrj",
+            "source": "Me",
+            "description": "Just a test"
+        }
+
+    Then call ``new_project()``
+
+    .. code-block:: python
+
+        # get project instance
+        pj = plans.new_project(specs=project_specs)
+
+
+    """
+    # --- Required keys ---
+    required = ["folder_base", "name"]
+    for key in required:
+        if key not in specs:
+            raise ValueError(f"Missing required key: '{key}'")
+
+    # --- Optional keys with defaults ---
+    defaults = {"alias": None, "source": "", "description": ""}
+    merged = {**defaults, **specs}
+
+    # --- Use merged dict safely ---
+    # create base folder if not exists
+    os.makedirs(merged["folder_base"], exist_ok=True)
+
+    # instantiate project
+    p = Project(name=merged["name"], alias=merged["alias"])
+    p.source = merged["source"]
+    p.description = merged["description"]
+    p.folder_base = merged["folder_base"]
+    p.update()
+    p.setup()
+
+    return p
+
+
+def load_project(project_folder):
+    """
+    Loads a Project from folder
+
+    :param project_folder: path to project root folder
+    :type project_folder: str or Path
+    :returns: A new `:class:`plans.Project` instance.
+    :rtype: :class:`plans.Project`
+
+    **Notes**
+
+    .. warning::
+
+       ``load_project()`` will overwrite the ``name`` attribute in ``project_info.csv``
+       file to match current folder name.
+
+
+    **Examples**
+
+    Import ``plans``
+
+    .. code-block:: python
+
+        import plans
+
+
+    Load an existing ``plans.Project``
+
+    .. code-block:: python
+
+        # get project instance
+        pj = plans.load_project(project_folder="path/to/project/folder")
+
+
+    """
+    if os.path.isdir(project_folder):
+        name = os.path.basename(project_folder)
+        folder_base = Path(project_folder).parent
+        p = Project(name=name, alias=None)
+        p.load_data()
+        # load from boot file
+        boot_file_name = "project_info"
+        boot_file = Path(project_folder) / "data/{}.csv".format(boot_file_name)
+        if os.path.isfile(boot_file):
+            p.boot(bootfile=boot_file)
+            # update attributes
+            p.name = name
+            p.folder_base = folder_base
+            # update project
+            p.update()
+            # update metadata file
+            p.export_metadata(folder=project_folder, filename=boot_file_name)
+            # setup
+            p.setup()
+        else:
+            new_project(
+                specs={
+                    "name": name,
+                    "folder_base": folder_base,
+                }
+            )
+        return p
+    else:
+        raise ValueError(f"Project folder not found: {project_folder}'")
 
 
 # CLASSES
@@ -74,8 +206,10 @@ from plans.root import FileSys
 
 class Project(FileSys):
 
-    def __init__(self):
-        super().__init__(name="PlansProject", alias=None)
+    def __init__(self, name, alias=None):
+        super().__init__(name=name, alias=alias)
+        self.load_data()
+        self.talk = True
 
     def get_metadata(self):
         # ------------ call super ----------- #
@@ -128,28 +262,99 @@ class Project(FileSys):
         df["folder"] = df["folder"].str.replace("outputs/{id}", "outputs")
         # handle default folders
         df["folder"] = df["folder"].str.replace(
-            "climate/{scenario}", "climate/observed"
+            "climate/{climate-scenario}", "climate/observed"
         )
-        df["folder"] = df["folder"].str.replace("lulc/{scenario}", "lulc/observed")
+        df["folder"] = df["folder"].str.replace("lulc/{lulc-scenario}", "lulc/observed")
         df["folder"] = df["folder"].str.replace("basins/{basin}", "basins/main")
+        # set templates as none
         df["file_template"] = None
 
         self.data = df.copy()
 
         # -------------- post-loading logic -------------- #
-        """
-        self.data = self.data[
-            ["Folder", "File", "Format", "File_Source", "Folder_Source"]
-        ].copy()
-        """
 
         return None
 
     def setup(self):
         super().setup()
         df = self.get_metadata_df()
-        df.to_csv(self.folder_root + "/project_info.csv", sep=";", index=False)
+        df.to_csv(self.folder_data + "/project_info.csv", sep=";", index=False)
         return None
+
+    def update(self):
+        super().update()
+        if self.folder_root is not None:
+
+            self.folder_data = str(Path(self.folder_root) / "data")
+
+            self.folder_outputs = str(Path(self.folder_root) / "outputs")
+            self.folder_topo = str(Path(self.folder_data) / "topo")
+            self.folder_soils = str(Path(self.folder_data) / "soils")
+            self.folder_basins = str(Path(self.folder_data) / "basins")
+            self.folder_climate = str(Path(self.folder_data) / "climate")
+            self.folder_lulc = str(Path(self.folder_data) / "lulc")
+
+    def make_run_folder(self, run_name):
+        # todo docstring
+        while True:
+            ts = Project.get_timestamp()
+            folder_run = Path(self.folder_outputs) / f"{run_name}_{ts}"
+            if os.path.exists(folder_run):
+                time.sleep(1)
+            else:
+                os.mkdir(folder_run)
+                break
+
+        return folder_run
+
+    def run_demo(self):
+        run_name = "demo"
+        folder_run = os.path.abspath(self.make_run_folder(run_name=run_name))
+        cmd = [
+            sys.executable,
+            "-m",
+            "plans.tools",
+            "demo",
+            "--input1",
+            "./tests/data/DataSet_data.csv",
+            "--input2",
+            "./tests/data/DataSet_data.csv",
+            "--folder",
+            folder_run,
+        ]
+        if self.talk:
+            cmd.append("--talk")
+
+        # Use Popen for async execution
+        process = subprocess.Popen(cmd)
+        return process, folder_run
+
+    def run_dto_analysis(self):
+        run_name = "dto"
+        folder_run = os.path.abspath(self.make_run_folder(run_name=run_name))
+        file_input1 = "C:/data/ldd.tif"
+        cmd = [
+            sys.executable,
+            "-m",
+            "plans.tools",
+            "run_dto",
+            "--input1",
+            file_input1,
+            "--folder",
+            folder_run,
+        ]
+        if self.talk:
+            cmd.append("--talk")
+
+        # Use Popen for async execution
+        process = subprocess.Popen(cmd)
+        return process, folder_run
+
+    @staticmethod
+    def get_timestamp():
+        # compute timestamp
+        _now = datetime.datetime.now()
+        return str(_now.strftime("%Y%m0%dT%H%M%S"))
 
 
 # todo [refactor] -- here we got some very interesting stuff
@@ -184,7 +389,9 @@ class Project_(FileSys):
         self.ndvi = None
 
     def download_datasets(self, zip_url):
-        """Download datasets from a URL. The download is expected to be a ZIP file. Note: requests library is required
+        """
+        Download datasets from a URL.
+        The download is expected to be a ZIP file. Note: requests library is required
 
         :param zip_url: url to dataset ZIP file
         :type zip_url: str
@@ -206,7 +413,8 @@ class Project_(FileSys):
         return None
 
     def download_default_datasets(self):
-        """Download the default datasets for PLANS
+        """
+        Download the default datasets for PLANS
 
         :return: None
         :rtype: None
@@ -218,7 +426,8 @@ class Project_(FileSys):
         return None
 
     def extract_datasets(self, zip_file, remove=False):
-        """Extract from ZIP file to datasets folder
+        """
+        Extract from ZIP file to datasets folder
 
         :param zip_file: path to zip file
         :type zip_file: str

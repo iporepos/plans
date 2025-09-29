@@ -862,11 +862,16 @@ class AOI(QualiHard):
 class LDD(QualiHard):
     """
     LDD - Local Drain Direction map dataset
-    convention:
 
-    7   8   9
-    4   5   6
-    1   2   3
+    LDD uses ``wbt`` convention derived from the WhiteboxTool.
+
+    .. csv-table:: ``wbt`` convention
+       :width: 30%
+
+       64, 128, 1
+       32, 0, 2
+       16, 8, 4
+
     """
 
     def __init__(self, name="LDDMap"):
@@ -882,17 +887,17 @@ class LDD(QualiHard):
     def get_table(self):
         df_aux = pd.DataFrame(
             {
-                self.field_id: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+                self.field_id: [16, 8, 4, 32, 0, 2, 64, 128, 1],
                 self.field_alias: [
-                    "1-SW",
-                    "2-S",
-                    "3-SE",
-                    "4-W",
-                    "5-C",
-                    "6-E",
-                    "7-NW",
-                    "8-N",
-                    "9-NE",
+                    "16-SW",
+                    "8-S",
+                    "4-SE",
+                    "32-W",
+                    "0-C",
+                    "2-E",
+                    "64-NW",
+                    "128-N",
+                    "1-NE",
                 ],
                 self.field_name: [
                     "South-west",
@@ -918,6 +923,7 @@ class LDD(QualiHard):
                 ],
             }
         )
+        df_aux = df_aux.sort_values(by=self.field_id).copy()
         return df_aux
 
 

@@ -31,6 +31,8 @@ Mauris gravida ex quam, in porttitor lacus lobortis vitae.
 In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.
 In a lacinia nisl.
 """
+import time
+
 # IMPORTS
 # ***********************************************************************
 # import modules from other libs
@@ -61,10 +63,8 @@ import geopandas as gpd
 
 # CONSTANTS -- Project-level
 # =======================================================================
-# ... {develop}
 
-# Subsubsection example
-# -----------------------------------------------------------------------
+
 # ... {develop}
 
 # CONSTANTS -- Module-level
@@ -851,7 +851,7 @@ def carve_dem(grd_dem, grd_rivers, wedge_width=3, wedge_depth=10):
     return (grd_dem + wedge_depth) - grd_wedge
 
 
-def downstream_coordinates(n_dir, i, j, s_convention="ldd"):
+def downstream_coordinates(n_dir, i, j, ldd_convention="wbt"):
     """
     Compute i and j downstream cell coordinates based on cell flow direction.
 
@@ -861,32 +861,73 @@ def downstream_coordinates(n_dir, i, j, s_convention="ldd"):
     :type i: int
     :param j: j (column) array index.
     :type j: int
-    :param s_convention: String of flow direction convention. Options: 'ldd' and 'd8'. Default is 'ldd'.
-    :type s_convention: str
+    :param ldd_convention: String of flow direction convention. Options: ``wbt``, ``d8``, ``pcraster``. Default is ``wbt``.
+    :type ldd_convention: str
     :return: Dictionary of downstream i, j, and distance factor.
     :rtype: dict
 
     **Notes**
 
-    - Assumes a specific flow direction convention ('ldd' or 'd8').
+    - Assumes a specific flow direction convention (``wbt``, ``d8``, ``pcraster``).
     - The output dictionary contains keys 'i', 'j', and 'distance'.
     - The 'i' and 'j' values represent downstream cell coordinates.
     - The 'distance' value is the Euclidean distance to the downstream cell.
 
+    ``LDD`` conventions:
+
+    ``wbt`` convention derived from the WhiteboxTool.
+
+    .. csv-table:: ``wbt`` convention
+       :width: 30%
+
+       64, 128, 1
+       32, 0, 2
+       16, 8, 4
+
+    ``d8`` convention derived from the SAGA tool.
+
+    .. csv-table:: ``d8`` convention
+       :width: 30%
+
+       6,7,8
+       5,0,1
+       4,3,2
+
+    ``pcraster`` convention derived from the PC-Raster tool.
+
+    .. csv-table:: ``pcraster`` convention
+       :width: 30%
+
+       1,2,3
+       4,5,6
+       7,8,9
+
+
     **Examples**
 
-    >>> downstream_coordinates(n_dir=1, i=3, j=4, s_convention='ldd')
+    >>> downstream_coordinates(n_dir=1, i=3, j=4, ldd_convention='pcraster')
     {'i': 4, 'j': 3, 'distance': np.float64(1.4142135623730951)}
 
     Change convention:
 
-    >>> downstream_coordinates(n_dir=5, i=10, j=15, s_convention='d8')
+    >>> downstream_coordinates(n_dir=5, i=10, j=15, ldd_convention='d8')
     {'i': 10, 'j': 14, 'distance': np.float64(1.0)}
 
     """
     # directions dictionaries
     dct_dirs = {
-        "ldd": {
+        "wbt": {
+            "32": {"di": 0, "dj": -1},
+            "0": {"di": 0, "dj": 0},
+            "2": {"di": 0, "dj": 1},
+            "4": {"di": 1, "dj": 1},
+            "8": {"di": 1, "dj": 0},
+            "16": {"di": 1, "dj": -1},
+            "64": {"di": -1, "dj": -1},
+            "128": {"di": -1, "dj": 0},
+            "1": {"di": -1, "dj": 1},
+        },
+        "pcraster": {
             "1": {"di": 1, "dj": -1},
             "2": {"di": 1, "dj": 0},
             "3": {"di": 1, "dj": 1},
@@ -910,7 +951,7 @@ def downstream_coordinates(n_dir, i, j, s_convention="ldd"):
         },
     }
     # set dir dict
-    dct_dir = dct_dirs[s_convention.lower()]
+    dct_dir = dct_dirs[ldd_convention.lower()]
     di = dct_dir[str(n_dir)]["di"]
     dj = dct_dir[str(n_dir)]["dj"]
     dist = np.sqrt(np.power(di, 2) + np.power(dj, 2))
@@ -918,7 +959,7 @@ def downstream_coordinates(n_dir, i, j, s_convention="ldd"):
     return dct_output
 
 
-def distance_to_outlet(grd_ldd, n_res=30, s_convention="ldd"):
+def distance_to_outlet(grd_ldd, n_res=30, ldd_convention="wbt"):
     """
     Compute the distance to outlet ``DTO`` raster of a given basin.
 
@@ -926,14 +967,10 @@ def distance_to_outlet(grd_ldd, n_res=30, s_convention="ldd"):
     :type grd_ldd: :class:`numpy.ndarray`
     :param n_res: Resolution factor for the output distance raster. Default is 30.
     :type n_res: int
-    :param s_convention: String of flow direction convention. Options: 'ldd' and 'd8'. Default is 'ldd'.
-    :type s_convention: str
+    :param ldd_convention: String of flow direction convention. Options: ``wbt``, ``d8``, ``pcraster``. Default is ``wbt``.
+    :type ldd_convention: str
     :return: 2d numpy array distance
     :rtype: :class:`numpy.ndarray`
-
-    Notes:
-
-    - The distance is set to 0 outside the basin area.
 
     """
 
@@ -951,8 +988,8 @@ def distance_to_outlet(grd_ldd, n_res=30, s_convention="ldd"):
 
     def is_center(ldd):
         # halt
-        dict_halt = {"ldd": 5, "d8": 0}
-        if ldd == dict_halt[s_convention]:
+        dict_halt = {"pcraster": 5, "d8": 0, "wbt": 0}
+        if ldd == dict_halt[ldd_convention]:
             return True
         else:
             return False
@@ -967,6 +1004,7 @@ def distance_to_outlet(grd_ldd, n_res=30, s_convention="ldd"):
     n_counter = 0
     for i in range(n_rows):
         for j in range(n_cols):
+            # print(f"\n{i}, {j}")
             # initiate cell loop:
             i_current = i
             j_current = j
@@ -982,16 +1020,22 @@ def distance_to_outlet(grd_ldd, n_res=30, s_convention="ldd"):
                 # trace loop
                 n_trace_count = 0
                 while True:
+
                     # get downstream position
                     dct_out = downstream_coordinates(
                         n_dir=lcl_ldd,
                         i=i_current,
                         j=j_current,
-                        s_convention=s_convention,
+                        ldd_convention=ldd_convention,
                     )
                     i_next = dct_out["i"]
                     j_next = dct_out["j"]
                     n_dist = dct_out["distance"]
+
+                    # print(f"ldd: {lcl_ldd}")
+                    # print(f"next j: {j_next}")
+                    # print(f"next i: {i_next}")
+                    # time.sleep(0.2)
                     # append to queue
                     if n_trace_count == 0:
                         list_accdist.append(n_dist)
@@ -1002,7 +1046,13 @@ def distance_to_outlet(grd_ldd, n_res=30, s_convention="ldd"):
                     # halting options
                     b_off = is_offgrid(i=i_next, j=j_next)
                     b_center = is_center(ldd=lcl_ldd)
-                    if b_off or b_center:
+                    if b_off:
+                        # print("is off")
+                        # QUIT
+                        n_traced_outdist = 0
+                        break
+                    if b_center:
+                        # print("is center")
                         # QUIT
                         n_traced_outdist = 0
                         break
@@ -1017,8 +1067,10 @@ def distance_to_outlet(grd_ldd, n_res=30, s_convention="ldd"):
                         n_trace_count = n_trace_count + 1
                     else:
                         # QUIT
+                        # print("is mapped")
                         n_traced_outdist = n_next_outdist
                         break
+
                 # now manipulate queues
                 vct_accdist = np.array(list_accdist)
                 vct_accdist_inv = vct_accdist[::-1]
@@ -1031,4 +1083,5 @@ def distance_to_outlet(grd_ldd, n_res=30, s_convention="ldd"):
                     grd_outdist[vct_is[k]][vct_js[k]] = vct_outdist[k]
             else:
                 pass
+
     return n_res * grd_outdist

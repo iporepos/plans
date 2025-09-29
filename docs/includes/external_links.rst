@@ -1,5 +1,7 @@
 .. _QGIS: https://www.qgis.org/en/site/
 
+.. _WhiteboxTools: https://www.whiteboxgeo.com/
+
 .. _LibreOffice: https://www.libreoffice.org/
 
 .. _SWAT: https://swat.tamu.edu/

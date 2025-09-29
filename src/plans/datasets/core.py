@@ -2453,7 +2453,7 @@ class TimeSeriesSpatialSamples(TimeSeriesSamples):
 class Raster(DataSet):
     # todo[docstring] - - examples
     """
-    The basic raster map dataset.
+    The basic Raster map dataset.
 
     """
 
@@ -2643,7 +2643,7 @@ class Raster(DataSet):
 
     def load_data(self, file_data, file_prj=None, id_band=1):
         """
-        Load data and metadata from files to the raster object.
+        Load data and metadata from files to the Raster object.
 
         :param file_data: The path to the raster file.
         :type file_data: str
@@ -2651,7 +2651,6 @@ class Raster(DataSet):
         :type file_prj: str
         :param id_band: Band id to read for GeoTIFF. Default value = 1
         :type id_band: int
-
 
         """
         # handle extension
@@ -3412,7 +3411,7 @@ class Raster(DataSet):
             vmin=ylim[0],
             vmax=ylim[1],
             interpolation="none",
-            extent=self.get_extent(),
+            # extent=self.get_extent(),
             aspect="equal",
             origin="upper",
         )
@@ -3872,9 +3871,6 @@ class SciRaster(Raster):
     def _set_view_specs(self):
         """
         Sets the default viewing specifications for the scientific raster, including the default data range.
-
-
-
         """
         super()._set_view_specs()
         self.view_specs["range"] = self.range_default
@@ -4496,7 +4492,7 @@ class QualiRaster(Raster):
             vmin=ylim[0],
             vmax=ylim[1],
             interpolation="none",
-            extent=self.get_extent(),
+            # extent=self.get_extent(),
             aspect="equal",
             origin="upper",
         )

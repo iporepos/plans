@@ -1,60 +1,61 @@
-name;description;units;dtype;category;tex;system;subsystem;project_info;parameters_info;climate_series;qobs_series;lulc_attributes;soils_attributes;dist_area_hist;simulation_series
-field;Field or attribute name;unitless;str;;;;;x;x;;;;;;
-value;Set value of field;unitless;misc;;;;;x;x;;;;;;
-id;Identification number;unitless;uint16;;;;;;;;;x;x;;
-name;Name;unitless;str;;;;;h;;;;x;x;;
-alias;Alias;unitless;str;;;;;h;;;;x;x;;
-color;Color;unitless;str;;;;;;;;;x;x;;
-source;Source for reference;unitless;str;;;;;h;;;;;;;
-description;Brief description;unitless;str;;;;;h;;;;;;;
-folder_base;(optional) System path to base / parent folder of project;unitless;str;;;;;h;;;;;;;
-datetime;Date-time label;unitless;str;variable;t;time;;;;x;x;;;;x
-ppt;Precipitation;mm/{dt};float32;variable;P;flow;input;;;x;;;;;x
-epot;Potential Evapotranspiration;mm/{dt};float32;variable;E_{\text{pot}};flow;output;;;x;;;;;x
-dt;Simulation time step;min;float32;parameter;\Delta t;time;;;h;;;;;;
-c0;Canopy storage initial conditions;mm;float32;initial condition;C_{0};storage;canopy;;h;;;;;;
-s0;Surface storage initial conditions;mm;float32;initial condition;S_{0};storage;surface;;h;;;;;;
-v0;Vadose zone initial conditions;mm;float32;initial condition;V_{0};storage;vadose zone;;h;;;;;;
-g0;Phreatic zone initial conditions;mm;float32;initial condition;G_{0};storage;phreatic zone;;h;;;;;;
-ck;Canopy residence time;d;float32;parameter;C_{k};storage;canopy;;h;;;w;;;
-ca;Activation level for canopy flow;mm;float32;parameter;C_{a};storage;canopy;;h;;;w;;;
-sk;Surface residence time;d;float32;parameter;S_{k};storage;surface;;h;;;w;;;
-soa;Activation level for overland flow;mm;float32;parameter;S_{o, a};storage;surface;;h;;;w;;;
-soc;Fragmentation level for overland flow;mm;float32;parameter;S_{o, c};storage;surface;;h;;;w;;;
-sua;Activation level for subsurface flow;mm;float32;parameter;S_{u, a};storage;surface;;h;;;w;;;
-suc;Fragmentation level for subsurface flow;mm;float32;parameter;S_{u, c};storage;surface;;h;;;w;;;
-sux;Subsurface storage capacity;mm;float32;parameter;\hat{S_{u}};storage;surface;;h;;;w;;;
-kv;Soil hydraulic conductivity;mm/d;float32;parameter;K_{V};flow;vadose zone;;h;;;;w;;
-gk;Phreatic zone residence time;d;float32;parameter;G_{k};storage;phreatic zone;;h;;;;w;;
-gx;Phreatic zone storage capacity;mm;float32;parameter;\hat{G};storage;phreatic zone;;h;;;;w;;
-dea;Deficit activation level for ET (root zone);mm;float32;parameter;D_{e, a};flow;phreatic zone;;h;;;w;;;
-ex;ET capacity of capilar zone;mm;float32;parameter;\hat{G_{e}};storage;vadose zone;;h;;;;w;;
-kq;Channel water celerity;m/d;float32;parameter;K_{Q};flow;channels;;h;;;;;;
-qobs;Streamflow observed at basin outlet;mm/{dt};float32;variable;Q_{\text{obs}};flow;channels;;;;x;;;;x
-distance;Distance to basin outlet;m;float32;boundary condition;X;flow;channels;;;;;;;x;
-f_area;Area fraction of basin;unitless;float32;boundary condition;A;flow;channels;;;;;;;x;
-lower;Lower bound value of field;misc;float32;;;;;;x;;;;;;
-upper;Upper bound value of field;misc;float32;;;;;;x;;;;;;
-hw;Weight for HAND in TSI superposition;unitless;float32;parameter;H_{w};storage;phreatic zone;;h;;;;;;
-hx;HAND upper threshold in TSI superposition;m;float32;parameter;\hat{H};storage;phreatic zone;;h;;;;;;
-e;Evapotranspiration flow (ET);mm/{dt};float32;variable;E;flow;output;;;;;;;;x
-ec;Canopy evaporation flow;mm/{dt};float32;variable;E_{c};flow;output;;;;;;;;x
-es;Surface evaporation flow;mm/{dt};float32;variable;E_{s};flow;output;;;;;;;;x
-eg;Phreatic zone transpiration flow;mm/{dt};float32;variable;E_{g};flow;output;;;;;;;;x
-c;Canopy storage level;mm;float32;variable;C;storage;canopy;;;;;;;;x
-s;Surface storage level;mm;float32;variable;S;storage;surface;;;;;;;;x
-v;Vadose zone storage level;mm;float32;variable;V;storage;vadose zone;;;;;;;;x
-g;Phreatic zone level;mm;float32;variable;G;storage;phreatic zone;;;;;;;;x
-psf;Canopy stem flow;mm/{dt};float32;variable;P_{sf};flow;canopy;;;;;;;;x
-ptf;Canopy spill flow (throughfall);mm/{dt};float32;variable;P_{tf};flow;canopy;;;;;;;;x
-ps;Surface effective precipitation (psf + ptf);mm/{dt};float32;variable;P_{s};flow;surface;;;;;;;;x
-qo;Overland flow (runoff);mm/{dt};float32;variable;Q_{o};flow;surface;;;;;;;;x
-qu;Underland flow (subsurface flow);mm/{dt};float32;variable;Q_{u};flow;surface;;;;;;;;x
-qh;Hillslope flow (qo + qu);mm/{dt};float32;variable;Q_{h};flow;surface;;;;;;;;x
-qc;Channel flow at basin outlet (routed qh);mm/{dt};float32;variable;Q_{c};flow;channels;;;;;;;;x
-qb;Groundwater base flow;mm/{dt};float32;variable;Q_{b};flow;phreatic zone;;;;;;;;x
-qn;Infiltration flow (drainage to mineral soil);mm/{dt};float32;variable;Q_{n};flow;surface;;;;;;;;x
-qv;Recharge flow (percolation to phreatic zone);mm/{dt};float32;variable;Q_{v};flow;vadose zone;;;;;;;;x
-d;Soil saturation deficit (gx - g);mm;float32;variable;D;storage;phreatic zone;;;;;;;;x
-dv;Vadose zone saturation deficit (d - v);mm;float32;variable;D_{v};storage;vadose zone;;;;;;;;x
-q;Streamflow or discharge at basin outlet;mm/{dt};float32;variable;Q;flow;output;;;;;;;;x
+name;description;units;dtype;category;tex;system;subsystem;project_info;parameters_info;climate_series;qobs_series;lulc_attributes;soils_attributes;dist_area_hist;simulation_series;lulc_series;climate_{lulc-scenario}_lulc_series
+field;Field or attribute name;unitless;str;;;;;x;x;;;;;;;;
+value;Set value of field;unitless;misc;;;;;x;x;;;;;;;;
+id;Identification number;unitless;uint16;;;;;;;;;x;x;;;;
+name;Name;unitless;str;;;;;h;;;;x;x;;;x;
+alias;Alias;unitless;str;;;;;h;;;;x;x;;;;
+color;Color;unitless;str;;;;;;;;;x;x;;;;
+source;Source for reference;unitless;str;;;;;h;;;;;;;;;
+description;Brief description;unitless;str;;;;;h;;;;;;;;;
+folder_base;(optional) System path to base / parent folder of project;unitless;str;;;;;h;;;;;;;;;
+datetime;Date-time label;unitless;str;variable;t;time;;;;x;x;;;;x;x;x
+ppt;Precipitation;mm/{dt};float32;variable;P;flow;input;;;x;;;;;x;;x
+pet;Potential Evapotranspiration;mm/{dt};float32;variable;E_{\text{pot}};flow;output;;;x;;;;;x;;x
+dt;Simulation time step;min;float32;parameter;\Delta t;time;;;h;;;;;;;;
+c0;Canopy storage initial conditions;mm;float32;initial condition;C_{0};storage;canopy;;h;;;;;;;;
+s0;Surface storage initial conditions;mm;float32;initial condition;S_{0};storage;surface;;h;;;;;;;;
+v0;Vadose zone initial conditions;mm;float32;initial condition;V_{0};storage;vadose zone;;h;;;;;;;;
+g0;Phreatic zone initial conditions;mm;float32;initial condition;G_{0};storage;phreatic zone;;h;;;;;;;;
+ck;Canopy residence time;d;float32;parameter;C_{k};storage;canopy;;h;;;w;;;;;
+ca;Activation level for canopy flow;mm;float32;parameter;C_{a};storage;canopy;;h;;;w;;;;;
+sk;Surface residence time;d;float32;parameter;S_{k};storage;surface;;h;;;w;;;;;
+soa;Activation level for overland flow;mm;float32;parameter;S_{o, a};storage;surface;;h;;;w;;;;;
+soc;Fragmentation level for overland flow;mm;float32;parameter;S_{o, c};storage;surface;;h;;;w;;;;;
+sua;Activation level for subsurface flow;mm;float32;parameter;S_{u, a};storage;surface;;h;;;w;;;;;
+suc;Fragmentation level for subsurface flow;mm;float32;parameter;S_{u, c};storage;surface;;h;;;w;;;;;
+sux;Subsurface storage capacity;mm;float32;parameter;\hat{S_{u}};storage;surface;;h;;;w;;;;;
+kv;Soil hydraulic conductivity;mm/d;float32;parameter;K_{V};flow;vadose zone;;h;;;;w;;;;
+gk;Phreatic zone residence time;d;float32;parameter;G_{k};storage;phreatic zone;;h;;;;w;;;;
+gx;Phreatic zone storage capacity;mm;float32;parameter;\hat{G};storage;phreatic zone;;h;;;;w;;;;
+dea;Deficit activation level for ET (root zone);mm;float32;parameter;D_{e, a};flow;phreatic zone;;h;;;w;;;;;
+gex;ET capacity of capilar zone;mm;float32;parameter;\hat{G_{e}};storage;vadose zone;;h;;;;w;;;;
+kq;Channel water celerity;m/d;float32;parameter;K_{Q};flow;channels;;h;;;;;;;;
+qobs;Streamflow observed at basin outlet;mm/{dt};float32;variable;Q_{\text{obs}};flow;channels;;;;x;;;;x;;
+distance;Distance to basin outlet;m;float32;boundary condition;X;flow;channels;;;;;;;x;;;
+f_area;Area fraction of basin;unitless;float32;boundary condition;A;flow;channels;;;;;;;x;;;
+lower;Lower bound value of field;misc;float32;;;;;;x;;;;;;;;
+upper;Upper bound value of field;misc;float32;;;;;;x;;;;;;;;
+hw;Weight for HAND in TSI superposition;unitless;float32;parameter;H_{w};storage;phreatic zone;;h;;;;;;;;
+hx;HAND upper threshold in TSI superposition;m;float32;parameter;\hat{H};storage;phreatic zone;;h;;;;;;;;
+et;Evapotranspiration flow (ET);mm/{dt};float32;variable;E;flow;output;;;;;;;;x;;
+ec;Canopy evaporation flow;mm/{dt};float32;variable;E_{c};flow;output;;;;;;;;x;;
+es;Surface evaporation flow;mm/{dt};float32;variable;E_{s};flow;output;;;;;;;;x;;
+eg;Phreatic zone transpiration flow;mm/{dt};float32;variable;E_{g};flow;output;;;;;;;;x;;
+c;Canopy storage level;mm;float32;variable;C;storage;canopy;;;;;;;;x;;
+s;Surface storage level;mm;float32;variable;S;storage;surface;;;;;;;;x;;
+v;Vadose zone storage level;mm;float32;variable;V;storage;vadose zone;;;;;;;;x;;
+g;Phreatic zone level;mm;float32;variable;G;storage;phreatic zone;;;;;;;;x;;
+psf;Canopy stem flow;mm/{dt};float32;variable;P_{sf};flow;canopy;;;;;;;;x;;
+ptf;Canopy spill flow (throughfall);mm/{dt};float32;variable;P_{tf};flow;canopy;;;;;;;;x;;
+ps;Surface effective precipitation (psf + ptf);mm/{dt};float32;variable;P_{s};flow;surface;;;;;;;;x;;
+qo;Overland flow (runoff);mm/{dt};float32;variable;Q_{o};flow;surface;;;;;;;;x;;
+qu;Underland flow (subsurface flow);mm/{dt};float32;variable;Q_{u};flow;surface;;;;;;;;x;;
+qh;Hillslope flow (qo + qu);mm/{dt};float32;variable;Q_{h};flow;surface;;;;;;;;x;;
+qc;Channel flow at basin outlet (routed qh);mm/{dt};float32;variable;Q_{c};flow;channels;;;;;;;;x;;
+qb;Groundwater base flow;mm/{dt};float32;variable;Q_{b};flow;phreatic zone;;;;;;;;x;;
+qn;Infiltration flow (drainage to mineral soil);mm/{dt};float32;variable;Q_{n};flow;surface;;;;;;;;x;;
+qv;Recharge flow (percolation to phreatic zone);mm/{dt};float32;variable;Q_{v};flow;vadose zone;;;;;;;;x;;
+d;Soil saturation deficit (gx - g);mm;float32;variable;D;storage;phreatic zone;;;;;;;;x;;
+dv;Vadose zone saturation deficit (d - v);mm;float32;variable;D_{v};storage;vadose zone;;;;;;;;x;;
+q;Streamflow or discharge at basin outlet;mm/{dt};float32;variable;Q;flow;output;;;;;;;;x;;
+id_lulc;Identification number for land use map;unitless;uint16;;;;;;;;;;;;;x;x

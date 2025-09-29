@@ -315,6 +315,24 @@ class MbaE:
 
         return None
 
+    def export_metadata(self, folder, filename):
+        """
+        Export object metadata to destination file.
+
+        :param folder: path to folder
+        :type folder: str
+        :param filename: file name without extension
+        :type filename: str
+        """
+        df_metadata = self.get_metadata_df()
+        # handle filename
+        fpath = Path(folder) / str(filename + self.file_csv_ext)
+        # export
+        df_metadata.to_csv(
+            fpath, sep=self.file_csv_sep, encoding=self.file_encoding, index=False
+        )
+        return None
+
     def export(self, folder, filename):
         """
         Export object resources to destination file.
@@ -324,13 +342,7 @@ class MbaE:
         :param filename: file name without extension
         :type filename: str
         """
-        df_metadata = self.get_metadata_df()
-        # handle filename
-        fpath = Path(folder + "/" + filename + self.file_csv_ext)
-        # export
-        df_metadata.to_csv(
-            fpath, sep=self.file_csv_sep, encoding=self.file_encoding, index=False
-        )
+        self.export_metadata(folder=folder, filename=filename)
         # ... continues in downstream objects ... #
         return None
 
@@ -2052,6 +2064,7 @@ class FileSys(DataSet):
         """
         # prior attributes
         self.folder_base = None
+        self.folder_root = None
 
         # ------------ call super ----------- #
         super().__init__(name=name, alias=alias)
@@ -2060,7 +2073,7 @@ class FileSys(DataSet):
         self.object_alias = "FS"
 
         # ------------ set mutables ----------- #
-        self.folder_root = None
+
         self._set_view_specs()
 
         # ... continues in downstream objects ... #
