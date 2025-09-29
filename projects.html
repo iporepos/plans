@@ -408,30 +408,30 @@
 </div>
 <section id="projects">
 <span id="id1"></span><h1>Projects<a class="headerlink" href="#projects" title="Link to this heading">#</a></h1>
-<p>This is the project reference documentation of <code class="docutils literal notranslate"><span class="pre">plans</span></code>.</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p>This page describes the <strong>project system</strong> used in <code class="docutils literal notranslate"><span class="pre">plans</span></code>.</p>
+<p>All simulations are organized inside a project, which is a <strong>self-contained file system</strong> with a standardized folder structure. Users must first create or specify a project before running any simulation. Each simulation must specify which scenario and basin combination (climate + land use + basin) to run. All required input data, intermediate caches, and outputs live inside this folder tree.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">{</span>project<span class="o">}</span>/
 <span class="w">     </span>├──<span class="w"> </span>data/
 <span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>project_info.csv
 <span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>parameters_info.csv
 <span class="w">     </span>│<span class="w">     </span>│
 <span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>basins/
-<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>main/<span class="w">          </span><span class="c1"># default basin</span>
-<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span><span class="o">{</span>basin<span class="o">}</span>/<span class="w">       </span><span class="c1"># user-defined basin</span>
+<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>main/<span class="w">                   </span><span class="c1"># default basin</span>
+<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span><span class="o">{</span>basin<span class="o">}</span>/<span class="w">                </span><span class="c1"># user-defined basin</span>
 <span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>basin.tif
 <span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>└──<span class="w"> </span>qobs_series.csv
 <span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>└──<span class="w"> </span>...
 <span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>climate/
-<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>observed/<span class="w">      </span><span class="c1"># default scenario</span>
+<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>observed/<span class="w">               </span><span class="c1"># default scenario</span>
 <span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>└──<span class="w"> </span>climate_series.csv
-<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span><span class="o">{</span>scenario<span class="o">}</span>/<span class="w">    </span><span class="c1"># user-defined scenarios</span>
+<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span><span class="o">{</span>climate-scenario<span class="o">}</span>/<span class="w">     </span><span class="c1"># user-defined scenarios</span>
 <span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>└──<span class="w"> </span>...
-<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>lulc/<span class="w"> </span><span class="o">(</span>land<span class="w"> </span>use<span class="w"> </span>data<span class="o">)</span>
-<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>observed/<span class="w">      </span><span class="c1"># default scenario</span>
+<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>lulc/
+<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>observed/<span class="w">               </span><span class="c1"># default scenario</span>
 <span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>lulc_attributes.csv
 <span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>lulc_<span class="o">{</span>date<span class="o">}</span>.tif
 <span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>└──<span class="w"> </span>...
-<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span><span class="o">{</span>scenario<span class="o">}</span>/<span class="w">    </span><span class="c1"># user-defined scenarios</span>
+<span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span><span class="o">{</span>lulc-scenario<span class="o">}</span>/<span class="w">        </span><span class="c1"># user-defined scenarios</span>
 <span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>└──<span class="w"> </span>...
 <span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>soils/
 <span class="w">     </span>│<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>soils_attributes.csv
@@ -446,6 +446,79 @@
 <span class="w">           </span>└──<span class="w"> </span>...
 </pre></div>
 </div>
+<section id="project-structure">
+<span id="id2"></span><h2>Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading">#</a></h2>
+<p>A project is divided into two main parts:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#project-data-folder"><span class="std std-ref">Data Folder</span></a> — Contains all <a class="reference internal" href="files.html#io-input-files"><span class="std std-ref">Input Files</span></a> and <a class="reference internal" href="files.html#io-intermediate-files"><span class="std std-ref">Intermediate Files</span></a> (caches), and configuration tables.</p></li>
+<li><p><a class="reference internal" href="#project-outputs-folder"><span class="std std-ref">Outputs Folder</span></a> — Stores all results of simulations and processing operations.</p></li>
+</ul>
+<p>Mandatory folders (<code class="docutils literal notranslate"><span class="pre">data/</span></code> and <code class="docutils literal notranslate"><span class="pre">outputs/</span></code>) are created automatically when a project is setup.
+Users may add extra folders and files, but the standardized structure must be preserved.</p>
+</section>
+<section id="data-folder">
+<span id="project-data-folder"></span><h2>Data Folder<a class="headerlink" href="#data-folder" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder is where users provide input files and where the model stores
+intermediate pre-processing results.</p>
+<p><strong>Subfolders:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">basins/</span></code> — Contains one default project main basin (<code class="docutils literal notranslate"><span class="pre">main/</span></code>) and any number of user-defined catchments. Each simulation must specify which basin to use.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">climate/</span></code> — Contains one default climate scenario (<code class="docutils literal notranslate"><span class="pre">observed/</span></code>) and any number of user-defined scenarios. Each simulation must specify which climate scenario to use.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lulc/</span></code> — Similar to climate, with an <code class="docutils literal notranslate"><span class="pre">observed/</span></code> folder for historical land-use data and optional land use scenario folders.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">soils/</span></code> — Stores soil maps and attributes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">topo/</span></code> — Contains topographic derivatives such as HAND, TWI, and other DEM-derived data.</p></li>
+</ul>
+<section id="basin-subfolder">
+<span id="project-basin-subfolder"></span><h3>Basin Subfolder<a class="headerlink" href="#basin-subfolder" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">basins/</span></code> folder defines the spatial units of simulation within the project.
+Each basin is represented by a <strong>boolean footprint raster</strong> that marks which
+raster cells belong to that catchment within the global spatial extent of the project.</p>
+<p>By default, a single subfolder called <code class="docutils literal notranslate"><span class="pre">main/</span></code> is created when a project is first initialized.
+This is intended to hold the <strong>primary basin of interest</strong> for the project — not necessarily the
+largest catchment, but the one most relevant for analysis.</p>
+<p>Users may create additional subfolders to represent:</p>
+<ul class="simple">
+<li><p><strong>Sub-catchments</strong> within the project area (for nested or partial-basin simulations)</p></li>
+<li><p><strong>Ungauged catchments</strong> (to run simulations without observed flow data)</p></li>
+<li><p><strong>Multiple gauged basins</strong> (to allow calibration or validation against multiple flow stations)</p></li>
+</ul>
+<p>Each basin folder may contain:</p>
+<ul class="simple">
+<li><p>Required and optional input files</p></li>
+<li><p>Intermediate files computed by the model</p></li>
+<li><p>Metadata or additional supporting files as needed</p></li>
+</ul>
+<p>Simulations must always reference a specific basin folder, allowing users to run scenarios
+for different spatial subsets of the project area.</p>
+</section>
+<section id="scenario-subfolder">
+<span id="project-scenario-subfolder"></span><h3>Scenario Subfolder<a class="headerlink" href="#scenario-subfolder" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">climate/</span></code> and <code class="docutils literal notranslate"><span class="pre">lulc/</span></code> subfolders define <strong>scenarios</strong> used in simulations.
+A scenario is a named folder containing all input data for a specific <strong>climate</strong> or <strong>land-use</strong> condition.</p>
+<p>By default, a subfolder called <code class="docutils literal notranslate"><span class="pre">observed/</span></code> is created for both climate and land use.
+This is intended to store <strong>historical or baseline data</strong> used as the reference case for simulations.</p>
+<p>Users may create additional scenario folders to represent:</p>
+<ul class="simple">
+<li><p><strong>Alternative climate conditions</strong> (e.g., future projections, synthetic weather series)</p></li>
+<li><p><strong>Alternative land-use configurations</strong> (e.g., reforestation plans, urban expansion)</p></li>
+<li><p><strong>What-if analyses</strong> combining different climate and land-use assumptions</p></li>
+</ul>
+<p>Each scenario subfolder may contain:</p>
+<ul class="simple">
+<li><p>Required and optional input files for that scenario (e.g., climate series, land-use rasters)</p></li>
+<li><p>Intermediate files computed by the model</p></li>
+<li><p>Metadata or additional supporting files as needed</p></li>
+</ul>
+<p>Simulations must always specify which scenario(s) to use.
+Climate and land-use scenarios can be freely combined, allowing users to explore
+multiple “what-if” configurations within a single project.</p>
+</section>
+</section>
+<section id="outputs-folder">
+<span id="project-outputs-folder"></span><h2>Outputs Folder<a class="headerlink" href="#outputs-folder" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">outputs/</span></code> folder stores results from all simulation and processing runs.
+Each operation is saved in its own subfolder, identified by a unique name, ID and timestamp, making it easy to retrieve and compare runs.</p>
+</section>
 </section>
 
 
@@ -486,6 +559,24 @@
                 <dialog id="pst-secondary-sidebar-modal"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-structure">Project Structure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-folder">Data Folder</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#basin-subfolder">Basin Subfolder</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scenario-subfolder">Scenario Subfolder</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#outputs-folder">Outputs Folder</a></li>
+</ul>
+  </nav></div>
 
   <div class="sidebar-secondary-item">
   <div role="note" aria-label="source link">

@@ -422,7 +422,7 @@
 </div>
 <section id="basin-area">
 <span id="io-basin"></span><h2>Basin Area<a class="headerlink" href="#basin-area" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">basin</span></code> file is a mandatory raster file with binary values (1 for basin pixels, 0 otherwise) defining the area of interest. Users may provide multiple basin area under the same extension. This is done by files organized in subfolders, one for each basin being modeled.</p>
+<p>A mandatory raster file with binary values (1 for basin pixels, 0 otherwise) defining the basin/catchment of interest. Users may provide multiple basin area under the same extension. This is done by files organized in subfolders, one for each basin being modeled.</p>
 <details class="seealso admonition">
 <summary class="admonition-title">Related files</summary>
 <ul class="simple">
@@ -459,7 +459,7 @@
 </section>
 <section id="climate-series">
 <span id="io-climate-series"></span><h2>Climate Series<a class="headerlink" href="#climate-series" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">climate_series</span></code> table is a time series file containing model forcing data such as precipitation and potential evapotranspiration. It can have a time step as fine as 15 minutes, but daily or hourly series are most common. This file is required for running the model.</p>
+<p>A time series file containing model forcing data such as precipitation and potential evapotranspiration. It can have a time step as fine as 15 minutes, but daily or hourly series are most common. This file is required for running the model.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
@@ -473,7 +473,7 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">climate_series.csv</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/climate/{scenario}</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/climate/{climate-scenario}</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -498,7 +498,7 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
 <td><p>Precipitation</p></td>
 </tr>
-<tr class="row-even"><td><p>epot</p></td>
+<tr class="row-even"><td><p>pet</p></td>
 <td><p>mm/{dt}</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
 <td><p>Potential Evapotranspiration</p></td>
@@ -541,9 +541,78 @@
 </pre></div>
 </div>
 </section>
+<section id="climate-and-land-use-series">
+<span id="io-climate-lulc-scenario-lulc-series"></span><h2>Climate and Land Use Series<a class="headerlink" href="#climate-and-land-use-series" title="Link to this heading">#</a></h2>
+<p>This time series is a merger or <a class="reference internal" href="#io-climate-series"><span class="std std-ref">Climate Series</span></a> and <a class="reference internal" href="#io-lulc-series"><span class="std std-ref">Land Use Series</span></a> for a given Land Use scenario. It relates all time steps for a given climate series to a land use map and related parameters at a given Land Use scenario.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>When generated, this time series downscale climate variables to the simulation time step defined in <a class="reference internal" href="#io-parameters-info"><span class="std std-ref">Parameters Info</span></a>.
+Hence, it can be a heavy file.</p>
+</div>
+<details class="seealso admonition">
+<summary class="admonition-title">Related files</summary>
+<ul class="simple">
+<li><p><a class="reference internal" href="#io-climate-series"><span class="std std-ref">Climate Series</span></a></p></li>
+<li><p><a class="reference internal" href="#io-lulc-series"><span class="std std-ref">Land Use Series</span></a></p></li>
+<li><p><a class="reference internal" href="#io-parameters-info"><span class="std std-ref">Parameters Info</span></a></p></li>
+</ul>
+</details>
+<p><strong>Specifications</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Workflow</p></td>
+<td><p><a class="reference internal" href="files.html#io-intermediate-files"><span class="std std-ref">Intermediate File</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Data Structure</p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-timeseries"><span class="std std-ref">Time Series</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">climate_{lulc-scenario}_lulc_series.csv</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/climate/{climate-scenario}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Required Fields</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Data Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>datetime</p></td>
+<td><p>unitless</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Date-time label</p></td>
+</tr>
+<tr class="row-odd"><td><p>ppt</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Precipitation</p></td>
+</tr>
+<tr class="row-even"><td><p>pet</p></td>
+<td><p>mm/{dt}</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Potential Evapotranspiration</p></td>
+</tr>
+<tr class="row-odd"><td><p>id_lulc</p></td>
+<td><p>unitless</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">uint16</span></code></p></td>
+<td><p>Identification number for land use map</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>File Sample</strong></p>
+</section>
 <section id="digital-elevation-model">
 <span id="io-dem"></span><h2>Digital Elevation Model<a class="headerlink" href="#digital-elevation-model" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">dem</span></code> is the digital elevation model (DEM) raster file. It is a raster file representing terrain height above sea level, in meters. While not mandatory, it is a valuable input for generating many derivative files such as slope, aspect, and flow accumulation. Users often preprocess DEMs to fill depressions and interpolate missing values, ensuring a hydrologically consistent surface for further analysis.</p>
+<p>Digital elevation model (DEM) raster file. It is a raster file representing terrain height above sea level, in meters. While not mandatory, it is a valuable input for generating many derivative files such as slope, aspect, and flow accumulation. Users often preprocess DEMs to fill depressions and interpolate missing values, ensuring a hydrologically consistent surface for further analysis.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
@@ -573,7 +642,7 @@
 </section>
 <section id="distance-vs-area-histogram">
 <span id="io-dist-area-hist"></span><h2>Distance vs Area Histogram<a class="headerlink" href="#distance-vs-area-histogram" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">dist_area_hist</span></code> intermediate table is an histogram relating flow path length (distance to outlet) to contributing area. It is generated by the model and used to compute unit hydrographs for flow routing.</p>
+<p>A histogram relating flow path length (distance to outlet) to contributing/upslope area. It is generated by the model and used to compute unit hydrographs for flow routing.</p>
 <details class="seealso admonition">
 <summary class="admonition-title">Related files</summary>
 <ul class="simple">
@@ -626,7 +695,7 @@
 </section>
 <section id="distance-to-outlet">
 <span id="io-dto"></span><h2>Distance To Outlet<a class="headerlink" href="#distance-to-outlet" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">dto</span></code> encodes the distance to outlet. It is a raster file computed by the model that records the flow path length from each pixel to the catchment outlet, using the <cite>ldd</cite> file for routing. It is an important variable for hydrograph generation, as it accounts for travel time differences across the basin.</p>
+<p>A raster map encoding distance to basin outlet. It is a raster file computed by the model that records the flow path length from each pixel to the catchment outlet, using LDD information for routing. It is an important variable for hydrograph generation, as it accounts for travel time differences across the basin.</p>
 <details class="seealso admonition">
 <summary class="admonition-title">Related files</summary>
 <ul class="simple">
@@ -663,7 +732,7 @@
 </section>
 <section id="flow-accumulation">
 <span id="io-flowacc"></span><h2>Flow Accumulation<a class="headerlink" href="#flow-accumulation" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">flowacc</span></code> encodes flow accumulation, an optional raster file indicating how much water or flow would accumulate at each pixel based on upslope contributions. It may be calculated as a discrete or fuzzy surface depending on the method. Flow accumulation is often used as an input for TWI calculations.</p>
+<p>A raster map indicating unitary accumulated water at each pixel based on upslope contributions. It may be calculated as a discrete or fuzzy surface depending on the method. Flow accumulation is often used as an input for TWI calculations.</p>
 <details class="seealso admonition">
 <summary class="admonition-title">Related files</summary>
 <ul class="simple">
@@ -701,7 +770,7 @@
 </section>
 <section id="height-above-nearest-drainage">
 <span id="io-hand"></span><h2>Height Above Nearest Drainage<a class="headerlink" href="#height-above-nearest-drainage" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">hand</span></code> is the Height Above Nearest Drainage (HAND). It is raster file derived from combining the DEM with a drainage network, representing the elevation difference between each pixel and its nearest stream. Values are given in meters and depend strongly on the definition of the drainage network, which can significantly influence model results. HAND can be obtained from external sources or derived directly from a DEM using geoprocessing techniques.</p>
+<p>A raster file derived from combining the DEM with a drainage network, representing the elevation difference between each pixel and its nearest stream. Values are given in meters and depend strongly on the definition of the drainage network, which can significantly influence model results. HAND can be obtained from external sources or derived directly from a DEM using geoprocessing techniques.</p>
 <details class="seealso admonition">
 <summary class="admonition-title">Related files</summary>
 <ul class="simple">
@@ -737,7 +806,7 @@
 </section>
 <section id="hill-shade">
 <span id="io-hillshade"></span><h2>Hill Shade<a class="headerlink" href="#hill-shade" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">hillshade</span></code> is an optional raster representing shaded relief, calculated from a DEM using parameters such as solar angle and azimuth. It is primarily used for visualization and can be combined with transparency layers to enhance the perception of terrain depth.</p>
+<p>A raster representing shaded relief, calculated from a DEM using parameters such as solar angle and azimuth. It is primarily used for visualization and can be combined with transparency layers to enhance the perception of terrain depth.</p>
 <details class="seealso admonition">
 <summary class="admonition-title">Related files</summary>
 <ul class="simple">
@@ -773,7 +842,30 @@
 </section>
 <section id="local-drain-direction">
 <span id="io-ldd"></span><h2>Local Drain Direction<a class="headerlink" href="#local-drain-direction" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">ldd</span></code> is the Local Drain Direction (LDD), a raster file encoding the flow direction of each pixel toward its downslope neighbor, following the PC-Raster convention. It provides essential information for routing water across the landscape and is used to determine flow paths and drainage network connectivity.</p>
+<p>Local Drain Direction (LDD), a raster file encoding the flow direction of each pixel toward its downslope neighbor, following the <a class="reference external" href="https://www.whiteboxgeo.com/">WhiteboxTool</a> convention. It provides essential information for routing water across the landscape and is used to determine flow paths and drainage network connectivity.</p>
+<div class="warning admonition">
+<p class="admonition-title">LDD standard convention</p>
+<p><code class="docutils literal notranslate"><span class="pre">plans</span></code> follows the <code class="docutils literal notranslate"><span class="pre">wbt</span></code> convention derived from the <a class="reference external" href="https://www.whiteboxgeo.com/">WhiteboxTool</a>:</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id3" style="width: 30%">
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">wbt</span></code> convention</span><a class="headerlink" href="#id3" title="Link to this table">#</a></caption>
+<tbody>
+<tr class="row-odd"><td><p>64</p></td>
+<td><p>128</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>32</p></td>
+<td><p>0</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>16</p></td>
+<td><p>8</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Users may need to transform their own LDD map to match this convention.</p>
+</div>
 <details class="seealso admonition">
 <summary class="admonition-title">Related files</summary>
 <ul class="simple">
@@ -811,15 +903,15 @@
 </section>
 <section id="land-use-attributes">
 <span id="io-lulc-attributes"></span><h2>Land Use Attributes<a class="headerlink" href="#land-use-attributes" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">lulc_attribute</span></code> table links land use class IDs from the LULC maps of a scenario to their names, descriptions, and parameter values weights. These attributes are used to represent vegetation, cover type, and land management effects in the model.</p>
+<p>A table that links land use class IDs from the LULC maps of a scenario to their names, descriptions, and parameter values weights. These attributes are used to represent vegetation, cover type, and land management effects in the model.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">lulc_attribute</span></code> table must live alongside map files in the respective <strong>scenario folder</strong> for land use. This means that different scenarios can have different encoding systems for land use.</p>
+<p>This table must live alongside map files in the respective <strong>scenario folder</strong> for land use. This means that different scenarios can have different encoding systems for land use.</p>
 </div>
 <details class="seealso admonition">
 <summary class="admonition-title">Related files</summary>
 <ul class="simple">
-<li><p><a class="reference internal" href="#io-lulc-date"><span class="std std-ref">Land Use</span></a></p></li>
+<li><p><a class="reference internal" href="#io-lulc-date"><span class="std std-ref">Land Use Map</span></a></p></li>
 <li><p><a class="reference internal" href="#io-parameters-info"><span class="std std-ref">Parameters Info</span></a></p></li>
 </ul>
 </details>
@@ -836,7 +928,7 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">lulc_attributes.csv</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/lulc/{scenario}</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/lulc/{lulc-scenario}</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -871,50 +963,25 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
 <td><p>Color</p></td>
 </tr>
-<tr class="row-even"><td><p>w_ck</p></td>
+<tr class="row-even"><td><p>w_id</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>(downscaling weight) Canopy residence time</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">uint16</span></code></p></td>
+<td><p>(downscaling weight) Identification number</p></td>
 </tr>
-<tr class="row-odd"><td><p>w_ca</p></td>
+<tr class="row-odd"><td><p>w_name</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>(downscaling weight) Activation level for canopy flow</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>(downscaling weight) Name</p></td>
 </tr>
-<tr class="row-even"><td><p>w_sk</p></td>
+<tr class="row-even"><td><p>w_alias</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>(downscaling weight) Surface residence time</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>(downscaling weight) Alias</p></td>
 </tr>
-<tr class="row-odd"><td><p>w_soa</p></td>
+<tr class="row-odd"><td><p>w_color</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>(downscaling weight) Activation level for overland flow</p></td>
-</tr>
-<tr class="row-even"><td><p>w_soc</p></td>
-<td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>(downscaling weight) Fragmentation level for overland flow</p></td>
-</tr>
-<tr class="row-odd"><td><p>w_sua</p></td>
-<td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>(downscaling weight) Activation level for subsurface flow</p></td>
-</tr>
-<tr class="row-even"><td><p>w_suc</p></td>
-<td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>(downscaling weight) Fragmentation level for subsurface flow</p></td>
-</tr>
-<tr class="row-odd"><td><p>w_sux</p></td>
-<td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>(downscaling weight) Subsurface storage capacity</p></td>
-</tr>
-<tr class="row-even"><td><p>w_dea</p></td>
-<td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>(downscaling weight) Deficit activation level for ET (root zone)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>(downscaling weight) Color</p></td>
 </tr>
 </tbody>
 </table>
@@ -929,9 +996,60 @@
 </pre></div>
 </div>
 </section>
-<section id="land-use">
-<span id="io-lulc-date"></span><h2>Land Use<a class="headerlink" href="#land-use" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">lulc_{date}</span></code> is a raster file with pixel IDs encoding land use and land cover (LULC) classes for a given date. Each class links to a land use attribute table that provides descriptions and parameters used in the model, influencing processes in the land phase of the hydrological cycle.</p>
+<section id="land-use-series">
+<span id="io-lulc-series"></span><h2>Land Use Series<a class="headerlink" href="#land-use-series" title="Link to this heading">#</a></h2>
+<p>This time series is an intermediate table that relates all land use maps in a given scenario with an ID field.</p>
+<p><strong>Specifications</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Workflow</p></td>
+<td><p><a class="reference internal" href="files.html#io-intermediate-files"><span class="std std-ref">Intermediate File</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Data Structure</p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-timeseries"><span class="std std-ref">Time Series</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lulc_series.csv</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/lulc/{lulc-scenario}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Required Fields</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Data Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>name</p></td>
+<td><p>unitless</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Name</p></td>
+</tr>
+<tr class="row-odd"><td><p>datetime</p></td>
+<td><p>unitless</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Date-time label</p></td>
+</tr>
+<tr class="row-even"><td><p>id_lulc</p></td>
+<td><p>unitless</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">uint16</span></code></p></td>
+<td><p>Identification number for land use map</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>File Sample</strong></p>
+</section>
+<section id="land-use-map">
+<span id="io-lulc-date"></span><h2>Land Use Map<a class="headerlink" href="#land-use-map" title="Link to this heading">#</a></h2>
+<p>A raster map with pixel IDs encoding land use and land cover (LULC) classes for a given date. Each class links to a land use attribute table that provides descriptions and parameters used in the model, influencing processes in the land phase of the hydrological cycle.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>All classes encoded in the map must be listed in <a class="reference internal" href="#io-lulc-attributes"><span class="std std-ref">Land Use Attributes</span></a>.</p>
@@ -955,7 +1073,7 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">lulc_{date}.tif</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Project Folder</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/lulc/{scenario}</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/lulc/{lulc-scenario}</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Pixel Units</p></td>
 <td><p>id</p></td>
@@ -969,9 +1087,47 @@
 <p><strong>View</strong></p>
 <p>{&gt;&gt; todo preview}</p>
 </section>
+<section id="land-use-parameter-map">
+<span id="io-lulc-date-parameter"></span><h2>Land Use Parameter Map<a class="headerlink" href="#land-use-parameter-map" title="Link to this heading">#</a></h2>
+<p>This files are intermediate maps of parameters related to Land Use. For all parameters related to land use, and for all land use maps available for a given scenario, a map is generated considering the downscaling weights provided in  <a class="reference internal" href="#io-lulc-attributes"><span class="std std-ref">Land Use Attributes</span></a>.</p>
+<details class="seealso admonition">
+<summary class="admonition-title">Related files</summary>
+<ul class="simple">
+<li><p><a class="reference internal" href="#io-lulc-date"><span class="std std-ref">Land Use Map</span></a></p></li>
+<li><p><a class="reference internal" href="#io-lulc-attributes"><span class="std std-ref">Land Use Attributes</span></a></p></li>
+<li><p><a class="reference internal" href="#io-parameters-info"><span class="std std-ref">Parameters Info</span></a></p></li>
+</ul>
+</details>
+<p><strong>Specifications</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Workflow</p></td>
+<td><p><a class="reference internal" href="files.html#io-intermediate-files"><span class="std std-ref">Intermediate File</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Data Structure</p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-timeraster"><span class="std std-ref">Time Raster</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lulc_{date}_{parameter}.tif</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/lulc/{lulc-scenario}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pixel Units</p></td>
+<td><p>misc</p></td>
+</tr>
+<tr class="row-even"><td><p>Data Type</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>View</strong></p>
+<p>{&gt;&gt; todo preview}</p>
+</section>
 <section id="parameters-info">
 <span id="io-parameters-info"></span><h2>Parameters Info<a class="headerlink" href="#parameters-info" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">parameters_info</span></code> table lists all model parameters and their set, lower, and upper values. These parameters represent effective, upscaled values for the catchment as a whole but can be downscaled to pixel level using weighting factors from soils, land use, and topographic saturation index. This table may also include information such as simulation time step and is useful for parameter sampling (e.g., Monte Carlo analysis).</p>
+<p>Table that lists all model parameters and their set, lower, and upper values. These parameters represent effective, upscaled values for the basin as a whole but can be downscaled to pixel level using weighting factors from soils, land use, and topographic saturation index. This table may also include information such as simulation time step and is useful for parameter sampling (e.g., Monte Carlo analysis).</p>
 <details class="seealso admonition">
 <summary class="admonition-title">Related files</summary>
 <ul class="simple">
@@ -1040,110 +1196,25 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>dt</p></td>
-<td><p>min</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Simulation time step</p></td>
-</tr>
-<tr class="row-odd"><td><p>c0</p></td>
-<td><p>mm</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Canopy storage initial conditions</p></td>
-</tr>
-<tr class="row-even"><td><p>s0</p></td>
-<td><p>mm</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Surface storage initial conditions</p></td>
-</tr>
-<tr class="row-odd"><td><p>v0</p></td>
-<td><p>mm</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Vadose zone initial conditions</p></td>
-</tr>
-<tr class="row-even"><td><p>g0</p></td>
-<td><p>mm</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Phreatic zone initial conditions</p></td>
-</tr>
-<tr class="row-odd"><td><p>ck</p></td>
-<td><p>d</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Canopy residence time</p></td>
-</tr>
-<tr class="row-even"><td><p>ca</p></td>
-<td><p>mm</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Activation level for canopy flow</p></td>
-</tr>
-<tr class="row-odd"><td><p>sk</p></td>
-<td><p>d</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Surface residence time</p></td>
-</tr>
-<tr class="row-even"><td><p>soa</p></td>
-<td><p>mm</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Activation level for overland flow</p></td>
-</tr>
-<tr class="row-odd"><td><p>soc</p></td>
-<td><p>mm</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Fragmentation level for overland flow</p></td>
-</tr>
-<tr class="row-even"><td><p>sua</p></td>
-<td><p>mm</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Activation level for subsurface flow</p></td>
-</tr>
-<tr class="row-odd"><td><p>suc</p></td>
-<td><p>mm</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Fragmentation level for subsurface flow</p></td>
-</tr>
-<tr class="row-even"><td><p>sux</p></td>
-<td><p>mm</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Subsurface storage capacity</p></td>
-</tr>
-<tr class="row-odd"><td><p>kv</p></td>
-<td><p>mm/d</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Soil hydraulic conductivity</p></td>
-</tr>
-<tr class="row-even"><td><p>gk</p></td>
-<td><p>d</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Phreatic zone residence time</p></td>
-</tr>
-<tr class="row-odd"><td><p>gx</p></td>
-<td><p>mm</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Phreatic zone storage capacity</p></td>
-</tr>
-<tr class="row-even"><td><p>dea</p></td>
-<td><p>mm</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Deficit activation level for ET (root zone)</p></td>
-</tr>
-<tr class="row-odd"><td><p>ex</p></td>
-<td><p>mm</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>ET capacity of capilar zone</p></td>
-</tr>
-<tr class="row-even"><td><p>kq</p></td>
-<td><p>m/d</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Channel water celerity</p></td>
-</tr>
-<tr class="row-odd"><td><p>hw</p></td>
+<tr class="row-even"><td><p>field</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Weight for HAND in TSI superposition</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Field or attribute name</p></td>
 </tr>
-<tr class="row-even"><td><p>hx</p></td>
-<td><p>m</p></td>
+<tr class="row-odd"><td><p>value</p></td>
+<td><p>unitless</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc</span></code></p></td>
+<td><p>Set value of field</p></td>
+</tr>
+<tr class="row-even"><td><p>lower</p></td>
+<td><p>misc</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>HAND upper threshold in TSI superposition</p></td>
+<td><p>Lower bound value of field</p></td>
+</tr>
+<tr class="row-odd"><td><p>upper</p></td>
+<td><p>misc</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Upper bound value of field</p></td>
 </tr>
 </tbody>
 </table>
@@ -1176,7 +1247,7 @@ hand_max;10.0;1.0;50.0;;
 </section>
 <section id="project-info">
 <span id="io-project-info"></span><h2>Project Info<a class="headerlink" href="#project-info" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">project_info</span></code> table contains metadata describing the project, such as name, alias, source, and description. It can also list alternative parameter tables or folders to override defaults. If left empty, the model uses default project settings.</p>
+<p>A table that contains metadata describing the project, such as name, alias, source, and description.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
@@ -1228,30 +1299,15 @@ hand_max;10.0;1.0;50.0;;
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>name</p></td>
+<tr class="row-even"><td><p>field</p></td>
 <td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
-<td><p>Name</p></td>
+<td><p>Field or attribute name</p></td>
 </tr>
-<tr class="row-odd"><td><p>alias</p></td>
+<tr class="row-odd"><td><p>value</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
-<td><p>Alias</p></td>
-</tr>
-<tr class="row-even"><td><p>source</p></td>
-<td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
-<td><p>Source for reference</p></td>
-</tr>
-<tr class="row-odd"><td><p>description</p></td>
-<td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
-<td><p>Brief description</p></td>
-</tr>
-<tr class="row-even"><td><p>folder_base</p></td>
-<td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
-<td><p>(optional) System path to base / parent folder of project</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc</span></code></p></td>
+<td><p>Set value of field</p></td>
 </tr>
 </tbody>
 </table>
@@ -1268,7 +1324,11 @@ folder_base;/path/to/base_folder
 </section>
 <section id="streamflow-series">
 <span id="io-qobs-series"></span><h2>Streamflow Series<a class="headerlink" href="#streamflow-series" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">qobs_series</span></code> series is a time series table located within each basin folder, containing observed streamflow values for that catchment. Values are given as specific discharge in millimeters per time step, requiring users to convert volumetric discharge data using the catchment area at the gauge station. While optional for running the model, this file is required for calibration, validation, and performance assessment.</p>
+<p>A time series table located within each basin folder, containing observed streamflow values for that catchment. While optional for running the model, this file is required for calibration, validation, and performance assessment.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Values for streamflow must be given as <strong>specific discharge</strong> in millimeters per time step, requiring users to convert volumetric discharge data using the catchment area at the gauge station.</p>
+</div>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
@@ -1314,7 +1374,7 @@ folder_base;/path/to/base_folder
 </section>
 <section id="simulation-series">
 <span id="io-simulation-series"></span><h2>Simulation Series<a class="headerlink" href="#simulation-series" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">simulation_series</span></code> file is a table generated as output for each model run. It consolidates all simulated variables, including streamflow (observed and simulated), climate forcing data, and internal model states such as flows and storage variables. This file provides a complete record of model behavior over the simulation period and is essential for result analysis and calibration.</p>
+<p>A time series table generated as output for each model run. It consolidates all simulated variables, including streamflow (observed and simulated), climate forcing data, and internal model states such as flows and storage variables. This file provides a complete record of model behavior over the simulation period and is essential for result analysis and calibration.</p>
 <p><strong>Specifications</strong></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
@@ -1353,7 +1413,7 @@ folder_base;/path/to/base_folder
 <td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
 <td><p>Precipitation</p></td>
 </tr>
-<tr class="row-even"><td><p>epot</p></td>
+<tr class="row-even"><td><p>pet</p></td>
 <td><p>mm/{dt}</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
 <td><p>Potential Evapotranspiration</p></td>
@@ -1363,7 +1423,7 @@ folder_base;/path/to/base_folder
 <td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
 <td><p>Streamflow observed at basin outlet</p></td>
 </tr>
-<tr class="row-even"><td><p>e</p></td>
+<tr class="row-even"><td><p>et</p></td>
 <td><p>mm/{dt}</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
 <td><p>Evapotranspiration flow (ET)</p></td>
@@ -1475,7 +1535,7 @@ folder_base;/path/to/base_folder
 </section>
 <section id="slope">
 <span id="io-slope"></span><h2>Slope<a class="headerlink" href="#slope" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">slope</span></code> is an optional raster file representing the inclination of the terrain in degrees. It can be derived from the digital elevation model and is used to assess processes such as runoff and erosion. Users may provide it directly or compute it using standard geoprocessing techniques.</p>
+<p>A raster file representing the inclination of the terrain in degrees. It can be derived from the digital elevation model and is used to assess processes such as runoff and erosion. Users may provide it directly or compute it using standard geoprocessing techniques.</p>
 <details class="seealso admonition">
 <summary class="admonition-title">Related files</summary>
 <ul class="simple">
@@ -1509,9 +1569,9 @@ folder_base;/path/to/base_folder
 <p><strong>View</strong></p>
 <p>{&gt;&gt; todo preview}</p>
 </section>
-<section id="soils">
-<span id="io-soils"></span><h2>Soils<a class="headerlink" href="#soils" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">soils</span></code> is a raster file containing pixel IDs that represent soil classes. Each class is linked to an attribute table that stores parameters such as soil properties and model weights. This is a qualitative raster and is essential for encoding the land-phase hydrological characteristics used in the model.</p>
+<section id="soils-map">
+<span id="io-soils"></span><h2>Soils Map<a class="headerlink" href="#soils-map" title="Link to this heading">#</a></h2>
+<p>A raster file containing pixel IDs that represent soil classes. Each class is linked to an attribute table that stores parameters such as soil properties and model weights. This is a qualitative raster and is essential for encoding the land-phase hydrological characteristics used in the model.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>All classes encoded in the map must be listed in <a class="reference internal" href="#io-soils-attributes"><span class="std std-ref">Soils Attributes</span></a>.</p>
@@ -1551,11 +1611,11 @@ folder_base;/path/to/base_folder
 </section>
 <section id="soils-attributes">
 <span id="io-soils-attributes"></span><h2>Soils Attributes<a class="headerlink" href="#soils-attributes" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">soils_attribute</span></code> table links soil class IDs from the soils map to their descriptive names and parameter values weights. These include model weights and other information necessary for representing soil properties in the model.</p>
+<p>A table that links soil class IDs from the soils map to their descriptive names and parameter values weights. These include model weights and other information necessary for representing soil properties in the model.</p>
 <details class="seealso admonition">
 <summary class="admonition-title">Related files</summary>
 <ul class="simple">
-<li><p><a class="reference internal" href="#io-soils"><span class="std std-ref">Soils</span></a></p></li>
+<li><p><a class="reference internal" href="#io-soils"><span class="std std-ref">Soils Map</span></a></p></li>
 <li><p><a class="reference internal" href="#io-parameters-info"><span class="std std-ref">Parameters Info</span></a></p></li>
 </ul>
 </details>
@@ -1607,25 +1667,25 @@ folder_base;/path/to/base_folder
 <td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
 <td><p>Color</p></td>
 </tr>
-<tr class="row-even"><td><p>w_kv</p></td>
+<tr class="row-even"><td><p>w_id</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>(downscaling weight) Soil hydraulic conductivity</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">uint16</span></code></p></td>
+<td><p>(downscaling weight) Identification number</p></td>
 </tr>
-<tr class="row-odd"><td><p>w_gk</p></td>
+<tr class="row-odd"><td><p>w_name</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>(downscaling weight) Phreatic zone residence time</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>(downscaling weight) Name</p></td>
 </tr>
-<tr class="row-even"><td><p>w_gx</p></td>
+<tr class="row-even"><td><p>w_alias</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>(downscaling weight) Phreatic zone storage capacity</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>(downscaling weight) Alias</p></td>
 </tr>
-<tr class="row-odd"><td><p>w_ex</p></td>
+<tr class="row-odd"><td><p>w_color</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>(downscaling weight) ET capacity of capilar zone</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>(downscaling weight) Color</p></td>
 </tr>
 </tbody>
 </table>
@@ -1639,9 +1699,47 @@ folder_base;/path/to/base_folder
 </pre></div>
 </div>
 </section>
+<section id="soils-parameter-map">
+<span id="io-soils-parameter"></span><h2>Soils Parameter Map<a class="headerlink" href="#soils-parameter-map" title="Link to this heading">#</a></h2>
+<p>This files are intermediate maps of parameters related to soils. For all parameters related to soils, a map is generated considering the downscaling weights provided in  <a class="reference internal" href="#io-soils-attributes"><span class="std std-ref">Soils Attributes</span></a>.</p>
+<details class="seealso admonition">
+<summary class="admonition-title">Related files</summary>
+<ul class="simple">
+<li><p><a class="reference internal" href="#io-soils"><span class="std std-ref">Soils Map</span></a></p></li>
+<li><p><a class="reference internal" href="#io-soils-attributes"><span class="std std-ref">Soils Attributes</span></a></p></li>
+<li><p><a class="reference internal" href="#io-parameters-info"><span class="std std-ref">Parameters Info</span></a></p></li>
+</ul>
+</details>
+<p><strong>Specifications</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Workflow</p></td>
+<td><p><a class="reference internal" href="files.html#io-intermediate-files"><span class="std std-ref">Intermediate File</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Data Structure</p></td>
+<td><p><a class="reference internal" href="data_structures.html#io-raster"><span class="std std-ref">Raster</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>File</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">soils_{parameter}.tif</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Project Folder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/soils</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pixel Units</p></td>
+<td><p>misc</p></td>
+</tr>
+<tr class="row-even"><td><p>Data Type</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>View</strong></p>
+<p>{&gt;&gt; todo preview}</p>
+</section>
 <section id="topographic-saturation-index">
 <span id="io-tsi"></span><h2>Topographic Saturation Index<a class="headerlink" href="#topographic-saturation-index" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">tsi</span></code> is the Topographic Saturation Index is a normalized, unitless index ranging from 0 to 1, representing the likelihood of saturation by combining HAND and TWI with weighted contributions. This file captures both catchment level effects and micro terrain influences, making it an important input for models simulating soil moisture and saturation dynamics.</p>
+<p>A normalized, unitless index map ranging from 0 to 1, representing the likelihood of saturation by combining HAND and TWI with weighted contributions. This file captures both catchment level effects and micro terrain influences, making it an important input for models simulating soil moisture and saturation dynamics.</p>
 <details class="seealso admonition">
 <summary class="admonition-title">Related files</summary>
 <ul class="simple">
@@ -1679,7 +1777,7 @@ folder_base;/path/to/base_folder
 </section>
 <section id="topographic-wetness-index">
 <span id="io-twi"></span><h2>Topographic Wetness Index<a class="headerlink" href="#topographic-wetness-index" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">twi</span></code> is the Topographic Wetness Index (TWI), a unitless index derived from a DEM that estimates the tendency of terrain to accumulate water, assuming shallow soils and a near-surface water table. It is widely used to describe terrain-driven hydrological processes, with higher values indicating wetter conditions. Users may compute it themselves or provide it as an optional file.</p>
+<p>A unitless index map derived from a DEM that estimates the tendency of terrain to accumulate water, assuming shallow soils and a near-surface water table. It is widely used to describe terrain-driven hydrological processes, with higher values indicating wetter conditions. Users may compute it themselves or provide it as an optional file.</p>
 <details class="seealso admonition">
 <summary class="admonition-title">Related files</summary>
 <ul class="simple">
@@ -1717,7 +1815,7 @@ folder_base;/path/to/base_folder
 </section>
 <section id="upslope-area">
 <span id="io-uparea"></span><h2>Upslope Area<a class="headerlink" href="#upslope-area" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">uparea</span></code> is a raster file that records the exact contributing area draining into each pixel, from a single pixel up to the full catchment extent. Computing upslope area typically requires DEM preprocessing such as depression filling. This is an optional file but can improve model performance when supplied.</p>
+<p>A raster file that records the exact contributing area draining into each pixel, from a single pixel up to the full catchment extent. Computing upslope area typically requires DEM preprocessing such as depression filling. This is an optional file but can improve model performance when supplied.</p>
 <details class="seealso admonition">
 <summary class="admonition-title">Related files</summary>
 <ul class="simple">
@@ -1803,6 +1901,7 @@ folder_base;/path/to/base_folder
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basin-area">Basin Area</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#climate-series">Climate Series</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#climate-and-land-use-series">Climate and Land Use Series</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#digital-elevation-model">Digital Elevation Model</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#distance-vs-area-histogram">Distance vs Area Histogram</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#distance-to-outlet">Distance To Outlet</a></li>
@@ -1811,14 +1910,17 @@ folder_base;/path/to/base_folder
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hill-shade">Hill Shade</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#local-drain-direction">Local Drain Direction</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#land-use-attributes">Land Use Attributes</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#land-use">Land Use</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#land-use-series">Land Use Series</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#land-use-map">Land Use Map</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#land-use-parameter-map">Land Use Parameter Map</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameters-info">Parameters Info</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-info">Project Info</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#streamflow-series">Streamflow Series</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simulation-series">Simulation Series</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#slope">Slope</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#soils">Soils</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#soils-map">Soils Map</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#soils-attributes">Soils Attributes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#soils-parameter-map">Soils Parameter Map</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#topographic-saturation-index">Topographic Saturation Index</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#topographic-wetness-index">Topographic Wetness Index</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#upslope-area">Upslope Area</a></li>

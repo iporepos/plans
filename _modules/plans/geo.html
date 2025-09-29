@@ -416,6 +416,8 @@
 <span class="sd">In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.</span>
 <span class="sd">In a lacinia nisl.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
 <span class="c1"># IMPORTS</span>
 <span class="c1"># ***********************************************************************</span>
 <span class="c1"># import modules from other libs</span>
@@ -446,10 +448,8 @@
 
 <span class="c1"># CONSTANTS -- Project-level</span>
 <span class="c1"># =======================================================================</span>
-<span class="c1"># ... {develop}</span>
 
-<span class="c1"># Subsubsection example</span>
-<span class="c1"># -----------------------------------------------------------------------</span>
+
 <span class="c1"># ... {develop}</span>
 
 <span class="c1"># CONSTANTS -- Module-level</span>
@@ -1310,7 +1310,7 @@
 
 <div class="viewcode-block" id="downstream_coordinates">
 <a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.downstream_coordinates">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">downstream_coordinates</span><span class="p">(</span><span class="n">n_dir</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">s_convention</span><span class="o">=</span><span class="s2">&quot;ldd&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">downstream_coordinates</span><span class="p">(</span><span class="n">n_dir</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">ldd_convention</span><span class="o">=</span><span class="s2">&quot;wbt&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute i and j downstream cell coordinates based on cell flow direction.</span>
 
@@ -1320,32 +1320,73 @@
 <span class="sd">    :type i: int</span>
 <span class="sd">    :param j: j (column) array index.</span>
 <span class="sd">    :type j: int</span>
-<span class="sd">    :param s_convention: String of flow direction convention. Options: &#39;ldd&#39; and &#39;d8&#39;. Default is &#39;ldd&#39;.</span>
-<span class="sd">    :type s_convention: str</span>
+<span class="sd">    :param ldd_convention: String of flow direction convention. Options: ``wbt``, ``d8``, ``pcraster``. Default is ``wbt``.</span>
+<span class="sd">    :type ldd_convention: str</span>
 <span class="sd">    :return: Dictionary of downstream i, j, and distance factor.</span>
 <span class="sd">    :rtype: dict</span>
 
 <span class="sd">    **Notes**</span>
 
-<span class="sd">    - Assumes a specific flow direction convention (&#39;ldd&#39; or &#39;d8&#39;).</span>
+<span class="sd">    - Assumes a specific flow direction convention (``wbt``, ``d8``, ``pcraster``).</span>
 <span class="sd">    - The output dictionary contains keys &#39;i&#39;, &#39;j&#39;, and &#39;distance&#39;.</span>
 <span class="sd">    - The &#39;i&#39; and &#39;j&#39; values represent downstream cell coordinates.</span>
 <span class="sd">    - The &#39;distance&#39; value is the Euclidean distance to the downstream cell.</span>
 
+<span class="sd">    ``LDD`` conventions:</span>
+
+<span class="sd">    ``wbt`` convention derived from the WhiteboxTool.</span>
+
+<span class="sd">    .. csv-table:: ``wbt`` convention</span>
+<span class="sd">       :width: 30%</span>
+
+<span class="sd">       64, 128, 1</span>
+<span class="sd">       32, 0, 2</span>
+<span class="sd">       16, 8, 4</span>
+
+<span class="sd">    ``d8`` convention derived from the SAGA tool.</span>
+
+<span class="sd">    .. csv-table:: ``d8`` convention</span>
+<span class="sd">       :width: 30%</span>
+
+<span class="sd">       6,7,8</span>
+<span class="sd">       5,0,1</span>
+<span class="sd">       4,3,2</span>
+
+<span class="sd">    ``pcraster`` convention derived from the PC-Raster tool.</span>
+
+<span class="sd">    .. csv-table:: ``pcraster`` convention</span>
+<span class="sd">       :width: 30%</span>
+
+<span class="sd">       1,2,3</span>
+<span class="sd">       4,5,6</span>
+<span class="sd">       7,8,9</span>
+
+
 <span class="sd">    **Examples**</span>
 
-<span class="sd">    &gt;&gt;&gt; downstream_coordinates(n_dir=1, i=3, j=4, s_convention=&#39;ldd&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; downstream_coordinates(n_dir=1, i=3, j=4, ldd_convention=&#39;pcraster&#39;)</span>
 <span class="sd">    {&#39;i&#39;: 4, &#39;j&#39;: 3, &#39;distance&#39;: np.float64(1.4142135623730951)}</span>
 
 <span class="sd">    Change convention:</span>
 
-<span class="sd">    &gt;&gt;&gt; downstream_coordinates(n_dir=5, i=10, j=15, s_convention=&#39;d8&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; downstream_coordinates(n_dir=5, i=10, j=15, ldd_convention=&#39;d8&#39;)</span>
 <span class="sd">    {&#39;i&#39;: 10, &#39;j&#39;: 14, &#39;distance&#39;: np.float64(1.0)}</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># directions dictionaries</span>
     <span class="n">dct_dirs</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;ldd&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;wbt&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;32&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;di&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;dj&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
+            <span class="s2">&quot;0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;di&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;dj&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+            <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;di&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;dj&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+            <span class="s2">&quot;4&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;di&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;dj&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+            <span class="s2">&quot;8&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;di&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;dj&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+            <span class="s2">&quot;16&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;di&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;dj&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
+            <span class="s2">&quot;64&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;di&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;dj&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
+            <span class="s2">&quot;128&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;di&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;dj&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+            <span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;di&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;dj&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;pcraster&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;di&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;dj&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
             <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;di&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;dj&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
             <span class="s2">&quot;3&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;di&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;dj&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
@@ -1369,7 +1410,7 @@
         <span class="p">},</span>
     <span class="p">}</span>
     <span class="c1"># set dir dict</span>
-    <span class="n">dct_dir</span> <span class="o">=</span> <span class="n">dct_dirs</span><span class="p">[</span><span class="n">s_convention</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+    <span class="n">dct_dir</span> <span class="o">=</span> <span class="n">dct_dirs</span><span class="p">[</span><span class="n">ldd_convention</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
     <span class="n">di</span> <span class="o">=</span> <span class="n">dct_dir</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">n_dir</span><span class="p">)][</span><span class="s2">&quot;di&quot;</span><span class="p">]</span>
     <span class="n">dj</span> <span class="o">=</span> <span class="n">dct_dir</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">n_dir</span><span class="p">)][</span><span class="s2">&quot;dj&quot;</span><span class="p">]</span>
     <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">di</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">dj</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
@@ -1380,7 +1421,7 @@
 
 <div class="viewcode-block" id="distance_to_outlet">
 <a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.distance_to_outlet">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">distance_to_outlet</span><span class="p">(</span><span class="n">grd_ldd</span><span class="p">,</span> <span class="n">n_res</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">s_convention</span><span class="o">=</span><span class="s2">&quot;ldd&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">distance_to_outlet</span><span class="p">(</span><span class="n">grd_ldd</span><span class="p">,</span> <span class="n">n_res</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">ldd_convention</span><span class="o">=</span><span class="s2">&quot;wbt&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the distance to outlet ``DTO`` raster of a given basin.</span>
 
@@ -1388,14 +1429,10 @@
 <span class="sd">    :type grd_ldd: :class:`numpy.ndarray`</span>
 <span class="sd">    :param n_res: Resolution factor for the output distance raster. Default is 30.</span>
 <span class="sd">    :type n_res: int</span>
-<span class="sd">    :param s_convention: String of flow direction convention. Options: &#39;ldd&#39; and &#39;d8&#39;. Default is &#39;ldd&#39;.</span>
-<span class="sd">    :type s_convention: str</span>
+<span class="sd">    :param ldd_convention: String of flow direction convention. Options: ``wbt``, ``d8``, ``pcraster``. Default is ``wbt``.</span>
+<span class="sd">    :type ldd_convention: str</span>
 <span class="sd">    :return: 2d numpy array distance</span>
 <span class="sd">    :rtype: :class:`numpy.ndarray`</span>
-
-<span class="sd">    Notes:</span>
-
-<span class="sd">    - The distance is set to 0 outside the basin area.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1413,8 +1450,8 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">is_center</span><span class="p">(</span><span class="n">ldd</span><span class="p">):</span>
         <span class="c1"># halt</span>
-        <span class="n">dict_halt</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ldd&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;d8&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
-        <span class="k">if</span> <span class="n">ldd</span> <span class="o">==</span> <span class="n">dict_halt</span><span class="p">[</span><span class="n">s_convention</span><span class="p">]:</span>
+        <span class="n">dict_halt</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;pcraster&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;d8&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;wbt&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">ldd</span> <span class="o">==</span> <span class="n">dict_halt</span><span class="p">[</span><span class="n">ldd_convention</span><span class="p">]:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -1429,6 +1466,7 @@
     <span class="n">n_counter</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rows</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_cols</span><span class="p">):</span>
+            <span class="c1"># print(f&quot;\n{i}, {j}&quot;)</span>
             <span class="c1"># initiate cell loop:</span>
             <span class="n">i_current</span> <span class="o">=</span> <span class="n">i</span>
             <span class="n">j_current</span> <span class="o">=</span> <span class="n">j</span>
@@ -1444,16 +1482,22 @@
                 <span class="c1"># trace loop</span>
                 <span class="n">n_trace_count</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+
                     <span class="c1"># get downstream position</span>
                     <span class="n">dct_out</span> <span class="o">=</span> <span class="n">downstream_coordinates</span><span class="p">(</span>
                         <span class="n">n_dir</span><span class="o">=</span><span class="n">lcl_ldd</span><span class="p">,</span>
                         <span class="n">i</span><span class="o">=</span><span class="n">i_current</span><span class="p">,</span>
                         <span class="n">j</span><span class="o">=</span><span class="n">j_current</span><span class="p">,</span>
-                        <span class="n">s_convention</span><span class="o">=</span><span class="n">s_convention</span><span class="p">,</span>
+                        <span class="n">ldd_convention</span><span class="o">=</span><span class="n">ldd_convention</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="n">i_next</span> <span class="o">=</span> <span class="n">dct_out</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">]</span>
                     <span class="n">j_next</span> <span class="o">=</span> <span class="n">dct_out</span><span class="p">[</span><span class="s2">&quot;j&quot;</span><span class="p">]</span>
                     <span class="n">n_dist</span> <span class="o">=</span> <span class="n">dct_out</span><span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">]</span>
+
+                    <span class="c1"># print(f&quot;ldd: {lcl_ldd}&quot;)</span>
+                    <span class="c1"># print(f&quot;next j: {j_next}&quot;)</span>
+                    <span class="c1"># print(f&quot;next i: {i_next}&quot;)</span>
+                    <span class="c1"># time.sleep(0.2)</span>
                     <span class="c1"># append to queue</span>
                     <span class="k">if</span> <span class="n">n_trace_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="n">list_accdist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_dist</span><span class="p">)</span>
@@ -1464,7 +1508,13 @@
                     <span class="c1"># halting options</span>
                     <span class="n">b_off</span> <span class="o">=</span> <span class="n">is_offgrid</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="n">i_next</span><span class="p">,</span> <span class="n">j</span><span class="o">=</span><span class="n">j_next</span><span class="p">)</span>
                     <span class="n">b_center</span> <span class="o">=</span> <span class="n">is_center</span><span class="p">(</span><span class="n">ldd</span><span class="o">=</span><span class="n">lcl_ldd</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">b_off</span> <span class="ow">or</span> <span class="n">b_center</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">b_off</span><span class="p">:</span>
+                        <span class="c1"># print(&quot;is off&quot;)</span>
+                        <span class="c1"># QUIT</span>
+                        <span class="n">n_traced_outdist</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="k">break</span>
+                    <span class="k">if</span> <span class="n">b_center</span><span class="p">:</span>
+                        <span class="c1"># print(&quot;is center&quot;)</span>
                         <span class="c1"># QUIT</span>
                         <span class="n">n_traced_outdist</span> <span class="o">=</span> <span class="mi">0</span>
                         <span class="k">break</span>
@@ -1479,8 +1529,10 @@
                         <span class="n">n_trace_count</span> <span class="o">=</span> <span class="n">n_trace_count</span> <span class="o">+</span> <span class="mi">1</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="c1"># QUIT</span>
+                        <span class="c1"># print(&quot;is mapped&quot;)</span>
                         <span class="n">n_traced_outdist</span> <span class="o">=</span> <span class="n">n_next_outdist</span>
                         <span class="k">break</span>
+
                 <span class="c1"># now manipulate queues</span>
                 <span class="n">vct_accdist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">list_accdist</span><span class="p">)</span>
                 <span class="n">vct_accdist_inv</span> <span class="o">=</span> <span class="n">vct_accdist</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -1493,6 +1545,7 @@
                     <span class="n">grd_outdist</span><span class="p">[</span><span class="n">vct_is</span><span class="p">[</span><span class="n">k</span><span class="p">]][</span><span class="n">vct_js</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span> <span class="o">=</span> <span class="n">vct_outdist</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">pass</span>
+
     <span class="k">return</span> <span class="n">n_res</span> <span class="o">*</span> <span class="n">grd_outdist</span></div>
 
 </pre></div>

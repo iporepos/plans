@@ -403,24 +403,22 @@ Mauris gravida ex quam, in porttitor lacus lobortis vitae.
 In a lacinia nisl. Pellentesque habitant morbi tristique senectus
 et netus et malesuada fames ac turpis egestas.</p>
 </section>
-<section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Link to this heading">#</a></h2>
-<p># todo [major docstring improvement] – examples
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,
-in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
-</pre></div>
+<p class="rubric">Functions</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.project.load_project" title="plans.project.load_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_project</span></code></a>(project_folder)</p></td>
+<td><p>Loads a Project from folder</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.project.new_project" title="plans.project.new_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">new_project</span></code></a>(specs)</p></td>
+<td><p>Create a new Project from a specification dictionary.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
-<p>Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl.</p>
-</section>
 <p class="rubric">Classes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#plans.project.Project" title="plans.project.Project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Project</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.project.Project" title="plans.project.Project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Project</span></code></a>(name[, alias])</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#plans.project.Project_" title="plans.project.Project_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Project_</span></code></a>(name, folder_base[, alias])</p></td>
@@ -429,13 +427,99 @@ In a lacinia nisl.</p>
 </tbody>
 </table>
 </div>
+<dl class="py function">
+<dt class="sig sig-object py" id="plans.project.new_project">
+<span class="sig-prename descclassname"><span class="pre">plans.project.</span></span><span class="sig-name descname"><span class="pre">new_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">specs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#new_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.new_project" title="Link to this definition">#</a></dt>
+<dd><p>Create a new Project from a specification dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>specs</strong> (<em>dict</em>) – <p>Dictionary containing project specifications.</p>
+<p><strong>Required keys</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">folder_base</span></code> (<em>str</em>): Path where the project folder will be created.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> (<em>str</em>): Name of the project.</p></li>
+</ul>
+<p><strong>Optional keys</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">alias</span></code> (<em>str</em>): Alternative identifier. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">source</span></code> (<em>str</em>): Source reference. Defaults to empty string.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">description</span></code> (<em>str</em>): Project description. Defaults to empty string.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If any required key is missing.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new <cite>:class:`plans.Project</cite> instance initialized with the given specifications.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">plans.Project</span></code></p>
+</dd>
+</dl>
+<p><strong>Examples</strong></p>
+<p>Import <code class="docutils literal notranslate"><span class="pre">plans</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">plans</span>
+</pre></div>
+</div>
+<p>Create a new <code class="docutils literal notranslate"><span class="pre">plans.Project</span></code>. First setup details.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># setup specs dictionary</span>
+<span class="n">project_specs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;folder_base&quot;</span><span class="p">:</span> <span class="s2">&quot;path/to/base/folder&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;newProject&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;NPrj&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;Me&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Just a test&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Then call <code class="docutils literal notranslate"><span class="pre">new_project()</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># get project instance</span>
+<span class="n">pj</span> <span class="o">=</span> <span class="n">plans</span><span class="o">.</span><span class="n">new_project</span><span class="p">(</span><span class="n">specs</span><span class="o">=</span><span class="n">project_specs</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plans.project.load_project">
+<span class="sig-prename descclassname"><span class="pre">plans.project.</span></span><span class="sig-name descname"><span class="pre">load_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#load_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.load_project" title="Link to this definition">#</a></dt>
+<dd><p>Loads a Project from folder</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_folder</strong> (<em>str</em><em> or </em><em>Path</em>) – path to project root folder</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new <cite>:class:`plans.Project</cite> instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">plans.Project</span></code></p>
+</dd>
+</dl>
+<p><strong>Notes</strong></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">load_project()</span></code> will overwrite the <code class="docutils literal notranslate"><span class="pre">name</span></code> attribute in <code class="docutils literal notranslate"><span class="pre">project_info.csv</span></code>
+file to match current folder name.</p>
+</div>
+<p><strong>Examples</strong></p>
+<p>Import <code class="docutils literal notranslate"><span class="pre">plans</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">plans</span>
+</pre></div>
+</div>
+<p>Load an existing <code class="docutils literal notranslate"><span class="pre">plans.Project</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># get project instance</span>
+<span class="n">pj</span> <span class="o">=</span> <span class="n">plans</span><span class="o">.</span><span class="n">load_project</span><span class="p">(</span><span class="n">project_folder</span><span class="o">=</span><span class="s2">&quot;path/to/project/folder&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="plans.project.Project">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.project.</span></span><span class="sig-name descname"><span class="pre">Project</span></span><a class="reference internal" href="../_modules/plans/project.html#Project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.project.</span></span><span class="sig-name descname"><span class="pre">Project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="plans.root.html#plans.root.FileSys" title="plans.root.FileSys"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileSys</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.project.Project.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize the <code class="docutils literal notranslate"><span class="pre">FileSys</span></code> object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -504,6 +588,32 @@ In a lacinia nisl.</p>
 </div>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.project.Project.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project.update" title="Link to this definition">#</a></dt>
+<dd><p>Refresh all mutable attributes based on data (including paths).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.project.Project.make_run_folder">
+<span class="sig-name descname"><span class="pre">make_run_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project.make_run_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project.make_run_folder" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.project.Project.run_demo">
+<span class="sig-name descname"><span class="pre">run_demo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project.run_demo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project.run_demo" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.project.Project.run_dto_analysis">
+<span class="sig-name descname"><span class="pre">run_dto_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project.run_dto_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project.run_dto_analysis" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.project.Project.get_timestamp">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_timestamp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project.get_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project.get_timestamp" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -529,7 +639,8 @@ If None, it takes the first and last characters from <code class="docutils liter
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.project.Project_.download_datasets">
 <span class="sig-name descname"><span class="pre">download_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project_.download_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project_.download_datasets" title="Link to this definition">#</a></dt>
-<dd><p>Download datasets from a URL. The download is expected to be a ZIP file. Note: requests library is required</p>
+<dd><p>Download datasets from a URL.
+The download is expected to be a ZIP file. Note: requests library is required</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>zip_url</strong> (<em>str</em>) – url to dataset ZIP file</p>
@@ -629,13 +740,19 @@ If None, it takes the first and last characters from <code class="docutils liter
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.new_project"><code class="docutils literal notranslate"><span class="pre">new_project()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.load_project"><code class="docutils literal notranslate"><span class="pre">load_project()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.__init__"><code class="docutils literal notranslate"><span class="pre">Project.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.get_metadata"><code class="docutils literal notranslate"><span class="pre">Project.get_metadata()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.setter"><code class="docutils literal notranslate"><span class="pre">Project.setter()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.load_data"><code class="docutils literal notranslate"><span class="pre">Project.load_data()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.setup"><code class="docutils literal notranslate"><span class="pre">Project.setup()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.update"><code class="docutils literal notranslate"><span class="pre">Project.update()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.make_run_folder"><code class="docutils literal notranslate"><span class="pre">Project.make_run_folder()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.run_demo"><code class="docutils literal notranslate"><span class="pre">Project.run_demo()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.run_dto_analysis"><code class="docutils literal notranslate"><span class="pre">Project.run_dto_analysis()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.get_timestamp"><code class="docutils literal notranslate"><span class="pre">Project.get_timestamp()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project_"><code class="docutils literal notranslate"><span class="pre">Project_</span></code></a><ul class="nav section-nav flex-column">

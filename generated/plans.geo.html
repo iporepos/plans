@@ -1051,7 +1051,7 @@ m0 = 0.5 when sinθ ≥ 0.05</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plans.geo.downstream_coordinates">
-<span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">downstream_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_convention</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ldd'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#downstream_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.downstream_coordinates" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">downstream_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ldd_convention</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wbt'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#downstream_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.downstream_coordinates" title="Link to this definition">#</a></dt>
 <dd><p>Compute i and j downstream cell coordinates based on cell flow direction.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1059,7 +1059,7 @@ m0 = 0.5 when sinθ ≥ 0.05</p>
 <li><p><strong>n_dir</strong> (<em>int</em>) – Flow direction code.</p></li>
 <li><p><strong>i</strong> (<em>int</em>) – i (row) array index.</p></li>
 <li><p><strong>j</strong> (<em>int</em>) – j (column) array index.</p></li>
-<li><p><strong>s_convention</strong> (<em>str</em>) – String of flow direction convention. Options: ‘ldd’ and ‘d8’. Default is ‘ldd’.</p></li>
+<li><p><strong>ldd_convention</strong> (<em>str</em>) – String of flow direction convention. Options: <code class="docutils literal notranslate"><span class="pre">wbt</span></code>, <code class="docutils literal notranslate"><span class="pre">d8</span></code>, <code class="docutils literal notranslate"><span class="pre">pcraster</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">wbt</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1071,18 +1071,76 @@ m0 = 0.5 when sinθ ≥ 0.05</p>
 </dl>
 <p><strong>Notes</strong></p>
 <ul class="simple">
-<li><p>Assumes a specific flow direction convention (‘ldd’ or ‘d8’).</p></li>
+<li><p>Assumes a specific flow direction convention (<code class="docutils literal notranslate"><span class="pre">wbt</span></code>, <code class="docutils literal notranslate"><span class="pre">d8</span></code>, <code class="docutils literal notranslate"><span class="pre">pcraster</span></code>).</p></li>
 <li><p>The output dictionary contains keys ‘i’, ‘j’, and ‘distance’.</p></li>
 <li><p>The ‘i’ and ‘j’ values represent downstream cell coordinates.</p></li>
 <li><p>The ‘distance’ value is the Euclidean distance to the downstream cell.</p></li>
 </ul>
+<p><code class="docutils literal notranslate"><span class="pre">LDD</span></code> conventions:</p>
+<p><code class="docutils literal notranslate"><span class="pre">wbt</span></code> convention derived from the WhiteboxTool.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id1" style="width: 30%">
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">wbt</span></code> convention</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
+<tbody>
+<tr class="row-odd"><td><p>64</p></td>
+<td><p>128</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>32</p></td>
+<td><p>0</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>16</p></td>
+<td><p>8</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">d8</span></code> convention derived from the SAGA tool.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id2" style="width: 30%">
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">d8</span></code> convention</span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
+<tbody>
+<tr class="row-odd"><td><p>6</p></td>
+<td><p>7</p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>3</p></td>
+<td><p>2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">pcraster</span></code> convention derived from the PC-Raster tool.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id3" style="width: 30%">
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">pcraster</span></code> convention</span><a class="headerlink" href="#id3" title="Link to this table">#</a></caption>
+<tbody>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>2</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p>5</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-odd"><td><p>7</p></td>
+<td><p>8</p></td>
+<td><p>9</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p><strong>Examples</strong></p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">downstream_coordinates</span><span class="p">(</span><span class="n">n_dir</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">j</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">s_convention</span><span class="o">=</span><span class="s1">&#39;ldd&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">downstream_coordinates</span><span class="p">(</span><span class="n">n_dir</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">j</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ldd_convention</span><span class="o">=</span><span class="s1">&#39;pcraster&#39;</span><span class="p">)</span>
 <span class="go">{&#39;i&#39;: 4, &#39;j&#39;: 3, &#39;distance&#39;: np.float64(1.4142135623730951)}</span>
 </pre></div>
 </div>
 <p>Change convention:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">downstream_coordinates</span><span class="p">(</span><span class="n">n_dir</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">j</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">s_convention</span><span class="o">=</span><span class="s1">&#39;d8&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">downstream_coordinates</span><span class="p">(</span><span class="n">n_dir</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">j</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">ldd_convention</span><span class="o">=</span><span class="s1">&#39;d8&#39;</span><span class="p">)</span>
 <span class="go">{&#39;i&#39;: 10, &#39;j&#39;: 14, &#39;distance&#39;: np.float64(1.0)}</span>
 </pre></div>
 </div>
@@ -1090,14 +1148,14 @@ m0 = 0.5 when sinθ ≥ 0.05</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plans.geo.distance_to_outlet">
-<span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">distance_to_outlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grd_ldd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_res</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_convention</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ldd'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#distance_to_outlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.distance_to_outlet" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">distance_to_outlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grd_ldd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_res</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ldd_convention</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wbt'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#distance_to_outlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.distance_to_outlet" title="Link to this definition">#</a></dt>
 <dd><p>Compute the distance to outlet <code class="docutils literal notranslate"><span class="pre">DTO</span></code> raster of a given basin.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>grd_ldd</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – 2d numpy array of flow direction LDD</p></li>
 <li><p><strong>n_res</strong> (<em>int</em>) – Resolution factor for the output distance raster. Default is 30.</p></li>
-<li><p><strong>s_convention</strong> (<em>str</em>) – String of flow direction convention. Options: ‘ldd’ and ‘d8’. Default is ‘ldd’.</p></li>
+<li><p><strong>ldd_convention</strong> (<em>str</em>) – String of flow direction convention. Options: <code class="docutils literal notranslate"><span class="pre">wbt</span></code>, <code class="docutils literal notranslate"><span class="pre">d8</span></code>, <code class="docutils literal notranslate"><span class="pre">pcraster</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">wbt</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1107,10 +1165,6 @@ m0 = 0.5 when sinθ ≥ 0.05</p>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
 </dd>
 </dl>
-<p>Notes:</p>
-<ul class="simple">
-<li><p>The distance is set to 0 outside the basin area.</p></li>
-</ul>
 </dd></dl>
 
 </section>
