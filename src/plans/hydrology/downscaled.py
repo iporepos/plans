@@ -54,7 +54,7 @@ import pandas as pd
 
 # Project-level imports
 # =======================================================================
-from .upscaled import Upscaled
+from .upscaled import UpscaledModel
 
 # ... {develop}
 
@@ -93,7 +93,7 @@ from .upscaled import Upscaled
 # =======================================================================
 
 
-class Downscaled(Upscaled):
+class DownscaledModel(UpscaledModel):
     """
     This is a local Rainfall-Runoff model. Simulates the the catchment globally and locally
     by applying downscaling methods. Expected inputs:
@@ -617,10 +617,10 @@ class Downscaled(Upscaled):
         #
 
         # [Surface] Conpute shutdown factor for underland flow
-        s_uf_shutdown = Upscaled.compute_s_uf_shutdown(s_uf_cap, s_uf_a)
+        s_uf_shutdown = UpscaledModel.compute_s_uf_shutdown(s_uf_cap, s_uf_a)
 
         # [Surface] Compute effective overland flow activation level
-        s_of_a_eff = Upscaled.compute_sof_a_eff(s_uf_cap, s_of_a)
+        s_of_a_eff = UpscaledModel.compute_sof_a_eff(s_uf_cap, s_of_a)
 
         #
         # ---------------- testing features ----------------
@@ -665,10 +665,10 @@ class Downscaled(Upscaled):
 
             # [Deficit] Phreatic zone deficit
             ## gb["d"][t] = Global.compute_d(g_cap=g_cap, g=gb["g"][t])
-            gb["d"][t] = Upscaled.compute_d(g_cap=g_cap, g=gb["g"][t])
+            gb["d"][t] = UpscaledModel.compute_d(g_cap=g_cap, g=gb["g"][t])
 
             # [Deficit] Vadose zone deficit
-            gb["dv"][t] = Upscaled.compute_dv(d=gb["d"][t], v=gb["v"][t])
+            gb["dv"][t] = UpscaledModel.compute_dv(d=gb["d"][t], v=gb["v"][t])
 
             #
             # [Evaporation] ---------- get evaporation flows first ---------- #
@@ -677,59 +677,59 @@ class Downscaled(Upscaled):
             # [Evaporation] [Canopy] ---- evaporation from canopy
 
             # [Evaporation] [Canopy] compute potential flow
-            e_c_pot = Upscaled.compute_ec_pot(e_pot=gb["e_pot"][t])
+            e_c_pot = UpscaledModel.compute_ec_pot(e_pot=gb["e_pot"][t])
 
             # [Evaporation] [Canopy] compute capacity flow
-            e_c_cap = Upscaled.compute_ec_cap(c=gb["c"][t], dt=dt)
+            e_c_cap = UpscaledModel.compute_ec_cap(c=gb["c"][t], dt=dt)
 
             # [Evaporation] [Canopy] compute actual flow
-            gb["ec"][t] = Upscaled.compute_ec(e_c_pot, e_c_cap)
+            gb["ec"][t] = UpscaledModel.compute_ec(e_c_pot, e_c_cap)
 
             # [Evaporation] [Soil] ---- transpiration from soil
 
             # [Evaporation] [Soil] compute potential flow
-            e_t_pot = Upscaled.compute_et_pot(e_pot=gb["e_pot"][t], ec=gb["ec"][t])
+            e_t_pot = UpscaledModel.compute_et_pot(e_pot=gb["e_pot"][t], ec=gb["ec"][t])
 
             # [Evaporation] [Soil] compute the root zone depth factor
-            gb["egf"][t] = Upscaled.compute_et_f(dv=gb["dv"][t], d_et_a=d_e_a)
+            gb["egf"][t] = UpscaledModel.compute_et_f(dv=gb["dv"][t], d_et_a=d_e_a)
 
             # [Evaporation] [Soil] compute capacity flow
-            e_t_cap = Upscaled.compute_et_cap(
+            e_t_cap = UpscaledModel.compute_et_cap(
                 e_t_f=gb["egf"][t], g=gb["g"][t], g_et_cap=g_e_cap, dt=dt
             )
 
             # [Evaporation] [Soil] compute actual flow
-            gb["eg"][t] = Upscaled.compute_et(e_t_pot, e_t_cap)
+            gb["eg"][t] = UpscaledModel.compute_et(e_t_pot, e_t_cap)
 
             # [Evaporation] [Surface] ---- evaporation from surface
 
             # [Evaporation] [Surface] compute potential flow
-            e_s_pot = Upscaled.compute_es_pot(
+            e_s_pot = UpscaledModel.compute_es_pot(
                 e_pot=gb["e_pot"][t], ec=gb["ec"][t], et=gb["eg"][t]
             )
 
             # [Evaporation] [Surface] compute capacity flow
-            e_s_cap = Upscaled.compute_es_cap(s=gb["s"][t], dt=dt)
+            e_s_cap = UpscaledModel.compute_es_cap(s=gb["s"][t], dt=dt)
 
             # [Evaporation] [Surface] compute actual flow
-            gb["es"][t] = Upscaled.compute_es(e_s_pot, e_s_cap)
+            gb["es"][t] = UpscaledModel.compute_es(e_s_pot, e_s_cap)
 
             #
             # [Evaporation] [Balance] ---- a priori discounts ---------- #
             #
 
             # [Evaporation] [Balance] -- apply discount a priori
-            gb["c"][t] = Upscaled.compute_e_discount(
+            gb["c"][t] = UpscaledModel.compute_e_discount(
                 storage=gb["c"][t], discount=gb["ec"][t]
             )
 
             # [Evaporation] [Balance] -- apply discount a priori
-            gb["g"][t] = Upscaled.compute_e_discount(
+            gb["g"][t] = UpscaledModel.compute_e_discount(
                 storage=gb["g"][t], discount=gb["eg"][t]
             )
 
             # [Evaporation] [Balance] water balance -- apply discount a priori
-            gb["s"][t] = Upscaled.compute_e_discount(
+            gb["s"][t] = UpscaledModel.compute_e_discount(
                 storage=gb["s"][t], discount=gb["es"][t]
             )
 
@@ -740,20 +740,22 @@ class Downscaled(Upscaled):
             # [Canopy] [Throughfall] --
 
             # [Canopy] [Throughfall] Compute throughfall fraction
-            gb["ptff"][t] = Upscaled.compute_tf_f(c=gb["c"][t], ca=c_a)
+            gb["ptff"][t] = UpscaledModel.compute_tf_f(c=gb["c"][t], ca=c_a)
 
             # [Canopy] [Throughfall] Compute throughfall capacity
-            p_tf_cap = Upscaled.compute_tf_cap(
+            p_tf_cap = UpscaledModel.compute_tf_cap(
                 c=gb["c"][t], ca=c_a, p=gb["p"][t], dt=dt
             )
 
             # [Canopy] [Throughfall] Compute throughfall
-            gb["ptf"][t] = Upscaled.compute_tf(p_tf_cap=p_tf_cap, p_tf_f=gb["ptff"][t])
+            gb["ptf"][t] = UpscaledModel.compute_tf(
+                p_tf_cap=p_tf_cap, p_tf_f=gb["ptff"][t]
+            )
 
             # [Canopy] [Stemflow] --
 
             # [Canopy] [Stemflow] Compute potential stemflow -- only activated storage contributes
-            c_sf_pot = Upscaled.compute_sf_pot(c=gb["c"][t], ca=c_a)
+            c_sf_pot = UpscaledModel.compute_sf_pot(c=gb["c"][t], ca=c_a)
 
             # [Canopy] [Stemflow] Compute actual stemflow
             gb["psf"][t] = compute_decay(s=c_sf_pot, dt=dt, k=c_k)
@@ -761,13 +763,13 @@ class Downscaled(Upscaled):
             # [Canopy] [Aggflows] --
 
             # [Canopy] [Aggflows] Compute effective rain on surface
-            gb["ps"][t] = Upscaled.compute_ps(sf=gb["psf"][t], tf=gb["ptf"][t])
+            gb["ps"][t] = UpscaledModel.compute_ps(sf=gb["psf"][t], tf=gb["ptf"][t])
 
             # [Canopy] [Aggflows] Compute effective rain on canopy
-            gb["pc"][t] = Upscaled.compute_pc(p=gb["p"][t], tf_f=gb["ptff"][t])
+            gb["pc"][t] = UpscaledModel.compute_pc(p=gb["p"][t], tf_f=gb["ptff"][t])
 
             # [Canopy] [Water Balance] ---- Apply water balance
-            gb["c"][t + 1] = Upscaled.compute_next_c(
+            gb["c"][t + 1] = UpscaledModel.compute_next_c(
                 c=gb["c"][t], pc=gb["pc"][t], sf=gb["psf"][t]
             )
 
@@ -778,47 +780,55 @@ class Downscaled(Upscaled):
             # [Surface] [Overland] -- Overland flow
 
             # [Surface] [Overland] Compute surface overland spill storage capacity
-            sof_ss_cap = Upscaled.compute_sof_cap(s=gb["s"][t], sof_a=s_of_a_eff)
+            sof_ss_cap = UpscaledModel.compute_sof_cap(s=gb["s"][t], sof_a=s_of_a_eff)
 
             # [Surface] [Overland] Compute overland flow fraction
-            gb["qoff"][t] = Upscaled.compute_qof_f(sof_cap=sof_ss_cap, sof_c=s_of_c)
+            gb["qoff"][t] = UpscaledModel.compute_qof_f(
+                sof_cap=sof_ss_cap, sof_c=s_of_c
+            )
 
             # [Surface] [Overland] Compute overland flow capacity
-            q_of_cap = Upscaled.compute_qof_cap(
+            q_of_cap = UpscaledModel.compute_qof_cap(
                 sof_cap=sof_ss_cap, ps=gb["ps"][t], dt=dt
             )
 
             # [Surface] [Overland] Compute potential overland
-            q_of_pot = Upscaled.compute_qof_pot(qof_cap=q_of_cap, qof_f=gb["qoff"][t])
+            q_of_pot = UpscaledModel.compute_qof_pot(
+                qof_cap=q_of_cap, qof_f=gb["qoff"][t]
+            )
 
             # [Surface] [Underland] -- Underland flow
 
             # [Surface] [Underland] Compute surface underland spill storage capacity
-            suf_ss_cap = Upscaled.compute_suf_cap(
+            suf_ss_cap = UpscaledModel.compute_suf_cap(
                 s=gb["s"][t], suf_a=s_uf_a, shutdown=s_uf_shutdown
             )
 
             # [Surface] [Underland] Compute underland flow fraction
-            gb["quff"][t] = Upscaled.compute_quf_f(suf_cap=suf_ss_cap, suf_c=s_uf_c)
+            gb["quff"][t] = UpscaledModel.compute_quf_f(
+                suf_cap=suf_ss_cap, suf_c=s_uf_c
+            )
 
             # [Surface] [Underland] Compute underland flow capacity
-            q_uf_cap = Upscaled.compute_quf_cap(suf_cap=suf_ss_cap, dt=dt)
+            q_uf_cap = UpscaledModel.compute_quf_cap(suf_cap=suf_ss_cap, dt=dt)
 
             # [Surface] [Underland] Compute potential underland flow
-            q_uf_pot = Upscaled.compute_quf_pot(quf_cap=q_uf_cap, quf_f=gb["quff"][t])
+            q_uf_pot = UpscaledModel.compute_quf_pot(
+                quf_cap=q_uf_cap, quf_f=gb["quff"][t]
+            )
 
             # [Surface] [Infiltration] -- Infiltration flow
 
             # [Surface] [Infiltration] -- Potential infiltration from downstream (soil)
-            q_if_pot_down = Upscaled.compute_qif_pot_down(
+            q_if_pot_down = UpscaledModel.compute_qif_pot_down(
                 d=gb["d"][t], v=gb["v"][t], dt=dt
             )
 
             # [Surface] [Infiltration] -- Potential infiltration from upstream (hydraulic head)
-            q_if_pot_up = Upscaled.compute_qif_pot_up(s=gb["s"][t], sk=s_k, dt=dt)
+            q_if_pot_up = UpscaledModel.compute_qif_pot_up(s=gb["s"][t], sk=s_k, dt=dt)
 
             # [Surface] [Infiltration] -- Potential infiltration
-            q_if_pot = Upscaled.compute_qif_pot(
+            q_if_pot = UpscaledModel.compute_qif_pot(
                 if_down=q_if_pot_down, if_up=q_if_pot_up
             )
 
@@ -850,7 +860,7 @@ class Downscaled(Upscaled):
                 )
 
             # [Surface Water Balance] ---- Apply water balance.
-            gb["s"][t + 1] = Upscaled.compute_next_s(
+            gb["s"][t + 1] = UpscaledModel.compute_next_s(
                 s=gb["s"][t],
                 ps=gb["ps"][t],
                 qof=gb["qof"][t],
@@ -865,19 +875,19 @@ class Downscaled(Upscaled):
             # [Soil Vadose Zone]
 
             # [Soil Vadose Zone] Get Recharge Fraction
-            gb["qvff"][t] = Upscaled.compute_qvf_f(d=gb["d"][t], v=gb["v"][t])
+            gb["qvff"][t] = UpscaledModel.compute_qvf_f(d=gb["d"][t], v=gb["v"][t])
 
             # [Soil Vadose Zone] Compute Potential Recharge
-            q_vf_pot = Upscaled.compute_qvf_pot(qvf_f=gb["qvff"][t], kv=k_v, dt=dt)
+            q_vf_pot = UpscaledModel.compute_qvf_pot(qvf_f=gb["qvff"][t], kv=k_v, dt=dt)
 
             # [Soil Vadose Zone] Compute Maximal Recharge
-            q_vf_cap = Upscaled.compute_qvf_cap(v=gb["v"][t], dt=dt)
+            q_vf_cap = UpscaledModel.compute_qvf_cap(v=gb["v"][t], dt=dt)
 
             # [Soil Vadose Zone] Compute Actual Recharge
-            gb["qvf"][t] = Upscaled.compute_qvf(qvf_pot=q_vf_pot, qvf_cap=q_vf_cap)
+            gb["qvf"][t] = UpscaledModel.compute_qvf(qvf_pot=q_vf_pot, qvf_cap=q_vf_cap)
 
             # [Vadose Water Balance] ---- Apply water balance
-            gb["v"][t + 1] = Upscaled.compute_next_v(
+            gb["v"][t + 1] = UpscaledModel.compute_next_v(
                 v=gb["v"][t], qif=gb["qif"][t], qvf=gb["qvf"][t]
             )
 
@@ -885,7 +895,7 @@ class Downscaled(Upscaled):
 
             # [Soil Phreatic Zone] Compute Base flow (blue water -- discount on green water)
             # gb["qgf"][t] = (np.max([gb["g"][t] - g_et_cap, 0.0])) * dt / g_k
-            gb["qgf"][t] = Upscaled.compute_qgf(
+            gb["qgf"][t] = UpscaledModel.compute_qgf(
                 g=gb["g"][t], get_cap=g_e_cap, gk=g_k, dt=dt
             )
 
@@ -894,7 +904,7 @@ class Downscaled(Upscaled):
                 gb["qgf"][t] = 0.0 * gb["qgf"][t]
 
             # [Phreatic Water Balance] ---- Apply water balance
-            gb["g"][t + 1] = Upscaled.compute_next_g(
+            gb["g"][t + 1] = UpscaledModel.compute_next_g(
                 g=gb["g"][t], qvf=gb["qvf"][t], qgf=gb["qgf"][t]
             )
 
@@ -905,10 +915,12 @@ class Downscaled(Upscaled):
         #
 
         # [Total Flows] Total E
-        gb["e"] = Upscaled.compute_e(ec=gb["ec"], es=gb["es"], eg=gb["eg"])
+        gb["e"] = UpscaledModel.compute_e(ec=gb["ec"], es=gb["es"], eg=gb["eg"])
 
         # [Total Flows] Compute Hillslope flow
-        gb["qhf"] = Upscaled.compute_qhf(qof=gb["qof"], quf=gb["quf"], qgf=gb["qgf"])
+        gb["qhf"] = UpscaledModel.compute_qhf(
+            qof=gb["qof"], quf=gb["quf"], qgf=gb["qgf"]
+        )
 
         #
         # [Streamflow] ---------- Solve flow routing to basin gauge station ---------- #
@@ -919,7 +931,7 @@ class Downscaled(Upscaled):
 
         # [Baseflow] Compute river base flow
         vct_inflow = gb["qgf"]
-        gb["qbf"] = Upscaled.propagate_inflow(
+        gb["qbf"] = UpscaledModel.propagate_inflow(
             inflow=vct_inflow,
             unit_hydrograph=self.data_guh[basin].values,
         )
@@ -927,7 +939,7 @@ class Downscaled(Upscaled):
         # [Fast Streamflow] Compute Streamflow
         # todo [feature] evaluate to split into more components
         vct_inflow = gb["quf"] + gb["qof"]
-        q_fast = Upscaled.propagate_inflow(
+        q_fast = UpscaledModel.propagate_inflow(
             inflow=vct_inflow, unit_hydrograph=self.data_guh[basin].values
         )
         gb["q"] = gb["qbf"] + q_fast

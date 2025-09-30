@@ -38,7 +38,5 @@ Print a message
 """
 # EXPOSE MODULES FROM PACKAGE
 # ***********************************************************************
-# todo fix this imports
-from .upscaled import Upscaled  # this works
-
-# from .downscaled import Downscaled # but this does not
+from .upscaled import UpscaledModel  # this works
+from .downscaled import DownscaledModel  # but this does not
