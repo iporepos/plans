@@ -38,5 +38,7 @@ Print a message
 """
 # EXPOSE MODULES FROM PACKAGE
 # ***********************************************************************
-from plans.hydrology.upscaled import Global
-from plans.hydrology.downscaled import Local
+# todo fix this imports
+from .upscaled import Upscaled  # this works
+
+# from .downscaled import Downscaled # but this does not
