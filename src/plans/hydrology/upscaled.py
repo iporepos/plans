@@ -54,7 +54,7 @@ import pandas as pd
 
 # Project-level imports
 # =======================================================================
-from plans.hydrology.core import Model
+from plans.hydrology import Model
 
 # ... {develop}
 

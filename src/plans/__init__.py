@@ -39,7 +39,3 @@ Print a message
 # EXPOSE MODULES FROM PACKAGE
 # ***********************************************************************
 from plans.project import Project, new_project, load_project
-
-
-def plans_add(num1, num2):
-    return num1 + num2

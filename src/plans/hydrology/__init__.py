@@ -38,5 +38,5 @@ Print a message
 """
 # EXPOSE MODULES FROM PACKAGE
 # ***********************************************************************
-from .upscaled import *
-from .downscaled import *
+from plans.hydrology.upscaled import Global
+from plans.hydrology.downscaled import Local
