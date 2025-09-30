@@ -442,7 +442,7 @@ In a lacinia nisl.</p>
 <td><p>The raster collection base dataset.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.core.QualiRasterSeries" title="plans.datasets.core.QualiRasterSeries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QualiRasterSeries</span></code></a>(name, varname, varalias[, ...])</p></td>
-<td><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">RasterSeries`</span></code> where date matters and all maps in collections are expected to be <code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRaster`</span></code> with the same variable, same projection and same grid.</p></td>
+<td><p>A <a class="reference internal" href="#plans.datasets.core.RasterSeries" title="plans.datasets.core.RasterSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">RasterSeries</span></code></a> where date matters and all maps in collections are expected to be <code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRaster`</span></code> with the same variable, same projection and same grid.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.core.Raster" title="plans.datasets.core.Raster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Raster</span></code></a>([name, alias, dtype])</p></td>
 <td><p>The basic Raster map dataset.</p></td>
@@ -521,14 +521,12 @@ In a lacinia nisl.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.core.TimeSeries.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MyTimeSeries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'TS0'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeries.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeries.__init__" title="Link to this definition">#</a></dt>
-<dd><p>Initialize the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object.
-Expected to increment superior methods.</p>
+<dd><p>Initialize the <code class="docutils literal notranslate"><span class="pre">DataSet</span></code> object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – unique object name</p></li>
-<li><p><strong>alias</strong> (<em>str</em>) – unique object alias.
-If None, it takes the first and last characters from name</p></li>
+<li><p><strong>alias</strong> (<em>str</em>) – unique object alias. If None, it takes the first and last characters from name</p></li>
 </ul>
 </dd>
 </dl>
@@ -545,8 +543,8 @@ If None, it takes the first and last characters from name</p></li>
 <span class="sig-name descname"><span class="pre">_set_frequency</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeries._set_frequency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeries._set_frequency" title="Link to this definition">#</a></dt>
 <dd><p>Guess the datetime resolution of a time series based on the consistency of
 timestamp components (e.g., seconds, minutes).</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
 <p>This method infers the datetime frequency of the time series data
 based on the consistency of timestamp components.</p>
 </div>
@@ -644,19 +642,6 @@ Expected to increment superior methods.</p>
 <li><p>Assumes the inputs file is in <code class="docutils literal notranslate"><span class="pre">csv</span></code> format.</p></li>
 <li><p>Expects a datetime column in the format <code class="docutils literal notranslate"><span class="pre">YYYY-mm-DD</span> <span class="pre">HH:MM:SS</span></code>.</p></li>
 </ul>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">datetime</span></code> field in the incoming file must be a full timestamp <code class="docutils literal notranslate"><span class="pre">YYYY-mm-DD</span> <span class="pre">HH:MM:SS</span></code>.
-Even if the data is a daily time series, make sure to include a constant, default timestamp
-like the following example:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>           datetime; temperature
-2020-02-07 12:00:00;        24.5
-2020-02-08 12:00:00;        25.1
-2020-02-09 12:00:00;        28.7
-2020-02-10 12:00:00;        26.5
-</pre></div>
-</div>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -692,7 +677,6 @@ If inplace is True, returns None, and the original data is modified in-place.</p
 <ul class="simple">
 <li><p>Creates a full date range with the expected frequency for the standardization period.</p></li>
 <li><p>Groups the data by epochs (based on the frequency and datetime field), applies the specified aggregation function, and fills in missing values with left merges.</p></li>
-<li><p>Cuts off any edges with missing data.</p></li>
 <li><p>Updates internal attributes, including <code class="docutils literal notranslate"><span class="pre">self.isstandard</span></code> to indicate that the data has been standardized.</p></li>
 </ul>
 <div class="admonition warning">
@@ -763,8 +747,8 @@ representing gaps in the time series.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>method</strong> (<em>str</em>) – Specifies the interpolation method. The default value is <code class="docutils literal notranslate"><span class="pre">linear</span></code>.</p></li>
-<li><p><strong>constant</strong> (<em>float</em>) – [optional] The constant value used when the <code class="docutils literal notranslate"><span class="pre">constant</span></code> method is selected. Default value = 0.</p></li>
-<li><p><strong>inplace</strong> (<em>bool</em>) – [optional] If True, modifies the original DataFrame in-place. Default value = False.</p></li>
+<li><p><strong>constant</strong> (<em>float</em>) – The constant value used when the <code class="docutils literal notranslate"><span class="pre">constant</span></code> method is selected. Default value = 0.</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em>) – If True, modifies the original DataFrame in-place. Default value = False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -777,9 +761,17 @@ representing gaps in the time series.</p>
 <p><strong>Notes</strong></p>
 <p>This function handles time series data, standardizing it if necessary before performing interpolation.
 The process is applied to each unique epoch within the series.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">linear</span></code> method applies linear interpolation, while <code class="docutils literal notranslate"><span class="pre">nearest</span></code> uses the value of the closest data point.
-<cite>zero</cite> is a zero-order interpolation (similar to <code class="docutils literal notranslate"><span class="pre">nearest</span></code>). <code class="docutils literal notranslate"><span class="pre">slinear</span></code>, <code class="docutils literal notranslate"><span class="pre">quadratic</span></code>, and <code class="docutils literal notranslate"><span class="pre">cubic</span></code> are spline
-interpolations of first, second, and third order, respectively. <code class="docutils literal notranslate"><span class="pre">constant</span></code> fills gaps with a constant value.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">linear</span></code>: linear interpolation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nearest</span></code>: uses the value of the closest data point.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">zero</span></code>: fills gaps with zeros.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>: fills gaps with a constant value provided in method parameter</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">slinear</span></code>: first order spline interpolation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">quadratic</span></code>: second order spline interpolation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cubic</span></code>: third order spline interpolation</p></li>
+</ul>
+</div></blockquote>
 </dd></dl>
 
 <dl class="py method">
@@ -922,6 +914,11 @@ or </em><em>str</em>) – option for setting minimal dates layout in x-axis.</p>
 </div>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.core.TimeSeries.add_hour">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_hour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'datetime'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeries.add_hour"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeries.add_hour" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -1003,34 +1000,14 @@ Required columns:</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.core.TimeSeriesCollection.set_data">
 <span class="sig-name descname"><span class="pre">set_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_dates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeriesCollection.set_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeriesCollection.set_data" title="Link to this definition">#</a></dt>
-<dd><p>Set data for the time series collection from a info DataFrame.</p>
+<dd><p>Set data for the time series collection from a info class:<cite>pandas.DataFrame</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>df_info</strong> (class:<cite>pandas.DataFrame</cite>) – <p>class:<cite>pandas.DataFrame</cite>
-DataFrame containing metadata information for the time series collection.
-This DataFrame is expected to have matching fields to the metadata keys.</p>
-<p>Required fields:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">Id</span></code>: int, required. Unique number id.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Name</span></code>: str, required. Simple name.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Alias</span></code>: str, required. Short nickname.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">X</span></code>: float, required. Longitude in WGS 84 Datum (EPSG4326).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Y</span></code>: float, required. Latitude in WGS 84 Datum (EPSG4326).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Code</span></code>: str, required</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Source</span></code>: str, required</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Description</span></code>: str, required</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Color</span></code>: str, optional</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Units</span></code> or <code class="docutils literal notranslate"><span class="pre">&lt;Varname&gt;_Units</span></code>: str, required. Units of data.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">VarField``or</span> <span class="pre">``&lt;Varname&gt;_VarField</span></code>: str, required. Variable column in data file.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">DtField``or</span> <span class="pre">``&lt;Varname&gt;_DtField</span></code>: str, required. Date-time column in data file</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">File``or</span> <span class="pre">``&lt;Varname&gt;_File</span></code>: str, required. Name or path to data time series <code class="docutils literal notranslate"><span class="pre">csv</span></code> file.</p></li>
-</ul>
-</p></li>
-<li><p><strong>src_dir</strong> (<em>str</em>) – str, optional
-Path for inputs directory in the case for only file names in <code class="docutils literal notranslate"><span class="pre">File</span></code> column.</p></li>
-<li><p><strong>filter_dates</strong> (<em>str</em>) – list, optional
-List of Start and End dates for filter data</p></li>
+<li><p><strong>df_info</strong> (class:<cite>pandas.DataFrame</cite>) – class:<cite>pandas.DataFrame</cite> containing metadata information for the time series collection.
+This DataFrame is expected to have matching fields to the metadata keys.</p></li>
+<li><p><strong>src_dir</strong> (<em>str</em>) – Path for inputs directory in the case for only file names in <code class="docutils literal notranslate"><span class="pre">File</span></code> column.</p></li>
+<li><p><strong>filter_dates</strong> (<em>str</em>) – List of Start and End dates for filter data</p></li>
 </ul>
 </dd>
 </dl>
@@ -3025,7 +3002,8 @@ expected to be the same variable, same projection and same grid.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.core.RasterSeries.load_folder">
 <span class="sig-name descname"><span class="pre">load_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">talk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tif'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#RasterSeries.load_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.RasterSeries.load_folder" title="Link to this definition">#</a></dt>
-<dd><p>Load all rasters from a folder by following a name pattern. Datetime is expected to be at the end of name before file extension.</p>
+<dd><p>Load all rasters from a folder by following a name pattern.
+Datetime is expected to be at the end of name before file extension.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3112,7 +3090,7 @@ expected to be the same variable, same projection and same grid.</p>
 <dt class="sig sig-object py" id="plans.datasets.core.QualiRasterSeries">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.datasets.core.</span></span><span class="sig-name descname"><span class="pre">QualiRasterSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varalias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'uint8'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#QualiRasterSeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.QualiRasterSeries" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#plans.datasets.core.RasterSeries" title="plans.datasets.core.RasterSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">RasterSeries</span></code></a></p>
-<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">RasterSeries`</span></code> where date matters and all maps in collections are
+<p>A <a class="reference internal" href="#plans.datasets.core.RasterSeries" title="plans.datasets.core.RasterSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">RasterSeries</span></code></a> where date matters and all maps in collections are
 expected to be <code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRaster`</span></code> with the same variable, same projection and same grid.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.core.QualiRasterSeries.__init__">
@@ -3122,8 +3100,8 @@ expected to be <code class="xref py py-class docutils literal notranslate"><span
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">RasterSeries.name`</span></code> name attribute</p></li>
-<li><p><strong>varname</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.varname`</span></code> variable name attribute, defaults to None</p></li>
-<li><p><strong>varalias</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.varalias`</span></code> variable alias attribute, defaults to None</p></li>
+<li><p><strong>varname</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.varname</span></code> variable name attribute, defaults to None</p></li>
+<li><p><strong>varalias</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.varalias</span></code> variable alias attribute, defaults to None</p></li>
 </ul>
 </dd>
 </dl>
@@ -3143,11 +3121,11 @@ expected to be <code class="xref py py-class docutils literal notranslate"><span
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.core.QualiRasterSeries.append">
 <span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raster</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#QualiRasterSeries.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.QualiRasterSeries.append" title="Link to this definition">#</a></dt>
-<dd><p>Append a <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster`</span></code> base_object to collection.
-Pre-existing objects with the same <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.name`</span></code> attribute are replaced</p>
+<dd><p>Append a <a class="reference internal" href="#plans.datasets.core.Raster" title="plans.datasets.core.Raster"><code class="xref py py-class docutils literal notranslate"><span class="pre">Raster</span></code></a> base_object to collection.
+Pre-existing objects with the same <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.name</span></code> attribute are replaced</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>raster</strong> (<a class="reference internal" href="#plans.datasets.core.Raster" title="plans.datasets.core.Raster"><code class="xref py py-class docutils literal notranslate"><span class="pre">Raster</span></code></a>) – incoming <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster`</span></code> to append</p>
+<dd class="field-odd"><p><strong>raster</strong> (<a class="reference internal" href="#plans.datasets.core.Raster" title="plans.datasets.core.Raster"><code class="xref py py-class docutils literal notranslate"><span class="pre">Raster</span></code></a>) – incoming <a class="reference internal" href="#plans.datasets.core.Raster" title="plans.datasets.core.Raster"><code class="xref py py-class docutils literal notranslate"><span class="pre">Raster</span></code></a> to append</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3155,12 +3133,12 @@ Pre-existing objects with the same <code class="xref py py-class docutils litera
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.core.QualiRasterSeries.load_data">
 <span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prj_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#QualiRasterSeries.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.QualiRasterSeries.load_data" title="Link to this definition">#</a></dt>
-<dd><p>Load a <code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRaster`</span></code> base_object from raster file.</p>
+<dd><p>Load a <a class="reference internal" href="#plans.datasets.core.QualiRaster" title="plans.datasets.core.QualiRaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">QualiRaster</span></code></a> base_object from raster file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.name`</span></code> name attribute</p></li>
-<li><p><strong>datetime</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.date`</span></code> date attribute</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.name</span></code> name attribute</p></li>
+<li><p><strong>datetime</strong> (<em>str</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Raster.date</span></code> date attribute</p></li>
 <li><p><strong>file_data</strong> (<em>str</em>) – path to raster file</p></li>
 <li><p><strong>prj_file</strong> (<em>str</em>) – path to projection file</p></li>
 <li><p><strong>table_file</strong> (<em>str</em>) – path to <code class="docutils literal notranslate"><span class="pre">.txt</span></code> table file</p></li>
@@ -3200,7 +3178,7 @@ Datetime is expected to be at the end of name before file extension.</p>
 <dd><p>Get areas prevalance for all series</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dataframe of series export_areas</p>
+<dd class="field-odd"><p>dataframe of series areas</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></p>
@@ -3303,6 +3281,7 @@ Datetime is expected to be at the end of name before file extension.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries.view_epochs"><code class="docutils literal notranslate"><span class="pre">TimeSeries.view_epochs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries._set_view_specs"><code class="docutils literal notranslate"><span class="pre">TimeSeries._set_view_specs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries.view"><code class="docutils literal notranslate"><span class="pre">TimeSeries.view()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries.add_hour"><code class="docutils literal notranslate"><span class="pre">TimeSeries.add_hour()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeriesCollection"><code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection</span></code></a><ul class="nav section-nav flex-column">

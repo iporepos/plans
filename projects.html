@@ -48,7 +48,7 @@
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API" href="api.html" />
+    <link rel="next" title="Examples" href="examples.html" />
     <link rel="prev" title="Files Index" href="files_index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -342,6 +342,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Projects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 </div>
 </nav></div>
@@ -409,6 +410,10 @@
 <section id="projects">
 <span id="id1"></span><h1>Projects<a class="headerlink" href="#projects" title="Link to this heading">#</a></h1>
 <p>This page describes the <strong>project system</strong> used in <code class="docutils literal notranslate"><span class="pre">plans</span></code>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>Check out the <a class="reference internal" href="files.html#files"><span class="std std-ref">Files</span></a> page for more details on how to setup input data.</p>
+</div>
 <p>All simulations are organized inside a project, which is a <strong>self-contained file system</strong> with a standardized folder structure. Users must first create or specify a project before running any simulation. Each simulation must specify which scenario and basin combination (climate + land use + basin) to run. All required input data, intermediate caches, and outputs live inside this folder tree.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">{</span>project<span class="o">}</span>/
 <span class="w">     </span>├──<span class="w"> </span>data/
@@ -517,7 +522,57 @@ multiple “what-if” configurations within a single project.</p>
 <section id="outputs-folder">
 <span id="project-outputs-folder"></span><h2>Outputs Folder<a class="headerlink" href="#outputs-folder" title="Link to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">outputs/</span></code> folder stores results from all simulation and processing runs.
-Each operation is saved in its own subfolder, identified by a unique name, ID and timestamp, making it easy to retrieve and compare runs.</p>
+Each processing operation is saved in its own subfolder, identified by <code class="docutils literal notranslate"><span class="pre">{process-name}_{timestamp}/</span></code>, making it easy to retrieve and compare runs.</p>
+</section>
+<section id="non-required-subfolders-and-files">
+<span id="project-convention"></span><h2>Non-required subfolders and files<a class="headerlink" href="#non-required-subfolders-and-files" title="Link to this heading">#</a></h2>
+<p>All required folders in a project may hold extra subfolders or files for helpíng to organize data
+and integrate with data processing pipelines. Non-required subfolders are ignored by <code class="docutils literal notranslate"><span class="pre">plans</span></code>.</p>
+<p>However, for the purpose of data sharing, we recommend to create subfolders always in the <code class="docutils literal notranslate"><span class="pre">{project}/data/</span></code> folder and following this naming convention:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">data/{project}.gpkg</span></code> - a geopackage file designed to store vector layers and QGIS projects</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/</span></code> - a subfolder to store sourced files that are not yet in the <code class="docutils literal notranslate"><span class="pre">plans</span></code> standard format.
+These files may be converted to the standard format via custom scripts</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scripts/</span></code> - a subfolder with file scripts</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">misc/</span></code> - a subfolder designed to store miscellaneous files</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temp/</span></code> - a subfolder designed to store temporary files</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">old/</span></code> - a subfolder designed to store deprecated files</p></li>
+</ul>
+<div class="tip admonition">
+<p class="admonition-title">Underscore prefix <code class="docutils literal notranslate"><span class="pre">_</span></code></p>
+<p>A possible extension of this convention is to include an underscore prefix <code class="docutils literal notranslate"><span class="pre">_</span></code> denoting a non-required folder, e.g., <code class="docutils literal notranslate"><span class="pre">data/_src/</span></code>. This prefix will visually split the non-required folders from the required ones.</p>
+</div>
+<div class="warning admonition">
+<p class="admonition-title">Basin, Land use and Climate subfolders are reserved for basins and scenarios</p>
+<p>Do not create subfolders in <code class="docutils literal notranslate"><span class="pre">data/basins</span></code>, <code class="docutils literal notranslate"><span class="pre">data/lulc</span></code> and <code class="docutils literal notranslate"><span class="pre">data/climate</span></code>. These are always interpreted as basins or scenarios folders.</p>
+</div>
+<p>Example of a project structure with extra folders</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>myproject/
+<span class="w">     </span>├──<span class="w"> </span>data/
+<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>myproject.gpkg<span class="w">               </span><span class="c1"># GIS layers and projects</span>
+<span class="w">     </span>│<span class="w">     </span>│
+<span class="w">     </span>│<span class="w">     </span>│<span class="w"> </span><span class="c1"># ------ required data</span>
+<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>project_info.csv
+<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>parameters_info.csv
+<span class="w">     </span>│<span class="w">     </span>│
+<span class="w">     </span>│<span class="w">     </span>│<span class="w"> </span><span class="c1"># ------ non-required folders</span>
+<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>_scripts/
+<span class="w">     </span>│<span class="w">     </span>│<span class="w">      </span>└──<span class="w"> </span>convert_dem_to_ldd.py<span class="w">  </span><span class="c1"># script</span>
+<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>_src/
+<span class="w">     </span>│<span class="w">     </span>│<span class="w">      </span>└──<span class="w"> </span>dem_large.tif<span class="w">          </span><span class="c1"># sourced data</span>
+<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>_temp/
+<span class="w">     </span>│<span class="w">     </span>│
+<span class="w">     </span>│<span class="w">     </span>│<span class="w"> </span><span class="c1"># ------ required folders</span>
+<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>basins/
+<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>climate/
+<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>lulc/
+<span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>soils/
+<span class="w">     </span>│<span class="w">     </span>└──<span class="w"> </span>topo/
+<span class="w">     </span>│
+<span class="w">     </span>└──<span class="w"> </span>outputs/
+<span class="w">           </span>└──<span class="w"> </span>...
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -541,11 +596,11 @@ Each operation is saved in its own subfolder, identified by a unique name, ID an
       </div>
     </a>
     <a class="right-next"
-       href="api.html"
+       href="examples.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">API</p>
+        <p class="prev-next-title">Examples</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -575,6 +630,7 @@ Each operation is saved in its own subfolder, identified by a unique name, ID an
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#outputs-folder">Outputs Folder</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#non-required-subfolders-and-files">Non-required subfolders and files</a></li>
 </ul>
   </nav></div>
 

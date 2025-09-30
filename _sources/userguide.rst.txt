@@ -46,7 +46,10 @@ On `Jupyter`_ or `Colab`_, run this command on a cell:
     %pip install git+https://github.com/iporepos/plans.git@main
 
 
-This installation is also enough for installing all dependencies needed for running ``plans``.
+This installation procedure is also enough for installing all dependencies needed for running ``plans``.
+
+
+
 
 
 .. _user guide workflow:
@@ -91,7 +94,7 @@ Once data is gathered, users are required to populate the folders of a project w
 .. admonition:: Working with projects
    :class: seealso
 
-   Check out the :ref:`Projects <projects>` page for more details on how to setup projects.
+   Check out the :ref:`projects` page for more details on how to setup projects.
 
 
 .. _user guide data:
@@ -103,7 +106,20 @@ Required input data are basically two types of files: **tables** and **raster ma
 .. admonition:: Working with input data
    :class: seealso
 
-   Check out the :ref:`Files <files>` page for more details on how to setup input data.
+   Check out the :ref:`files` page for more details on how to setup input data.
+
+
+.. _user guide examples:
+
+Tutorials
+***********************************************************************
+
+.. include:: ./includes/ipsum.rst
+
+.. admonition:: Hands-on tutorials
+   :class: seealso
+
+   Check out the :ref:`examples` page for hands-on examples.
 
 
 .. toctree::
@@ -112,3 +128,4 @@ Required input data are basically two types of files: **tables** and **raster ma
 
    files
    projects
+   examples

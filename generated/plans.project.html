@@ -406,10 +406,13 @@ et netus et malesuada fames ac turpis egestas.</p>
 <p class="rubric">Functions</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#plans.project.load_project" title="plans.project.load_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_project</span></code></a>(project_folder)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.project.handle_input_file" title="plans.project.handle_input_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_input_file</span></code></a>(file_path)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.project.load_project" title="plans.project.load_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_project</span></code></a>(project_folder)</p></td>
 <td><p>Loads a Project from folder</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#plans.project.new_project" title="plans.project.new_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">new_project</span></code></a>(specs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.project.new_project" title="plans.project.new_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">new_project</span></code></a>(specs)</p></td>
 <td><p>Create a new Project from a specification dictionary.</p></td>
 </tr>
 </tbody>
@@ -421,9 +424,6 @@ et netus et malesuada fames ac turpis egestas.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#plans.project.Project" title="plans.project.Project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Project</span></code></a>(name[, alias])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#plans.project.Project_" title="plans.project.Project_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Project_</span></code></a>(name, folder_base[, alias])</p></td>
-<td><p></p></td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -431,6 +431,10 @@ et netus et malesuada fames ac turpis egestas.</p>
 <dt class="sig sig-object py" id="plans.project.new_project">
 <span class="sig-prename descclassname"><span class="pre">plans.project.</span></span><span class="sig-name descname"><span class="pre">new_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">specs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#new_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.new_project" title="Link to this definition">#</a></dt>
 <dd><p>Create a new Project from a specification dictionary.</p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>This method overwrites all existing default files.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>specs</strong> (<em>dict</em>) – <p>Dictionary containing project specifications.</p>
@@ -463,9 +467,9 @@ et netus et malesuada fames ac turpis egestas.</p>
 </pre></div>
 </div>
 <p>Create a new <code class="docutils literal notranslate"><span class="pre">plans.Project</span></code>. First setup details.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># setup specs dictionary</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># [CHANGE THIS] setup specs dictionary</span>
 <span class="n">project_specs</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;folder_base&quot;</span><span class="p">:</span> <span class="s2">&quot;path/to/base/folder&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;folder_base&quot;</span><span class="p">:</span> <span class="s2">&quot;C:/plans&quot;</span><span class="p">,</span> <span class="c1"># change this path</span>
     <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;newProject&quot;</span><span class="p">,</span>
     <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;NPrj&quot;</span><span class="p">,</span>
     <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;Me&quot;</span><span class="p">,</span>
@@ -474,8 +478,11 @@ et netus et malesuada fames ac turpis egestas.</p>
 </pre></div>
 </div>
 <p>Then call <code class="docutils literal notranslate"><span class="pre">new_project()</span></code></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># get project instance</span>
-<span class="n">pj</span> <span class="o">=</span> <span class="n">plans</span><span class="o">.</span><span class="n">new_project</span><span class="p">(</span><span class="n">specs</span><span class="o">=</span><span class="n">project_specs</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plans</span><span class="o">.</span><span class="n">new_project</span><span class="p">(</span><span class="n">specs</span><span class="o">=</span><span class="n">project_specs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Create and get the project instance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prj</span> <span class="o">=</span> <span class="n">plans</span><span class="o">.</span><span class="n">new_project</span><span class="p">(</span><span class="n">specs</span><span class="o">=</span><span class="n">project_specs</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -512,6 +519,11 @@ file to match current folder name.</p>
 </pre></div>
 </div>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plans.project.handle_input_file">
+<span class="sig-prename descclassname"><span class="pre">plans.project.</span></span><span class="sig-name descname"><span class="pre">handle_input_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#handle_input_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.handle_input_file" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="plans.project.Project">
@@ -605,88 +617,24 @@ file to match current folder name.</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="plans.project.Project.run_dto_analysis">
-<span class="sig-name descname"><span class="pre">run_dto_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project.run_dto_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project.run_dto_analysis" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="plans.project.Project.run_analysis_dto">
+<span class="sig-name descname"><span class="pre">run_analysis_dto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_views</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_basin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project.run_analysis_dto"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project.run_analysis_dto" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.project.Project.run_analysis_lulc_series">
+<span class="sig-name descname"><span class="pre">run_analysis_lulc_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lulc_scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_views</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_basin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project.run_analysis_lulc_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project.run_analysis_lulc_series" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.project.Project.get_dto">
+<span class="sig-name descname"><span class="pre">get_dto</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project.get_dto"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project.get_dto" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.project.Project.get_timestamp">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_timestamp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project.get_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project.get_timestamp" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="plans.project.Project_">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plans.project.</span></span><span class="sig-name descname"><span class="pre">Project_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project_" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="plans.root.html#plans.root.FileSys" title="plans.root.FileSys"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileSys</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="plans.project.Project_.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project_.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project_.__init__" title="Link to this definition">#</a></dt>
-<dd><p>Initiate a project</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – unique object name</p></li>
-<li><p><strong>alias</strong> (<em>str</em>) – unique object alias.
-If None, it takes the first and last characters from <code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
-<li><p><strong>folder_base</strong> – path to base folder</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="plans.project.Project_.download_datasets">
-<span class="sig-name descname"><span class="pre">download_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project_.download_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project_.download_datasets" title="Link to this definition">#</a></dt>
-<dd><p>Download datasets from a URL.
-The download is expected to be a ZIP file. Note: requests library is required</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>zip_url</strong> (<em>str</em>) – url to dataset ZIP file</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="plans.project.Project_.download_default_datasets">
-<span class="sig-name descname"><span class="pre">download_default_datasets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project_.download_default_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project_.download_default_datasets" title="Link to this definition">#</a></dt>
-<dd><p>Download the default datasets for PLANS</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="plans.project.Project_.extract_datasets">
-<span class="sig-name descname"><span class="pre">extract_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/project.html#Project_.extract_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.project.Project_.extract_datasets" title="Link to this definition">#</a></dt>
-<dd><p>Extract from ZIP file to datasets folder</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>zip_file</strong> (<em>str</em>) – path to zip file</p></li>
-<li><p><strong>remove</strong> (<em>bool</em>) – option for deleting the zip file after extraction</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
 
 </dd></dl>
 
@@ -742,6 +690,7 @@ The download is expected to be a ZIP file. Note: requests library is required</p
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.new_project"><code class="docutils literal notranslate"><span class="pre">new_project()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.load_project"><code class="docutils literal notranslate"><span class="pre">load_project()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.handle_input_file"><code class="docutils literal notranslate"><span class="pre">handle_input_file()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.__init__"><code class="docutils literal notranslate"><span class="pre">Project.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.get_metadata"><code class="docutils literal notranslate"><span class="pre">Project.get_metadata()</span></code></a></li>
@@ -751,15 +700,10 @@ The download is expected to be a ZIP file. Note: requests library is required</p
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.update"><code class="docutils literal notranslate"><span class="pre">Project.update()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.make_run_folder"><code class="docutils literal notranslate"><span class="pre">Project.make_run_folder()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.run_demo"><code class="docutils literal notranslate"><span class="pre">Project.run_demo()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.run_dto_analysis"><code class="docutils literal notranslate"><span class="pre">Project.run_dto_analysis()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.run_analysis_dto"><code class="docutils literal notranslate"><span class="pre">Project.run_analysis_dto()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.run_analysis_lulc_series"><code class="docutils literal notranslate"><span class="pre">Project.run_analysis_lulc_series()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.get_dto"><code class="docutils literal notranslate"><span class="pre">Project.get_dto()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project.get_timestamp"><code class="docutils literal notranslate"><span class="pre">Project.get_timestamp()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project_"><code class="docutils literal notranslate"><span class="pre">Project_</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project_.__init__"><code class="docutils literal notranslate"><span class="pre">Project_.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project_.download_datasets"><code class="docutils literal notranslate"><span class="pre">Project_.download_datasets()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project_.download_default_datasets"><code class="docutils literal notranslate"><span class="pre">Project_.download_default_datasets()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.project.Project_.extract_datasets"><code class="docutils literal notranslate"><span class="pre">Project_.extract_datasets()</span></code></a></li>
 </ul>
 </li>
 </ul>
