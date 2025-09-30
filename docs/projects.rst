@@ -9,6 +9,10 @@ Projects
 
 This page describes the **project system** used in ``plans``.
 
+.. seealso::
+
+   Check out the :ref:`files` page for more details on how to setup input data.
+
 All simulations are organized inside a project, which is a **self-contained file system** with a standardized folder structure. Users must first create or specify a project before running any simulation. Each simulation must specify which scenario and basin combination (climate + land use + basin) to run. All required input data, intermediate caches, and outputs live inside this folder tree.
 
 .. code-block:: bash
@@ -139,7 +143,66 @@ Outputs Folder
 =======================================================================
 
 The ``outputs/`` folder stores results from all simulation and processing runs.
-Each operation is saved in its own subfolder, identified by a unique name, ID and timestamp, making it easy to retrieve and compare runs.
+Each processing operation is saved in its own subfolder, identified by ``{process-name}_{timestamp}/``, making it easy to retrieve and compare runs.
+
+.. _project convention:
+
+Non-required subfolders and files
+=======================================================================
+
+All required folders in a project may hold extra subfolders or files for helpíng to organize data
+and integrate with data processing pipelines. Non-required subfolders are ignored by ``plans``.
+
+However, for the purpose of data sharing, we recommend to create subfolders always in the ``{project}/data/`` folder and following this naming convention:
+
+- ``data/{project}.gpkg`` - a geopackage file designed to store vector layers and QGIS projects
+- ``src/`` - a subfolder to store sourced files that are not yet in the ``plans`` standard format.
+  These files may be converted to the standard format via custom scripts
+- ``scripts/`` - a subfolder with file scripts
+- ``misc/`` - a subfolder designed to store miscellaneous files
+- ``temp/`` - a subfolder designed to store temporary files
+- ``old/`` - a subfolder designed to store deprecated files
+
+.. admonition:: Underscore prefix ``_``
+   :class: tip
+
+   A possible extension of this convention is to include an underscore prefix ``_`` denoting a non-required folder, e.g., ``data/_src/``. This prefix will visually split the non-required folders from the required ones.
+
+
+.. admonition:: Basin, Land use and Climate subfolders are reserved for basins and scenarios
+   :class: warning
+
+   Do not create subfolders in ``data/basins``, ``data/lulc`` and ``data/climate``. These are always interpreted as basins or scenarios folders.
+
+Example of a project structure with extra folders
+
+.. code-block:: bash
+
+   myproject/
+        ├── data/
+        │     ├── myproject.gpkg               # GIS layers and projects
+        │     │
+        │     │ # ------ required data
+        │     ├── project_info.csv
+        │     ├── parameters_info.csv
+        │     │
+        │     │ # ------ non-required folders
+        │     ├── _scripts/
+        │     │      └── convert_dem_to_ldd.py  # script
+        │     ├── _src/
+        │     │      └── dem_large.tif          # sourced data
+        │     ├── _temp/
+        │     │
+        │     │ # ------ required folders
+        │     ├── basins/
+        │     ├── climate/
+        │     ├── lulc/
+        │     ├── soils/
+        │     └── topo/
+        │
+        └── outputs/
+              └── ...
+
 
 
 

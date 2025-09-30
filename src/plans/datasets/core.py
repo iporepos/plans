@@ -110,18 +110,6 @@ def get_colors(size=10, cmap="tab20", randomize=True):
 class TimeSeries(Univar):
 
     def __init__(self, name="MyTimeSeries", alias="TS0"):
-        """
-        Initialize the ``TimeSeries`` object.
-        Expected to increment superior methods.
-
-        :param name: unique object name
-        :type name: str
-
-        :param alias: unique object alias.
-            If None, it takes the first and last characters from name
-        :type alias: str
-
-        """
         # ------------ set defaults ----------- #
 
         # upstream setups
@@ -146,14 +134,14 @@ class TimeSeries(Univar):
         self.datarange_max = None
 
         # --- auto update info
-        # todo refactor names here later on
+        # todo refactor names here later on --- why?
         self.dtfreq = None
         self.dtres = None
         self.start = None
         self.end = None
         self.var_min = None
         self.var_max = None
-        self.isstandard = False
+        self.is_standard = False
         self.gapsize = 6
         self.epochs_stats = None
         self.epochs_n = None
@@ -161,7 +149,7 @@ class TimeSeries(Univar):
         self.eva = None
 
         # incoming data
-        self.file_input = None  # todo rename
+        self.file_input = None  # todo rename to file_data??
         self.file_data_dtfield = self.dtfield
         self.file_data_varfield = self.varfield
 
@@ -176,9 +164,10 @@ class TimeSeries(Univar):
         super()._set_fields()
 
         # TimeSeries fields
-        self.code_field = "Code"
-        self.x_field = "X"
-        self.y_field = "Y"
+        # todo evaluate to make this fields snakecase
+        self.code_field = "code"
+        self.x_field = "x"
+        self.y_field = "y"
 
         self.varfield_field = "VarField"
         self.varname_field = "VarName"
@@ -213,7 +202,7 @@ class TimeSeries(Univar):
         Guess the datetime resolution of a time series based on the consistency of
         timestamp components (e.g., seconds, minutes).
 
-        .. note::
+        .. caution::
 
             This method infers the datetime frequency of the time series data
             based on the consistency of timestamp components.
@@ -296,7 +285,7 @@ class TimeSeries(Univar):
             self.start_field: self.start,
             self.end_field: self.end,
             # Standardization
-            self.isstandard_field: self.isstandard,
+            self.isstandard_field: self.is_standard,
             # Epochs info
             self.gapsize_field: self.gapsize,
             self.epochs_n_field: self.epochs_n,
@@ -470,20 +459,6 @@ class TimeSeries(Univar):
         - Expects a datetime column in the format ``YYYY-mm-DD HH:MM:SS``.
 
 
-        .. important::
-
-            The ``datetime`` field in the incoming file must be a full timestamp ``YYYY-mm-DD HH:MM:SS``.
-            Even if the data is a daily time series, make sure to include a constant, default timestamp
-            like the following example:
-
-            .. code-block:: text
-
-                           datetime; temperature
-                2020-02-07 12:00:00;        24.5
-                2020-02-08 12:00:00;        25.1
-                2020-02-09 12:00:00;        28.7
-                2020-02-10 12:00:00;        26.5
-
         """
 
         # -------------- overwrite relative path inputs -------------- #
@@ -599,7 +574,6 @@ class TimeSeries(Univar):
 
         - Creates a full date range with the expected frequency for the standardization period.
         - Groups the data by epochs (based on the frequency and datetime field), applies the specified aggregation function, and fills in missing values with left merges.
-        - Cuts off any edges with missing data.
         - Updates internal attributes, including ``self.isstandard`` to indicate that the data has been standardized.
 
         .. warning::
@@ -640,8 +614,8 @@ class TimeSeries(Univar):
         df_data.rename(columns={self.agg: self.varfield}, inplace=True)
 
         # Standardize incoming start and end
-        start_std = self.start.datetime()  # the start of date
-        end_std = self.end + pd.Timedelta(days=1)  # the next day
+        start_std = self.start.normalize()  # the start of day
+        end_std = self.end.normalize() + pd.Timedelta(days=1)  # the start of next day
         end_std = end_std.date()
 
         # Get a standard date range for all periods
@@ -657,11 +631,11 @@ class TimeSeries(Univar):
         # Clear extra column
         self.data = df_data_std.drop(columns=on_st).copy()
 
-        # Cut off edges
-        self.cut_edges(inplace=True)
+        # [removed] Cut off edges
+        # self.cut_edges(inplace=True)
 
         # Set extra attributes
-        self.isstandard = True
+        self.is_standard = True
 
         # Update all attributes
         self.update()
@@ -778,7 +752,7 @@ class TimeSeries(Univar):
         """
 
         # Ensure data is standardized
-        if not self.isstandard:
+        if not self.is_standard:
             self.standardize()
 
         # Get epochs
@@ -827,16 +801,15 @@ class TimeSeries(Univar):
 
         return None
 
-    # docs: ok
     def interpolate_gaps(self, method="linear", constant=0, inplace=False):
         """
         Fills gaps in a time series using various interpolation methods.
 
         :param method: Specifies the interpolation method. The default value is ``linear``.
         :type method: str
-        :param constant: [optional] The constant value used when the ``constant`` method is selected. Default value = 0.
+        :param constant: The constant value used when the ``constant`` method is selected. Default value = 0.
         :type constant: float
-        :param inplace: [optional] If True, modifies the original DataFrame in-place. Default value = False.
+        :param inplace: If True, modifies the original DataFrame in-place. Default value = False.
         :type inplace: bool
         :return: A new ``pandas.DataFrame`` with interpolated values if inplace is False, otherwise None.
         :rtype: :class:`pandas.DataFrame` or None
@@ -846,15 +819,19 @@ class TimeSeries(Univar):
         This function handles time series data, standardizing it if necessary before performing interpolation.
         The process is applied to each unique epoch within the series.
 
-        The ``linear`` method applies linear interpolation, while ``nearest`` uses the value of the closest data point.
-        `zero` is a zero-order interpolation (similar to ``nearest``). ``slinear``, ``quadratic``, and ``cubic`` are spline
-        interpolations of first, second, and third order, respectively. ``constant`` fills gaps with a constant value.
+         - ``linear``: linear interpolation
+         - ``nearest``: uses the value of the closest data point.
+         - ``zero``: fills gaps with zeros.
+         - ``constant``: fills gaps with a constant value provided in method parameter
+         - ``slinear``: first order spline interpolation
+         - ``quadratic``: second order spline interpolation
+         - ``cubic``: third order spline interpolation
 
         """
         from scipy.interpolate import interp1d
 
         # Ensure data is standardized
-        if not self.isstandard:
+        if not self.is_standard:
             self.standardize()
 
         # Get epochs for interpolation
@@ -899,7 +876,6 @@ class TimeSeries(Univar):
         else:
             return df_new
 
-    # docs: ok
     def aggregate(self, freq, bad_max, agg_funcs=None):
         """
         Aggregate the time series data based on a specified frequency using various aggregation functions.
@@ -1038,6 +1014,7 @@ class TimeSeries(Univar):
         else:
             return df_upscale
 
+    # todo improve methods of downscaling
     def downscale(self, freq):
         """
         Donwscale time series for smaller time steps using linear inteporlation.
@@ -1439,6 +1416,12 @@ class TimeSeries(Univar):
             plt.close(fig)
             return file_path
 
+    @staticmethod
+    def add_hour(df, hour=12, dt_field="datetime"):
+        # todo docstring
+        df[dt_field] = df[dt_field].dt.normalize() + pd.to_timedelta(hour, unit="h")
+        return df
+
 
 class TimeSeriesCollection(Collection):
     """
@@ -1567,37 +1550,15 @@ class TimeSeriesCollection(Collection):
 
     # docs: ok
     def set_data(self, df_info, src_dir=None, filter_dates=None):
-        """Set data for the time series collection from a info DataFrame.
+        """
+        Set data for the time series collection from a info class:`pandas.DataFrame`.
 
-        :param df_info: class:`pandas.DataFrame`
-            DataFrame containing metadata information for the time series collection.
+        :param df_info: class:`pandas.DataFrame` containing metadata information for the time series collection.
             This DataFrame is expected to have matching fields to the metadata keys.
-
-            Required fields:
-
-            - ``Id``: int, required. Unique number id.
-            - ``Name``: str, required. Simple name.
-            - ``Alias``: str, required. Short nickname.
-            - ``X``: float, required. Longitude in WGS 84 Datum (EPSG4326).
-            - ``Y``: float, required. Latitude in WGS 84 Datum (EPSG4326).
-            - ``Code``: str, required
-            - ``Source``: str, required
-            - ``Description``: str, required
-            - ``Color``: str, optional
-            - ``Units`` or ``<Varname>_Units``: str, required. Units of data.
-            - ``VarField``or ``<Varname>_VarField``: str, required. Variable column in data file.
-            - ``DtField``or ``<Varname>_DtField``: str, required. Date-time column in data file
-            - ``File``or ``<Varname>_File``: str, required. Name or path to data time series ``csv`` file.
-
-
         :type df_info: class:`pandas.DataFrame`
-
-        :param src_dir: str, optional
-            Path for inputs directory in the case for only file names in ``File`` column.
+        :param src_dir: Path for inputs directory in the case for only file names in ``File`` column.
         :type src_dir: str
-
-        :param filter_dates: list, optional
-            List of Start and End dates for filter data
+        :param filter_dates: List of Start and End dates for filter data
         :type filter_dates: str
 
         **Notes**
@@ -5569,7 +5530,8 @@ class RasterSeries(RasterCollection):
         self, folder, name_pattern, talk=False, file_format="tif", parallel=False
     ):
         """
-        Load all rasters from a folder by following a name pattern. Datetime is expected to be at the end of name before file extension.
+        Load all rasters from a folder by following a name pattern.
+        Datetime is expected to be at the end of name before file extension.
 
         :param folder: path to folder
         :type folder: str
@@ -5715,7 +5677,7 @@ class RasterSeries(RasterCollection):
 
 class QualiRasterSeries(RasterSeries):
     """
-    A :class:`RasterSeries`` where date matters and all maps in collections are
+    A :class:`RasterSeries` where date matters and all maps in collections are
     expected to be :class:`QualiRaster`` with the same variable, same projection and same grid.
     """
 
@@ -5725,9 +5687,9 @@ class QualiRasterSeries(RasterSeries):
 
         :param name: :class:`RasterSeries.name`` name attribute
         :type name: str
-        :param varname: :class:`Raster.varname`` variable name attribute, defaults to None
+        :param varname: :class:`Raster.varname` variable name attribute, defaults to None
         :type varname: str
-        :param varalias: :class:`Raster.varalias`` variable alias attribute, defaults to None
+        :param varalias: :class:`Raster.varalias` variable alias attribute, defaults to None
         :type varalias: str
         """
         super().__init__(
@@ -5768,10 +5730,10 @@ class QualiRasterSeries(RasterSeries):
 
     def append(self, raster):
         """
-        Append a :class:`Raster`` base_object to collection.
-        Pre-existing objects with the same :class:`Raster.name`` attribute are replaced
+        Append a :class:`Raster` base_object to collection.
+        Pre-existing objects with the same :class:`Raster.name` attribute are replaced
 
-        :param raster: incoming :class:`Raster`` to append
+        :param raster: incoming :class:`Raster` to append
         :type raster: :class:`Raster`
         """
         super().append(new_object=raster)
@@ -5780,11 +5742,11 @@ class QualiRasterSeries(RasterSeries):
 
     def load_data(self, name, datetime, file_data, prj_file=None, table_file=None):
         """
-        Load a :class:`QualiRaster`` base_object from raster file.
+        Load a :class:`QualiRaster` base_object from raster file.
 
-        :param name: :class:`Raster.name`` name attribute
+        :param name: :class:`Raster.name` name attribute
         :type name: str
-        :param datetime: :class:`Raster.date`` date attribute
+        :param datetime: :class:`Raster.date` date attribute
         :type datetime: str
         :param file_data: path to raster file
         :type file_data: str
@@ -5921,11 +5883,11 @@ class QualiRasterSeries(RasterSeries):
         """
         Get areas prevalance for all series
 
-        :return: dataframe of series export_areas
+        :return: dataframe of series areas
         :rtype: :class:`pandas.DataFrame`
         """
 
-        # compute export_areas for each raster
+        # compute areas for each raster
         for i in range(len(self.catalog)):
             s_raster_name = self.catalog[self.field_name].values[i]
             s_raster_date = self.catalog[self.field_datetime].values[i]
@@ -5935,7 +5897,7 @@ class QualiRasterSeries(RasterSeries):
             df_areas.insert(
                 loc=0, column="{}_raster".format(self.field_name), value=s_raster_name
             )
-            df_areas.insert(loc=1, column="Date", value=s_raster_date)
+            df_areas.insert(loc=1, column=self.field_datetime, value=s_raster_date)
             # concat dataframes
             if i == 0:
                 df_areas_full = df_areas.copy()

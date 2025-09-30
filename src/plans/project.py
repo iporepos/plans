@@ -26,6 +26,7 @@ et netus et malesuada fames ac turpis egestas.
 # =======================================================================
 import os, sys
 import datetime
+import shutil
 import subprocess
 import time
 from pathlib import Path
@@ -40,8 +41,10 @@ import pandas as pd
 
 # Project-level imports
 # =======================================================================
+from plans.config import DATA_DIR
 from plans.root import FileSys
 from plans.root import RecordTable
+
 
 # ... {develop}
 
@@ -53,9 +56,18 @@ from plans.root import RecordTable
 
 # FUNCTIONS
 # ***********************************************************************
+
+# Project-level functions
+# =======================================================================
+
+
 def new_project(specs):
     """
     Create a new Project from a specification dictionary.
+
+    .. danger::
+
+        This method overwrites all existing default files.
 
     :param specs: Dictionary containing project specifications.
 
@@ -82,15 +94,15 @@ def new_project(specs):
 
     .. code-block:: python
 
-        import plans
+       import plans
 
     Create a new ``plans.Project``. First setup details.
 
     .. code-block:: python
 
-        # setup specs dictionary
+        # [CHANGE THIS] setup specs dictionary
         project_specs = {
-            "folder_base": "path/to/base/folder",
+            "folder_base": "C:/plans", # change this path
             "name": "newProject",
             "alias": "NPrj",
             "source": "Me",
@@ -101,8 +113,13 @@ def new_project(specs):
 
     .. code-block:: python
 
-        # get project instance
-        pj = plans.new_project(specs=project_specs)
+        plans.new_project(specs=project_specs)
+
+    Create and get the project instance:
+
+    .. code-block:: python
+
+        prj = plans.new_project(specs=project_specs)
 
 
     """
@@ -119,6 +136,10 @@ def new_project(specs):
     # --- Use merged dict safely ---
     # create base folder if not exists
     os.makedirs(merged["folder_base"], exist_ok=True)
+
+    folder_root = Path(merged["folder_base"]) / merged["name"]
+    if os.path.isdir(folder_root):
+        raise ValueError(f"Project folder already exists '{folder_root}'")
 
     # instantiate project
     p = Project(name=merged["name"], alias=merged["alias"])
@@ -168,7 +189,7 @@ def load_project(project_folder):
     """
     if os.path.isdir(project_folder):
         name = os.path.basename(project_folder)
-        folder_base = Path(project_folder).parent
+        folder_base = os.path.abspath(Path(project_folder).parent)
         p = Project(name=name, alias=None)
         p.load_data()
         # load from boot file
@@ -195,6 +216,17 @@ def load_project(project_folder):
         return p
     else:
         raise ValueError(f"Project folder not found: {project_folder}'")
+
+
+# Module-level functions
+# =======================================================================
+
+
+def handle_input_file(file_path):
+    if not os.path.isfile(file_path):
+        raise FileNotFoundError
+    else:
+        pass
 
 
 # CLASSES
@@ -249,7 +281,7 @@ class Project(FileSys):
         :rtype: None
         """
         # -------------- overwrite relative path inputs -------------- #
-        file_data = os.path.abspath("./src/plans/data/files.csv")
+        file_data = DATA_DIR / "files.csv"
 
         # -------------- implement loading logic -------------- #
 
@@ -308,13 +340,16 @@ class Project(FileSys):
         return folder_run
 
     def run_demo(self):
-        run_name = "demo"
-        folder_run = os.path.abspath(self.make_run_folder(run_name=run_name))
+        # todo docstring
+        run_name = str(self.run_demo.__name__).replace("run_", "")
+        folder_run = os.path.abspath(
+            self.make_run_folder(run_name=run_name.replace("_", "-"))
+        )
         cmd = [
             sys.executable,
             "-m",
             "plans.tools",
-            "demo",
+            run_name,
             "--input1",
             "./tests/data/DataSet_data.csv",
             "--input2",
@@ -329,20 +364,39 @@ class Project(FileSys):
         process = subprocess.Popen(cmd)
         return process, folder_run
 
-    def run_dto_analysis(self):
-        run_name = "dto"
-        folder_run = os.path.abspath(self.make_run_folder(run_name=run_name))
-        file_input1 = "C:/data/ldd.tif"
+    def run_analysis_dto(self, include_views=True, use_basin=None):
+        # todo docstring
+        run_name = str(self.run_analysis_dto.__name__).replace("run_", "")
+        folder_run = os.path.abspath(
+            self.make_run_folder(run_name=run_name.replace("_", "-"))
+        )
+
+        # set iputs
+        file_ldd = Path(self.folder_topo) / "ldd.tif"
+        handle_input_file(file_ldd)
+        if use_basin is not None:
+            file_basin = Path(self.folder_basins) / f"{use_basin}/basin.tif"
+            handle_input_file(file_basin)
+
         cmd = [
             sys.executable,
             "-m",
             "plans.tools",
-            "run_dto",
-            "--input1",
-            file_input1,
+            run_name,
+            "--ldd",
+            file_ldd,
             "--folder",
             folder_run,
+            "--label",
+            self.name,
         ]
+
+        if use_basin is not None:
+            cmd = cmd + ["--basin", file_basin]
+
+        if include_views:
+            cmd.append("--views")
+
         if self.talk:
             cmd.append("--talk")
 
@@ -350,101 +404,64 @@ class Project(FileSys):
         process = subprocess.Popen(cmd)
         return process, folder_run
 
+    def run_analysis_lulc_series(
+        self, lulc_scenario, include_views=True, use_basin=None
+    ):
+        # todo docstring
+        run_name = str(self.run_analysis_lulc_series.__name__).replace("run_", "")
+        folder_run = os.path.abspath(
+            self.make_run_folder(run_name=run_name.replace("_", "-"))
+        )
+
+        # set iputs
+        folder_lulc_scenario = Path(self.folder_lulc) / lulc_scenario
+        file_lulc = Path(folder_lulc_scenario) / "lulc_attributes.csv"
+        handle_input_file(file_lulc)
+        if use_basin is not None:
+            file_basin = Path(self.folder_basins) / f"{use_basin}/basin.tif"
+            handle_input_file(file_basin)
+
+        cmd = [
+            sys.executable,
+            "-m",
+            "plans.tools",
+            run_name,
+            "--attributes",
+            file_lulc,
+            "--scenario",
+            folder_lulc_scenario,
+            "--folder",
+            folder_run,
+            "--label",
+            self.name,
+        ]
+
+        if use_basin is not None:
+            cmd = cmd + ["--basin", file_basin]
+
+        if include_views:
+            cmd.append("--views")
+
+        if self.talk:
+            cmd.append("--talk")
+
+        # Use Popen for async execution
+        process = subprocess.Popen(cmd)
+        return process, folder_run
+
+    def get_dto(self):
+        # todo docstring
+        subp, folder_run = self.run_analysis_dto(include_views=True, use_basin=None)
+        subp.wait()
+        shutil.copy(src=f"{folder_run}/dto.tif", dst=f"{self.folder_topo}/dto.tif")
+        shutil.copy(src=f"{folder_run}/dto.jpg", dst=f"{self.folder_topo}/dto.jpg")
+        shutil.rmtree(folder_run)
+
     @staticmethod
     def get_timestamp():
         # compute timestamp
         _now = datetime.datetime.now()
-        return str(_now.strftime("%Y%m0%dT%H%M%S"))
-
-
-# todo [refactor] -- here we got some very interesting stuff
-class Project_(FileSys):
-
-    def __init__(self, name, folder_base, alias=None):
-        """Initiate a project
-
-        :param name: unique object name
-        :type name: str
-
-        :param alias: unique object alias.
-            If None, it takes the first and last characters from ``name``
-        :type alias: str
-
-        :param folder_base: path to base folder
-        :type name: str
-        """
-        # ---------- call super -----------#
-        super().__init__(name=name, folder_base=folder_base, alias=alias)
-
-        # overwrite struture of the project
-        self.structure = self.get_structure()
-
-        self.topo_status = None
-        # self.update_status_topo()
-
-        self.topo = None
-        self.soil = None
-        self.lulc = None
-        self.et = None
-        self.ndvi = None
-
-    def download_datasets(self, zip_url):
-        """
-        Download datasets from a URL.
-        The download is expected to be a ZIP file. Note: requests library is required
-
-        :param zip_url: url to dataset ZIP file
-        :type zip_url: str
-        :return: None
-        :rtype: None
-        """
-        import requests
-
-        # 1) download to main folder
-        print("Downloading datasets from URL...")
-        response = requests.get(zip_url)
-        # just in case of any problem
-        response.raise_for_status()
-        _s_zipfile = "{}/samples.zip".format(self.path_main)
-        with open(_s_zipfile, "wb") as file:
-            file.write(response.content)
-        # 2) extract to datasets folder
-        self.extract_datasets(zip_file=_s_zipfile, remove=True)
-        return None
-
-    def download_default_datasets(self):
-        """
-        Download the default datasets for PLANS
-
-        :return: None
-        :rtype: None
-        """
-        zip_url = (
-            "https://zenodo.org/record/8217681/files/default_samples.zip?download=1"
-        )
-        self.download_datasets(zip_url=zip_url)
-        return None
-
-    def extract_datasets(self, zip_file, remove=False):
-        """
-        Extract from ZIP file to datasets folder
-
-        :param zip_file: path to zip file
-        :type zip_file: str
-        :param remove: option for deleting the zip file after extraction
-        :type remove: bool
-        :return: None
-        :rtype: None
-        """
-        import zipfile
-
-        print("Unzipping dataset files...")
-        with zipfile.ZipFile(zip_file, "r") as zip_ref:
-            zip_ref.extractall(self.path_ds)
-        # 3) delete zip file
-        if remove:
-            os.remove(zip_file)
-        return None
+        return str(_now.strftime("%Y-%m-%dT%H%M%S"))
 
 
 # ... {develop}

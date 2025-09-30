@@ -1055,7 +1055,7 @@ class AOICollection(QualiRasterCollection):
 
 class LULCSeries(QualiRasterSeries):
     """
-    A :class:`QualiRasterSeries`` for holding Land Use and Land Cover maps
+    A :class:`QualiRasterSeries` for holding Land Use and Land Cover maps
     """
 
     def __init__(self, name):
@@ -1102,7 +1102,8 @@ class LULCSeries(QualiRasterSeries):
         return None
 
     def get_lulcc(self, date_start, date_end, by_lulc_id):
-        """Get the :class:`LULCChange`` of a given time interval and LULC class Id
+        """
+        Get the :class:`LULCChange`` of a given time interval and LULC class Id
 
         :param date_start: start date of time interval
         :type date_start: str
@@ -1154,7 +1155,8 @@ class LULCSeries(QualiRasterSeries):
         return map_lulc_change
 
     def get_lulcc_series(self, by_lulc_id):
-        """Get the :class:`QualiRasterSeries`` of LULC Change for the entire LULC series for a given LULC Id
+        """
+        Get the :class:`QualiRasterSeries` of LULC Change for the entire LULC series for a given LULC Id
 
         :param by_lulc_id: LULC class Id
         :type by_lulc_id: int

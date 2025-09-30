@@ -200,6 +200,18 @@ For a single unit test module:
 python -m tests.unit.test_module
 ```
 
+For a single class inside the module:
+
+```bash
+python -m unittest -v tests.unit.test_module.TestClass
+```
+
+For a single method:
+
+```bash
+python -m unittest -v tests.unit.test_module.TestClass.test_method
+```
+
 ```{seealso}
 See more in [unittest library](https://docs.python.org/3/library/doctest.html) for details on unit tests.
 ```

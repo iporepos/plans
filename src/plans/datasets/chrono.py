@@ -46,29 +46,25 @@ class RainSeries(TimeSeries):
     """
     A class for representing and working with rainfall time series data.
 
-    The ``RainSeries`` class extends the ``TimeSeries`` class and focuses on handling rainfall data.
+    **Notes**
+
+    todo notes
+
+    **Examples**
+
+    todo examples
+
 
     """
 
     def __init__(self, name="MyRainfallSeries", alias=None):
-        """Initialize a RainSeries object.
-
-        :param name: str, optional
-            Name of the rainfall series. Default is "MyRainfallSeries".
-        :type name: str
-
-        :param alias: str, optional
-            Alias for the rainfall series. Default is None.
-        :type alias: str
-
-        """
         # Use the superior initialization from the parent class (TimeSeries)
         super().__init__(name, alias=alias)
         self.varname = "Rain"
-        self.varfield = "P"
+        self.varfield = "ppt"
         self.units = "mm"
         # Overwrite attributes specific to RainSeries
-        self.name_object = "Rainfall Time Series"
+        self.name_object = "Rain Time Series"
         self.agg = "sum"  # Aggregation method, set to "sum" by default
         self.gapsize = (
             7 * 72
@@ -96,60 +92,86 @@ class RainSeries(TimeSeries):
         return None
 
 
-class TempSeries(TimeSeries):
-    """A class for representing and working with temperature time series data.
+class TemperatureSeries(TimeSeries):
+    """
+    A class for representing and working with temperature time series data.
 
-    The ``TemperatureSeries`` class extends the ``TimeSeries`` class and focuses on handling temperature data.
+    **Notes**
+
+    todo notes
 
     **Examples**
 
-    .. code-block:: python
-
-        temperature_data = TempSeries(name="Temperature2022", alias="Temp2022")
-
+    todo examples
 
     """
 
     def __init__(self, name="MyTemperatureSeries", alias=None):
-        """
-        Initialize a TempSeries object.
-
-        :param name: Name of the temperature series. Default is "MyTemperatureSeries".
-        :type name: str
-        :param alias: Alias for the temperature series. Default is None.
-        :type alias: str
-
-        """
         # Use the superior initialization from the parent class (TimeSeries)
         super().__init__(name, alias=alias)
         self.varname = "Temperature"
-        self.varalias = "Temp"
-        self.varfield = "Temp"
+        self.varalias = "TAS"
+        self.varfield = "tas"
         self.units = "Celcius"
         # Overwrite attributes specific
-        self.name_object = "Temp Time Series"
-        self.agg = "mean"  # Aggregation method, set to "sum" by default
+        self.name_object = "Temperature Time Series"
+        self.agg = "mean"  # Aggregation method,
         self.gapsize = 6  # Maximum gap size of 6 hours assuming hourly Temperature
         self.datarange_max = 50
         self.datarange_min = -20
         self.rawcolor = "orange"
 
 
+class ETSeries(TimeSeries):
+    """
+    A class for representing and working with ET and PET data.
+
+    **Notes**
+
+    todo notes
+
+    **Examples**
+
+    todo examples
+
+    """
+
+    def __init__(self, name="MyETSeries", alias=None):
+        # Use the superior initialization from the parent class (TimeSeries)
+        super().__init__(name, alias=alias)
+        self.varname = "ET"
+        self.varfield = "et"
+        self.units = "mm"
+        # Overwrite attributes specific
+        self.name_object = "ET Time Series"
+        self.agg = "sum"  # Aggregation method
+        self.gapsize = 6  # Maximum gap size in dt units
+        self.datarange_max = 10000  # absurd yearly precipitation
+        self.datarange_min = 0
+        self.rawcolor = "navy"
+        # Specific attributes
+        self.upstream_area = None  # in sq km
+
+
 class StageSeries(TimeSeries):
     """
     A class for representing and working with river stage time series data.
 
-    The ``StageSeries`` class extends the ``TimeSeries`` class and focuses on handling river stage data.
+
+    **Notes**
+
+    todo notes
+
+    **Examples**
+
+    todo examples
+
+
     """
 
     def __init__(self, name="MyStageSeries", alias=None):
-        """Initialize a StageSeries object.
-
-        :param name: Name of the river stage series. Default is "MyStageSeries".
-        :type name: str
-        :param alias: Alias for the river stage series. Default is None.
-        :type alias: str
-
+        """
+        Initialize a ``StageSeries`` object.
         """
         # Use the superior initialization from the parent class (TimeSeries)
         super().__init__(name, alias=alias)
@@ -165,18 +187,6 @@ class StageSeries(TimeSeries):
         self.upstream_area = None
 
     def get_metadata(self):
-        """Get all metadata from the base object.
-
-        :return: metadata
-        :rtype: dict
-
-        **Notes:**
-
-        - Metadata includes information from the base class (TimeSeries) and additional TempSeries-specific attributes.
-        - The returned dictionary contains key-value pairs with metadata information.
-
-
-        """
         # Get metadata from the base class (TimeSeries)
         base_metadata = super().get_metadata()
         # Additional TimeSeries-specific metadata
@@ -188,11 +198,23 @@ class StageSeries(TimeSeries):
         return base_metadata
 
 
-class FlowSeries(TimeSeries):
-    """A class for representing and working with streamflow time series data."""
+class StreamflowTimeSeries(TimeSeries):
+    """
+    A class for representing and working with streamflow time series data.
+
+    **Notes**
+
+    todo notes
+
+    **Examples**
+
+    todo examples
+
+    """
 
     def __init__(self, name="MyFlowSeries", alias=None):
-        """Initialize a FlowSeries object.
+        """
+        Initialize a FlowSeries object.
 
         :param name: str, optional
             Name of the streamflow series. Default is "MyFlowSeries".
@@ -315,12 +337,12 @@ class RainSeriesSamples(TimeSeriesSpatialSamples):
         self._set_view_specs()
 
 
-class TempSeriesSamples(TimeSeriesSpatialSamples):
+class TemperatureSeriesSamples(TimeSeriesSpatialSamples):
     # todo docstring
 
     def __init__(self, name="MyTempSColection"):
         # todo docstring
-        super().__init__(name=name, base_object=TempSeries)
+        super().__init__(name=name, base_object=TemperatureSeries)
         # overwrite parent attributes
         self.name_object = "Temperature Series Sample"
         self._set_view_specs()
@@ -336,52 +358,6 @@ class StageSeriesCollection(TimeSeriesCluster):
         self._set_view_specs()
 
     def set_data(self, df_info, src_dir=None, filter_dates=None):
-        # todo docstring
-        """
-        Set data for the time series collection from a info DataFrame.
-
-        **Notes:**
-
-        - The ``set_data`` method populates the time series collection with data based on the provided DataFrame.
-        - It creates time series objects, loads data, and performs additional processing steps.
-        - Adjust ``skip_process`` according to your data processing needs.
-
-        :param df_info: class:`pandas.DataFrame`
-            DataFrame containing metadata information for the time series collection.
-            This DataFrame is expected to have matching fields to the metadata keys.
-
-            Required fields:
-
-            - ``Id``: int, required. Unique number id.
-            - ``Name``: str, required. Simple name.
-            - ``Alias``: str, required. Short nickname.
-            - ``Units``: str, required. Units of data.
-            - ``VarField``: str, required. Variable column in data file.
-            - ``DtField``: str, required. Date-time column in data file
-            - ``File``: str, required. Name or path to data time series ``csv`` file.
-            - ``X``: float, required. Longitude in WGS 84 Datum (EPSG4326).
-            - ``Y``: float, required. Latitude in WGS 84 Datum (EPSG4326).
-            - ``Code``: str, required
-            - ``Source``: str, required
-            - ``Description``: str, required
-            - ``Color``: str, required
-            - ``UpstreamArea``: float, required
-
-
-        :type df_info: class:`pandas.DataFrame`
-
-        :param src_dir: str, optional
-            Path for source directory in the case for only file names in ``File`` column.
-        :type src_dir: str
-
-        :param filter_dates: list, optional
-            List of Start and End dates for filter data
-        :type filter_dates: str
-
-
-
-
-        """
         # generic part
         super().set_data(df_info=df_info, filter_dates=filter_dates)
         # custom part

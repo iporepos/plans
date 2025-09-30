@@ -72,188 +72,316 @@ from plans.datasets import DC_NODATA
 # CONSTANTS -- Module-level
 # =======================================================================
 logger = logging.getLogger(__name__)
+LABEL_LOADING = "loading"
+LABEL_PROCESSING = "processing"
+LABEL_EXPORTING = "exporting"
+LABEL_RUN = "run"
+
+DC_MSG = {
+    LABEL_LOADING: "loaded inputs",
+    LABEL_PROCESSING: "processed data",
+    LABEL_EXPORTING: "exported outputs",
+    LABEL_RUN: "run completed",
+}
 # ... {develop}
 
 
 # FUNCTIONS
 # ***********************************************************************
 
+# FUNCTIONS -- utilities
+# =======================================================================
+
+
+def setup_logger(label, talk):
+    s = "%(asctime)s [%(levelname)s] plans.tools.{}: %(message)s".format(label)
+    logging.basicConfig(level=logging.INFO, format=s)
+    logger.setLevel(logging.INFO if talk else logging.WARNING)
+
+
+# step decorator
+def step(label):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            start = time.time()
+            logger.info(f"{label} ...")
+
+            result = func(*args, **kwargs)  # <--- your unique protocol here
+
+            elapsed = time.time() - start
+            logger.info(format_msg_elapsed(DC_MSG[label], elapsed))
+            return result, elapsed
+
+        return wrapper
+
+    return decorator
+
+
+def format_msg_elapsed(msg, time):
+    return "{} in {:.2f} seconds".format(msg, time)
+
+
+def save_runtime_data(steps, times, folder_output):
+    df_run = pd.DataFrame({"step": steps, "time": times})
+    file_output_runtimes = Path(folder_output) / "runtimes.csv"
+    df_run.to_csv(file_output_runtimes, sep=";", index=False)
+    return file_output_runtimes
+
+
 # FUNCTIONS -- Project-level
 # =======================================================================
 
 
-def demo(input_file1, input_file2, output_folder, talk):
+def demo(file_input1, file_input2, folder_output, talk):
+    # todo docstring
+    # LOGGING
+    # -------------------------------------------------------------------
+    tool_name = demo.__name__
+    setup_logger(label=tool_name, talk=talk)
+
+    # DEFINE PROTOCOLS
+    # -------------------------------------------------------------------
+    @step(LABEL_LOADING)
+    def load_inputs(f1, f2):
+        df1 = pd.read_csv(f1)
+        df2 = pd.read_csv(f2)
+        time.sleep(1)
+        return df1, df2
+
+    @step(LABEL_PROCESSING)
+    def process_data(df1, df2):
+        time.sleep(3)
+        return pd.concat([df1, df2])
+
+    @step(LABEL_EXPORTING)
+    def export_data(df, folder):
+        time.sleep(2)
+        file_out = Path(folder) / "demo_output.csv"
+        df.to_csv(file_out, sep=";", index=False)
+        return file_out
+
     # START UP
     # -------------------------------------------------------------------
-    if talk:
-        logger.setLevel(logging.INFO)  # show info + warnings
-    else:
-        logger.setLevel(logging.WARNING)  # silence info/debug
+    start_total = time.time()
+    ls_steps, ls_times = [], []
 
-    start_start = time.time()
-    tool_name = demo.__name__
-
-    ls_steps = []
-    ls_times = []
-
-    # LOAD INPUTS
+    # LOADING INPUTS
     # -------------------------------------------------------------------
-    step_label = "loading"
-    start_time = time.time()
+    (df1, df2), t = load_inputs(file_input1, file_input2)
 
-    # load protocols
-    time.sleep(0.2)
-    df_data1 = pd.read_csv(input_file1)
-    df_data2 = pd.read_csv(input_file2)
+    ls_steps.append(LABEL_LOADING)
+    ls_times.append(t)
 
-    end_time = time.time()
-    elapsed_time_load = end_time - start_time
-
-    ls_steps.append(step_label)
-    ls_times.append(elapsed_time_load)
-
-    logger.info("Loaded inputs in %.2f seconds", elapsed_time_load)
-
-    # PROCESS DATA
+    # PROCESSING DATA
     # -------------------------------------------------------------------
-    step_label = "processing"
-    start_time = time.time()
+    df_out, t = process_data(df1, df2)
 
-    # process protocols
-    time.sleep(1)
-    df_output = pd.concat([df_data1, df_data2])
+    ls_steps.append(LABEL_PROCESSING)
+    ls_times.append(t)
 
-    end_time = time.time()
-    elapsed_time_process = end_time - start_time
-
-    ls_steps.append(step_label)
-    ls_times.append(elapsed_time_process)
-
-    logger.info("Processed data in %.2f seconds", elapsed_time_process)
-
-    # EXPORT OUTPUTS
+    # EXPORTING OUTPUTS
     # -------------------------------------------------------------------
-    step_label = "exporting"
-    start_time = time.time()
+    file_out, t = export_data(df_out, folder_output)
 
-    # export protocols
-    time.sleep(0.3)
-    file_output = Path(output_folder) / "demo_output.csv"
-    df_output.to_csv(file_output, sep=";", index=False)
-
-    end_time = time.time()
-    elapsed_time_export = end_time - start_time
-
-    ls_steps.append(step_label)
-    ls_times.append(elapsed_time_export)
-    logger.info(
-        "Exported output in %.2f seconds to %s", elapsed_time_export, file_output
-    )
+    ls_steps.append(LABEL_EXPORTING)
+    ls_times.append(t)
 
     # SHUTDOWN
     # -------------------------------------------------------------------
-    step_label = "run"
-    end_end = time.time()
-    elapsed_time = end_end - start_start
-    ls_steps.append(step_label)
-    ls_times.append(elapsed_time)
+    total_elapsed = time.time() - start_total
+    logger.info(format_msg_elapsed(DC_MSG[LABEL_RUN], total_elapsed))
 
-    df_run = pd.DataFrame({"step": ls_steps, "time": ls_times})
-    file_output_runtimes = Path(output_folder) / "runtimes.csv"
-    df_run.to_csv(file_output_runtimes, sep=";", index=False)
+    # record it in your steps/times lists
+    ls_steps.append(LABEL_RUN)
+    ls_times.append(total_elapsed)
 
-    logger.info("Run completed in %.2f seconds", elapsed_time)
+    # Save all runtime data including total
+    runtimes_file = save_runtime_data(
+        steps=ls_steps, times=ls_times, folder_output=folder_output
+    )
     return True
 
 
-def run_dto(file_ldd, output_folder, talk):
-    from plans.datasets import Raster, LDD, DTO
+def analysis_dto(file_ldd, file_basin, folder_output, label, views, talk):
+    # todo docstring
+    from plans.datasets import Raster, LDD, DTO, AOI
     from plans.geo import distance_to_outlet
+
+    # LOGGING
+    # -------------------------------------------------------------------
+    tool_name = analysis_dto.__name__
+    setup_logger(label=tool_name, talk=talk)
+
+    # DEFINE PROTOCOLS
+    # -------------------------------------------------------------------
+    @step(LABEL_LOADING)
+    def load_inputs(file_ldd, file_basin):
+        # handle ldd
+        ldd = LDD(name=label)
+        ldd.load_data(file_data=file_ldd)
+
+        # handle basin
+        basin = None
+        if file_basin is not None:
+            basin = AOI(name=label)
+            basin.load_data(file_data=file_basin)
+
+        return ldd, basin
+
+    @step(LABEL_PROCESSING)
+    def process_data(ldd):
+        grd_outdist = distance_to_outlet(grd_ldd=ldd.data, n_res=ldd.cellsize)
+        return grd_outdist
+
+    @step(LABEL_EXPORTING)
+    def export_data(ldd, basin, grd_outdist):
+        file_name_output = "dto"
+        # setup output object
+        dto = DTO(name=label)
+        dto.data = grd_outdist.copy()
+        dto.raster_metadata = ldd.raster_metadata
+        dto.raster_metadata["NODATA_value"] = DC_NODATA["float32"]
+
+        # apply aoi mask
+        if basin is not None:
+            dto.apply_aoi_mask(grid_aoi=basin.data, inplace=True)
+
+        if views:
+            dto.view_specs["folder"] = folder_output
+            dto.view_specs["filename"] = file_name_output
+            dto.view(show=False)
+        file_output = dto.export_tif(folder=folder_output, filename=file_name_output)
+        return file_output
 
     # START UP
     # -------------------------------------------------------------------
-    if talk:
-        logger.setLevel(logging.INFO)  # show info + warnings
-    else:
-        logger.setLevel(logging.WARNING)  # silence info/debug
+    start_total = time.time()
+    ls_steps, ls_times = [], []
 
-    start_start = time.time()
-
-    ls_steps = []
-    ls_times = []
-
-    # LOAD INPUTS
+    # LOADING INPUTS
     # -------------------------------------------------------------------
-    step_label = "loading"
-    start_time = time.time()
+    (ldd, basin), t = load_inputs(file_ldd, file_basin)
 
-    # load protocols
-    logger.info("Loading inputs ...")
-    ldd = LDD()
-    ldd.load_data(file_data=file_ldd)
+    ls_steps.append(LABEL_LOADING)
+    ls_times.append(t)
 
-    end_time = time.time()
-    elapsed_time_load = end_time - start_time
-
-    ls_steps.append(step_label)
-    ls_times.append(elapsed_time_load)
-
-    logger.info("Loaded inputs in %.2f seconds", elapsed_time_load)
-
-    # PROCESS DATA
+    # PROCESSING DATA
     # -------------------------------------------------------------------
-    step_label = "processing"
-    start_time = time.time()
+    grd_outdist, t = process_data(ldd)
 
-    # process protocols
-    logger.info("Processing ...")
-    grd_outdist = distance_to_outlet(grd_ldd=ldd.data, n_res=ldd.cellsize)
+    ls_steps.append(LABEL_EXPORTING)
+    ls_times.append(t)
 
-    end_time = time.time()
-    elapsed_time_process = end_time - start_time
-
-    ls_steps.append(step_label)
-    ls_times.append(elapsed_time_process)
-
-    logger.info("Processed data in %.2f seconds", elapsed_time_process)
-
-    # EXPORT OUTPUTS
+    # EXPORTING OUTPUTS
     # -------------------------------------------------------------------
-    step_label = "exporting"
-    start_time = time.time()
+    file_output, t = export_data(ldd, basin, grd_outdist)
 
-    # export protocols
-    logger.info("Exporting ...")
-
-    dto = DTO()
-    dto.data = grd_outdist.copy()
-    dto.raster_metadata = ldd.raster_metadata
-    dto.raster_metadata["NODATA_value"] = DC_NODATA["float32"]
-    dto.view(show=True)
-    file_output = dto.export_tif(folder=output_folder, filename="dto")
-
-    end_time = time.time()
-    elapsed_time_export = end_time - start_time
-
-    ls_steps.append(step_label)
-    ls_times.append(elapsed_time_export)
-    logger.info(
-        "Exported output in %.2f seconds to %s", elapsed_time_export, file_output
-    )
+    ls_steps.append(LABEL_EXPORTING)
+    ls_times.append(t)
 
     # SHUTDOWN
     # -------------------------------------------------------------------
-    step_label = "run"
-    end_end = time.time()
-    elapsed_time = end_end - start_start
-    ls_steps.append(step_label)
-    ls_times.append(elapsed_time)
+    total_elapsed = time.time() - start_total
+    logger.info(format_msg_elapsed(DC_MSG[LABEL_RUN], total_elapsed))
 
-    df_run = pd.DataFrame({"step": ls_steps, "time": ls_times})
-    file_output_runtimes = Path(output_folder) / "runtimes.csv"
-    df_run.to_csv(file_output_runtimes, sep=";", index=False)
+    # record it in your steps/times lists
+    ls_steps.append(LABEL_RUN)
+    ls_times.append(total_elapsed)
 
-    logger.info("Run completed in %.2f seconds", elapsed_time)
+    # Save all runtime data including total
+    runtimes_file = save_runtime_data(
+        steps=ls_steps, times=ls_times, folder_output=folder_output
+    )
+    return True
+
+
+def analysis_lulc_series(
+    file_lulc, folder_lulc, file_aoi, folder_output, label, views, talk
+):
+    # todo docstring
+    from plans.datasets import Raster, LULCSeries, AOI
+
+    # LOGGING
+    # -------------------------------------------------------------------
+    tool_name = analysis_lulc_series.__name__
+    setup_logger(label=tool_name, talk=talk)
+
+    # DEFINE PROTOCOLS
+    # -------------------------------------------------------------------
+    @step(LABEL_LOADING)
+    def load_inputs(file_lulc, folder_lulc, file_aoi):
+        # handle ldd
+        lulc_series = LULCSeries(name=label)
+        lulc_series.load_folder(
+            folder=folder_lulc, file_table=file_lulc, name_pattern="lulc_*", talk=True
+        )
+
+        # handle basin
+        aoi_map = None
+        if file_aoi is not None:
+            aoi_map = AOI(name=label)
+            aoi_map.load_data(file_data=file_aoi)
+            lulc_series.apply_aoi_masks(grid_aoi=aoi_map.data, inplace=True)
+
+        return lulc_series, aoi_map
+
+    @step(LABEL_PROCESSING)
+    def process_data(lulc_series):
+        print("hello")
+        print(lulc_series.catalog.info())
+        for k in lulc_series.collection:
+            lulc_series.collection[k].view(show=True)
+
+        df = lulc_series.get_series_areas()
+        return df
+
+    @step(LABEL_EXPORTING)
+    def export_data(df):
+        file_name_output = "lulc_series"
+        print(df.info())
+        print(df.head())
+        time.sleep(1)
+        return None
+
+    # START UP
+    # -------------------------------------------------------------------
+    start_total = time.time()
+    ls_steps, ls_times = [], []
+
+    # LOADING INPUTS
+    # -------------------------------------------------------------------
+    (lulc_series, aoi_map), t = load_inputs(file_lulc, folder_lulc, file_aoi)
+
+    ls_steps.append(LABEL_LOADING)
+    ls_times.append(t)
+
+    # PROCESSING DATA
+    # -------------------------------------------------------------------
+    df, t = process_data(lulc_series)
+
+    ls_steps.append(LABEL_EXPORTING)
+    ls_times.append(t)
+
+    # EXPORTING OUTPUTS
+    # -------------------------------------------------------------------
+    file_output, t = export_data(df)
+
+    ls_steps.append(LABEL_EXPORTING)
+    ls_times.append(t)
+
+    # SHUTDOWN
+    # -------------------------------------------------------------------
+    total_elapsed = time.time() - start_total
+    logger.info(format_msg_elapsed(DC_MSG[LABEL_RUN], total_elapsed))
+
+    # record it in your steps/times lists
+    ls_steps.append(LABEL_RUN)
+    ls_times.append(total_elapsed)
+
+    # Save all runtime data including total
+    runtimes_file = save_runtime_data(
+        steps=ls_steps, times=ls_times, folder_output=folder_output
+    )
     return True
 
 
@@ -280,11 +408,30 @@ def main():
     parser_demo.add_argument("--talk", action="store_true")  # flag
 
     # --- dto
-    parser_dto = subparsers.add_parser("run_dto", help="Run dto()")
+    parser_dto = subparsers.add_parser("analysis_dto", help="Run dto()")
+    parser_dto.add_argument("--ldd", required=True, help="path to ldd.tif map")
     parser_dto.add_argument(
-        "--input1", required=True, help="Input file path to ldd.tif map"
+        "--basin", required=False, help="path to basin.tif map", default=None
     )
-    parser_dto.add_argument("--folder", required=True, help="Output folder path")
+    parser_dto.add_argument("--folder", required=True, help="path to output folder")
+    parser_dto.add_argument("--label", required=True, help="Label")
+    parser_dto.add_argument("--views", action="store_true")  # flag
+    parser_dto.add_argument("--talk", action="store_true")  # flag
+
+    # --- lulc series
+    parser_dto = subparsers.add_parser(
+        "analysis_lulc_series", help="Analysis of LULC series"
+    )
+    parser_dto.add_argument(
+        "--attributes", required=True, help="path to lulc_attributes csv"
+    )
+    parser_dto.add_argument("--scenario", required=True, help="path to lulc map folder")
+    parser_dto.add_argument(
+        "--basin", required=False, help="path to basin.tif map", default=None
+    )
+    parser_dto.add_argument("--folder", required=True, help="path to output folder")
+    parser_dto.add_argument("--label", required=True, help="Label")
+    parser_dto.add_argument("--views", action="store_true")  # flag
     parser_dto.add_argument("--talk", action="store_true")  # flag
 
     # --- func2
@@ -296,8 +443,20 @@ def main():
 
     if args.command == "demo":
         demo(args.input1, args.input2, args.folder, args.talk)
-    elif args.command == "run_dto":
-        run_dto(args.input1, args.folder, args.talk)
+    elif args.command == "analysis_dto":
+        analysis_dto(
+            args.ldd, args.basin, args.folder, args.label, args.views, args.talk
+        )
+    elif args.command == "analysis_lulc_series":
+        analysis_lulc_series(
+            args.attributes,
+            args.scenario,
+            args.basin,
+            args.folder,
+            args.label,
+            args.views,
+            args.talk,
+        )
     elif args.command == "func2":
         func2(args.path, args.flag)
 
@@ -306,10 +465,7 @@ def main():
 # ***********************************************************************
 # standalone behaviour as a script
 if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s [%(levelname)s] plans.%(module)s.%(funcName)s: %(message)s",
-    )
+
     # Call main
     # ===================================================================
     main()
