@@ -16,10 +16,10 @@ blocks of the model and how they interact.
 
 .. _system overview:
 
-Overview
+System overview
 ************************************************************************
 
-The model is based on a `System Dynamics`_ structure, representing the
+The ``plans`` model is based on a `System Dynamics`_ approach, representing the
 hillslope system as a column of interconnected storages — like a series
 of “water buckets” — that fill, spill, drain and dry over time.
 

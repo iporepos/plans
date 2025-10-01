@@ -411,10 +411,19 @@
 <span id="theory"></span><h1>Theoretical Reference<a class="headerlink" href="#theoretical-reference" title="Link to this heading">#</a></h1>
 <section id="introduction">
 <span id="theory-introduction"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">#</a></h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<p>This page provides a basic theoretical background and some technical details
+for understanding how the <code class="docutils literal notranslate"><span class="pre">plans</span></code> model work.</p>
+<div class="seealso admonition">
+<p class="admonition-title">System components index</p>
+<p>Check out the full reference for variables and parameters at the
+<a class="reference internal" href="system.html#system-index"><span class="std std-ref">System Index</span></a> page.</p>
+</div>
 </section>
 <section id="system-models">
 <span id="theory-systems"></span><h2>System Models<a class="headerlink" href="#system-models" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">plans</span></code> model is based on a <a class="reference external" href="https://en.wikipedia.org/wiki/System_dynamics">System Dynamics</a> approach, representing the
+hillslope system as a column of interconnected storages — like a series
+of “water buckets” — that fill, spill, drain and dry over time.</p>
 <p>The <a class="reference external" href="https://en.wikipedia.org/wiki/System_dynamics">System Dynamics</a> approach is a modeling paradigm used to represent complex systems
 through a set of interconnected components. Under this paradigm, a model is
 built as a network of <strong>storages</strong> and <strong>flows</strong> that move between them.</p>
@@ -442,9 +451,45 @@ entire catchment or hillslope is represented by a single system of storages,
 or <strong>semi-distributed</strong>, where the catchment is divided into an array of
 cells. This cells can be spatially arranged in a regular or irregular grid or mesh.</p>
 <p>In the case of semi-distributed models, each cell or unit is simulated
-just like a tiny lumped model. This is a key difference from truly
-distributed models, which use gridded spatial representations of the
-velocity vector field to calculate flows.</p>
+just like a tiny lumped model, also known as Hydrological Response Units <code class="docutils literal notranslate"><span class="pre">HRU</span></code>.
+This is a key difference from truly distributed models, which use gridded
+spatial representations of the velocity vector field to calculate flows.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">plans</span></code> model falls into the category of semi-distributed models.</p>
+</section>
+<section id="simulation-approaches">
+<span id="theory-simulation-approaches"></span><h3>Simulation approaches<a class="headerlink" href="#simulation-approaches" title="Link to this heading">#</a></h3>
+<p>In semi-distributed models, Hydrological response units <code class="docutils literal notranslate"><span class="pre">HRU</span></code> can be
+simulated in two main ways: <strong>grid-to-grid simulation</strong> and <strong>histogram simulation</strong>.
+Each approach has distinct advantages and limitations, depending on the
+scale of the study area and the computational resources available.</p>
+<section id="grid-to-grid-simulation">
+<span id="theory-g2g"></span><h4>Grid-To-Grid simulation<a class="headerlink" href="#grid-to-grid-simulation" title="Link to this heading">#</a></h4>
+<p>In grid-to-grid simulation <code class="docutils literal notranslate"><span class="pre">G2G</span></code>, each map cell (or pixel) is treated as an
+unique <code class="docutils literal notranslate"><span class="pre">HRU</span></code>. This approach is most suitable when parameters are expressed
+as continuous spatial variables (e.g., canopy cover, soil storage capacity, etc).</p>
+<p><em>Advantages</em>:
+- Directly represents spatial heterogeneity at pixel resolution.
+- Results are already mapped at the same scale as the input data, requiring no additional downscaling.</p>
+<p><em>Disadvantages</em>:
+- Memory- and computation-intensive, especially for large basins.
+- Simulation may become impractical if the study area contains millions of cells.</p>
+</section>
+<section id="histogram-simulation">
+<span id="theory-hst"></span><h4>Histogram Simulation<a class="headerlink" href="#histogram-simulation" title="Link to this heading">#</a></h4>
+<p>In histogram simulation <code class="docutils literal notranslate"><span class="pre">HST</span></code>, the <code class="docutils literal notranslate"><span class="pre">HRU</span></code> units are larger patches that
+share common parameter values. For example, canopy parameters may be
+averaged for all cells within a given land-use class.</p>
+<p>The area fraction of each <code class="docutils literal notranslate"><span class="pre">HRU</span></code> type is then represented in a histogram,
+which is used to upscale simulated values.</p>
+<p><em>Advantages</em>:
+- Highly efficient in terms of memory and computational cost.
+- Suitable for large study areas where grid-to-grid simulation is infeasible.
+- Suitable for calibration or monte carlo analysis where many simulations are needed.</p>
+<p><em>Disadvantages</em>:
+- Simulation occurs at an intermediate scale, requiring an additional step to downscale or reproject results back onto maps.
+- Some spatial detail is lost due to parameter aggregation.
+- Mapping outputs back to raster resolution requires extra processing.</p>
+</section>
 </section>
 <section id="water-balance">
 <span id="theory-water-balance"></span><h3>Water balance<a class="headerlink" href="#water-balance" title="Link to this heading">#</a></h3>
@@ -536,14 +581,18 @@ hydrological response.</p>
 the <strong>surface storage</strong>, causing a <strong>spill flow</strong> pulse by the activation
 small channels that convey water downhill to the main stream network.</p>
 <p>There are two main <strong>mechanisms</strong> for overland flow generation:</p>
-<ol class="arabic simple">
-<li><p><strong>Infiltration-excess</strong> overland flow. This happens when rain flow is
-so intense that infiltration flow is exceeded. Common during heavy storms and
-where the soil surface presents a high residence time (like compacted soils).</p></li>
-<li><p><strong>Saturation-excess</strong> overland flow. This occurs when rain reaches areas
-where soil is fully saturated and there is zero potential for infiltration.
-Common in all events where rain reaches a saturated soil surface.</p></li>
-</ol>
+<section id="infiltration-excess">
+<span id="theory-infiltration-excess"></span><h4>Infiltration-excess<a class="headerlink" href="#infiltration-excess" title="Link to this heading">#</a></h4>
+<p>This happens when rain flow is so intense that infiltration flow is exceeded.
+Common during heavy storms and where the soil surface presents a high residence
+time (like compacted soils).</p>
+</section>
+<section id="saturation-excess">
+<span id="theory-saturation-excess"></span><h4>Saturation-excess<a class="headerlink" href="#saturation-excess" title="Link to this heading">#</a></h4>
+<p>This occurs when rain reaches areas where soil is fully saturated and there
+is zero potential for infiltration. Common in all events where rain reaches
+a saturated soil surface.</p>
+</section>
 </section>
 <section id="variable-source-area">
 <span id="theory-variable-source-area"></span><h3>Variable source area<a class="headerlink" href="#variable-source-area" title="Link to this heading">#</a></h3>
@@ -704,18 +753,17 @@ variable. This yields a a similar approach for downscaling:</p>
 </section>
 <section id="model-structure">
 <span id="theory-model-structure"></span><h2>Model Structure<a class="headerlink" href="#model-structure" title="Link to this heading">#</a></h2>
-<p>The model is based on a <a class="reference external" href="https://en.wikipedia.org/wiki/System_dynamics">System Dynamics</a> structure, representing the
-hillslope system as a column of interconnected storages — like a series
-of “water buckets” — that fill, spill, drain and dry over time.</p>
-<p>In the standard configuration, the model column begins with a canopy storage,
+<p>The <code class="docutils literal notranslate"><span class="pre">plans</span></code> model is based on a <a class="reference external" href="https://en.wikipedia.org/wiki/System_dynamics">System Dynamics</a> structure, representing the
+hillslope system as <strong>columns</strong> of interconnected storages — like a collection
+of water buckets — that fill, spill, drain and dry over time.</p>
+<p>Each column is known as the <strong>hydrological response unit</strong> <code class="docutils literal notranslate"><span class="pre">HRU</span></code>. A
+landscape spatial unit with a specific parameter set.</p>
+<p>The model column begins with a canopy storage,
 followed by a surface storage (which can include an organic soil layer
 where present). Beneath it lies the mineral soil storage, divided into
 an unsaturated zone (where water moves vertically through pores) and a
 saturated phreatic zone (fully saturated, driving drainage and lateral
 exchanges with neighboring cells).</p>
-<p>Each column represents a cell on a 2D grid, which can be simulated in
-distributed or semi-lumped configurations, allowing flexibility in
-spatial resolution and computational power.</p>
 <figure class="align-center" id="id5">
 <a class="reference external image-reference" href="https://github.com/iporepos/plans-assets/blob/main/docs/figs/model_structure.jpg?raw=true"><img alt="``plans`` model column structure" src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/model_structure.jpg?raw=true" style="width: 75%;" />
 </a>
@@ -855,6 +903,11 @@ land use parameters. The same logic applies to soils information.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#system-models">System Models</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#system-dynamics-in-hydrology">System Dynamics in Hydrology</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lumped-and-semi-distributed-models">Lumped and semi-distributed models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulation-approaches">Simulation approaches</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#grid-to-grid-simulation">Grid-To-Grid simulation</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#histogram-simulation">Histogram Simulation</a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#water-balance">Water balance</a></li>
 </ul>
 </li>
@@ -862,7 +915,11 @@ land use parameters. The same logic applies to soils information.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-storage">Linear Storage</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#recession-curves">Recession curves</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#subsurface-flows">Subsurface flows</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#theory-overland-flow">Overland flow</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#theory-overland-flow">Overland flow</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#infiltration-excess">Infiltration-excess</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#saturation-excess">Saturation-excess</a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#variable-source-area">Variable source area</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#connectivity">Connectivity</a></li>
 </ul>

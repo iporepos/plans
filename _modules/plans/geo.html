@@ -413,8 +413,6 @@
 <span class="sd">In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.</span>
 <span class="sd">In a lacinia nisl.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
-
 <span class="c1"># IMPORTS</span>
 <span class="c1"># ***********************************************************************</span>
 <span class="c1"># import modules from other libs</span>
@@ -505,9 +503,7 @@
     <span class="n">dissolve</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Retrieve a list of upstream basins for a list of gauges. This function identifies the basins in which each gauge</span>
-<span class="sd">    is located and then finds all upstream basins for each of these basins.</span>
-<span class="sd">    The resulting GeoDataFrame can optionally be dissolved into a single feature for each gauge.</span>
+<span class="sd">    Retrieve a list of upstream basins for a list of gauges.</span>
 
 <span class="sd">    :param basins: A GeoDataFrame containing the basin features.</span>
 <span class="sd">    :type basins: :class:`geopandas.GeoDataFrame`</span>
@@ -525,6 +521,13 @@
 <span class="sd">    :type dissolve: bool</span>
 <span class="sd">    :return: A GeoDataFrame with the upstream basins for each gauge, including the gauge identifier. Returns None if no gauges are found within any basin.</span>
 <span class="sd">    :rtype: :class:`geopandas.GeoDataFrame`</span>
+
+<span class="sd">    **Notes**</span>
+
+<span class="sd">    This function identifies the basins in which each gauge</span>
+<span class="sd">    is located and then finds all upstream basins for each of these basins.</span>
+<span class="sd">    The resulting GeoDataFrame can optionally be dissolved into a single feature for each gauge.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># ensure gauges are in the same crs</span>
     <span class="k">if</span> <span class="n">basins</span><span class="o">.</span><span class="n">crs</span> <span class="o">!=</span> <span class="n">gauges</span><span class="o">.</span><span class="n">crs</span><span class="p">:</span>
@@ -849,21 +852,39 @@
 
 <div class="viewcode-block" id="downscale_linear">
 <a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.downscale_linear">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">downscale_linear</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">array_covar</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">downscale_linear</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">covariate</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="n">scalar_region</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Applies linear downscaling to a covariance array based on a scalar value.</span>
+<span class="sd">    Applies linear downscaling to a covariate array based on a scalar value.</span>
 
 <span class="sd">    :param scalar: The scalar value used for downscaling.</span>
 <span class="sd">    :type scalar: float</span>
-<span class="sd">    :param array_covar: The covariance array to be downscaled.</span>
-<span class="sd">    :type array_covar: :class:`numpy.ndarray`</span>
+<span class="sd">    :param covariate: The covariate array to be downscaled.</span>
+<span class="sd">    :type covariate: :class:`numpy.ndarray`</span>
+<span class="sd">    :param scalar_region: Boolean array setting a valid region for the scalar value.</span>
+<span class="sd">    :type scalar_region: :class:`numpy.ndarray` or None</span>
 <span class="sd">    :param mode: The aggregation mode to use, &quot;mean&quot; or &quot;sum&quot;. Default value = &quot;mean&quot;</span>
 <span class="sd">    :type mode: str</span>
 <span class="sd">    :return: The linearly downscaled array.</span>
 <span class="sd">    :rtype: :class:`numpy.ndarray`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">funcs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">}</span>
-    <span class="k">return</span> <span class="n">array_covar</span> <span class="o">*</span> <span class="n">scalar</span> <span class="o">/</span> <span class="n">funcs</span><span class="p">[</span><span class="n">mode</span><span class="p">](</span><span class="n">array_covar</span><span class="p">)</span></div>
+    <span class="c1"># handle region</span>
+    <span class="k">if</span> <span class="n">scalar_region</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">scalar_region</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">covariate</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">scalar_region_nan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">scalar_region</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">scalar_region</span><span class="p">)</span>
+
+    <span class="c1"># compute upscaled</span>
+    <span class="n">covariate_upscaled</span> <span class="o">=</span> <span class="n">funcs</span><span class="p">[</span><span class="n">mode</span><span class="p">](</span><span class="n">scalar_region_nan</span> <span class="o">*</span> <span class="n">covariate</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">covariate_upscaled</span><span class="p">)</span>
+
+    <span class="n">covariate_normalized</span> <span class="o">=</span> <span class="n">covariate</span> <span class="o">/</span> <span class="n">covariate_upscaled</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">covariate_normalized</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">covariate_normalized</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">scalar</span> <span class="o">*</span> <span class="n">covariate_normalized</span></div>
 
 
 
@@ -871,9 +892,9 @@
 <a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.downscale_variance">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">downscale_variance</span><span class="p">(</span>
     <span class="n">mean</span><span class="p">,</span>
-    <span class="n">array_covar</span><span class="p">,</span>
+    <span class="n">covariate</span><span class="p">,</span>
     <span class="n">scale_factor</span><span class="p">,</span>
-    <span class="n">mirror</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span><span class="p">,</span>
     <span class="n">max_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">min_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -883,12 +904,12 @@
 
 <span class="sd">    :param mean: The input mean array.</span>
 <span class="sd">    :type mean: :class:`numpy.ndarray`</span>
-<span class="sd">    :param array_covar: The covariance array used for downscaling.</span>
-<span class="sd">    :type array_covar: :class:`numpy.ndarray`</span>
+<span class="sd">    :param covariate: The covariance array used for downscaling.</span>
+<span class="sd">    :type covariate: :class:`numpy.ndarray`</span>
 <span class="sd">    :param scale_factor: The factor by which to downscale.</span>
 <span class="sd">    :type scale_factor: float</span>
-<span class="sd">    :param mirror: Whether to mirror the downscaling effect. Default value = False</span>
-<span class="sd">    :type mirror: bool</span>
+<span class="sd">    :param reverse: Whether to mirror the downscaling effect. Default value = False</span>
+<span class="sd">    :type reverse: bool</span>
 <span class="sd">    :param mode: The post-processing mode to apply. Can be &quot;simple&quot;, &quot;prune&quot;, &quot;truncate&quot;, or &quot;compensate&quot;. Default value = &quot;simple&quot;</span>
 <span class="sd">    :type mode: str</span>
 <span class="sd">    :param max_value: [optional] The maximum value for pruning or truncation.</span>
@@ -899,10 +920,10 @@
 <span class="sd">    :rtype: :class:`numpy.ndarray`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># get mask</span>
-    <span class="n">downler</span> <span class="o">=</span> <span class="n">downscaling_mask</span><span class="p">(</span><span class="n">array_covar</span><span class="o">=</span><span class="n">array_covar</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale_factor</span><span class="p">)</span>
+    <span class="n">downler</span> <span class="o">=</span> <span class="n">downscaling_mask</span><span class="p">(</span><span class="n">covariate</span><span class="o">=</span><span class="n">covariate</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale_factor</span><span class="p">)</span>
 
     <span class="n">signal</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="n">mirror</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
         <span class="n">signal</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
     <span class="c1"># compute simple scaling</span>
@@ -917,7 +938,7 @@
     <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;compensate&quot;</span><span class="p">:</span>
         <span class="c1"># this method fix the truncation problem</span>
         <span class="n">grd_pruned</span> <span class="o">=</span> <span class="n">prune</span><span class="p">(</span><span class="n">array</span><span class="o">=</span><span class="n">grd</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="n">max_value</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="n">min_value</span><span class="p">)</span>
-        <span class="n">grd</span> <span class="o">=</span> <span class="n">downscale_linear</span><span class="p">(</span><span class="n">scalar</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span> <span class="n">array_covar</span><span class="o">=</span><span class="n">grd_pruned</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+        <span class="n">grd</span> <span class="o">=</span> <span class="n">downscale_linear</span><span class="p">(</span><span class="n">scalar</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span> <span class="n">covariate</span><span class="o">=</span><span class="n">grd_pruned</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">grd</span></div>
 
@@ -926,22 +947,101 @@
 <span class="c1"># todo [refactor] -- evaluate to rename or move inside</span>
 <div class="viewcode-block" id="downscaling_mask">
 <a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.downscaling_mask">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">downscaling_mask</span><span class="p">(</span><span class="n">array_covar</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">downscaling_mask</span><span class="p">(</span><span class="n">covariate</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute a downscaling mask by using a covariate array</span>
 
-<span class="sd">    :param array_covar: Numpy array of a covariate</span>
-<span class="sd">    :type array_covar: :class:`numpy.ndarray`</span>
+<span class="sd">    :param covariate: Numpy array of a covariate</span>
+<span class="sd">    :type covariate: :class:`numpy.ndarray`</span>
 <span class="sd">    :param scale: scale factor (expected to be positive)</span>
 <span class="sd">    :type scale: float</span>
 <span class="sd">    :return: downscaling mask array</span>
 <span class="sd">    :rtype: :class:`numpy.ndarray`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">scale</span> <span class="o">*</span> <span class="p">(</span><span class="n">array_covar</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">array_covar</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">scale</span> <span class="o">*</span> <span class="p">(</span><span class="n">covariate</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">covariate</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="buffer">
+<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.buffer">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">buffer</span><span class="p">(</span><span class="n">grd_input</span><span class="p">,</span> <span class="n">n_radius</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate a buffer mask</span>
+
+<span class="sd">    :param grd_input: Pseudo-boolean 2D numpy array where pixels with value 1 represent the foreground.</span>
+<span class="sd">    :type grd_input: :class:`numpy.ndarray`</span>
+<span class="sd">    :param n_radius: number of pixels for buffer (inclusive)</span>
+<span class="sd">    :type n_radius: int</span>
+<span class="sd">    :return: Pseudo-boolean 2D numpy array representing buffer area.</span>
+<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">grd_distance</span> <span class="o">=</span> <span class="n">euclidean_distance</span><span class="p">(</span><span class="n">grd_input</span><span class="p">)</span>
+    <span class="n">grd_buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">grd_distance</span> <span class="o">&lt;=</span> <span class="n">n_radius</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">grd_buffer</span></div>
+
+
+
+<div class="viewcode-block" id="euclidean_distance">
+<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.euclidean_distance">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">euclidean_distance</span><span class="p">(</span><span class="n">grd_input</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the Euclidean distance from pixels with value 1</span>
+
+<span class="sd">    :param grd_input: Pseudo-boolean 2D numpy array where pixels with value 1 represent the foreground.</span>
+<span class="sd">    :type grd_input: :class:`numpy.ndarray`</span>
+<span class="sd">    :return: 2D numpy array representing the Euclidean distance.</span>
+<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
+
+<span class="sd">    **Note**</span>
+
+<span class="sd">    - The function uses the `distance_transform_edt` from `scipy.ndimage` to compute the Euclidean distance.</span>
+<span class="sd">    - The inputs array is treated as a binary mask, and the distance is calculated from foreground pixels (value 1).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">distance_transform_edt</span>
+
+    <span class="n">grd_input</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">grd_input</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># reverse foreground values</span>
+    <span class="c1"># Calculate the distance map</span>
+    <span class="k">return</span> <span class="n">distance_transform_edt</span><span class="p">(</span><span class="n">grd_input</span><span class="p">)</span></div>
 
 
 
 <span class="c1"># Special processing of array values</span>
+<span class="c1"># -----------------------------------------------------------------------</span>
+
+<span class="c1"># MODELLING</span>
+<span class="c1"># -----------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="donwscale_parameter">
+<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.donwscale_parameter">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">donwscale_parameter</span><span class="p">(</span><span class="n">upscaled_value</span><span class="p">,</span> <span class="n">basin</span><span class="p">,</span> <span class="n">covariate</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">):</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">downscale_linear</span><span class="p">(</span>
+        <span class="n">scalar</span><span class="o">=</span><span class="n">upscaled_value</span><span class="p">,</span> <span class="n">covariate</span><span class="o">=</span><span class="n">covariate</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">scalar_region</span><span class="o">=</span><span class="n">basin</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">output</span></div>
+
+
+
+<div class="viewcode-block" id="downscale_parameter_to_units">
+<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.downscale_parameter_to_units">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">downscale_parameter_to_units</span><span class="p">(</span>
+    <span class="n">upscaled_value</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">basin</span><span class="p">,</span> <span class="n">covariate_table</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span>
+<span class="p">):</span>
+    <span class="c1"># convert values</span>
+    <span class="n">covariate</span> <span class="o">=</span> <span class="n">convert</span><span class="p">(</span>
+        <span class="n">array</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
+        <span class="n">old_values</span><span class="o">=</span><span class="n">covariate_table</span><span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>  <span class="c1"># unit ids</span>
+        <span class="n">new_values</span><span class="o">=</span><span class="n">covariate_table</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>  <span class="c1"># downscaling weights</span>
+    <span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">donwscale_parameter</span><span class="p">(</span>
+        <span class="n">upscaled_value</span><span class="o">=</span><span class="n">upscaled_value</span><span class="p">,</span> <span class="n">basin</span><span class="o">=</span><span class="n">basin</span><span class="p">,</span> <span class="n">covariate</span><span class="o">=</span><span class="n">covariate</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">output</span></div>
+
+
+
+<span class="c1"># SOILS</span>
 <span class="c1"># -----------------------------------------------------------------------</span>
 
 
@@ -972,11 +1072,15 @@
 
 
 
+<span class="c1"># DEM</span>
+<span class="c1"># -----------------------------------------------------------------------</span>
+
+
 <div class="viewcode-block" id="slope">
 <a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.slope">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">slope</span><span class="p">(</span><span class="n">dem</span><span class="p">,</span> <span class="n">cellsize</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate slope using gradient-based algorithms on a 2D numpy array.</span>
+<span class="sd">    Calculate slope using gradient-based algorithms</span>
 
 <span class="sd">    :param dem: 2D numpy array representing the Digital Elevation Model (``DEM``).</span>
 <span class="sd">    :type dem: :class:`numpy.ndarray`</span>
@@ -998,55 +1102,11 @@
 
 
 
-<div class="viewcode-block" id="buffer">
-<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.buffer">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">buffer</span><span class="p">(</span><span class="n">grd_input</span><span class="p">,</span> <span class="n">n_radius</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate a buffer mask</span>
-
-<span class="sd">    :param grd_input: Pseudo-boolean 2D numpy array where pixels with value 1 represent the foreground.</span>
-<span class="sd">    :type grd_input: :class:`numpy.ndarray`</span>
-<span class="sd">    :param n_radius: number of pixels for buffer (inclusive)</span>
-<span class="sd">    :type n_radius: int</span>
-<span class="sd">    :return: Pseudo-boolean 2D numpy array representing buffer area.</span>
-<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">grd_distance</span> <span class="o">=</span> <span class="n">euclidean_distance</span><span class="p">(</span><span class="n">grd_input</span><span class="p">)</span>
-    <span class="n">grd_buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">grd_distance</span> <span class="o">&lt;=</span> <span class="n">n_radius</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">grd_buffer</span></div>
-
-
-
-<div class="viewcode-block" id="euclidean_distance">
-<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.euclidean_distance">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">euclidean_distance</span><span class="p">(</span><span class="n">grd_input</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate the Euclidean distance from pixels with value 1.</span>
-
-<span class="sd">    :param grd_input: Pseudo-boolean 2D numpy array where pixels with value 1 represent the foreground.</span>
-<span class="sd">    :type grd_input: :class:`numpy.ndarray`</span>
-<span class="sd">    :return: 2D numpy array representing the Euclidean distance.</span>
-<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
-
-<span class="sd">    **Note**</span>
-
-<span class="sd">    - The function uses the `distance_transform_edt` from `scipy.ndimage` to compute the Euclidean distance.</span>
-<span class="sd">    - The inputs array is treated as a binary mask, and the distance is calculated from foreground pixels (value 1).</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">distance_transform_edt</span>
-
-    <span class="n">grd_input</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">grd_input</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># reverse foreground values</span>
-    <span class="c1"># Calculate the distance map</span>
-    <span class="k">return</span> <span class="n">distance_transform_edt</span><span class="p">(</span><span class="n">grd_input</span><span class="p">)</span></div>
-
-
-
 <div class="viewcode-block" id="twi">
 <a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.twi">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">twi</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="n">flowacc</span><span class="p">,</span> <span class="n">cellsize</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate the Topographic Wetness Index ``TWI``.</span>
+<span class="sd">    Calculate the Topographic Wetness Index ``TWI``</span>
 
 <span class="sd">    :param slope: 2D numpy array representing the slope in degrees.</span>
 <span class="sd">    :type slope: :class:`numpy.ndarray`</span>
@@ -1059,7 +1119,7 @@
 
 <span class="sd">    **Note**</span>
 
-<span class="sd">    - The function uses the formula: TWI = ln( A / hc_colors tan(S)), where A is flow accumulation, hc_colors is the cell resolution and S is slope in radians.</span>
+<span class="sd">    - The function uses the formula: TWI = ln( A / cellsize tan(S)), where A is flow accumulation, cellsize is the cell resolution and S is slope in radians.</span>
 <span class="sd">    - The inputs arrays `slope` and `flowacc` should have the same dimensions.</span>
 <span class="sd">    - The formula includes a small value (0.01) to prevent issues with tangent calculations for non-NaN values.</span>
 
@@ -1069,180 +1129,8 @@
 
 
 
-<div class="viewcode-block" id="shalstab_wetness">
-<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.shalstab_wetness">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">shalstab_wetness</span><span class="p">(</span>
-    <span class="n">flowacc</span><span class="p">,</span>
-    <span class="n">slope</span><span class="p">,</span>
-    <span class="n">cellsize</span><span class="p">,</span>
-    <span class="n">soil_phi</span><span class="p">,</span>
-    <span class="n">soil_z</span><span class="p">,</span>
-    <span class="n">soil_c</span><span class="p">,</span>
-    <span class="n">soil_p</span><span class="p">,</span>
-    <span class="n">water_p</span><span class="o">=</span><span class="mi">997</span><span class="p">,</span>
-    <span class="n">g</span><span class="o">=</span><span class="mf">9.8</span><span class="p">,</span>
-    <span class="n">degree</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">kPa</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate the SHALSTAB wetness model</span>
-
-<span class="sd">    :param flowacc: flow accumulation map (square meters)</span>
-<span class="sd">    :type flowacc: :class:`numpy.ndarray`</span>
-<span class="sd">    :param slope: slope map (degrees or radians)</span>
-<span class="sd">    :type slope: :class:`numpy.ndarray`</span>
-<span class="sd">    :param cellsize: grid cell size (meters)</span>
-<span class="sd">    :type cellsize: float</span>
-<span class="sd">    :param soil_phi: soil angle of internal friction (degrees or radians)</span>
-<span class="sd">    :type soil_phi: :class:`numpy.ndarray` or float</span>
-<span class="sd">    :param soil_z: soil depth (meters)</span>
-<span class="sd">    :type soil_z: :class:`numpy.ndarray` or float</span>
-<span class="sd">    :param soil_c: soil cohesion (Pa or N/m0² or kg/ms²)</span>
-<span class="sd">    :type soil_c: :class:`numpy.ndarray` or float</span>
-<span class="sd">    :param soil_p: soil density (kg/m0³)</span>
-<span class="sd">    :type soil_p: :class:`numpy.ndarray` or float</span>
-<span class="sd">    :param water_p: water density (kg/m0³)</span>
-<span class="sd">    :type water_p: float</span>
-<span class="sd">    :param g: gravity acceleration (m0 / s²)</span>
-<span class="sd">    :type g: float</span>
-<span class="sd">    :param degree: flag to note if slope and soil_phi are in degrees</span>
-<span class="sd">    :type degree: bool</span>
-<span class="sd">    :param kPa: flag to note if soil_c in kPa</span>
-<span class="sd">    :type kPa: bool</span>
-<span class="sd">    :return: map of q/T ratio</span>
-<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">degree</span><span class="p">:</span>
-        <span class="c1"># convert to radians</span>
-        <span class="n">slope</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span>
-        <span class="n">soil_phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">soil_phi</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">kPa</span><span class="p">:</span>
-        <span class="c1"># convert to Pa</span>
-        <span class="n">soil_c</span> <span class="o">=</span> <span class="n">soil_c</span> <span class="o">*</span> <span class="mi">1000</span>
-
-    <span class="c1"># get density ratio</span>
-    <span class="n">density_r</span> <span class="o">=</span> <span class="n">soil_p</span> <span class="o">/</span> <span class="n">water_p</span>
-
-    <span class="c1"># get tangent ratio</span>
-    <span class="n">tan_r</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">soil_phi</span><span class="p">))</span>
-
-    <span class="n">slope_term</span> <span class="o">=</span> <span class="n">density_r</span> <span class="o">*</span> <span class="n">tan_r</span>
-
-    <span class="c1"># get force term</span>
-    <span class="n">cohesion_term</span> <span class="o">=</span> <span class="n">soil_c</span> <span class="o">/</span> <span class="p">(</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">slope</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">soil_phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">water_p</span> <span class="o">*</span> <span class="n">g</span> <span class="o">*</span> <span class="n">soil_z</span>
-    <span class="p">)</span>
-
-    <span class="n">topo_term</span> <span class="o">=</span> <span class="n">cellsize</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span> <span class="o">/</span> <span class="n">flowacc</span>
-
-    <span class="c1"># apply full equation</span>
-    <span class="n">q_t</span> <span class="o">=</span> <span class="n">topo_term</span> <span class="o">*</span> <span class="p">(</span><span class="n">slope_term</span> <span class="o">+</span> <span class="n">cohesion_term</span><span class="p">)</span>
-
-    <span class="c1"># force non-negative</span>
-    <span class="n">q_t</span> <span class="o">=</span> <span class="n">q_t</span> <span class="o">*</span> <span class="p">(</span><span class="n">q_t</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.0001</span>
-
-    <span class="n">shalstab_classes</span> <span class="o">=</span> <span class="n">classify</span><span class="p">(</span>
-        <span class="n">array</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">q_t</span><span class="p">),</span>
-        <span class="n">upvalues</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">3.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.2</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span>
-        <span class="n">classes</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span>
-    <span class="p">)</span>
-
-    <span class="c1"># improve id 1 and id 7</span>
-    <span class="n">mask1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">soil_phi</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">density_r</span><span class="p">)))</span>
-    <span class="n">mask7</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">soil_phi</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">slope</span><span class="p">))</span>
-
-    <span class="c1"># shalstab_classes = (shalstab_classes * (mask1 != 1)) + mask1</span>
-    <span class="c1"># shalstab_classes = (shalstab_classes * (mask7 != 1)) + (mask7 * 7)</span>
-
-    <span class="k">return</span> <span class="n">q_t</span><span class="p">,</span> <span class="n">shalstab_classes</span></div>
-
-
-
-<div class="viewcode-block" id="usle_l">
-<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.usle_l">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">usle_l</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="n">cellsize</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Wischmeier &amp; Smith (1978) L factor</span>
-
-<span class="sd">    L = (x / 22.13) ^ m0</span>
-
-<span class="sd">    where:</span>
-
-<span class="sd">    m0 = 0.2 when sinθ &lt; 0.01;</span>
-<span class="sd">    m0 = 0.3 when 0.01 ≤ sinθ ≤ 0.03;</span>
-<span class="sd">    m0 = 0.4 when 0.03 &lt; sinθ &lt; 0.05;</span>
-<span class="sd">    m0 = 0.5 when sinθ ≥ 0.05</span>
-
-<span class="sd">    x is the plot lenght taken as 1.4142 * cellsize  (diagonal length of cell)</span>
-
-<span class="sd">    :param slope: slope in degrees of terrain 2d array</span>
-<span class="sd">    :type slope: :class:`numpy.ndarray`</span>
-<span class="sd">    :param cellsize: cell size in meters</span>
-<span class="sd">    :type cellsize: float</span>
-<span class="sd">    :return: Wischmeier &amp; Smith (1978) L factor 2d array</span>
-<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">slope_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">slope</span> <span class="o">/</span> <span class="mi">360</span>
-    <span class="n">lcl_grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">slope_rad</span><span class="p">)</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="n">classify</span><span class="p">(</span>
-        <span class="n">lcl_grad</span><span class="p">,</span>
-        <span class="n">upvalues</span><span class="o">=</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">lcl_grad</span><span class="p">)),</span>
-        <span class="n">classes</span><span class="o">=</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">cellsize</span> <span class="o">/</span> <span class="mf">22.13</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="usle_s">
-<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.usle_s">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">usle_s</span><span class="p">(</span><span class="n">slope</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the USLE S-factor (slope steepness factor) based on the Wischmeier &amp; Smith (1978) equation.</span>
-
-<span class="sd">    S = 65.41(sinθ)^2 + 4.56sinθ + 0.065</span>
-
-<span class="sd">    :param slope: Slope in degrees of terrain.</span>
-<span class="sd">    :type slope: :class:`numpy.ndarray`</span>
-<span class="sd">    :return: The USLE S-factor.</span>
-<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">slope_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">slope</span> <span class="o">/</span> <span class="mi">360</span>
-    <span class="n">lcl_grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">slope_rad</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">(</span><span class="mf">65.41</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">lcl_grad</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="mf">4.56</span> <span class="o">*</span> <span class="n">lcl_grad</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.065</span></div>
-
-
-
-<div class="viewcode-block" id="usle_m_a">
-<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.usle_m_a">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">usle_m_a</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">prec</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">cellsize</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    USLE-M Annual Soil Loss (Kinnell &amp; Risse, 1998)</span>
-
-<span class="sd">    :param q: Annual runoff in mm/year.</span>
-<span class="sd">    :type q: :class:`numpy.ndarray`</span>
-<span class="sd">    :param prec: Annual precipitation in mm/year.</span>
-<span class="sd">    :type prec: :class:`numpy.ndarray` or float</span>
-<span class="sd">    :param r: Rain erosivity in MJ mm h-1 ha-1 year-1.</span>
-<span class="sd">    :type r: :class:`numpy.ndarray` or float</span>
-<span class="sd">    :param k: Erodibility K factor in ton h MJ-1 mm-1.</span>
-<span class="sd">    :type k: :class:`numpy.ndarray` or float</span>
-<span class="sd">    :param l: USLE/RUSLE L factor.</span>
-<span class="sd">    :type l: :class:`numpy.ndarray` or float</span>
-<span class="sd">    :param s: USLE/RUSLE S factor.</span>
-<span class="sd">    :type s: :class:`numpy.ndarray` or float</span>
-<span class="sd">    :param c: C_UM factor.</span>
-<span class="sd">    :type c: :class:`numpy.ndarray` or float</span>
-<span class="sd">    :param p: USLE/RUSLE P factor.</span>
-<span class="sd">    :type p: :class:`numpy.ndarray` or float</span>
-<span class="sd">    :param cellsize: Grid cell size in meters. Default value = 30</span>
-<span class="sd">    :type cellsize: float</span>
-<span class="sd">    :return: Annual Soil Loss in ton/year.</span>
-<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">q</span> <span class="o">/</span> <span class="n">prec</span><span class="p">)</span> <span class="o">*</span> <span class="n">r</span> <span class="o">*</span> <span class="n">k</span> <span class="o">*</span> <span class="n">l</span> <span class="o">*</span> <span class="n">s</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="n">cellsize</span> <span class="o">*</span> <span class="n">cellsize</span> <span class="o">/</span> <span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span></div>
-
+<span class="c1"># DRAINAGE AND ROUTING</span>
+<span class="c1"># -----------------------------------------------------------------------</span>
 
 
 <div class="viewcode-block" id="rivers_wedge">
@@ -1250,12 +1138,6 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">rivers_wedge</span><span class="p">(</span><span class="n">grd_rivers</span><span class="p">,</span> <span class="n">wedge_width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">wedge_depth</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a wedge-like trench along the river lines.</span>
-
-<span class="sd">    Notes:</span>
-
-<span class="sd">    - The function generates a wedge-like trench along the river lines based on distance transform.</span>
-<span class="sd">    - The inputs array `grd_rivers` should be a pseudo-boolean grid where rivers are represented as 1 and others as 0.</span>
-<span class="sd">    - The width `w` controls the width of the trench, and `h` controls its height.</span>
 
 <span class="sd">    :param grd_rivers: Pseudo-boolean grid indicating the presence of rivers.</span>
 <span class="sd">    :type grd_rivers: :class:`numpy.ndarray`</span>
@@ -1265,6 +1147,12 @@
 <span class="sd">    :type wedge_depth: float</span>
 <span class="sd">    :return: Grid of the wedge (positive).</span>
 <span class="sd">    :rtype: :class:`numpy.ndarray`</span>
+
+<span class="sd">    **Notes**</span>
+
+<span class="sd">    - The function generates a wedge-like trench along the river lines based on distance transform.</span>
+<span class="sd">    - The inputs array `grd_rivers` should be a pseudo-boolean grid where rivers are represented as 1 and others as 0.</span>
+<span class="sd">    - The width `w` controls the width of the trench, and `h` controls its height.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">grd_dist</span> <span class="o">=</span> <span class="n">euclidean_distance</span><span class="p">(</span><span class="n">grd_input</span><span class="o">=</span><span class="n">grd_rivers</span><span class="p">)</span>
@@ -1494,7 +1382,6 @@
                     <span class="c1"># print(f&quot;ldd: {lcl_ldd}&quot;)</span>
                     <span class="c1"># print(f&quot;next j: {j_next}&quot;)</span>
                     <span class="c1"># print(f&quot;next i: {i_next}&quot;)</span>
-                    <span class="c1"># time.sleep(0.2)</span>
                     <span class="c1"># append to queue</span>
                     <span class="k">if</span> <span class="n">n_trace_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="n">list_accdist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_dist</span><span class="p">)</span>
@@ -1544,6 +1431,190 @@
                 <span class="k">pass</span>
 
     <span class="k">return</span> <span class="n">n_res</span> <span class="o">*</span> <span class="n">grd_outdist</span></div>
+
+
+
+<span class="c1"># SHALSTAB</span>
+<span class="c1"># -----------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="shalstab_wetness">
+<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.shalstab_wetness">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">shalstab_wetness</span><span class="p">(</span>
+    <span class="n">flowacc</span><span class="p">,</span>
+    <span class="n">slope</span><span class="p">,</span>
+    <span class="n">cellsize</span><span class="p">,</span>
+    <span class="n">soil_phi</span><span class="p">,</span>
+    <span class="n">soil_z</span><span class="p">,</span>
+    <span class="n">soil_c</span><span class="p">,</span>
+    <span class="n">soil_p</span><span class="p">,</span>
+    <span class="n">water_p</span><span class="o">=</span><span class="mi">997</span><span class="p">,</span>
+    <span class="n">g</span><span class="o">=</span><span class="mf">9.8</span><span class="p">,</span>
+    <span class="n">degree</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">kPa</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the SHALSTAB wetness model</span>
+
+<span class="sd">    :param flowacc: flow accumulation map (square meters)</span>
+<span class="sd">    :type flowacc: :class:`numpy.ndarray`</span>
+<span class="sd">    :param slope: slope map (degrees or radians)</span>
+<span class="sd">    :type slope: :class:`numpy.ndarray`</span>
+<span class="sd">    :param cellsize: grid cell size (meters)</span>
+<span class="sd">    :type cellsize: float</span>
+<span class="sd">    :param soil_phi: soil angle of internal friction (degrees or radians)</span>
+<span class="sd">    :type soil_phi: :class:`numpy.ndarray` or float</span>
+<span class="sd">    :param soil_z: soil depth (meters)</span>
+<span class="sd">    :type soil_z: :class:`numpy.ndarray` or float</span>
+<span class="sd">    :param soil_c: soil cohesion (Pa or N/m0² or kg/ms²)</span>
+<span class="sd">    :type soil_c: :class:`numpy.ndarray` or float</span>
+<span class="sd">    :param soil_p: soil density (kg/m0³)</span>
+<span class="sd">    :type soil_p: :class:`numpy.ndarray` or float</span>
+<span class="sd">    :param water_p: water density (kg/m0³)</span>
+<span class="sd">    :type water_p: float</span>
+<span class="sd">    :param g: gravity acceleration (m0 / s²)</span>
+<span class="sd">    :type g: float</span>
+<span class="sd">    :param degree: flag to note if slope and soil_phi are in degrees</span>
+<span class="sd">    :type degree: bool</span>
+<span class="sd">    :param kPa: flag to note if soil_c in kPa</span>
+<span class="sd">    :type kPa: bool</span>
+<span class="sd">    :return: map of q/T ratio</span>
+<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">degree</span><span class="p">:</span>
+        <span class="c1"># convert to radians</span>
+        <span class="n">slope</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span>
+        <span class="n">soil_phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">soil_phi</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">kPa</span><span class="p">:</span>
+        <span class="c1"># convert to Pa</span>
+        <span class="n">soil_c</span> <span class="o">=</span> <span class="n">soil_c</span> <span class="o">*</span> <span class="mi">1000</span>
+
+    <span class="c1"># get density ratio</span>
+    <span class="n">density_r</span> <span class="o">=</span> <span class="n">soil_p</span> <span class="o">/</span> <span class="n">water_p</span>
+
+    <span class="c1"># get tangent ratio</span>
+    <span class="n">tan_r</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">soil_phi</span><span class="p">))</span>
+
+    <span class="n">slope_term</span> <span class="o">=</span> <span class="n">density_r</span> <span class="o">*</span> <span class="n">tan_r</span>
+
+    <span class="c1"># get force term</span>
+    <span class="n">cohesion_term</span> <span class="o">=</span> <span class="n">soil_c</span> <span class="o">/</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">slope</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">soil_phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">water_p</span> <span class="o">*</span> <span class="n">g</span> <span class="o">*</span> <span class="n">soil_z</span>
+    <span class="p">)</span>
+
+    <span class="n">topo_term</span> <span class="o">=</span> <span class="n">cellsize</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span> <span class="o">/</span> <span class="n">flowacc</span>
+
+    <span class="c1"># apply full equation</span>
+    <span class="n">q_t</span> <span class="o">=</span> <span class="n">topo_term</span> <span class="o">*</span> <span class="p">(</span><span class="n">slope_term</span> <span class="o">+</span> <span class="n">cohesion_term</span><span class="p">)</span>
+
+    <span class="c1"># force non-negative</span>
+    <span class="n">q_t</span> <span class="o">=</span> <span class="n">q_t</span> <span class="o">*</span> <span class="p">(</span><span class="n">q_t</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.0001</span>
+
+    <span class="n">shalstab_classes</span> <span class="o">=</span> <span class="n">classify</span><span class="p">(</span>
+        <span class="n">array</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">q_t</span><span class="p">),</span>
+        <span class="n">upvalues</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">3.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.8</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.2</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span>
+        <span class="n">classes</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span>
+    <span class="p">)</span>
+
+    <span class="c1"># improve id 1 and id 7</span>
+    <span class="n">mask1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">soil_phi</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">density_r</span><span class="p">)))</span>
+    <span class="n">mask7</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">soil_phi</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">slope</span><span class="p">))</span>
+
+    <span class="c1"># shalstab_classes = (shalstab_classes * (mask1 != 1)) + mask1</span>
+    <span class="c1"># shalstab_classes = (shalstab_classes * (mask7 != 1)) + (mask7 * 7)</span>
+
+    <span class="k">return</span> <span class="n">q_t</span><span class="p">,</span> <span class="n">shalstab_classes</span></div>
+
+
+
+<span class="c1"># USLE</span>
+<span class="c1"># -----------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="usle_l">
+<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.usle_l">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">usle_l</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="n">cellsize</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the USLE L factor of Wischmeier &amp; Smith (1978)</span>
+
+<span class="sd">    L = (x / 22.13) ^ m0</span>
+
+<span class="sd">    where:</span>
+
+<span class="sd">    m0 = 0.2 when sinθ &lt; 0.01;</span>
+<span class="sd">    m0 = 0.3 when 0.01 ≤ sinθ ≤ 0.03;</span>
+<span class="sd">    m0 = 0.4 when 0.03 &lt; sinθ &lt; 0.05;</span>
+<span class="sd">    m0 = 0.5 when sinθ ≥ 0.05</span>
+
+<span class="sd">    x is the plot lenght taken as 1.4142 * cellsize  (diagonal length of cell)</span>
+
+<span class="sd">    :param slope: slope in degrees of terrain 2d array</span>
+<span class="sd">    :type slope: :class:`numpy.ndarray`</span>
+<span class="sd">    :param cellsize: cell size in meters</span>
+<span class="sd">    :type cellsize: float</span>
+<span class="sd">    :return: Wischmeier &amp; Smith (1978) L factor 2d array</span>
+<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">slope_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">slope</span> <span class="o">/</span> <span class="mi">360</span>
+    <span class="n">lcl_grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">slope_rad</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">classify</span><span class="p">(</span>
+        <span class="n">lcl_grad</span><span class="p">,</span>
+        <span class="n">upvalues</span><span class="o">=</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">lcl_grad</span><span class="p">)),</span>
+        <span class="n">classes</span><span class="o">=</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">cellsize</span> <span class="o">/</span> <span class="mf">22.13</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="usle_s">
+<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.usle_s">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">usle_s</span><span class="p">(</span><span class="n">slope</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the USLE S-factor (slope steepness factor) based on the Wischmeier &amp; Smith (1978) equation.</span>
+
+<span class="sd">    S = 65.41(sinθ)^2 + 4.56sinθ + 0.065</span>
+
+<span class="sd">    :param slope: Slope in degrees of terrain.</span>
+<span class="sd">    :type slope: :class:`numpy.ndarray`</span>
+<span class="sd">    :return: The USLE S-factor.</span>
+<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">slope_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">slope</span> <span class="o">/</span> <span class="mi">360</span>
+    <span class="n">lcl_grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">slope_rad</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mf">65.41</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">lcl_grad</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="mf">4.56</span> <span class="o">*</span> <span class="n">lcl_grad</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.065</span></div>
+
+
+
+<div class="viewcode-block" id="usle_m_a">
+<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.usle_m_a">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">usle_m_a</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">prec</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">cellsize</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    USLE-M Annual Soil Loss (Kinnell &amp; Risse, 1998)</span>
+
+<span class="sd">    :param q: Annual runoff in mm/year.</span>
+<span class="sd">    :type q: :class:`numpy.ndarray`</span>
+<span class="sd">    :param prec: Annual precipitation in mm/year.</span>
+<span class="sd">    :type prec: :class:`numpy.ndarray` or float</span>
+<span class="sd">    :param r: Rain erosivity in MJ mm h-1 ha-1 year-1.</span>
+<span class="sd">    :type r: :class:`numpy.ndarray` or float</span>
+<span class="sd">    :param k: Erodibility K factor in ton h MJ-1 mm-1.</span>
+<span class="sd">    :type k: :class:`numpy.ndarray` or float</span>
+<span class="sd">    :param l: USLE/RUSLE L factor.</span>
+<span class="sd">    :type l: :class:`numpy.ndarray` or float</span>
+<span class="sd">    :param s: USLE/RUSLE S factor.</span>
+<span class="sd">    :type s: :class:`numpy.ndarray` or float</span>
+<span class="sd">    :param c: C_UM factor.</span>
+<span class="sd">    :type c: :class:`numpy.ndarray` or float</span>
+<span class="sd">    :param p: USLE/RUSLE P factor.</span>
+<span class="sd">    :type p: :class:`numpy.ndarray` or float</span>
+<span class="sd">    :param cellsize: Grid cell size in meters. Default value = 30</span>
+<span class="sd">    :type cellsize: float</span>
+<span class="sd">    :return: Annual Soil Loss in ton/year.</span>
+<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">q</span> <span class="o">/</span> <span class="n">prec</span><span class="p">)</span> <span class="o">*</span> <span class="n">r</span> <span class="o">*</span> <span class="n">k</span> <span class="o">*</span> <span class="n">l</span> <span class="o">*</span> <span class="n">s</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="n">cellsize</span> <span class="o">*</span> <span class="n">cellsize</span> <span class="o">/</span> <span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span></div>
 
 </pre></div>
 

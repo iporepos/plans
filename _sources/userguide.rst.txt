@@ -7,11 +7,6 @@
 User Guide
 #######################################################################
 
-.. _quickview:
-
-Overview
-***********************************************************************
-
 ``plans`` is open-source, cross-platform tool that is built on top of `Python`_
 and some common dependencies, like `NumPy`_, `SciPy`_, `Matplotlib`_, `Pandas`_ and `Rasterio`_.
 

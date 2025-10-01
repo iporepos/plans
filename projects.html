@@ -414,12 +414,31 @@
 <p class="admonition-title">See also</p>
 <p>Check out the <a class="reference internal" href="files.html#files"><span class="std std-ref">Files</span></a> page for more details on how to setup input data.</p>
 </div>
-<p>All simulations are organized inside a project, which is a
-<strong>self-contained file system</strong> with a standardized folder structure.
-Users must first create or specify a project before running any simulation.
-Each simulation must specify which scenario and basin combination
-(climate + land use + basin) to run. All required input data,
-intermediate caches, and outputs live inside this folder tree.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">plans</span></code> system for projects works following this general rules:</p>
+<p><strong>Standard file system</strong></p>
+<p>A project has a standard file system, with expected folder and file names
+in an expected nesting pattern. Standard components may be required or optional (extra).
+Non-standard components are ignored.</p>
+<p><strong>Self-contained file system</strong></p>
+<p>A project is self-contained, since all files and outputs for running <code class="docutils literal notranslate"><span class="pre">plans</span></code> live inside a project.
+Users must first create or specify/load a project before running any analysis or simulation.</p>
+<p><strong>One area of interest</strong></p>
+<p>A project is defined for a single area of interest <code class="docutils literal notranslate"><span class="pre">AOI</span></code>. This means that all data is related
+to a rectangular spatial extension. Maps must share the same extension.
+This can account for multiple basins within the <code class="docutils literal notranslate"><span class="pre">AOI</span></code>.</p>
+<p><strong>Simulation combinations</strong></p>
+<p>A model simulation in a project is defined by a scenario and basin combination.
+So every run is referred to a climate + land use + basin combination.</p>
+<section id="project-structure">
+<span id="id2"></span><h2>Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading">#</a></h2>
+<p>A project is divided into two main parts:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#project-data-folder"><span class="std std-ref">Data Folder</span></a> — Contains all <a class="reference internal" href="files.html#io-input-files"><span class="std std-ref">Input Files</span></a> and <a class="reference internal" href="files.html#io-intermediate-files"><span class="std std-ref">Intermediate Files</span></a>.</p></li>
+<li><p><a class="reference internal" href="#project-outputs-folder"><span class="std std-ref">Outputs Folder</span></a> — Stores all results of simulations and processing operations.</p></li>
+</ul>
+<p>Mandatory folders (<code class="docutils literal notranslate"><span class="pre">data/</span></code> and <code class="docutils literal notranslate"><span class="pre">outputs/</span></code>) are created automatically when a project is setup.
+Users may add extra folders and files, but the standardized structure must be preserved.</p>
+<p>The project tree of looks like this:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">{</span>project<span class="o">}</span>/
 <span class="w">     </span>├──<span class="w"> </span>data/
 <span class="w">     </span>│<span class="w">     </span>├──<span class="w"> </span>project_info.csv
@@ -456,41 +475,53 @@ intermediate caches, and outputs live inside this folder tree.</p>
 <span class="w">           </span>└──<span class="w"> </span>...
 </pre></div>
 </div>
-<section id="project-structure">
-<span id="id2"></span><h2>Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading">#</a></h2>
-<p>A project is divided into two main parts:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#project-data-folder"><span class="std std-ref">Data Folder</span></a> — Contains all <a class="reference internal" href="files.html#io-input-files"><span class="std std-ref">Input Files</span></a> and <a class="reference internal" href="files.html#io-intermediate-files"><span class="std std-ref">Intermediate Files</span></a> (caches), and configuration tables.</p></li>
-<li><p><a class="reference internal" href="#project-outputs-folder"><span class="std std-ref">Outputs Folder</span></a> — Stores all results of simulations and processing operations.</p></li>
-</ul>
-<p>Mandatory folders (<code class="docutils literal notranslate"><span class="pre">data/</span></code> and <code class="docutils literal notranslate"><span class="pre">outputs/</span></code>) are created automatically when a project is setup.
-Users may add extra folders and files, but the standardized structure must be preserved.</p>
 </section>
 <section id="data-folder">
 <span id="project-data-folder"></span><h2>Data Folder<a class="headerlink" href="#data-folder" title="Link to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder is where users provide input files and where the model stores
 intermediate pre-processing results.</p>
-<p><strong>Subfolders:</strong></p>
+<p><strong>Data standard subfolders:</strong></p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">basins/</span></code> — Contains one default project main basin (<code class="docutils literal notranslate"><span class="pre">main/</span></code>) and any number of user-defined catchments. Each simulation must specify which basin to use.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">basins/</span></code> — Contains one standard project main basin (<code class="docutils literal notranslate"><span class="pre">main/</span></code>) and any number of user-defined catchments. Each simulation must specify which basin to use.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">climate/</span></code> — Contains one default climate scenario (<code class="docutils literal notranslate"><span class="pre">observed/</span></code>) and any number of user-defined scenarios. Each simulation must specify which climate scenario to use.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">lulc/</span></code> — Similar to climate, with an <code class="docutils literal notranslate"><span class="pre">observed/</span></code> folder for historical land-use data and optional land use scenario folders.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lulc/</span></code> — Similar to climate, with a default <code class="docutils literal notranslate"><span class="pre">observed/</span></code> folder for historical land-use data and optional land use scenario folders.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">soils/</span></code> — Stores soil maps and attributes.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">topo/</span></code> — Contains topographic derivatives such as HAND, TWI, and other DEM-derived data.</p></li>
 </ul>
+<section id="optional-subfolders">
+<span id="project-subfolders"></span><h3>Optional subfolders<a class="headerlink" href="#optional-subfolders" title="Link to this heading">#</a></h3>
+<p>Users may create optional subfolders under <code class="docutils literal notranslate"><span class="pre">basins/</span></code>, <code class="docutils literal notranslate"><span class="pre">climate/</span></code> and
+<code class="docutils literal notranslate"><span class="pre">lulc/</span></code> data folders. Any name for this subfolders is possible,
+but must be just one word with ASCII characters.</p>
+<div class="danger admonition">
+<p class="admonition-title">Naming subfolders with just one word</p>
+<p>Subfolders must be named with a single word with ASCII characters:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>└──<span class="w"> </span>scenario01<span class="w">  </span><span class="c1"># this folder name is ok</span>
+</pre></div>
+</div>
+<p>Special characters, blank spaces, underscores and hyphen are <strong>not allowed</strong>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>└──<span class="w"> </span>my<span class="w"> </span>ipcc-scenario_01<span class="w">  </span><span class="c1"># not allowed folder name</span>
+</pre></div>
+</div>
+<p>This rule is intended to avoid disrupting file name patterns and command line strings.</p>
+</div>
+</section>
 <section id="basin-subfolder">
 <span id="project-basin-subfolder"></span><h3>Basin Subfolder<a class="headerlink" href="#basin-subfolder" title="Link to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">basins/</span></code> folder defines the spatial units of simulation within the project.
+<p>The <code class="docutils literal notranslate"><span class="pre">basins/</span></code> folder defines the units of simulation within the project.
 Each basin is represented by a <strong>boolean footprint raster</strong> that marks which
 raster cells belong to that catchment within the global spatial extent of the project.</p>
-<p>By default, a single subfolder called <code class="docutils literal notranslate"><span class="pre">main/</span></code> is created when a project is first initialized.
+<div class="important admonition">
+<p class="admonition-title">Main basin standard subfolder</p>
+<p>Data for the <strong>main basin</strong> of a project is expected to live in a subfolder named <code class="docutils literal notranslate"><span class="pre">main/</span></code>.
 This is intended to hold the <strong>primary basin of interest</strong> for the project — not necessarily the
-largest catchment, but the one most relevant for analysis.</p>
+largest or gauged catchment, but the one most relevant for the project analysis.</p>
+</div>
 <p>Users may create additional subfolders to represent:</p>
 <ul class="simple">
-<li><p><strong>Sub-catchments</strong> within the project area (for nested or partial-basin simulations)</p></li>
-<li><p><strong>Ungauged catchments</strong> (to run simulations without observed flow data)</p></li>
+<li><p><strong>Sub-basins</strong> within the project area (for nested or partial-basin simulations)</p></li>
 <li><p><strong>Multiple gauged basins</strong> (to allow calibration or validation against multiple flow stations)</p></li>
+<li><p><strong>Ungauged basins</strong> (to run simulations without observed flow data)</p></li>
 </ul>
 <p>Each basin folder may contain:</p>
 <ul class="simple">
@@ -507,6 +538,11 @@ for different spatial subsets of the project area.</p>
 A scenario is a named folder containing all input data for a specific <strong>climate</strong> or <strong>land-use</strong> condition.</p>
 <p>By default, a subfolder called <code class="docutils literal notranslate"><span class="pre">observed/</span></code> is created for both climate and land use.
 This is intended to store <strong>historical or baseline data</strong> used as the reference case for simulations.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There is no standard expected name for scenarios. The default <code class="docutils literal notranslate"><span class="pre">observed/</span></code> is only
+a name suggestion.</p>
+</div>
 <p>Users may create additional scenario folders to represent:</p>
 <ul class="simple">
 <li><p><strong>Alternative climate conditions</strong> (e.g., future projections, synthetic weather series)</p></li>
@@ -531,7 +567,7 @@ Each processing operation is saved in its own subfolder, identified by <code cla
 </section>
 <section id="non-required-subfolders-and-files">
 <span id="project-convention"></span><h2>Non-required subfolders and files<a class="headerlink" href="#non-required-subfolders-and-files" title="Link to this heading">#</a></h2>
-<p>All required folders in a project may hold extra subfolders or files for helpíng to organize data
+<p>All required folders in a project may hold extra subfolders or files for helping to organize data
 and integrate with data processing pipelines. Non-required subfolders are ignored by <code class="docutils literal notranslate"><span class="pre">plans</span></code>.</p>
 <p>However, for the purpose of data sharing, we recommend to create subfolders always in the <code class="docutils literal notranslate"><span class="pre">{project}/data/</span></code> folder and following this naming convention:</p>
 <ul class="simple">
@@ -547,7 +583,7 @@ These files may be converted to the standard format via custom scripts</p></li>
 <p class="admonition-title">Underscore prefix <code class="docutils literal notranslate"><span class="pre">_</span></code></p>
 <p>A possible extension of this convention is to include an underscore prefix <code class="docutils literal notranslate"><span class="pre">_</span></code> denoting a non-required folder, e.g., <code class="docutils literal notranslate"><span class="pre">data/_src/</span></code>. This prefix will visually split the non-required folders from the required ones.</p>
 </div>
-<div class="warning admonition">
+<div class="danger admonition">
 <p class="admonition-title">Basin, Land use and Climate subfolders are reserved for basins and scenarios</p>
 <p>Do not create subfolders in <code class="docutils literal notranslate"><span class="pre">data/basins</span></code>, <code class="docutils literal notranslate"><span class="pre">data/lulc</span></code> and <code class="docutils literal notranslate"><span class="pre">data/climate</span></code>. These are always interpreted as basins or scenarios folders.</p>
 </div>
@@ -630,6 +666,7 @@ These files may be converted to the standard format via custom scripts</p></li>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-structure">Project Structure</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-folder">Data Folder</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-subfolders">Optional subfolders</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#basin-subfolder">Basin Subfolder</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scenario-subfolder">Scenario Subfolder</a></li>
 </ul>
