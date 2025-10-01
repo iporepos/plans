@@ -1476,6 +1476,7 @@
 
         <span class="c1"># handle flow variable</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">agg</span> <span class="o">==</span> <span class="s2">&quot;sum&quot;</span><span class="p">:</span>
+
             <span class="c1"># compute downscaling factor assuming at least 2 data points</span>
             <span class="n">tdelta_source</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1492,6 +1493,14 @@
         <span class="n">df_downscale</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_downscale</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span>
         <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">agg</span> <span class="o">==</span> <span class="s2">&quot;sum&quot;</span><span class="p">:</span>
+            <span class="c1"># apply factor for numerical loss/gain</span>
+            <span class="n">up_sum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">down_sum</span> <span class="o">=</span> <span class="n">df_downscale</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">diff_factor</span> <span class="o">=</span> <span class="n">down_sum</span> <span class="o">/</span> <span class="n">up_sum</span>
+            <span class="n">df_downscale</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_downscale</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span> <span class="o">/</span> <span class="n">diff_factor</span>
+
         <span class="k">return</span> <span class="n">df_downscale</span></div>
 
 
@@ -1692,6 +1701,7 @@
                 <span class="s2">&quot;marker&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">&quot;marker_eva&quot;</span><span class="p">:</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;n_bins&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+                <span class="s2">&quot;subtitle_a&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -1772,7 +1782,6 @@
         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ylabel&quot;</span><span class="p">])</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;xmin&quot;</span><span class="p">],</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;xmax&quot;</span><span class="p">])</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ymin&quot;</span><span class="p">],</span> <span class="mf">1.2</span> <span class="o">*</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ymax&quot;</span><span class="p">])</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;plot_grid&quot;</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="n">include_eva</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eva</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1851,7 +1860,6 @@
                 <span class="n">ax3</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
                 <span class="n">ax3</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
                 <span class="n">ax3</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;T(X)&quot;</span><span class="p">)</span>
-                <span class="n">ax3</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;plot_grid&quot;</span><span class="p">])</span>
 
         <span class="c1"># --------------------- end --------------------- #</span>
         <span class="c1"># return object, show or save</span>
@@ -5224,6 +5232,7 @@
             <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span>
             <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;upper&quot;</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="c1"># todo the extent issue must be settled</span>
         <span class="n">ax1</span><span class="o">.</span><span class="n">set_autoscale_on</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Prevent auto-scaling which might add padding</span>
 
         <span class="c1"># plot helper geometry</span>
@@ -6826,6 +6835,31 @@
         <span class="n">df_areas_full</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_datetime</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span>
             <span class="n">df_areas_full</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_datetime</span><span class="p">]</span>
         <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">df_areas_full</span><span class="o">.</span><span class="n">info</span><span class="p">())</span>
+        <span class="c1"># handle id for raster</span>
+        <span class="n">field_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_raster&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">)</span>
+        <span class="c1"># slice from areas</span>
+        <span class="n">df_slice</span> <span class="o">=</span> <span class="n">df_areas_full</span><span class="p">[[</span><span class="n">field_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_datetime</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">df_slice</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">df_slice</span><span class="p">)</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="n">field_name</span><span class="p">)</span>
+
+        <span class="c1"># sort and reset</span>
+        <span class="n">df_slice</span> <span class="o">=</span> <span class="n">df_slice</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">field_datetime</span><span class="p">)</span>
+        <span class="n">df_slice</span> <span class="o">=</span> <span class="n">df_slice</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># create the id</span>
+        <span class="n">field_id</span> <span class="o">=</span> <span class="s2">&quot;id_raster&quot;</span>
+        <span class="n">df_slice</span><span class="p">[</span><span class="n">field_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_slice</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">df_slice</span> <span class="o">=</span> <span class="n">df_slice</span><span class="p">[[</span><span class="n">field_id</span><span class="p">,</span> <span class="n">field_name</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">ls_old_columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df_areas_full</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="n">ls_new_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">field_id</span><span class="p">]</span> <span class="o">+</span> <span class="n">ls_old_columns</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">df_slice</span><span class="o">.</span><span class="n">info</span><span class="p">())</span>
+
+        <span class="c1"># merge</span>
+        <span class="n">df_areas_full</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+            <span class="n">left</span><span class="o">=</span><span class="n">df_areas_full</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="n">df_slice</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">field_name</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span>
+        <span class="p">)</span>
+        <span class="c1"># organize</span>
+        <span class="n">df_areas_full</span> <span class="o">=</span> <span class="n">df_areas_full</span><span class="p">[</span><span class="n">ls_new_columns</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">df_areas_full</span></div>
 

@@ -543,12 +543,17 @@
 </div>
 </section>
 <section id="climate-and-land-use-series">
-<span id="io-climate-lulc-scenario-lulc-series"></span><h2>Climate and Land Use Series<a class="headerlink" href="#climate-and-land-use-series" title="Link to this heading">#</a></h2>
-<p>This time series is a merger or <a class="reference internal" href="#io-climate-series"><span class="std std-ref">Climate Series</span></a> and <a class="reference internal" href="#io-lulc-series"><span class="std std-ref">Land Use Series</span></a> for a given Land Use scenario. It relates all time steps for a given climate series to a land use map and related parameters at a given Land Use scenario.</p>
+<span id="io-climate-series-lulc-lulc-scenario"></span><h2>Climate and Land Use Series<a class="headerlink" href="#climate-and-land-use-series" title="Link to this heading">#</a></h2>
+<p>This time series is a temporal merger or <a class="reference internal" href="#io-climate-series"><span class="std std-ref">Climate Series</span></a> and <a class="reference internal" href="#io-lulc-series"><span class="std std-ref">Land Use Series</span></a> for a given Land Use
+scenario. It relates all time steps for a given climate series to a land use map and related parameters at a given Land Use scenario.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <a class="reference internal" href="#io-climate-series"><span class="std std-ref">Climate Series</span></a> and <a class="reference internal" href="#io-lulc-series"><span class="std std-ref">Land Use Series</span></a> must have an overlap in the time line. Otherwise this file is
+empty.</p>
+</div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>When generated, this time series downscale climate variables to the simulation time step defined in <a class="reference internal" href="#io-parameters-info"><span class="std std-ref">Parameters Info</span></a>.
-Hence, it can be a heavy file.</p>
+<p>This can be a heavy file. When generated, this time series downscale climate variables to the simulation time step defined in <a class="reference internal" href="#io-parameters-info"><span class="std std-ref">Parameters Info</span></a>.</p>
 </div>
 <details class="seealso admonition">
 <summary class="admonition-title">Related files</summary>
@@ -568,7 +573,7 @@ Hence, it can be a heavy file.</p>
 <td><p><a class="reference internal" href="data_structures.html#io-timeseries"><span class="std std-ref">Time Series</span></a></p></td>
 </tr>
 <tr class="row-odd"><td><p>File</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">climate_{lulc-scenario}_lulc_series.csv</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">climate_series_lulc_{lulc-scenario}.csv</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Project Folder</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">{project}/data/climate/{climate-scenario}</span></code></p></td>
@@ -601,7 +606,7 @@ Hence, it can be a heavy file.</p>
 <td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
 <td><p>Potential Evapotranspiration</p></td>
 </tr>
-<tr class="row-odd"><td><p>id_lulc</p></td>
+<tr class="row-odd"><td><p>id_lulc_raster</p></td>
 <td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">uint16</span></code></p></td>
 <td><p>Identification number for land use map</p></td>
@@ -964,25 +969,50 @@ Hence, it can be a heavy file.</p>
 <td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
 <td><p>Color</p></td>
 </tr>
-<tr class="row-even"><td><p>w_id</p></td>
+<tr class="row-even"><td><p>w_ck</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">uint16</span></code></p></td>
-<td><p>(downscaling weight) Identification number</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>(downscaling weight) Canopy residence time</p></td>
 </tr>
-<tr class="row-odd"><td><p>w_name</p></td>
+<tr class="row-odd"><td><p>w_ca</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
-<td><p>(downscaling weight) Name</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>(downscaling weight) Activation level for canopy flow</p></td>
 </tr>
-<tr class="row-even"><td><p>w_alias</p></td>
+<tr class="row-even"><td><p>w_sk</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
-<td><p>(downscaling weight) Alias</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>(downscaling weight) Surface residence time</p></td>
 </tr>
-<tr class="row-odd"><td><p>w_color</p></td>
+<tr class="row-odd"><td><p>w_soa</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
-<td><p>(downscaling weight) Color</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>(downscaling weight) Activation level for overland flow</p></td>
+</tr>
+<tr class="row-even"><td><p>w_soc</p></td>
+<td><p>unitless</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>(downscaling weight) Fragmentation level for overland flow</p></td>
+</tr>
+<tr class="row-odd"><td><p>w_sua</p></td>
+<td><p>unitless</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>(downscaling weight) Activation level for subsurface flow</p></td>
+</tr>
+<tr class="row-even"><td><p>w_suc</p></td>
+<td><p>unitless</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>(downscaling weight) Fragmentation level for subsurface flow</p></td>
+</tr>
+<tr class="row-odd"><td><p>w_sux</p></td>
+<td><p>unitless</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>(downscaling weight) Subsurface storage capacity</p></td>
+</tr>
+<tr class="row-even"><td><p>w_dea</p></td>
+<td><p>unitless</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>(downscaling weight) Deficit activation level for ET (root zone)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1038,7 +1068,7 @@ Hence, it can be a heavy file.</p>
 <td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
 <td><p>Date-time label</p></td>
 </tr>
-<tr class="row-even"><td><p>id_lulc</p></td>
+<tr class="row-even"><td><p>id_lulc_raster</p></td>
 <td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">uint16</span></code></p></td>
 <td><p>Identification number for land use map</p></td>
@@ -1197,25 +1227,110 @@ Hence, it can be a heavy file.</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>field</p></td>
-<td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
-<td><p>Field or attribute name</p></td>
-</tr>
-<tr class="row-odd"><td><p>value</p></td>
-<td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">misc</span></code></p></td>
-<td><p>Set value of field</p></td>
-</tr>
-<tr class="row-even"><td><p>lower</p></td>
-<td><p>misc</p></td>
+<tr class="row-even"><td><p>dt</p></td>
+<td><p>min</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Lower bound value of field</p></td>
+<td><p>Simulation time step</p></td>
 </tr>
-<tr class="row-odd"><td><p>upper</p></td>
-<td><p>misc</p></td>
+<tr class="row-odd"><td><p>c0</p></td>
+<td><p>mm</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>Upper bound value of field</p></td>
+<td><p>Canopy storage initial conditions</p></td>
+</tr>
+<tr class="row-even"><td><p>s0</p></td>
+<td><p>mm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Surface storage initial conditions</p></td>
+</tr>
+<tr class="row-odd"><td><p>v0</p></td>
+<td><p>mm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Vadose zone initial conditions</p></td>
+</tr>
+<tr class="row-even"><td><p>g0</p></td>
+<td><p>mm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Phreatic zone initial conditions</p></td>
+</tr>
+<tr class="row-odd"><td><p>ck</p></td>
+<td><p>d</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Canopy residence time</p></td>
+</tr>
+<tr class="row-even"><td><p>ca</p></td>
+<td><p>mm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Activation level for canopy flow</p></td>
+</tr>
+<tr class="row-odd"><td><p>sk</p></td>
+<td><p>d</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Surface residence time</p></td>
+</tr>
+<tr class="row-even"><td><p>soa</p></td>
+<td><p>mm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Activation level for overland flow</p></td>
+</tr>
+<tr class="row-odd"><td><p>soc</p></td>
+<td><p>mm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Fragmentation level for overland flow</p></td>
+</tr>
+<tr class="row-even"><td><p>sua</p></td>
+<td><p>mm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Activation level for subsurface flow</p></td>
+</tr>
+<tr class="row-odd"><td><p>suc</p></td>
+<td><p>mm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Fragmentation level for subsurface flow</p></td>
+</tr>
+<tr class="row-even"><td><p>sux</p></td>
+<td><p>mm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Subsurface storage capacity</p></td>
+</tr>
+<tr class="row-odd"><td><p>kv</p></td>
+<td><p>mm/d</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Soil hydraulic conductivity</p></td>
+</tr>
+<tr class="row-even"><td><p>gk</p></td>
+<td><p>d</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Phreatic zone residence time</p></td>
+</tr>
+<tr class="row-odd"><td><p>gx</p></td>
+<td><p>mm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Phreatic zone storage capacity</p></td>
+</tr>
+<tr class="row-even"><td><p>dea</p></td>
+<td><p>mm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Deficit activation level for ET (root zone)</p></td>
+</tr>
+<tr class="row-odd"><td><p>gex</p></td>
+<td><p>mm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>ET capacity of capilar zone</p></td>
+</tr>
+<tr class="row-even"><td><p>kq</p></td>
+<td><p>m/d</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Channel water celerity</p></td>
+</tr>
+<tr class="row-odd"><td><p>hw</p></td>
+<td><p>unitless</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>Weight for HAND in TSI superposition</p></td>
+</tr>
+<tr class="row-even"><td><p>hx</p></td>
+<td><p>m</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>HAND upper threshold in TSI superposition</p></td>
 </tr>
 </tbody>
 </table>
@@ -1230,19 +1345,19 @@ g0;0.0;0.0;10000.0;Phreatic zone initial conditions;mm
 ck;0.2;0.01;365.0;Canopy residence time;d
 ca;10.0;0.0;500.0;Activation level for canopy flow;mm
 sk;1.0;0.01;365.0;Surface residence time;d
-sofa;5.0;0.0;1000.0;;
-sofc;50.0;0.0;1000.0;;
-sufa;4.0;0.0;1000.0;;
-sufc;1.0;0.0;1000.0;;
-sufcap;5.0;0.0;1000.0;;
+soa;5.0;0.0;1000.0;Activation level for overland flow;mm
+soc;50.0;0.0;1000.0;Fragmentation level for overland flow;mm
+sua;4.0;0.0;1000.0;Activation level for subsurface flow;mm
+suc;1.0;0.0;1000.0;Fragmentation level for subsurface flow;mm
+sux;5.0;0.0;1000.0;Subsurface storage capacity;mm
 kv;500.0;0.0;500.0;Soil hydraulic conductivity;mm/d
 gk;5.0;0.01;365.0;Phreatic zone residence time;d
-gcap;80.0;0.0;10000.0;;
+gx;80.0;0.0;10000.0;Phreatic zone storage capacity;mm
 dea;10.0;0.0;10000.0;Deficit activation level for ET (root zone);mm
-ecap;10.0;0.0;10000.0;;
+gex;10.0;0.0;10000.0;ET capacity of capilar zone;mm
 kq;500.0;1.0;50000.0;Channel water celerity;m/d
-hand_w;1.0;0.001;100.0;;
-hand_max;10.0;1.0;50.0;;
+hw;1.0;0.001;100.0;Weight for HAND in TSI superposition;unitless
+hx;10.0;1.0;50.0;HAND upper threshold in TSI superposition;m
 </pre></div>
 </div>
 </section>
@@ -1300,15 +1415,30 @@ hand_max;10.0;1.0;50.0;;
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>field</p></td>
+<tr class="row-even"><td><p>name</p></td>
 <td><p>unitless</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
-<td><p>Field or attribute name</p></td>
+<td><p>Name</p></td>
 </tr>
-<tr class="row-odd"><td><p>value</p></td>
+<tr class="row-odd"><td><p>alias</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">misc</span></code></p></td>
-<td><p>Set value of field</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Alias</p></td>
+</tr>
+<tr class="row-even"><td><p>source</p></td>
+<td><p>unitless</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Source for reference</p></td>
+</tr>
+<tr class="row-odd"><td><p>description</p></td>
+<td><p>unitless</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Brief description</p></td>
+</tr>
+<tr class="row-even"><td><p>folder_base</p></td>
+<td><p>unitless</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>(optional) System path to base / parent folder of project</p></td>
 </tr>
 </tbody>
 </table>
@@ -1668,25 +1798,25 @@ folder_base;/path/to/base_folder
 <td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
 <td><p>Color</p></td>
 </tr>
-<tr class="row-even"><td><p>w_id</p></td>
+<tr class="row-even"><td><p>w_kv</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">uint16</span></code></p></td>
-<td><p>(downscaling weight) Identification number</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>(downscaling weight) Soil hydraulic conductivity</p></td>
 </tr>
-<tr class="row-odd"><td><p>w_name</p></td>
+<tr class="row-odd"><td><p>w_gk</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
-<td><p>(downscaling weight) Name</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>(downscaling weight) Phreatic zone residence time</p></td>
 </tr>
-<tr class="row-even"><td><p>w_alias</p></td>
+<tr class="row-even"><td><p>w_gx</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
-<td><p>(downscaling weight) Alias</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>(downscaling weight) Phreatic zone storage capacity</p></td>
 </tr>
-<tr class="row-odd"><td><p>w_color</p></td>
+<tr class="row-odd"><td><p>w_gex</p></td>
 <td><p>unitless</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
-<td><p>(downscaling weight) Color</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
+<td><p>(downscaling weight) ET capacity of capilar zone</p></td>
 </tr>
 </tbody>
 </table>

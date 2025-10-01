@@ -522,11 +522,40 @@
 
 
 
+<span class="k">class</span><span class="w"> </span><span class="nc">ETSeries</span><span class="p">(</span><span class="n">TimeSeries</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for representing and working with ET data.</span>
+
+<span class="sd">    **Notes**</span>
+
+<span class="sd">    todo notes</span>
+
+<span class="sd">    **Examples**</span>
+
+<span class="sd">    todo examples</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyETSeries&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Use the superior initialization from the parent class (TimeSeries)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;ET&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span> <span class="o">=</span> <span class="s2">&quot;et&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;mm&quot;</span>
+        <span class="c1"># Overwrite attributes specific</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">&quot;ET Time Series&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agg</span> <span class="o">=</span> <span class="s2">&quot;sum&quot;</span>  <span class="c1"># Aggregation method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gapsize</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># Maximum gap size in dt units</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datarange_max</span> <span class="o">=</span> <span class="mi">10000</span>  <span class="c1"># absurd yearly precipitation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datarange_min</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">&quot;red&quot;</span>
+
+
 <div class="viewcode-block" id="ETSeries">
 <a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.ETSeries">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ETSeries</span><span class="p">(</span><span class="n">TimeSeries</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A class for representing and working with ET and PET data.</span>
+<span class="sd">    A class for representing and working with PET data.</span>
 
 <span class="sd">    **Notes**</span>
 
@@ -543,18 +572,16 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyETSeries&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Use the superior initialization from the parent class (TimeSeries)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;ET&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span> <span class="o">=</span> <span class="s2">&quot;et&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;PET&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span> <span class="o">=</span> <span class="s2">&quot;pet&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;mm&quot;</span>
         <span class="c1"># Overwrite attributes specific</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">&quot;ET Time Series&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">&quot;PET Time Series&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">agg</span> <span class="o">=</span> <span class="s2">&quot;sum&quot;</span>  <span class="c1"># Aggregation method</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gapsize</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># Maximum gap size in dt units</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datarange_max</span> <span class="o">=</span> <span class="mi">10000</span>  <span class="c1"># absurd yearly precipitation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datarange_min</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">&quot;navy&quot;</span>
-        <span class="c1"># Specific attributes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">upstream_area</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># in sq km</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">&quot;darkred&quot;</span></div>
 </div>
 
 

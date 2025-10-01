@@ -15,7 +15,8 @@ Files used in ``plans`` are related to the following two primitive data structur
 A :ref:`Table<io-table>` can store a frame of data in rows and columns in a single file.
 A :ref:`Raster<io-raster>` can store a map in a matrix/grid of numbers in a single file.
 
-Input files must be formatted in by **standard** way, otherwise the tool is not going to work. The standards are meant to be simple and user-friendly.
+Input files must be formatted in by **standard** way, otherwise the tool
+is not going to work. The standards are meant to be simple and user-friendly.
 
 .. admonition:: Using open-source applications
    :class: tip
@@ -27,7 +28,9 @@ Input files must be formatted in by **standard** way, otherwise the tool is not 
 Table
 ============================================
 
-A ``Table`` in ``plans`` is a frame of data defined by **rows** and **columns**. Usually, the first row stores the **names** of the fields and the subsequent rows stores the data itself.
+A ``Table`` in ``plans`` is a frame of data defined by **rows**
+and **columns**. Usually, the first row stores the **names** of the
+fields and the subsequent rows stores the data itself.
 
 **Structure rules**
 
@@ -39,7 +42,8 @@ A ``Table`` in ``plans`` is a frame of data defined by **rows** and **columns**.
 
 **Example**
 
-In the following table ``id`` is an integer number ``int`` field, ``ndvi_mean`` is a real number ``float`` field and the remaining are text ``str`` fields.
+In the following table ``id`` is an integer number ``int`` field,
+``ndvi_mean`` is a real number ``float`` field and the remaining are text ``str`` fields.
 
 .. code-block:: text
 
@@ -74,7 +78,8 @@ In the following table ``id`` is an integer number ``int`` field, ``ndvi_mean`` 
 Information Table
 --------------------------------------------
 
-An :ref:`Information Table<io-attribute>` is a special kind of :ref:`Table<io-table>` that stores field information in a listed format.
+An :ref:`Information Table<io-attribute>` is a special kind of
+:ref:`Table<io-table>` that stores field information in a listed format.
 
 
 **Structure rules**
@@ -105,7 +110,8 @@ An :ref:`Information Table<io-attribute>` is a special kind of :ref:`Table<io-ta
 
 **Required horizontal fields**
 
-A required horizontal field in ``Information Table`` is an **expected row** with set values for ``field`` and ``value``.
+A required horizontal field in ``Information Table`` is an
+**expected row** with set values for ``field`` and ``value``.
 
 
 **Example**
@@ -127,7 +133,11 @@ A required horizontal field in ``Information Table`` is an **expected row** with
 Attribute Table
 --------------------------------------------
 
-An :ref:`Attribute Table<io-attribute>` is a special kind of :ref:`Table<io-table>` that stores extra information about :ref:`Raster<io-raster>` maps. Each column represents a **field** that must be *homogeneous*. This means that each field stores the same :ref:`data type<io-data-type>`.
+An :ref:`Attribute Table<io-attribute>` is a special kind of
+:ref:`Table<io-table>` that stores extra information about
+:ref:`Raster<io-raster>` maps. Each column represents a **field**
+that must be *homogeneous*. This means that each field stores
+the same :ref:`data type<io-data-type>`.
 
 **Structure rules**
 
@@ -223,7 +233,8 @@ A :ref:`Time Series<io-timeseries>` in ``plans`` is a special kind of :ref:`Tabl
 .. admonition:: Variable fields
    :class: note
 
-   The other fields than ``datetime`` generally are fields that stores the state of **variables** like precipitation ``ppt`` and surface air temperature ``tas``.
+   The other fields than ``datetime`` generally are fields that stores
+   the state of **variables** like precipitation ``ppt`` and surface air temperature ``tas``.
 
 
 **Datetime frequency**
@@ -239,12 +250,14 @@ A :ref:`Time Series<io-timeseries>` in ``plans`` is a special kind of :ref:`Tabl
 .. admonition:: Shorter and longer frequencies
    :class: warning
 
-   Shorter frequencies than 15 min are not recommended due to processing performance. Longer frequencies than 1 day are not recommended due to effective hydrological process representation.
+   Shorter frequencies than 15 min are not recommended due to processing performance.
+   Longer frequencies than 1 day are not recommended due to effective hydrological process representation.
 
 
 **Example**
 
-``Time Series`` files tends to have a large number of rows. The first 10 rows of a daily ``Time Series`` file looks like this:
+``Time Series`` files tends to have a large number of rows. The first 10 rows of
+a daily ``Time Series`` file looks like this:
 
 .. code-block:: text
 
@@ -262,15 +275,20 @@ A :ref:`Time Series<io-timeseries>` in ``plans`` is a special kind of :ref:`Tabl
 .. admonition:: Automatic fill of time information
    :class: note
 
-   During processing, ``plans`` will fill *time* information (hours, minute and seconds) if only the *date* is passed (year, month and day), like in the above example.
+   During processing, ``plans`` will fill *time* information (hours,
+   minute and seconds) if only the *date* is passed (year, month and day), like in the above example.
 
 
 .. admonition:: Small gaps and voids in ``Time Series``
    :class: important
 
-   ``plans`` will try to fill or **interpolate** small gaps and voids in a given ``Time Series``. However, be aware that this may cause unnoticed impacts on model outputs. A best practice is to interpolate and fill voids *prior* to the processing so users can understand what is going on.
+   ``plans`` will try to fill or **interpolate** small gaps and voids in a
+   given ``Time Series``. However, be aware that this may cause unnoticed
+   impacts on model outputs. A best practice is to interpolate and fill
+   voids *prior* to the processing so users can understand what is going on.
 
-   For instance, consider the following ``Time Series`` that has a **gap** (missing Jan/3 and Jan/4 dates) and a **void** for ``ppt`` in Jan/8:
+   For instance, consider the following ``Time Series`` that has a **gap**
+   (missing Jan/3 and Jan/4 dates) and a **void** for ``ppt`` in Jan/8:
 
    .. code-block::
      :emphasize-lines: 3,4,7
@@ -284,7 +302,8 @@ A :ref:`Time Series<io-timeseries>` in ``plans`` is a special kind of :ref:`Tabl
      2020-01-08 00:00:00.000;     ; 28.3
      2020-01-09 00:00:00.000;  0.0; 27.1
 
-   In this case, ``plans`` would interpolate temperature ``tas`` and fill with 0 the precipitation ``ppt``:
+   In this case, ``plans`` would interpolate temperature ``tas`` and fill
+   with 0 the precipitation ``ppt``:
 
    .. code-block::
        :emphasize-lines: 4,5,8
@@ -307,7 +326,9 @@ A :ref:`Time Series<io-timeseries>` in ``plans`` is a special kind of :ref:`Tabl
 Raster
 ============================================
 
-A **Raster** in ``plans`` is a map of data defined by a matrix or grid of cells storing numbers (int or float) and encoded in way that it can be georeferenced in a given Coordinate Reference System (``CRS``).
+A **Raster** in ``plans`` is a map of data defined by a matrix or grid
+of cells storing numbers (int or float) and encoded in way that it can be
+georeferenced in a given Coordinate Reference System (``CRS``).
 
 **Structure rules**
 
@@ -324,7 +345,8 @@ Rule set for multiple files:
 .. admonition:: Raster grid shape must be the same
    :class: important
 
-   The rule set for multiple files implies that all ``Raster`` files in a given project must share the same grid shape (number or rows and columns).
+   The rule set for multiple files implies that all ``Raster`` files in
+   a given project must share the same grid shape (number or rows and columns).
 
 
 .. _io-tif-file:
@@ -332,9 +354,11 @@ Rule set for multiple files:
 GeoTIFF file
 --------------------------------------------
 
-The `GeoTIFF`_ file is the standard ``Raster`` file in ``plans``. This is a well-known raster file distributed by most of dataset providers.
+The `GeoTIFF`_ file is the standard ``Raster`` file in ``plans``. This
+is a well-known raster file distributed by most of dataset providers.
 
-The advantages of ``GeoTIFF`` is that it stores data and metadata together in the same file. ``plans`` parse ``GeoTIFF`` files using the `Rasterio`_ libray.
+The advantages of ``GeoTIFF`` is that it stores data and metadata together
+in the same file. ``plans`` parse ``GeoTIFF`` files using the `Rasterio`_ libray.
 
 .. admonition:: GDAL reference
    :class: seealso
@@ -347,7 +371,8 @@ The advantages of ``GeoTIFF`` is that it stores data and metadata together in th
 Time Raster
 --------------------------------------------
 
-A ``Time Raster`` in ``plans`` is a special kind of :ref:`Raster<io-raster>` file in which the data refers to a **snapshot of the time line**.
+A ``Time Raster`` in ``plans`` is a special kind of :ref:`Raster<io-raster>`
+file in which the data refers to a **snapshot of the time line**.
 
 **Structure rules**
 
@@ -364,7 +389,8 @@ Rule set for multiple files:
 
 **Example**
 
-For instance, Land Use Land Cover is a spatial data that may require many ``Time Raster`` files:
+For instance, Land Use Land Cover is a spatial data that may require
+many ``Time Raster`` files:
 
 .. code-block:: bash
 
@@ -380,7 +406,9 @@ For instance, Land Use Land Cover is a spatial data that may require many ``Time
 Quali Raster
 --------------------------------------------
 
-A Quali Raster in ``plans`` is a special kind of :ref:`Raster<io-raster>` file in which data is qualitative (classes or ids), and an auxiliary :ref:`Attribute Table<io-attribute>` must be provided.
+A Quali Raster in ``plans`` is a special kind of :ref:`Raster<io-raster>`
+file in which data is qualitative (classes or ids), and an auxiliary
+:ref:`Attribute Table<io-attribute>` must be provided.
 
 **Structure rules**
 
@@ -397,7 +425,9 @@ Rule set for multiple files:
 
 **Example**
 
-For instance, a ``Quali Raster`` for Land Use Land Cover only stores the ``id`` code for each land use class. More information and parameters must be stored in the auxiliar ``Attribute Table``.
+For instance, a ``Quali Raster`` for Land Use Land Cover only stores
+the ``id`` code for each land use class. More information and parameters
+must be stored in the auxiliar ``Attribute Table``.
 
 .. code-block:: bash
 
@@ -426,7 +456,10 @@ For instance, a ``Quali Raster`` for Land Use Land Cover only stores the ``id`` 
 Time Quali Raster
 --------------------------------------------
 
-A ``Time Quali Raster`` in ``plans`` is a special kind of :ref:`Raster<io-raster>` file that arises when the map is both a :ref:`Time Raster<io-timeraster>` and a :ref:`Quali Raster<io-qualiraster>`. Land Use maps are the classical example, as shown above. Rules overlap.
+A ``Time Quali Raster`` in ``plans`` is a special kind of :ref:`Raster<io-raster>`
+file that arises when the map is both a :ref:`Time Raster<io-timeraster>` and
+a :ref:`Quali Raster<io-qualiraster>`. Land Use maps are the classical example,
+as shown above. Rules overlap.
 
 
 .. _io-data-type:
@@ -434,7 +467,8 @@ A ``Time Quali Raster`` in ``plans`` is a special kind of :ref:`Raster<io-raster
 Data Types
 ============================================
 
-**Data Type** is the encoding of data at the hardware level. For beginners, one may understand data types by this primitive classification:
+**Data Type** is the encoding of data at the hardware level. For beginners,
+one may understand data types by this primitive classification:
 
 - ``str`` text string: common text characters
 - ``int`` integer numbers: 2, 0, 1000
@@ -444,7 +478,9 @@ Data Types
 .. admonition:: Detailed data types
    :class: important
 
-   The data types listed above are very primitive. For instance, ``int`` can be ``int8`` or ``int64``, which yield a big difference in memory usage. :ref:`See below<io-data-type-reference>` for a comprehensive reference.
+   The data types listed above are very primitive. For instance,
+   ``int`` can be ``int8`` or ``int64``, which yield a big difference in memory usage.
+   :ref:`See below<io-data-type-reference>` for a comprehensive reference.
 
 
 .. _io-data-type-nodata:
@@ -452,12 +488,17 @@ Data Types
 No-data value convention
 --------------------------------------------
 
-A ``nodata`` value is a convention of what values in data means that there are actually *no data* (a data void). For tables, this is usually set as empty cells or some text like "N.A." (not-apply, etc). For raster maps, the ``GeoTIFF`` format has a built-in metadata that stores a ``nodata`` value.
+A ``nodata`` value is a convention of what values in data means that
+there are actually *no data* (a data void). For tables, this is usually
+set as empty cells or some text like "N.A." (not-apply, etc). For
+raster maps, the ``GeoTIFF`` format has a built-in metadata
+that stores a ``nodata`` value.
 
 .. admonition:: Enforcement of ``nodata``
    :class: warning
 
-   Users are *not* required to set ``nodata`` values, but the incoming values may be overwritten to ``plans`` standard convention.
+   Users are *not* required to set ``nodata`` values, but the incoming
+   values may be overwritten to ``plans`` standard convention.
 
 
 .. _io-data-type-reference:
@@ -475,7 +516,6 @@ Data Types Reference
 .. note::
 
    Hi-order values in the above table are approximations. For example, the exact upper value of ``int32`` is 4,294,967,295.
-
 
 
 .. admonition:: NumPy Data Types
