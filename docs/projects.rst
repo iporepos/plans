@@ -13,7 +13,12 @@ This page describes the **project system** used in ``plans``.
 
    Check out the :ref:`files` page for more details on how to setup input data.
 
-All simulations are organized inside a project, which is a **self-contained file system** with a standardized folder structure. Users must first create or specify a project before running any simulation. Each simulation must specify which scenario and basin combination (climate + land use + basin) to run. All required input data, intermediate caches, and outputs live inside this folder tree.
+All simulations are organized inside a project, which is a
+**self-contained file system** with a standardized folder structure.
+Users must first create or specify a project before running any simulation.
+Each simulation must specify which scenario and basin combination
+(climate + land use + basin) to run. All required input data,
+intermediate caches, and outputs live inside this folder tree.
 
 .. code-block:: bash
 

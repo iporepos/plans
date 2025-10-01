@@ -17,7 +17,6 @@ et netus et malesuada fames ac turpis egestas.
 
 
 """
-
 # IMPORTS
 # ***********************************************************************
 # import modules from other libs
@@ -25,6 +24,7 @@ et netus et malesuada fames ac turpis egestas.
 # Native imports
 # =======================================================================
 import os, sys
+import glob
 import datetime
 import shutil
 import subprocess
@@ -203,7 +203,7 @@ def load_project(project_folder):
             # update project
             p.update()
             # update metadata file
-            p.export_metadata(folder=project_folder, filename=boot_file_name)
+            p.export_metadata(folder=f"{project_folder}/data", filename=boot_file_name)
             # setup
             p.setup()
         else:
@@ -222,9 +222,9 @@ def load_project(project_folder):
 # =======================================================================
 
 
-def handle_input_file(file_path):
+def handle_input_file(file_path, msg=""):
     if not os.path.isfile(file_path):
-        raise FileNotFoundError
+        raise FileNotFoundError(msg)
     else:
         pass
 
@@ -326,6 +326,34 @@ class Project(FileSys):
             self.folder_climate = str(Path(self.folder_data) / "climate")
             self.folder_lulc = str(Path(self.folder_data) / "lulc")
 
+    def list_basins(self):
+        # todo docstring
+        return os.listdir(self.folder_basins)
+
+    def list_scenarios_climate(self):
+        # todo docstring
+        ls_folder_names = os.listdir(self.folder_climate)
+        ls_folders = [Path(self.folder_climate) / folder for folder in ls_folder_names]
+        # check if has climate series
+        ls_scenarios = []
+        for folder in ls_folders:
+            file_csv = folder / "climate_series.csv"
+            if os.path.exists(file_csv):
+                ls_scenarios.append(os.path.basename(folder))
+        return ls_scenarios
+
+    def list_scenarios_lulc(self):
+        # todo docstring
+        ls_folder_names = os.listdir(self.folder_lulc)
+        ls_folders = [Path(self.folder_lulc) / folder for folder in ls_folder_names]
+        # check if has lulc-style raster maps
+        ls_scenarios = []
+        for folder in ls_folders:
+            ls_tifs = glob.glob(f"{folder}/lulc_*.tif")
+            if len(ls_tifs) > 0:
+                ls_scenarios.append(os.path.basename(folder))
+        return ls_scenarios
+
     def make_run_folder(self, run_name):
         # todo docstring
         while True:
@@ -348,14 +376,16 @@ class Project(FileSys):
         cmd = [
             sys.executable,
             "-m",
+            # tool name
             "plans.tools",
             run_name,
+            # arguments
+            "--folder",
+            folder_run,
             "--input1",
             "./tests/data/DataSet_data.csv",
             "--input2",
             "./tests/data/DataSet_data.csv",
-            "--folder",
-            folder_run,
         ]
         if self.talk:
             cmd.append("--talk")
@@ -373,20 +403,22 @@ class Project(FileSys):
 
         # set iputs
         file_ldd = Path(self.folder_topo) / "ldd.tif"
-        handle_input_file(file_ldd)
+        handle_input_file(file_ldd, ">> check ldd.tif")
         if use_basin is not None:
             file_basin = Path(self.folder_basins) / f"{use_basin}/basin.tif"
-            handle_input_file(file_basin)
+            handle_input_file(file_basin, ">> check basin")
 
         cmd = [
             sys.executable,
             "-m",
+            # tool name
             "plans.tools",
             run_name,
-            "--ldd",
-            file_ldd,
+            # arguments
             "--folder",
             folder_run,
+            "--ldd",
+            file_ldd,
             "--label",
             self.name,
         ]
@@ -416,28 +448,85 @@ class Project(FileSys):
         # set iputs
         folder_lulc_scenario = Path(self.folder_lulc) / lulc_scenario
         file_lulc = Path(folder_lulc_scenario) / "lulc_attributes.csv"
-        handle_input_file(file_lulc)
+        handle_input_file(file_lulc, ">> check lulc_attributes")
         if use_basin is not None:
             file_basin = Path(self.folder_basins) / f"{use_basin}/basin.tif"
-            handle_input_file(file_basin)
+            handle_input_file(file_basin, ">> check basin")
 
         cmd = [
             sys.executable,
             "-m",
             "plans.tools",
             run_name,
+            "--folder",
+            folder_run,
             "--attributes",
             file_lulc,
             "--scenario",
             folder_lulc_scenario,
-            "--folder",
-            folder_run,
-            "--label",
-            self.name,
         ]
 
         if use_basin is not None:
-            cmd = cmd + ["--basin", file_basin]
+            cmd = cmd + ["--label", f"{self.name} - {use_basin}"]
+            cmd = cmd + ["--aoi", file_basin]
+        else:
+            cmd = cmd + ["--label", self.name]
+
+        if include_views:
+            cmd.append("--views")
+
+        if self.talk:
+            cmd.append("--talk")
+
+        # Use Popen for async execution
+        process = subprocess.Popen(cmd)
+        return process, folder_run
+
+    def run_analysis_climate_series_lulc(
+        self,
+        climate_scenario,
+        lulc_scenario,
+        include_views=True,
+    ):
+        # todo docstring
+        run_name = str(self.run_analysis_climate_series_lulc.__name__).replace(
+            "run_", ""
+        )
+        folder_run = os.path.abspath(
+            self.make_run_folder(run_name=run_name.replace("_", "-"))
+        )
+
+        # set iputs
+
+        file_parameters = Path(self.folder_data) / "parameters_info.csv"
+        handle_input_file(file_parameters, ">> check parameters_info")
+
+        folder_climate_scenario = Path(self.folder_climate) / climate_scenario
+        file_climate = Path(folder_climate_scenario) / "climate_series.csv"
+        handle_input_file(
+            file_climate, f">> check climate_series in {climate_scenario}"
+        )
+
+        folder_lulc_scenario = Path(self.folder_lulc) / lulc_scenario
+        file_lulc = Path(folder_lulc_scenario) / "lulc_series.csv"
+        handle_input_file(file_lulc, f">> check lulc_series in {lulc_scenario}")
+
+        cmd = [
+            sys.executable,
+            "-m",
+            "plans.tools",
+            run_name,
+            "--folder",
+            folder_run,
+            "--parameters",
+            file_parameters,
+            "--climate",
+            file_climate,
+            "--lulc",
+            file_lulc,
+            "--label",
+            f"{lulc_scenario}",
+        ]
 
         if include_views:
             cmd.append("--views")
@@ -455,7 +544,100 @@ class Project(FileSys):
         subp.wait()
         shutil.copy(src=f"{folder_run}/dto.tif", dst=f"{self.folder_topo}/dto.tif")
         shutil.copy(src=f"{folder_run}/dto.jpg", dst=f"{self.folder_topo}/dto.jpg")
-        shutil.rmtree(folder_run)
+        ## shutil.rmtree(folder_run)
+        return None
+
+    def get_climate_lulc_series(
+        self,
+        climate_scenario=None,
+        lulc_scenario=None,
+        skip_climate_scenario=None,
+        skip_lulc_scenario=None,
+    ):
+        # todo docstring
+        # set lists of scenarios
+        ls_lulc_scenarios = self.list_scenarios_lulc()
+        if lulc_scenario is not None:
+            ls_lulc_scenarios = [lulc_scenario]
+        ls_climate_scenarios = self.list_scenarios_climate()
+        if climate_scenario is not None:
+            ls_climate_scenarios = [climate_scenario]
+
+        # setup lists
+        ls_processes = []
+        ls_folders_run = []
+        ls_folders_scenarios = []
+        ls_l_cenarios = []
+        for c_scenario in ls_climate_scenarios:
+            for l_scenario in ls_lulc_scenarios:
+                if c_scenario == skip_climate_scenario:
+                    pass
+                elif l_scenario == skip_lulc_scenario:
+                    pass
+                else:
+                    folder_scenario = Path(self.folder_climate) / c_scenario
+                    subp, folder_run = self.run_analysis_climate_series_lulc(
+                        climate_scenario=c_scenario,
+                        lulc_scenario=l_scenario,
+                        include_views=True,
+                    )
+                    ls_processes.append(subp)
+                    ls_folders_run.append(folder_run)
+                    ls_folders_scenarios.append(folder_scenario)
+                    ls_l_cenarios.append(l_scenario)
+        for subp in ls_processes:
+            subp.wait()
+
+        # move files
+        for i in range(len(ls_folders_run)):
+            folder_run = ls_folders_run[i]
+            folder_scenario = ls_folders_scenarios[i]
+            scenario_lulc = ls_l_cenarios[i]
+            file_name = "climate_series_lulc_{}.csv".format(scenario_lulc)
+            shutil.copy(
+                src=f"{folder_run}/{file_name}", dst=f"{folder_scenario}/{file_name}"
+            )
+            ## shutil.rmtree(folder_run)
+
+        return None
+
+    def get_lulc_series(self, lulc_scenario=None, skip_lulc_scenario=None):
+        # todo docstring
+        ls_scenarios = self.list_scenarios_lulc()
+        if lulc_scenario is not None:
+            ls_scenarios = [lulc_scenario]
+        ls_processes = []
+        ls_folders_run = []
+        ls_folders_scenarios = []
+        # run analysis for all scenarios
+        for scenario_name in ls_scenarios:
+            if scenario_name == skip_lulc_scenario:
+                pass
+            else:
+                folder_scenario = Path(self.folder_lulc) / scenario_name
+                subp, folder_run = self.run_analysis_lulc_series(
+                    lulc_scenario=scenario_name, include_views=True, use_basin=None
+                )
+                ls_processes.append(subp)
+                ls_folders_run.append(folder_run)
+                ls_folders_scenarios.append(folder_scenario)
+        for subp in ls_processes:
+            subp.wait()
+        # move files
+        for i in range(len(ls_folders_run)):
+            folder_run = ls_folders_run[i]
+            folder_scenario = ls_folders_scenarios[i]
+            file_name = "lulc_series.csv"
+            shutil.copy(
+                src=f"{folder_run}/{file_name}", dst=f"{folder_scenario}/{file_name}"
+            )
+            ls_figs = glob.glob(f"{folder_run}/*.jpg")
+            for f in ls_figs:
+                file_fig_name = os.path.basename(f)
+                shutil.copy(f, f"{folder_scenario}/{file_fig_name}")
+            ## shutil.rmtree(folder_run)
+
+        return None
 
     @staticmethod
     def get_timestamp():

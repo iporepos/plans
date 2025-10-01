@@ -1036,6 +1036,7 @@ class TimeSeries(Univar):
 
         # handle flow variable
         if self.agg == "sum":
+
             # compute downscaling factor assuming at least 2 data points
             tdelta_source = (
                 self.data[self.dtfield].values[1] - self.data[self.dtfield].values[0]
@@ -1052,6 +1053,14 @@ class TimeSeries(Univar):
         df_downscale[self.varfield] = df_downscale[self.varfield].interpolate(
             method="linear"
         )
+
+        if self.agg == "sum":
+            # apply factor for numerical loss/gain
+            up_sum = self.data[self.varfield].sum()
+            down_sum = df_downscale[self.varfield].sum()
+            diff_factor = down_sum / up_sum
+            df_downscale[self.varfield] = df_downscale[self.varfield] / diff_factor
+
         return df_downscale
 
     def assess_extreme_values(self, eva_freq="YS", eva_agg="max"):
@@ -1243,6 +1252,7 @@ class TimeSeries(Univar):
                 "marker": None,
                 "marker_eva": ".",
                 "n_bins": 100,
+                "subtitle_a": None,
             }
         )
 
@@ -1320,7 +1330,6 @@ class TimeSeries(Univar):
         ax.set_ylabel(specs["ylabel"])
         ax.set_xlim(specs["xmin"], specs["xmax"])
         ax.set_ylim(specs["ymin"], 1.2 * specs["ymax"])
-        ax.data(specs["plot_grid"])
 
         if include_eva:
             if self.eva is not None:
@@ -1399,7 +1408,6 @@ class TimeSeries(Univar):
                 ax3.set_xlim(1, 1000)
                 ax3.set_xscale("log")
                 ax3.set_xlabel("T(X)")
-                ax3.data(specs["plot_grid"])
 
         # --------------------- end --------------------- #
         # return object, show or save
@@ -4457,6 +4465,7 @@ class QualiRaster(Raster):
             aspect="equal",
             origin="upper",
         )
+        # todo the extent issue must be settled
         ax1.set_autoscale_on(False)  # Prevent auto-scaling which might add padding
 
         # plot helper geometry
@@ -5909,6 +5918,31 @@ class QualiRasterSeries(RasterSeries):
         df_areas_full[self.field_datetime] = pd.to_datetime(
             df_areas_full[self.field_datetime]
         )
+        print(df_areas_full.info())
+        # handle id for raster
+        field_name = "{}_raster".format(self.field_name)
+        # slice from areas
+        df_slice = df_areas_full[[field_name, self.field_datetime]].copy()
+        df_slice = pd.DataFrame(df_slice).drop_duplicates(subset=field_name)
+
+        # sort and reset
+        df_slice = df_slice.sort_values(by=self.field_datetime)
+        df_slice = df_slice.reset_index(drop=True)
+        # create the id
+        field_id = "id_raster"
+        df_slice[field_id] = df_slice.index.values + 1
+        df_slice = df_slice[[field_id, field_name]].copy()
+
+        ls_old_columns = list(df_areas_full.columns)
+        ls_new_columns = [field_id] + ls_old_columns
+        print(df_slice.info())
+
+        # merge
+        df_areas_full = pd.merge(
+            left=df_areas_full, right=df_slice, on=field_name, how="left"
+        )
+        # organize
+        df_areas_full = df_areas_full[ls_new_columns].copy()
 
         return df_areas_full
 

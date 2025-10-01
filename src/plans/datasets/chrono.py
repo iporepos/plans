@@ -124,7 +124,7 @@ class TemperatureSeries(TimeSeries):
 
 class ETSeries(TimeSeries):
     """
-    A class for representing and working with ET and PET data.
+    A class for representing and working with ET data.
 
     **Notes**
 
@@ -148,9 +148,36 @@ class ETSeries(TimeSeries):
         self.gapsize = 6  # Maximum gap size in dt units
         self.datarange_max = 10000  # absurd yearly precipitation
         self.datarange_min = 0
-        self.rawcolor = "navy"
-        # Specific attributes
-        self.upstream_area = None  # in sq km
+        self.rawcolor = "red"
+
+
+class ETSeries(TimeSeries):
+    """
+    A class for representing and working with PET data.
+
+    **Notes**
+
+    todo notes
+
+    **Examples**
+
+    todo examples
+
+    """
+
+    def __init__(self, name="MyETSeries", alias=None):
+        # Use the superior initialization from the parent class (TimeSeries)
+        super().__init__(name, alias=alias)
+        self.varname = "PET"
+        self.varfield = "pet"
+        self.units = "mm"
+        # Overwrite attributes specific
+        self.name_object = "PET Time Series"
+        self.agg = "sum"  # Aggregation method
+        self.gapsize = 6  # Maximum gap size in dt units
+        self.datarange_max = 10000  # absurd yearly precipitation
+        self.datarange_min = 0
+        self.rawcolor = "darkred"
 
 
 class StageSeries(TimeSeries):

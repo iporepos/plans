@@ -290,9 +290,7 @@ def filter_files(df, workflow):
 
 
 def filter_fields(df, file_name, query="x"):
-    df = df[
-        df[file_name] == "x"
-    ].copy()  # df.query("{} == '{}'".format(file_name, query))
+    df = df[df[file_name] == query].copy()
     dc_cols = {
         "name": "Name",
         "units": "Units",

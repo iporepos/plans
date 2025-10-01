@@ -34,6 +34,12 @@ In a lacinia nisl.
 
 import pandas as pd
 
+# todo ---- improve examples an docstrings
+# todo ---- format module
+# todo ---- refactor better names
+# todo ---- refactor for root.DataSet inheritance
+# todo ---- make unit tests
+
 
 class Stage:
     # todo [major doctring]
@@ -165,7 +171,7 @@ class Stage:
         )
 
         # Extract day number from 'Cota' columns
-        df_melted["Day"] = df_melted["Day"].str.extract("(\d+)").astype(int)
+        df_melted["Day"] = df_melted["Day"].str.extract(r"(\d+)").astype(int)
 
         # Create a new DateTime column for each day
         df_melted[self.dtfield] = df_melted.apply(

@@ -12,15 +12,15 @@ User Guide
 Overview
 ***********************************************************************
 
-``plans`` is open-source, cross-platform tool that is built on top of `Python`_ and some common
-dependencies, like `NumPy`_, `SciPy`_, `Matplotlib`_, `Pandas`_ and `Rasterio`_.
+``plans`` is open-source, cross-platform tool that is built on top of `Python`_
+and some common dependencies, like `NumPy`_, `SciPy`_, `Matplotlib`_, `Pandas`_ and `Rasterio`_.
 
-This means that ``plans`` can be run in any operational system, locally or remotely,
-as long as Python is installed.
+This means that ``plans`` can be run in any operational system, locally
+or remotely, as long as Python is installed.
 
-Users are encouraged to run ``plans`` under interactive Python environments, like `Jupyter`_
-or `Colab`_ notebooks. These platforms are very intuitive for beginners and remove the burden of
-setting Python environments.
+Users are encouraged to run ``plans`` under interactive Python environments,
+like `Jupyter`_ or `Colab`_ notebooks. These platforms are very intuitive
+for beginners and remove the burden of setting Python environments.
 
 .. seealso::
 
@@ -57,7 +57,9 @@ This installation procedure is also enough for installing all dependencies neede
 Workflow
 ***********************************************************************
 
-The workflow of ``plans`` is based on the concept of **project**. That means that all **input data** required must be organized in a **standard file system**. Once all is set, users can run simulations without specifying entries all the time.
+The workflow of ``plans`` is based on the concept of **project**. That
+means that all **input data** required must be organized in a **standard file system**.
+Once all is set, users can run simulations without specifying entries all the time.
 
 Typically, to run ``plans`` users may go through the following steps (with some iteration):
 
@@ -87,9 +89,15 @@ Setup
 
 Projects
 ========================================================================
-A **project** in ``plans`` is a standard file system that is considered the root for all operations in a given *processing session*. Folders and files names or patterns are pre-defined so ``plans`` automatically finds their existence for processing.
+A **project** in ``plans`` is a standard file system that is considered
+the root for all operations in a given *processing session*. Folders and
+files names or patterns are pre-defined so ``plans`` automatically finds
+their existence for processing.
 
-Once data is gathered, users are required to populate the folders of a project with standard files. For instance, rain data tables of a scenario must live in the ``climate`` folder. Topographical maps must go in the ``topo`` folder, etc.
+Once data is gathered, users are required to populate the folders of a
+project with standard files. For instance, rain data tables of a scenario
+must live in the ``climate`` folder. Topographical maps must go in the
+``topo`` folder, etc.
 
 .. admonition:: Working with projects
    :class: seealso
@@ -101,7 +109,8 @@ Once data is gathered, users are required to populate the folders of a project w
 
 Input data
 ========================================================================
-Required input data are basically two types of files: **tables** and **raster maps**. Tables are formatted in ``.csv`` and raster files are formatted in ``.tif``.
+Required input data are basically two types of files: **tables** and **raster maps**.
+Tables are formatted in ``.csv`` and raster files are formatted in ``.tif``.
 
 .. admonition:: Working with input data
    :class: seealso

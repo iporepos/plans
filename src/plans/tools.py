@@ -51,12 +51,13 @@ import argparse
 # External imports
 # =======================================================================
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # ... {develop}
 
 # Project-level imports
 # =======================================================================
-from plans.datasets import DC_NODATA
+from plans.datasets import DC_NODATA, TimeSeries
 
 # ... {develop}
 
@@ -72,10 +73,12 @@ from plans.datasets import DC_NODATA
 # CONSTANTS -- Module-level
 # =======================================================================
 logger = logging.getLogger(__name__)
+LABEL_STARTING = "starting"
 LABEL_LOADING = "loading"
 LABEL_PROCESSING = "processing"
 LABEL_EXPORTING = "exporting"
 LABEL_RUN = "run"
+LABEL_PROJECT = "project"
 
 DC_MSG = {
     LABEL_LOADING: "loaded inputs",
@@ -121,6 +124,10 @@ def format_msg_elapsed(msg, time):
     return "{} in {:.2f} seconds".format(msg, time)
 
 
+def format_msg_output(folder):
+    return "check results in:\n\n\t{}\n".format(folder)
+
+
 def save_runtime_data(steps, times, folder_output):
     df_run = pd.DataFrame({"step": steps, "time": times})
     file_output_runtimes = Path(folder_output) / "runtimes.csv"
@@ -132,7 +139,7 @@ def save_runtime_data(steps, times, folder_output):
 # =======================================================================
 
 
-def demo(file_input1, file_input2, folder_output, talk):
+def demo(folder_output, file_input1, file_input2, talk):
     # todo docstring
     # LOGGING
     # -------------------------------------------------------------------
@@ -164,6 +171,7 @@ def demo(file_input1, file_input2, folder_output, talk):
     # -------------------------------------------------------------------
     start_total = time.time()
     ls_steps, ls_times = [], []
+    logger.info(LABEL_STARTING)
 
     # LOADING INPUTS
     # -------------------------------------------------------------------
@@ -190,6 +198,7 @@ def demo(file_input1, file_input2, folder_output, talk):
     # -------------------------------------------------------------------
     total_elapsed = time.time() - start_total
     logger.info(format_msg_elapsed(DC_MSG[LABEL_RUN], total_elapsed))
+    logger.info(format_msg_output(folder_output))
 
     # record it in your steps/times lists
     ls_steps.append(LABEL_RUN)
@@ -202,7 +211,7 @@ def demo(file_input1, file_input2, folder_output, talk):
     return True
 
 
-def analysis_dto(file_ldd, file_basin, folder_output, label, views, talk):
+def analysis_dto(folder_output, file_ldd, file_basin, label, views, talk):
     # todo docstring
     from plans.datasets import Raster, LDD, DTO, AOI
     from plans.geo import distance_to_outlet
@@ -241,7 +250,6 @@ def analysis_dto(file_ldd, file_basin, folder_output, label, views, talk):
         dto.data = grd_outdist.copy()
         dto.raster_metadata = ldd.raster_metadata
         dto.raster_metadata["NODATA_value"] = DC_NODATA["float32"]
-
         # apply aoi mask
         if basin is not None:
             dto.apply_aoi_mask(grid_aoi=basin.data, inplace=True)
@@ -257,6 +265,7 @@ def analysis_dto(file_ldd, file_basin, folder_output, label, views, talk):
     # -------------------------------------------------------------------
     start_total = time.time()
     ls_steps, ls_times = [], []
+    logger.info(LABEL_STARTING)
 
     # LOADING INPUTS
     # -------------------------------------------------------------------
@@ -283,6 +292,7 @@ def analysis_dto(file_ldd, file_basin, folder_output, label, views, talk):
     # -------------------------------------------------------------------
     total_elapsed = time.time() - start_total
     logger.info(format_msg_elapsed(DC_MSG[LABEL_RUN], total_elapsed))
+    logger.info(format_msg_output(folder_output))
 
     # record it in your steps/times lists
     ls_steps.append(LABEL_RUN)
@@ -296,7 +306,13 @@ def analysis_dto(file_ldd, file_basin, folder_output, label, views, talk):
 
 
 def analysis_lulc_series(
-    file_lulc, folder_lulc, file_aoi, folder_output, label, views, talk
+    folder_output,
+    file_lulc_attributes,
+    folder_lulc_scenario,
+    file_aoi,
+    label,
+    views,
+    talk,
 ):
     # todo docstring
     from plans.datasets import Raster, LULCSeries, AOI
@@ -313,44 +329,56 @@ def analysis_lulc_series(
         # handle ldd
         lulc_series = LULCSeries(name=label)
         lulc_series.load_folder(
-            folder=folder_lulc, file_table=file_lulc, name_pattern="lulc_*", talk=True
+            folder=folder_lulc, file_table=file_lulc, name_pattern="lulc_*", talk=talk
         )
-
         # handle basin
         aoi_map = None
         if file_aoi is not None:
             aoi_map = AOI(name=label)
             aoi_map.load_data(file_data=file_aoi)
             lulc_series.apply_aoi_masks(grid_aoi=aoi_map.data, inplace=True)
-
         return lulc_series, aoi_map
 
     @step(LABEL_PROCESSING)
     def process_data(lulc_series):
-        print("hello")
-        print(lulc_series.catalog.info())
-        for k in lulc_series.collection:
-            lulc_series.collection[k].view(show=True)
-
         df = lulc_series.get_series_areas()
+        df.rename(columns={"id_raster": "id_lulc_raster"}, inplace=True)
         return df
 
     @step(LABEL_EXPORTING)
     def export_data(df):
         file_name_output = "lulc_series"
-        print(df.info())
-        print(df.head())
-        time.sleep(1)
+        file_output = Path(folder_output) / f"{file_name_output}.csv"
+        df.to_csv(file_output, sep=";", index=False)
+        if views:
+            # format titles
+            for k in lulc_series.collection:
+                dt = lulc_series.collection[k].datetime
+                title = f"{label} | LULC | {dt}"
+                lulc_series.collection[k].view_specs["title"] = title
+            # export views
+            lulc_series.get_views(
+                show=False,
+                folder=folder_output,
+                dpi=300,
+                fig_format="jpg",
+                talk=talk,
+                specs=None,
+                suffix=None,
+            )
         return None
 
     # START UP
     # -------------------------------------------------------------------
     start_total = time.time()
     ls_steps, ls_times = [], []
+    logger.info(LABEL_STARTING)
 
     # LOADING INPUTS
     # -------------------------------------------------------------------
-    (lulc_series, aoi_map), t = load_inputs(file_lulc, folder_lulc, file_aoi)
+    (lulc_series, aoi_map), t = load_inputs(
+        file_lulc_attributes, folder_lulc_scenario, file_aoi
+    )
 
     ls_steps.append(LABEL_LOADING)
     ls_times.append(t)
@@ -373,6 +401,7 @@ def analysis_lulc_series(
     # -------------------------------------------------------------------
     total_elapsed = time.time() - start_total
     logger.info(format_msg_elapsed(DC_MSG[LABEL_RUN], total_elapsed))
+    logger.info(format_msg_output(folder_output))
 
     # record it in your steps/times lists
     ls_steps.append(LABEL_RUN)
@@ -382,6 +411,173 @@ def analysis_lulc_series(
     runtimes_file = save_runtime_data(
         steps=ls_steps, times=ls_times, folder_output=folder_output
     )
+    return True
+
+
+def analysis_climate_series_lulc(
+    folder_output,
+    file_parameters,
+    file_climate_series,
+    file_lulc_series,
+    label,
+    views,
+    talk,
+):
+    # todo docstring
+    from plans.datasets import RainSeries, ETSeries
+
+    # LOGGING
+    # -------------------------------------------------------------------
+    tool_name = demo.__name__
+    setup_logger(label=tool_name, talk=talk)
+
+    # DEFINE PROTOCOLS
+    # -------------------------------------------------------------------
+    @step(LABEL_LOADING)
+    def load_inputs(file_parameters, file_climate_series, file_lulc_series):
+
+        df_params = pd.read_csv(file_parameters, sep=";")
+        dt_value = df_params.loc[df_params["field"] == "dt", "value"].values[
+            0
+        ]  # Minutes
+
+        ppt = RainSeries()
+        ppt.load_data(
+            file_data=file_climate_series,
+            input_dtfield="datetime",
+            input_varfield="ppt",
+        )
+
+        pet = ETSeries()
+        pet.load_data(
+            file_data=file_climate_series,
+            input_dtfield="datetime",
+            input_varfield="pet",
+        )
+
+        df_lulc = pd.read_csv(
+            file_lulc_series, sep=";", parse_dates=[TimeSeries().dtfield]
+        )
+        df_lulc.drop_duplicates(subset="id_lulc_raster", inplace=True)
+
+        return dt_value, ppt, pet, df_lulc
+
+    @step(LABEL_PROCESSING)
+    def process_data(dt_value, ppt, pet, df_lulc):
+        # downscale
+        df_downscaled_ppt = ppt.downscale(freq=f"{dt_value}min")
+        df_downscaled_pet = pet.downscale(freq=f"{dt_value}min")
+        df_downscaled = pd.merge(
+            left=df_downscaled_ppt, right=df_downscaled_pet, on="datetime", how="left"
+        )
+        df_downscaled["date"] = df_downscaled["datetime"].dt.strftime("%Y-%m-%d")
+
+        # handle lulc
+        df_lulc = df_lulc[["datetime", "id_lulc_raster"]].copy()
+
+        df_lulc.rename(columns={"datetime": "date"}, inplace=True)
+        df_lulc["date"] = df_lulc["date"].dt.strftime("%Y-%m-%d")
+
+        # merge
+        df_downscaled = pd.merge(
+            left=df_downscaled, right=df_lulc, on="date", how="left"
+        )
+        # interpolate voids using nearest method
+        df_downscaled["id_lulc_raster"] = df_downscaled["id_lulc_raster"].interpolate(
+            method="nearest"
+        )
+        df_downscaled.drop(columns="date", inplace=True)
+        df_downscaled.dropna(subset="id_lulc_raster", inplace=True)
+        df_downscaled["id_lulc_raster"] = df_downscaled["id_lulc_raster"].astype(
+            dtype="int16"
+        )
+        df_downscaled.reset_index(drop=True, inplace=True)
+
+        logger.info(
+            "processed data:\n\n{}\n\n{}\n\n".format(
+                df_downscaled.head(5).to_string(), df_downscaled.tail(5).to_string()
+            )
+        )
+
+        return df_downscaled
+
+    @step(LABEL_EXPORTING)
+    def export_data(df, folder):
+        file_out = Path(folder) / f"climate_series_lulc_{label}.csv"
+        df.to_csv(file_out, sep=";", index=False)
+        return file_out
+
+    # START UP
+    # -------------------------------------------------------------------
+    start_total = time.time()
+    ls_steps, ls_times = [], []
+    logger.info(LABEL_STARTING)
+
+    # LOADING INPUTS
+    # -------------------------------------------------------------------
+    (dt_value, ppt, pet, df_lulc), t = load_inputs(
+        file_parameters, file_climate_series, file_lulc_series
+    )
+
+    ls_steps.append(LABEL_LOADING)
+    ls_times.append(t)
+
+    # PROCESSING DATA
+    # -------------------------------------------------------------------
+    df_out, t = process_data(dt_value, ppt, pet, df_lulc)
+
+    ls_steps.append(LABEL_PROCESSING)
+    ls_times.append(t)
+
+    # EXPORTING OUTPUTS
+    # -------------------------------------------------------------------
+    file_out, t = export_data(df_out, folder_output)
+
+    ls_steps.append(LABEL_EXPORTING)
+    ls_times.append(t)
+
+    # SHUTDOWN
+    # -------------------------------------------------------------------
+    total_elapsed = time.time() - start_total
+    logger.info(format_msg_elapsed(DC_MSG[LABEL_RUN], total_elapsed))
+    logger.info(format_msg_output(folder_output))
+
+    # record it in your steps/times lists
+    ls_steps.append(LABEL_RUN)
+    ls_times.append(total_elapsed)
+
+    # Save all runtime data including total
+    runtimes_file = save_runtime_data(
+        steps=ls_steps, times=ls_times, folder_output=folder_output
+    )
+    return True
+
+
+def analysis_lulc_parameters(
+    folder_output,
+    file_parameters,
+    file_lulc_attributes,
+    folder_lulc_scenario,
+    file_basin,
+    label,
+    views,
+    talk,
+):
+    # todo develop
+    return True
+
+
+def analysis_soils_parameters(
+    folder_output,
+    file_parameters,
+    file_soils_attributes,
+    file_soils,
+    file_basin,
+    label,
+    views,
+    talk,
+):
+    # todo develop
     return True
 
 
@@ -397,68 +593,248 @@ def func2(path: str, flag: bool):
 
 
 def main():
+
+    # todo --- improvements
+    #  this can be improved by parsing a tools.csv file with all tools specs stored in a smart way (DRY)
+
+    def add_arguments_str(parser, arguments):
+        parser.add_argument(
+            "--{}".format(arguments["flag"]),
+            required=arguments["required"],
+            help=arguments["help"],
+            default=arguments["default"],
+        )
+        return parser
+
+    def add_arguments_bool(parser, arguments):
+        parser.add_argument("--{}".format(arguments["flag"]), action="store_true")
+        return parser
+
+    def add_arguments(parser, arguments):
+        for k in arguments:
+            if arguments[k]["type"] == "str":
+                parser = add_arguments_str(parser, arguments=arguments[k])
+            elif arguments[k]["type"] == "bool":
+                parser = add_arguments_bool(parser, arguments=arguments[k])
+        return parser
+
+    # LISTED PARSERS
+    # ===================================================================
     parser = argparse.ArgumentParser(description="Tools runner")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    # --- demo
+    # demo
+    # -------------------------------------------------------------------
+    dc_args = {
+        1: {
+            "type": "str",
+            "flag": "folder",
+            "required": True,
+            "default": None,
+            "help": "output folder file path",
+        },
+        2: {
+            "type": "str",
+            "flag": "input1",
+            "required": True,
+            "default": None,
+            "help": "input 1 file path",
+        },
+        3: {
+            "type": "str",
+            "flag": "input2",
+            "required": True,
+            "default": None,
+            "help": "input 2 file path",
+        },
+        4: {
+            "type": "bool",
+            "flag": "talk",
+            "action": "store_true",
+        },
+    }
     parser_demo = subparsers.add_parser("demo", help="Run demo()")
-    parser_demo.add_argument("--input1", required=True, help="Input file path")
-    parser_demo.add_argument("--input2", required=True, help="Input file path")
-    parser_demo.add_argument("--folder", required=True, help="Output folder path")
-    parser_demo.add_argument("--talk", action="store_true")  # flag
+    parser_demo = add_arguments(parser_demo, dc_args)
 
-    # --- dto
+    # dto
+    # -------------------------------------------------------------------
+    dc_args = {
+        1: {
+            "type": "str",
+            "flag": "folder",
+            "required": True,
+            "default": None,
+            "help": "output folder file path",
+        },
+        2: {
+            "type": "str",
+            "flag": "ldd",
+            "required": True,
+            "default": None,
+            "help": "path to ldd.tif map",
+        },
+        3: {
+            "type": "str",
+            "flag": "basin",
+            "required": False,
+            "default": None,
+            "help": "path to basin.tif map",
+        },
+        4: {
+            "type": "str",
+            "flag": "label",
+            "required": True,
+            "default": LABEL_PROJECT,
+            "help": "project label",
+        },
+        5: {
+            "type": "bool",
+            "flag": "views",
+            "action": "store_true",
+        },
+        6: {
+            "type": "bool",
+            "flag": "talk",
+            "action": "store_true",
+        },
+    }
     parser_dto = subparsers.add_parser("analysis_dto", help="Run dto()")
-    parser_dto.add_argument("--ldd", required=True, help="path to ldd.tif map")
-    parser_dto.add_argument(
-        "--basin", required=False, help="path to basin.tif map", default=None
-    )
-    parser_dto.add_argument("--folder", required=True, help="path to output folder")
-    parser_dto.add_argument("--label", required=True, help="Label")
-    parser_dto.add_argument("--views", action="store_true")  # flag
-    parser_dto.add_argument("--talk", action="store_true")  # flag
+    parser_dto = add_arguments(parser_dto, dc_args)
 
-    # --- lulc series
-    parser_dto = subparsers.add_parser(
-        "analysis_lulc_series", help="Analysis of LULC series"
-    )
-    parser_dto.add_argument(
-        "--attributes", required=True, help="path to lulc_attributes csv"
-    )
-    parser_dto.add_argument("--scenario", required=True, help="path to lulc map folder")
-    parser_dto.add_argument(
-        "--basin", required=False, help="path to basin.tif map", default=None
-    )
-    parser_dto.add_argument("--folder", required=True, help="path to output folder")
-    parser_dto.add_argument("--label", required=True, help="Label")
-    parser_dto.add_argument("--views", action="store_true")  # flag
-    parser_dto.add_argument("--talk", action="store_true")  # flag
+    # lulc_series
+    # -------------------------------------------------------------------
+    dc_args = {
+        1: {
+            "type": "str",
+            "flag": "folder",
+            "required": True,
+            "default": None,
+            "help": "output folder file path",
+        },
+        2: {
+            "type": "str",
+            "flag": "attributes",
+            "required": True,
+            "default": None,
+            "help": "path to lulc attribute table",
+        },
+        3: {
+            "type": "str",
+            "flag": "scenario",
+            "required": True,
+            "default": None,
+            "help": "path to folder with lulc scenario maps",
+        },
+        4: {
+            "type": "str",
+            "flag": "aoi",
+            "required": False,
+            "default": None,
+            "help": "path to aoi or basin map",
+        },
+        5: {
+            "type": "str",
+            "flag": "label",
+            "required": True,
+            "default": LABEL_PROJECT,
+            "help": "project label",
+        },
+        6: {
+            "type": "bool",
+            "flag": "views",
+            "action": "store_true",
+        },
+        7: {
+            "type": "bool",
+            "flag": "talk",
+            "action": "store_true",
+        },
+    }
+    parser_lulc_series = subparsers.add_parser("analysis_lulc_series", help="Run dto()")
+    parser_lulc_series = add_arguments(parser_lulc_series, dc_args)
 
-    # --- func2
-    parser_f2 = subparsers.add_parser("func2", help="Run func2")
-    parser_f2.add_argument("--path", required=True, help="Path to folder")
-    parser_f2.add_argument("--flag", action="store_true", help="Enable optional flag")
+    # climate_lulc_series
+    # -------------------------------------------------------------------
+    dc_args = {
+        1: {
+            "type": "str",
+            "flag": "folder",
+            "required": True,
+            "default": None,
+            "help": "output folder file path",
+        },
+        2: {
+            "type": "str",
+            "flag": "parameters",
+            "required": True,
+            "default": None,
+            "help": "path to parameters table",
+        },
+        3: {
+            "type": "str",
+            "flag": "climate",
+            "required": True,
+            "default": None,
+            "help": "path to climate series",
+        },
+        4: {
+            "type": "str",
+            "flag": "lulc",
+            "required": False,
+            "default": None,
+            "help": "path to lulc series",
+        },
+        5: {
+            "type": "str",
+            "flag": "label",
+            "required": True,
+            "default": LABEL_PROJECT,
+            "help": "project label",
+        },
+        6: {
+            "type": "bool",
+            "flag": "views",
+            "action": "store_true",
+        },
+        7: {
+            "type": "bool",
+            "flag": "talk",
+            "action": "store_true",
+        },
+    }
+    parser_climate_lulc_series = subparsers.add_parser(
+        "analysis_climate_series_lulc", help="Run "
+    )
+    parser_climate_lulc_series = add_arguments(parser_climate_lulc_series, dc_args)
 
     args = parser.parse_args()
 
     if args.command == "demo":
-        demo(args.input1, args.input2, args.folder, args.talk)
+        demo(args.folder, args.input1, args.input2, args.talk)
     elif args.command == "analysis_dto":
         analysis_dto(
-            args.ldd, args.basin, args.folder, args.label, args.views, args.talk
+            args.folder, args.ldd, args.basin, args.label, args.views, args.talk
         )
     elif args.command == "analysis_lulc_series":
         analysis_lulc_series(
+            args.folder,
             args.attributes,
             args.scenario,
-            args.basin,
-            args.folder,
+            args.aoi,
             args.label,
             args.views,
             args.talk,
         )
-    elif args.command == "func2":
-        func2(args.path, args.flag)
+    elif args.command == "analysis_climate_series_lulc":
+        analysis_climate_series_lulc(
+            args.folder,
+            args.parameters,
+            args.climate,
+            args.lulc,
+            args.label,
+            args.views,
+            args.talk,
+        )
 
 
 # SCRIPT

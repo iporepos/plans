@@ -17,38 +17,20 @@ et netus et malesuada fames ac turpis egestas.
 Example
 -------
 
-# todo [major docstring improvement] -- examples
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,
-in porttitor lacus lobortis vitae. In a lacinia nisl.
-
-.. code-block:: python
-
-    # set file path
-    f = "../_inmet_auto_src.csv"
-
-    # instantiate object
-    auto = inmet.Automatic(name="Automatic Station")
-
-    # load data
-    auto.load_data(file_path=f)
-
-    # print data (pandas dataframe)
-    print(auto.data.head().to_string(index=False))
-
-    # print metadata (pandas dataframe)
-    print(auto.station_metadata_df.to_string())
-
-    # export to folder
-    auto.export_data(folder="C:/data", append_id=True)
-
 """
 
 import pandas as pd
 
+# todo ---- improve examples an docstrings
+# todo ---- format module
+# todo ---- refactor better names
+# todo ---- refactor for root.DataSet inheritance
+# todo ---- make unit tests
+
 
 class _StationINMET_:
-    """This is a base object for parsing Inmet Stations datasets
+    """
+    This is a base object for parsing Inmet Stations datasets
 
     Objects downstream will use or overwrite this methods
 
@@ -92,7 +74,8 @@ class _StationINMET_:
         self.reading_nan = ["null", -9999]
 
     def get_metadata(self):
-        """Base metata getter method
+        """
+        Base metata getter method
 
         :return: dictionary of metadata
         :rtype: dict
@@ -102,7 +85,8 @@ class _StationINMET_:
         return dict_meta
 
     def update(self):
-        """Base update method
+        """
+        Base update method
 
         :return: None
         :rtype: None
@@ -480,7 +464,9 @@ class ConventionalHourly(_Conventional_):
 
 # todo docstring
 class ConventionalDaily(_Conventional_):
-    """Parser object for ``INMET`` Conventional Stations - Daily measurements."""
+    """
+    Parser object for ``INMET`` Conventional Stations - Daily measurements.
+    """
 
     # todo docstring
     def __init__(self, name="MyConvetionalDaily"):
@@ -505,7 +491,9 @@ class ConventionalDaily(_Conventional_):
 
 
 class _Automatic_(_StationINMET_):
-    """Base Parser object for automatic INMET stations"""
+    """
+    Base Parser object for automatic INMET stations
+    """
 
     def __init__(self, name="MyAutomatic"):
         super().__init__(name=name)
@@ -517,7 +505,9 @@ class _Automatic_(_StationINMET_):
 
 
 class Automatic(_Automatic_):
-    """Parser object for ``INMET`` Automatic Stations provided by any date range."""
+    """
+    Parser object for ``INMET`` Automatic Stations provided by any date range.
+    """
 
     def __init__(self, name="MyAutomatic"):
         super().__init__(name=name)

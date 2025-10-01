@@ -200,15 +200,21 @@ climate_series
 A time series file containing model forcing data such as precipitation and potential evapotranspiration. It can have a time step as fine as 15 minutes, but daily or hourly series are most common. This file is required for running the model.
 
 
-climate_{lulc-scenario}_lulc_series
+climate_series_lulc_{lulc-scenario}
 =============================================================
 
-This time series is a merger or :ref:`io-climate_series` and :ref:`io-lulc_series` for a given Land Use scenario. It relates all time steps for a given climate series to a land use map and related parameters at a given Land Use scenario.
+This time series is a temporal merger or :ref:`io-climate_series` and :ref:`io-lulc_series` for a given Land Use
+scenario. It relates all time steps for a given climate series to a land use map and related parameters at a given Land Use scenario.
+
+.. warning::
+
+   The :ref:`io-climate_series` and :ref:`io-lulc_series` must have an overlap in the time line. Otherwise this file is
+   empty.
 
 .. important::
 
-   When generated, this time series downscale climate variables to the simulation time step defined in :ref:`io-parameters_info`.
-   Hence, it can be a heavy file.
+   This can be a heavy file. When generated, this time series downscale climate variables to the simulation time step defined in :ref:`io-parameters_info`.
+
 
 .. admonition:: Related files
    :class: seealso

@@ -1179,7 +1179,8 @@ class LULCSeries(QualiRasterSeries):
         return series_lulcc
 
     def get_conversion_matrix(self, date_start, date_end, talk=False):
-        """Compute the conversion matrix, expansion matrix and retraction matrix for a given interval
+        """
+        Compute the conversion matrix, expansion matrix and retraction matrix for a given interval
 
         :param date_start: start date of time interval
         :type date_start: str

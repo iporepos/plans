@@ -27,6 +27,11 @@ Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,
 in porttitor lacus lobortis vitae. In a lacinia nisl.
 
 """
+# todo ---- improve examples an docstrings
+# todo ---- format module
+# todo ---- refactor better names
+# todo ---- refactor for root.DataSet inheritance
+# todo ---- make unit tests
 
 from osgeo import gdal
 

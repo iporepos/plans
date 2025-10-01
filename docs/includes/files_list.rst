@@ -62,17 +62,23 @@ A time series file containing model forcing data such as precipitation and poten
    :language: text
 
 
-.. _io-climate_{lulc-scenario}_lulc_series:
+.. _io-climate_series_lulc_{lulc-scenario}:
 
 Climate and Land Use Series
 ------------------------------------------------------------
 
-This time series is a merger or :ref:`io-climate_series` and :ref:`io-lulc_series` for a given Land Use scenario. It relates all time steps for a given climate series to a land use map and related parameters at a given Land Use scenario.
+This time series is a temporal merger or :ref:`io-climate_series` and :ref:`io-lulc_series` for a given Land Use
+scenario. It relates all time steps for a given climate series to a land use map and related parameters at a given Land Use scenario.
+
+.. warning::
+
+   The :ref:`io-climate_series` and :ref:`io-lulc_series` must have an overlap in the time line. Otherwise this file is
+   empty.
 
 .. important::
 
-   When generated, this time series downscale climate variables to the simulation time step defined in :ref:`io-parameters_info`.
-   Hence, it can be a heavy file.
+   This can be a heavy file. When generated, this time series downscale climate variables to the simulation time step defined in :ref:`io-parameters_info`.
+
 
 .. admonition:: Related files
    :class: seealso
@@ -89,14 +95,14 @@ This time series is a merger or :ref:`io-climate_series` and :ref:`io-lulc_serie
 
    Workflow, ":ref:`Intermediate File<io-intermediate-files>`"
    Data Structure, ":ref:`Time Series<io-timeseries>`"
-   File, "``climate_{lulc-scenario}_lulc_series.csv``"
+   File, "``climate_series_lulc_{lulc-scenario}.csv``"
    Project Folder, "``{project}/data/climate/{climate-scenario}``"
 
 
 **Required Fields**
 
 .. csv-table::
-   :file: ../data/fields_climate_{lulc-scenario}_lulc_series.csv
+   :file: ../data/fields_climate_series_lulc_{lulc-scenario}.csv
    :header-rows: 1
    :widths: auto
    :delim: ;
@@ -104,7 +110,7 @@ This time series is a merger or :ref:`io-climate_series` and :ref:`io-lulc_serie
 
 **File Sample**
 
-.. literalinclude:: ./data/samples/climate_{lulc-scenario}_lulc_series.csv
+.. literalinclude:: ./data/samples/climate_series_lulc_{lulc-scenario}.csv
    :language: text
 
 
