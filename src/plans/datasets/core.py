@@ -2448,8 +2448,8 @@ class Raster(DataSet):
         self.cmap = "jet"
         # extra
         self.varname = "Unknown variable"
-        self.varalias = "Var"
-        self.units = "units"
+        self.varalias = "UnVar"
+        self.units = "unknown"
         self.datetime = None  # "2020-01-01"
 
         # ------------ call super ----------- #
@@ -2486,7 +2486,7 @@ class Raster(DataSet):
         # Attribute fields
         self.field_varname = "var_name"
         self.field_varalias = "var_alias"
-        self.field_units = "color"
+        self.field_units = "units"
         self.field_datetime = "datetime"
         self.field_cellsize = "resolution"
         self.field_nrows = "rows"

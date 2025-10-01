@@ -31,8 +31,6 @@ Mauris gravida ex quam, in porttitor lacus lobortis vitae.
 In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.
 In a lacinia nisl.
 """
-import time
-
 # IMPORTS
 # ***********************************************************************
 # import modules from other libs
@@ -118,9 +116,7 @@ def get_basins_by_gauges(
     dissolve=True,
 ):
     """
-    Retrieve a list of upstream basins for a list of gauges. This function identifies the basins in which each gauge
-    is located and then finds all upstream basins for each of these basins.
-    The resulting GeoDataFrame can optionally be dissolved into a single feature for each gauge.
+    Retrieve a list of upstream basins for a list of gauges.
 
     :param basins: A GeoDataFrame containing the basin features.
     :type basins: :class:`geopandas.GeoDataFrame`
@@ -138,6 +134,13 @@ def get_basins_by_gauges(
     :type dissolve: bool
     :return: A GeoDataFrame with the upstream basins for each gauge, including the gauge identifier. Returns None if no gauges are found within any basin.
     :rtype: :class:`geopandas.GeoDataFrame`
+
+    **Notes**
+
+    This function identifies the basins in which each gauge
+    is located and then finds all upstream basins for each of these basins.
+    The resulting GeoDataFrame can optionally be dissolved into a single feature for each gauge.
+
     """
     # ensure gauges are in the same crs
     if basins.crs != gauges.crs:
@@ -435,28 +438,46 @@ def upscale(array, weights=None, mode="mean"):
         return weighted_sum
 
 
-def downscale_linear(scalar, array_covar, mode="mean"):
+def downscale_linear(scalar, covariate, mode="mean", scalar_region=None):
     """
-    Applies linear downscaling to a covariance array based on a scalar value.
+    Applies linear downscaling to a covariate array based on a scalar value.
 
     :param scalar: The scalar value used for downscaling.
     :type scalar: float
-    :param array_covar: The covariance array to be downscaled.
-    :type array_covar: :class:`numpy.ndarray`
+    :param covariate: The covariate array to be downscaled.
+    :type covariate: :class:`numpy.ndarray`
+    :param scalar_region: Boolean array setting a valid region for the scalar value.
+    :type scalar_region: :class:`numpy.ndarray` or None
     :param mode: The aggregation mode to use, "mean" or "sum". Default value = "mean"
     :type mode: str
     :return: The linearly downscaled array.
     :rtype: :class:`numpy.ndarray`
     """
     funcs = {"mean": np.nanmean, "sum": np.nansum}
-    return array_covar * scalar / funcs[mode](array_covar)
+    # handle region
+    if scalar_region is None:
+        scalar_region = np.ones(shape=covariate.shape)
+    scalar_region_nan = np.where(scalar_region == 0, np.nan, scalar_region)
+
+    # compute upscaled
+    covariate_upscaled = funcs[mode](scalar_region_nan * covariate)
+
+    print(scalar)
+    print(covariate_upscaled)
+
+    covariate_normalized = covariate / covariate_upscaled
+    plt.title(np.mean(covariate_normalized))
+    plt.imshow(covariate_normalized)
+    plt.show()
+
+    return scalar * covariate_normalized
 
 
 def downscale_variance(
     mean,
-    array_covar,
+    covariate,
     scale_factor,
-    mirror=False,
+    reverse=False,
     mode="simple",
     max_value=None,
     min_value=None,
@@ -466,12 +487,12 @@ def downscale_variance(
 
     :param mean: The input mean array.
     :type mean: :class:`numpy.ndarray`
-    :param array_covar: The covariance array used for downscaling.
-    :type array_covar: :class:`numpy.ndarray`
+    :param covariate: The covariance array used for downscaling.
+    :type covariate: :class:`numpy.ndarray`
     :param scale_factor: The factor by which to downscale.
     :type scale_factor: float
-    :param mirror: Whether to mirror the downscaling effect. Default value = False
-    :type mirror: bool
+    :param reverse: Whether to mirror the downscaling effect. Default value = False
+    :type reverse: bool
     :param mode: The post-processing mode to apply. Can be "simple", "prune", "truncate", or "compensate". Default value = "simple"
     :type mode: str
     :param max_value: [optional] The maximum value for pruning or truncation.
@@ -482,10 +503,10 @@ def downscale_variance(
     :rtype: :class:`numpy.ndarray`
     """
     # get mask
-    downler = downscaling_mask(array_covar=array_covar, scale=scale_factor)
+    downler = downscaling_mask(covariate=covariate, scale=scale_factor)
 
     signal = 1
-    if mirror:
+    if reverse:
         signal = -1
 
     # compute simple scaling
@@ -500,27 +521,94 @@ def downscale_variance(
     elif mode == "compensate":
         # this method fix the truncation problem
         grd_pruned = prune(array=grd, max_value=max_value, min_value=min_value)
-        grd = downscale_linear(scalar=mean, array_covar=grd_pruned, mode="mean")
+        grd = downscale_linear(scalar=mean, covariate=grd_pruned, mode="mean")
 
     return grd
 
 
 # todo [refactor] -- evaluate to rename or move inside
-def downscaling_mask(array_covar, scale):
+def downscaling_mask(covariate, scale):
     """
     Compute a downscaling mask by using a covariate array
 
-    :param array_covar: Numpy array of a covariate
-    :type array_covar: :class:`numpy.ndarray`
+    :param covariate: Numpy array of a covariate
+    :type covariate: :class:`numpy.ndarray`
     :param scale: scale factor (expected to be positive)
     :type scale: float
     :return: downscaling mask array
     :rtype: :class:`numpy.ndarray`
     """
-    return scale * (array_covar - np.mean(array_covar))
+    return scale * (covariate - np.mean(covariate))
+
+
+def buffer(grd_input, n_radius):
+    """
+    Calculate a buffer mask
+
+    :param grd_input: Pseudo-boolean 2D numpy array where pixels with value 1 represent the foreground.
+    :type grd_input: :class:`numpy.ndarray`
+    :param n_radius: number of pixels for buffer (inclusive)
+    :type n_radius: int
+    :return: Pseudo-boolean 2D numpy array representing buffer area.
+    :rtype: :class:`numpy.ndarray`
+    """
+    grd_distance = euclidean_distance(grd_input)
+    grd_buffer = np.where(grd_distance <= n_radius, 1, 0)
+    return grd_buffer
+
+
+def euclidean_distance(grd_input):
+    """
+    Calculate the Euclidean distance from pixels with value 1
+
+    :param grd_input: Pseudo-boolean 2D numpy array where pixels with value 1 represent the foreground.
+    :type grd_input: :class:`numpy.ndarray`
+    :return: 2D numpy array representing the Euclidean distance.
+    :rtype: :class:`numpy.ndarray`
+
+    **Note**
+
+    - The function uses the `distance_transform_edt` from `scipy.ndimage` to compute the Euclidean distance.
+    - The inputs array is treated as a binary mask, and the distance is calculated from foreground pixels (value 1).
+
+    """
+    from scipy.ndimage import distance_transform_edt
+
+    grd_input = 1 * (grd_input == 0)  # reverse foreground values
+    # Calculate the distance map
+    return distance_transform_edt(grd_input)
 
 
 # Special processing of array values
+# -----------------------------------------------------------------------
+
+# MODELLING
+# -----------------------------------------------------------------------
+
+
+def donwscale_parameter(upscaled_value, basin, covariate, mode="mean"):
+    output = downscale_linear(
+        scalar=upscaled_value, covariate=covariate, mode=mode, scalar_region=basin
+    )
+    return output
+
+
+def downscale_parameter_to_units(
+    upscaled_value, units, basin, covariate_table, mode="mean"
+):
+    # convert values
+    covariate = convert(
+        array=units,
+        old_values=covariate_table["v"].values,  # unit ids
+        new_values=covariate_table["w"].values,  # downscaling weights
+    )
+    output = donwscale_parameter(
+        upscaled_value=upscaled_value, basin=basin, covariate=covariate, mode=mode
+    )
+    return output
+
+
+# SOILS
 # -----------------------------------------------------------------------
 
 
@@ -548,9 +636,13 @@ def soils(slope, hand, slope_threshold=25, hand_threshold=5):
     return grd_soils
 
 
+# DEM
+# -----------------------------------------------------------------------
+
+
 def slope(dem, cellsize, degree=True):
     """
-    Calculate slope using gradient-based algorithms on a 2D numpy array.
+    Calculate slope using gradient-based algorithms
 
     :param dem: 2D numpy array representing the Digital Elevation Model (``DEM``).
     :type dem: :class:`numpy.ndarray`
@@ -571,47 +663,9 @@ def slope(dem, cellsize, degree=True):
     return slope_array
 
 
-def buffer(grd_input, n_radius):
-    """
-    Calculate a buffer mask
-
-    :param grd_input: Pseudo-boolean 2D numpy array where pixels with value 1 represent the foreground.
-    :type grd_input: :class:`numpy.ndarray`
-    :param n_radius: number of pixels for buffer (inclusive)
-    :type n_radius: int
-    :return: Pseudo-boolean 2D numpy array representing buffer area.
-    :rtype: :class:`numpy.ndarray`
-    """
-    grd_distance = euclidean_distance(grd_input)
-    grd_buffer = np.where(grd_distance <= n_radius, 1, 0)
-    return grd_buffer
-
-
-def euclidean_distance(grd_input):
-    """
-    Calculate the Euclidean distance from pixels with value 1.
-
-    :param grd_input: Pseudo-boolean 2D numpy array where pixels with value 1 represent the foreground.
-    :type grd_input: :class:`numpy.ndarray`
-    :return: 2D numpy array representing the Euclidean distance.
-    :rtype: :class:`numpy.ndarray`
-
-    **Note**
-
-    - The function uses the `distance_transform_edt` from `scipy.ndimage` to compute the Euclidean distance.
-    - The inputs array is treated as a binary mask, and the distance is calculated from foreground pixels (value 1).
-
-    """
-    from scipy.ndimage import distance_transform_edt
-
-    grd_input = 1 * (grd_input == 0)  # reverse foreground values
-    # Calculate the distance map
-    return distance_transform_edt(grd_input)
-
-
 def twi(slope, flowacc, cellsize):
     """
-    Calculate the Topographic Wetness Index ``TWI``.
+    Calculate the Topographic Wetness Index ``TWI``
 
     :param slope: 2D numpy array representing the slope in degrees.
     :type slope: :class:`numpy.ndarray`
@@ -624,7 +678,7 @@ def twi(slope, flowacc, cellsize):
 
     **Note**
 
-    - The function uses the formula: TWI = ln( A / hc_colors tan(S)), where A is flow accumulation, hc_colors is the cell resolution and S is slope in radians.
+    - The function uses the formula: TWI = ln( A / cellsize tan(S)), where A is flow accumulation, cellsize is the cell resolution and S is slope in radians.
     - The inputs arrays `slope` and `flowacc` should have the same dimensions.
     - The formula includes a small value (0.01) to prevent issues with tangent calculations for non-NaN values.
 
@@ -633,179 +687,13 @@ def twi(slope, flowacc, cellsize):
     return np.log((flowacc / cellsize) / (np.tan((slope * np.pi / 180) + 0.01)))
 
 
-def shalstab_wetness(
-    flowacc,
-    slope,
-    cellsize,
-    soil_phi,
-    soil_z,
-    soil_c,
-    soil_p,
-    water_p=997,
-    g=9.8,
-    degree=True,
-    kPa=True,
-):
-    """
-    Calculate the SHALSTAB wetness model
-
-    :param flowacc: flow accumulation map (square meters)
-    :type flowacc: :class:`numpy.ndarray`
-    :param slope: slope map (degrees or radians)
-    :type slope: :class:`numpy.ndarray`
-    :param cellsize: grid cell size (meters)
-    :type cellsize: float
-    :param soil_phi: soil angle of internal friction (degrees or radians)
-    :type soil_phi: :class:`numpy.ndarray` or float
-    :param soil_z: soil depth (meters)
-    :type soil_z: :class:`numpy.ndarray` or float
-    :param soil_c: soil cohesion (Pa or N/m0² or kg/ms²)
-    :type soil_c: :class:`numpy.ndarray` or float
-    :param soil_p: soil density (kg/m0³)
-    :type soil_p: :class:`numpy.ndarray` or float
-    :param water_p: water density (kg/m0³)
-    :type water_p: float
-    :param g: gravity acceleration (m0 / s²)
-    :type g: float
-    :param degree: flag to note if slope and soil_phi are in degrees
-    :type degree: bool
-    :param kPa: flag to note if soil_c in kPa
-    :type kPa: bool
-    :return: map of q/T ratio
-    :rtype: :class:`numpy.ndarray`
-    """
-
-    if degree:
-        # convert to radians
-        slope = np.radians(slope)
-        soil_phi = np.radians(soil_phi)
-
-    if kPa:
-        # convert to Pa
-        soil_c = soil_c * 1000
-
-    # get density ratio
-    density_r = soil_p / water_p
-
-    # get tangent ratio
-    tan_r = 1 - (np.tan(slope) / np.tan(soil_phi))
-
-    slope_term = density_r * tan_r
-
-    # get force term
-    cohesion_term = soil_c / (
-        np.square(np.cos(slope)) * np.tan(soil_phi) * water_p * g * soil_z
-    )
-
-    topo_term = cellsize * np.sin(slope) / flowacc
-
-    # apply full equation
-    q_t = topo_term * (slope_term + cohesion_term)
-
-    # force non-negative
-    q_t = q_t * (q_t > 0) + 0.0001
-
-    shalstab_classes = classify(
-        array=np.log10(q_t),
-        upvalues=np.array([-3.1, -2.8, -2.5, -2.2, 10]),
-        classes=np.array([6, 5, 4, 3, 2]),
-    )
-
-    # improve id 1 and id 7
-    mask1 = 1 * (np.tan(slope) <= np.tan(soil_phi) * (1 - (1 / density_r)))
-    mask7 = 1 * (np.tan(soil_phi) > np.tan(slope))
-
-    # shalstab_classes = (shalstab_classes * (mask1 != 1)) + mask1
-    # shalstab_classes = (shalstab_classes * (mask7 != 1)) + (mask7 * 7)
-
-    return q_t, shalstab_classes
-
-
-def usle_l(slope, cellsize):
-    """
-    Wischmeier & Smith (1978) L factor
-
-    L = (x / 22.13) ^ m0
-
-    where:
-
-    m0 = 0.2 when sinθ < 0.01;
-    m0 = 0.3 when 0.01 ≤ sinθ ≤ 0.03;
-    m0 = 0.4 when 0.03 < sinθ < 0.05;
-    m0 = 0.5 when sinθ ≥ 0.05
-
-    x is the plot lenght taken as 1.4142 * cellsize  (diagonal length of cell)
-
-    :param slope: slope in degrees of terrain 2d array
-    :type slope: :class:`numpy.ndarray`
-    :param cellsize: cell size in meters
-    :type cellsize: float
-    :return: Wischmeier & Smith (1978) L factor 2d array
-    :rtype: :class:`numpy.ndarray`
-    """
-    slope_rad = np.pi * 2 * slope / 360
-    lcl_grad = np.sin(slope_rad)
-    m = classify(
-        lcl_grad,
-        upvalues=(0.01, 0.03, 0.05, np.max(lcl_grad)),
-        classes=(0.2, 0.3, 0.4, 0.5),
-    )
-    return np.power(np.sqrt(2) * cellsize / 22.13, m)
-
-
-def usle_s(slope):
-    """
-    Calculates the USLE S-factor (slope steepness factor) based on the Wischmeier & Smith (1978) equation.
-
-    S = 65.41(sinθ)^2 + 4.56sinθ + 0.065
-
-    :param slope: Slope in degrees of terrain.
-    :type slope: :class:`numpy.ndarray`
-    :return: The USLE S-factor.
-    :rtype: :class:`numpy.ndarray`
-    """
-    slope_rad = np.pi * 2 * slope / 360
-    lcl_grad = np.sin(slope_rad)
-    return (65.41 * np.power(lcl_grad, 2)) + (4.56 * lcl_grad) + 0.065
-
-
-def usle_m_a(q, prec, r, k, l, s, c, p, cellsize=30):
-    """
-    USLE-M Annual Soil Loss (Kinnell & Risse, 1998)
-
-    :param q: Annual runoff in mm/year.
-    :type q: :class:`numpy.ndarray`
-    :param prec: Annual precipitation in mm/year.
-    :type prec: :class:`numpy.ndarray` or float
-    :param r: Rain erosivity in MJ mm h-1 ha-1 year-1.
-    :type r: :class:`numpy.ndarray` or float
-    :param k: Erodibility K factor in ton h MJ-1 mm-1.
-    :type k: :class:`numpy.ndarray` or float
-    :param l: USLE/RUSLE L factor.
-    :type l: :class:`numpy.ndarray` or float
-    :param s: USLE/RUSLE S factor.
-    :type s: :class:`numpy.ndarray` or float
-    :param c: C_UM factor.
-    :type c: :class:`numpy.ndarray` or float
-    :param p: USLE/RUSLE P factor.
-    :type p: :class:`numpy.ndarray` or float
-    :param cellsize: Grid cell size in meters. Default value = 30
-    :type cellsize: float
-    :return: Annual Soil Loss in ton/year.
-    :rtype: :class:`numpy.ndarray`
-    """
-    return (q / prec) * r * k * l * s * c * p * (cellsize * cellsize / (100 * 100))
+# DRAINAGE AND ROUTING
+# -----------------------------------------------------------------------
 
 
 def rivers_wedge(grd_rivers, wedge_width=3, wedge_depth=3):
     """
     Generate a wedge-like trench along the river lines.
-
-    Notes:
-
-    - The function generates a wedge-like trench along the river lines based on distance transform.
-    - The inputs array `grd_rivers` should be a pseudo-boolean grid where rivers are represented as 1 and others as 0.
-    - The width `w` controls the width of the trench, and `h` controls its height.
 
     :param grd_rivers: Pseudo-boolean grid indicating the presence of rivers.
     :type grd_rivers: :class:`numpy.ndarray`
@@ -815,6 +703,12 @@ def rivers_wedge(grd_rivers, wedge_width=3, wedge_depth=3):
     :type wedge_depth: float
     :return: Grid of the wedge (positive).
     :rtype: :class:`numpy.ndarray`
+
+    **Notes**
+
+    - The function generates a wedge-like trench along the river lines based on distance transform.
+    - The inputs array `grd_rivers` should be a pseudo-boolean grid where rivers are represented as 1 and others as 0.
+    - The width `w` controls the width of the trench, and `h` controls its height.
 
     """
     grd_dist = euclidean_distance(grd_input=grd_rivers)
@@ -1035,7 +929,6 @@ def distance_to_outlet(grd_ldd, n_res=30, ldd_convention="wbt"):
                     # print(f"ldd: {lcl_ldd}")
                     # print(f"next j: {j_next}")
                     # print(f"next i: {i_next}")
-                    # time.sleep(0.2)
                     # append to queue
                     if n_trace_count == 0:
                         list_accdist.append(n_dist)
@@ -1085,3 +978,175 @@ def distance_to_outlet(grd_ldd, n_res=30, ldd_convention="wbt"):
                 pass
 
     return n_res * grd_outdist
+
+
+# SHALSTAB
+# -----------------------------------------------------------------------
+
+
+def shalstab_wetness(
+    flowacc,
+    slope,
+    cellsize,
+    soil_phi,
+    soil_z,
+    soil_c,
+    soil_p,
+    water_p=997,
+    g=9.8,
+    degree=True,
+    kPa=True,
+):
+    """
+    Calculate the SHALSTAB wetness model
+
+    :param flowacc: flow accumulation map (square meters)
+    :type flowacc: :class:`numpy.ndarray`
+    :param slope: slope map (degrees or radians)
+    :type slope: :class:`numpy.ndarray`
+    :param cellsize: grid cell size (meters)
+    :type cellsize: float
+    :param soil_phi: soil angle of internal friction (degrees or radians)
+    :type soil_phi: :class:`numpy.ndarray` or float
+    :param soil_z: soil depth (meters)
+    :type soil_z: :class:`numpy.ndarray` or float
+    :param soil_c: soil cohesion (Pa or N/m0² or kg/ms²)
+    :type soil_c: :class:`numpy.ndarray` or float
+    :param soil_p: soil density (kg/m0³)
+    :type soil_p: :class:`numpy.ndarray` or float
+    :param water_p: water density (kg/m0³)
+    :type water_p: float
+    :param g: gravity acceleration (m0 / s²)
+    :type g: float
+    :param degree: flag to note if slope and soil_phi are in degrees
+    :type degree: bool
+    :param kPa: flag to note if soil_c in kPa
+    :type kPa: bool
+    :return: map of q/T ratio
+    :rtype: :class:`numpy.ndarray`
+    """
+
+    if degree:
+        # convert to radians
+        slope = np.radians(slope)
+        soil_phi = np.radians(soil_phi)
+
+    if kPa:
+        # convert to Pa
+        soil_c = soil_c * 1000
+
+    # get density ratio
+    density_r = soil_p / water_p
+
+    # get tangent ratio
+    tan_r = 1 - (np.tan(slope) / np.tan(soil_phi))
+
+    slope_term = density_r * tan_r
+
+    # get force term
+    cohesion_term = soil_c / (
+        np.square(np.cos(slope)) * np.tan(soil_phi) * water_p * g * soil_z
+    )
+
+    topo_term = cellsize * np.sin(slope) / flowacc
+
+    # apply full equation
+    q_t = topo_term * (slope_term + cohesion_term)
+
+    # force non-negative
+    q_t = q_t * (q_t > 0) + 0.0001
+
+    shalstab_classes = classify(
+        array=np.log10(q_t),
+        upvalues=np.array([-3.1, -2.8, -2.5, -2.2, 10]),
+        classes=np.array([6, 5, 4, 3, 2]),
+    )
+
+    # improve id 1 and id 7
+    mask1 = 1 * (np.tan(slope) <= np.tan(soil_phi) * (1 - (1 / density_r)))
+    mask7 = 1 * (np.tan(soil_phi) > np.tan(slope))
+
+    # shalstab_classes = (shalstab_classes * (mask1 != 1)) + mask1
+    # shalstab_classes = (shalstab_classes * (mask7 != 1)) + (mask7 * 7)
+
+    return q_t, shalstab_classes
+
+
+# USLE
+# -----------------------------------------------------------------------
+
+
+def usle_l(slope, cellsize):
+    """
+    Calculate the USLE L factor of Wischmeier & Smith (1978)
+
+    L = (x / 22.13) ^ m0
+
+    where:
+
+    m0 = 0.2 when sinθ < 0.01;
+    m0 = 0.3 when 0.01 ≤ sinθ ≤ 0.03;
+    m0 = 0.4 when 0.03 < sinθ < 0.05;
+    m0 = 0.5 when sinθ ≥ 0.05
+
+    x is the plot lenght taken as 1.4142 * cellsize  (diagonal length of cell)
+
+    :param slope: slope in degrees of terrain 2d array
+    :type slope: :class:`numpy.ndarray`
+    :param cellsize: cell size in meters
+    :type cellsize: float
+    :return: Wischmeier & Smith (1978) L factor 2d array
+    :rtype: :class:`numpy.ndarray`
+    """
+    slope_rad = np.pi * 2 * slope / 360
+    lcl_grad = np.sin(slope_rad)
+    m = classify(
+        lcl_grad,
+        upvalues=(0.01, 0.03, 0.05, np.max(lcl_grad)),
+        classes=(0.2, 0.3, 0.4, 0.5),
+    )
+    return np.power(np.sqrt(2) * cellsize / 22.13, m)
+
+
+def usle_s(slope):
+    """
+    Calculates the USLE S-factor (slope steepness factor) based on the Wischmeier & Smith (1978) equation.
+
+    S = 65.41(sinθ)^2 + 4.56sinθ + 0.065
+
+    :param slope: Slope in degrees of terrain.
+    :type slope: :class:`numpy.ndarray`
+    :return: The USLE S-factor.
+    :rtype: :class:`numpy.ndarray`
+    """
+    slope_rad = np.pi * 2 * slope / 360
+    lcl_grad = np.sin(slope_rad)
+    return (65.41 * np.power(lcl_grad, 2)) + (4.56 * lcl_grad) + 0.065
+
+
+def usle_m_a(q, prec, r, k, l, s, c, p, cellsize=30):
+    """
+    USLE-M Annual Soil Loss (Kinnell & Risse, 1998)
+
+    :param q: Annual runoff in mm/year.
+    :type q: :class:`numpy.ndarray`
+    :param prec: Annual precipitation in mm/year.
+    :type prec: :class:`numpy.ndarray` or float
+    :param r: Rain erosivity in MJ mm h-1 ha-1 year-1.
+    :type r: :class:`numpy.ndarray` or float
+    :param k: Erodibility K factor in ton h MJ-1 mm-1.
+    :type k: :class:`numpy.ndarray` or float
+    :param l: USLE/RUSLE L factor.
+    :type l: :class:`numpy.ndarray` or float
+    :param s: USLE/RUSLE S factor.
+    :type s: :class:`numpy.ndarray` or float
+    :param c: C_UM factor.
+    :type c: :class:`numpy.ndarray` or float
+    :param p: USLE/RUSLE P factor.
+    :type p: :class:`numpy.ndarray` or float
+    :param cellsize: Grid cell size in meters. Default value = 30
+    :type cellsize: float
+    :return: Annual Soil Loss in ton/year.
+    :rtype: :class:`numpy.ndarray`
+    """
+    return (q / prec) * r * k * l * s * c * p * (cellsize * cellsize / (100 * 100))

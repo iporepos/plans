@@ -36,6 +36,22 @@ Print a message
 
 
 """
+# LOOP COMMENTS
+# ***********************************************************************
+# Launch, Observe, Optimize, Progress
+
+# todo --- KISS improvements
+#  main() can be improved by parsing a tools.csv file with all tools specs
+#  stored in a smart way
+
+# todo --- DRY refactor
+#  implement a class-based (OOP) logic. This will reduce
+#  severely the code repetition for every tool
+
+# todo --- DOCS improvements
+#  wait for major upgrades for developing consistent docstrings
+#  include examples of how to call each tool in the terminal
+
 # IMPORTS
 # ***********************************************************************
 # import modules from other libs
@@ -593,9 +609,6 @@ def func2(path: str, flag: bool):
 
 
 def main():
-
-    # todo --- improvements
-    #  this can be improved by parsing a tools.csv file with all tools specs stored in a smart way (DRY)
 
     def add_arguments_str(parser, arguments):
         parser.add_argument(

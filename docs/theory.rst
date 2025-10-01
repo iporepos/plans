@@ -12,12 +12,23 @@ Theoretical Reference
 Introduction
 =======================================================================
 
-.. include:: ./includes/ipsum.rst
+This page provides a basic theoretical background and some technical details
+for understanding how the ``plans`` model work.
+
+.. admonition:: System components index
+   :class: seealso
+
+   Check out the full reference for variables and parameters at the
+   :ref:`system-index` page.
 
 .. _theory systems:
 
 System Models
 =======================================================================
+
+The ``plans`` model is based on a `System Dynamics`_ approach, representing the
+hillslope system as a column of interconnected storages — like a series
+of “water buckets” — that fill, spill, drain and dry over time.
 
 The `System Dynamics`_ approach is a modeling paradigm used to represent complex systems
 through a set of interconnected components. Under this paradigm, a model is
@@ -57,9 +68,60 @@ or **semi-distributed**, where the catchment is divided into an array of
 cells. This cells can be spatially arranged in a regular or irregular grid or mesh.
 
 In the case of semi-distributed models, each cell or unit is simulated
-just like a tiny lumped model. This is a key difference from truly
-distributed models, which use gridded spatial representations of the
-velocity vector field to calculate flows.
+just like a tiny lumped model, also known as Hydrological Response Units ``HRU``.
+This is a key difference from truly distributed models, which use gridded
+spatial representations of the velocity vector field to calculate flows.
+
+The ``plans`` model falls into the category of semi-distributed models.
+
+.. _theory simulation approaches:
+
+Simulation approaches
+----------------------------------------------------------------------
+
+In semi-distributed models, Hydrological response units ``HRU`` can be
+simulated in two main ways: **grid-to-grid simulation** and **histogram simulation**.
+Each approach has distinct advantages and limitations, depending on the
+scale of the study area and the computational resources available.
+
+.. _theory g2g:
+
+Grid-To-Grid simulation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In grid-to-grid simulation ``G2G``, each map cell (or pixel) is treated as an
+unique ``HRU``. This approach is most suitable when parameters are expressed
+as continuous spatial variables (e.g., canopy cover, soil storage capacity, etc).
+
+*Advantages*:
+- Directly represents spatial heterogeneity at pixel resolution.
+- Results are already mapped at the same scale as the input data, requiring no additional downscaling.
+
+*Disadvantages*:
+- Memory- and computation-intensive, especially for large basins.
+- Simulation may become impractical if the study area contains millions of cells.
+
+.. _theory hst:
+
+Histogram Simulation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In histogram simulation ``HST``, the ``HRU`` units are larger patches that
+share common parameter values. For example, canopy parameters may be
+averaged for all cells within a given land-use class.
+
+The area fraction of each ``HRU`` type is then represented in a histogram,
+which is used to upscale simulated values.
+
+*Advantages*:
+- Highly efficient in terms of memory and computational cost.
+- Suitable for large study areas where grid-to-grid simulation is infeasible.
+- Suitable for calibration or monte carlo analysis where many simulations are needed.
+
+*Disadvantages*:
+- Simulation occurs at an intermediate scale, requiring an additional step to downscale or reproject results back onto maps.
+- Some spatial detail is lost due to parameter aggregation.
+- Mapping outputs back to raster resolution requires extra processing.
 
 .. _theory water balance:
 
@@ -194,12 +256,23 @@ small channels that convey water downhill to the main stream network.
 
 There are two main **mechanisms** for overland flow generation:
 
-#. **Infiltration-excess** overland flow. This happens when rain flow is
-   so intense that infiltration flow is exceeded. Common during heavy storms and
-   where the soil surface presents a high residence time (like compacted soils).
-#. **Saturation-excess** overland flow. This occurs when rain reaches areas
-   where soil is fully saturated and there is zero potential for infiltration.
-   Common in all events where rain reaches a saturated soil surface.
+.. _theory infiltration-excess:
+
+Infiltration-excess
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This happens when rain flow is so intense that infiltration flow is exceeded.
+Common during heavy storms and where the soil surface presents a high residence
+time (like compacted soils).
+
+.. _theory saturation-excess:
+
+Saturation-excess
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This occurs when rain reaches areas where soil is fully saturated and there
+is zero potential for infiltration. Common in all events where rain reaches
+a saturated soil surface.
 
 .. _theory variable source area:
 
@@ -449,20 +522,20 @@ Rearranging yields:
 Model Structure
 =======================================================================
 
-The model is based on a `System Dynamics`_ structure, representing the
-hillslope system as a column of interconnected storages — like a series
-of “water buckets” — that fill, spill, drain and dry over time.
+The ``plans`` model is based on a `System Dynamics`_ structure, representing the
+hillslope system as **columns** of interconnected storages — like a collection
+of water buckets — that fill, spill, drain and dry over time.
 
-In the standard configuration, the model column begins with a canopy storage,
+Each column is known as the **hydrological response unit** ``HRU``. A
+landscape spatial unit with a specific parameter set.
+
+The model column begins with a canopy storage,
 followed by a surface storage (which can include an organic soil layer
 where present). Beneath it lies the mineral soil storage, divided into
 an unsaturated zone (where water moves vertically through pores) and a
 saturated phreatic zone (fully saturated, driving drainage and lateral
 exchanges with neighboring cells).
 
-Each column represents a cell on a 2D grid, which can be simulated in
-distributed or semi-lumped configurations, allowing flexibility in
-spatial resolution and computational power.
 
 .. include:: ./figs/model_structure.rst
 

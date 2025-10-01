@@ -299,7 +299,7 @@ class DownscaledModel(UpscaledModel):
 
                 # downscale weights to match global mean
                 vc_down = geo.downscale_linear(
-                    scalar=self.params[p]["value"], array_covar=vc_weights, mode="mean"
+                    scalar=self.params[p]["value"], covariate=vc_weights, mode="mean"
                 )
                 # reset data table
                 dc_aux[p_domain]["table"][p] = vc_down.copy()

@@ -199,10 +199,9 @@ Time Series
 
 A :ref:`Time Series<io-timeseries>` in ``plans`` is a special kind of :ref:`Table<io-table>` file that must have a ``datetime`` text field (preferably in the first column).
 
-
 **Structure rules**
 
-#. [required] file name signature: ``{filename}_series``
+#. [required] file name signature: ``{filename}_series[_optional-suffix]``
 #. [required] file extension: ``.csv``
 #. [required] column separator: semi-colon ``;``
 #. [required] first row stores field names
@@ -210,7 +209,7 @@ A :ref:`Time Series<io-timeseries>` in ``plans`` is a special kind of :ref:`Tabl
 #. [required] no-data convention: empty cell
 #. [required] homogeneous data type for on each column
 #. [required] ``datetime`` text field (preferably in the first column)
-#. [recommended] ``datetime`` formatted in `ISO 8601`_: ``yyyy-mm-dd HH:MM:SS.SSS``
+#. [recommended] ``datetime`` formatted in `ISO 8601`_: ``yyyy-mm-dd HH:MM:SS.S``
 #. [recommended] homogeneous datetime frequency
 #. [recommended] no gaps or voids in data
 
@@ -221,7 +220,7 @@ A :ref:`Time Series<io-timeseries>` in ``plans`` is a special kind of :ref:`Tabl
    :header: "Name", "Description", "Data Type", "Units"
    :widths: 10, 40, 15, 15
 
-   ``datetime``, "Date and time in `ISO 8601`_: ``yyyy-mm-dd HH:MM:SS.SSS``", ``str``, datetime
+   ``datetime``, "Date and time in `ISO 8601`_: ``yyyy-mm-dd HH:MM:SS.S``", ``str``, datetime
 
 
 .. admonition:: Extra required fields
