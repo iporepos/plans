@@ -44,41 +44,15 @@ Mapping infiltration potential:
 
 ```txt
 plans/
-│
-├── LICENSE
-├── README.md                     # this file (landing page)
-├── ...                           # configuration files
-│
-├── src/                          # source code folder
-│    └── plans/                   # source code root
-│         ├── analyst.py          # direct modules
-│         ├── geo.py              
-│         ├── help.py             
-│         ├── hydro.py            
-│         ├── mini.py             
-│         ├── project.py          
-│         ├── qutils.py           
-│         ├── root.py             
-│         ├── tools.py        
-│         ├── cli.py 
-│         ├── viewer.py
-│         ├── datasets/           # package for dataset structures
-│         │    ├── core.py
-│         │    ├── chrono.py
-│         │    └── spatial.py
-│         ├── parsers/            # package for specific parsing
-│         │    ├── flare.py
-│         │    ├── inmet.py
-│         │    ├── qgdal.py
-│         │    └── snirh.py
-│         └── data/               # run-time data
-│              └── iofiles.csv    
-│
-├── tests/                        # testing code folder
-├── docs/                         # documentation folder
-│
-└── examples/                     # learning resources 
-     ├── examples_01.ipynb    
-     └── examples_02.ipynb            
+  │
+  ├── LICENSE
+  ├── README.md                     # this file (landing page)
+  ├── ...                           # configuration files
+  │
+  ├── src/                          # source code folder
+  │    └── plans/                   # library
+  ├── tests/                        # testing code
+  ├── docs/                         # documentation 
+  └── examples/                     # learning resources       
 
 ```

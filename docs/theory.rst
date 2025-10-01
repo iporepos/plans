@@ -114,14 +114,14 @@ The area fraction of each ``HRU`` type is then represented in a histogram,
 which is used to upscale simulated values.
 
 *Advantages*:
-- Highly efficient in terms of memory and computational cost.
-- Suitable for large study areas where grid-to-grid simulation is infeasible.
-- Suitable for calibration or monte carlo analysis where many simulations are needed.
+ - Highly efficient in terms of memory and computational cost.
+ - Suitable for large study areas where grid-to-grid simulation is infeasible.
+ - Suitable for calibration or monte carlo analysis where many simulations are needed.
 
 *Disadvantages*:
-- Simulation occurs at an intermediate scale, requiring an additional step to downscale or reproject results back onto maps.
-- Some spatial detail is lost due to parameter aggregation.
-- Mapping outputs back to raster resolution requires extra processing.
+ - Simulation occurs at an intermediate scale, requiring an additional step to downscale or reproject results back onto maps.
+ - Some spatial detail is lost due to parameter aggregation.
+ - Mapping outputs back to raster resolution requires extra processing.
 
 .. _theory water balance:
 
@@ -458,7 +458,7 @@ Rearranging yields:
 .. math::
   :label: eq-downscaling-linear
 
-   V_{i} = W_{i} \cdot \frac{V}{W}
+   V_{i} = V \cdot \frac{W_{i}}{W}
 
 .. _theory downscaling variance:
 
@@ -583,17 +583,29 @@ Model Equations
 Model Scaling
 =======================================================================
 
-.. _theory scaling soil moisture:
+Scaling in ``plans`` makes use of the concept of Hydrologic Response Units (HRU).
+Theses units are defined by a unique combination of land use class, soil class
+and topographic saturation index. All variables and parameters simulated are
+referred to the scale of the HRU.
 
-Soil moisture
-----------------------------------------------------------------------
+The size of HRU can vary depending on the simulation approach. In the
+:ref:`G2G approach<theory g2g>` the HRU is cell (or pixel) in the raster maps.
+In the :ref:`HST approach<theory hst>` the HRU size is an intermediate set of
+units aggregated by soil, land use and a discretization of the topographic saturation index.
 
-.. include:: ./includes/ipsum.rst
 
 .. _theory scaling parameters:
 
-Parameters
+Scaling parameters
 ----------------------------------------------------------------------
+
+A parameter is a static value attributed to the HRU. In the case of land use,
+it can vary with time, but it is defined as an input prior to the simulation.
+
+In ``plans``, parameters usually are given at the basin scale in the
+:ref:`io-parameters_info` table. This means that downscaling is the most
+required process. However, upscaling is also needed for some processing
+steps.
 
 .. _theory upscaling parameters:
 
@@ -603,6 +615,23 @@ Upscaling
 Model parameters :math:`V` of land use and soils are upscaled by
 :ref:`theory averaging`. Equation :eq:`eq-upscaling-avg` is
 applied over the basin area in the map.
+
+In the hydrological terms: let :math:`V_{u}` be the parameter value in
+HRU units in a basin :math:`B` indexed by :math:`u \in \{1, 2, \ldots, N\}`.
+This value is upscaled to the basin level :math:`B` by area averaging:
+
+.. math::
+  :label: eq-upscaling-parameters
+
+   V_{B} = \frac{ \sum_{u=1}^N V_{u} A_{u}}
+               {\sum_{u=1}^N A_{u}}
+
+where
+
+- :math:`V_{B}` is the upscaled value to basin :math:`B`,
+- :math:`V_{u}` is the parameter value of HRU :math:`u`,
+- :math:`A_{u}` is the area extent of HRU :math:`u`,
+- :math:`N` is the number of HRU contained within the basin
 
 For example, if a basin contains multiple land-use or soil classes,
 the **effective parameter value** for the entire basin is obtained as
@@ -622,9 +651,20 @@ In contrast to upscaling, The effective basin-scale parameter value
 Once the value is known, the downscaling method applies
 :ref:`theory downscaling linear`.
 
-This means that Equation :eq:`eq-downscaling-linear` distributes the
-basin-scale parameter value :math:`V` back to the individual values :math:`V_{i}` by
-applying the provided **downscaling weights** :math:`W_{i}` in the attribute table of
+In the hydrological terms: let :math:`V_{B}` be the upscaled parameter value in
+a basin :math:`B` indexed by :math:`u \in \{1, 2, \ldots, N\}` HRU units.
+Also, let :math:`W_{u}` be a **downscaling weight** known at the HRU scale,
+and :math:`W_{B}` is the averaged downscaling weight value at the basin scale.
+The downscaled value of :math:`V_{u}` ay the HRU level is given by linear proportion:
+
+.. math::
+  :label: eq-downscaling-parameters
+
+   V_{u} = W_{u} \cdot \frac{V_{B}}{W_{B}}
+
+This means that Equation :eq:`eq-downscaling-parameters` distributes the
+basin-scale parameter value :math:`V_{B}` back to the HRU values :math:`V_{u}` by
+applying the provided downscaling weights :math:`W_{u}` provided in the attribute table of
 land use or soil classes [todo links].
 
 .. admonition:: Using covariates as downscaling weights
@@ -636,7 +676,34 @@ land use or soil classes [todo links].
    land use parameters. The same logic applies to soils information.
 
 
-.
+.. _theory scaling soil moisture:
+
+Scaling soil moisture
+----------------------------------------------------------------------
+
+.. include:: ./includes/ipsum.rst
+
+.. _theory upscaling soil moisture:
+
+Upscaling
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. include:: ./includes/ipsum.rst
+
+.. _theory downscaling soil moisture:
+
+Upscaling
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. include:: ./includes/ipsum.rst
+
+
+.. _theory scaling other:
+
+Other variables
+----------------------------------------------------------------------
+
+.. include:: ./includes/ipsum.rst
 
 
 References
