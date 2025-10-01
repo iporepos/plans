@@ -481,14 +481,20 @@ share common parameter values. For example, canopy parameters may be
 averaged for all cells within a given land-use class.</p>
 <p>The area fraction of each <code class="docutils literal notranslate"><span class="pre">HRU</span></code> type is then represented in a histogram,
 which is used to upscale simulated values.</p>
-<p><em>Advantages</em>:
-- Highly efficient in terms of memory and computational cost.
-- Suitable for large study areas where grid-to-grid simulation is infeasible.
-- Suitable for calibration or monte carlo analysis where many simulations are needed.</p>
-<p><em>Disadvantages</em>:
-- Simulation occurs at an intermediate scale, requiring an additional step to downscale or reproject results back onto maps.
-- Some spatial detail is lost due to parameter aggregation.
-- Mapping outputs back to raster resolution requires extra processing.</p>
+<dl class="simple">
+<dt><em>Advantages</em>:</dt><dd><ul class="simple">
+<li><p>Highly efficient in terms of memory and computational cost.</p></li>
+<li><p>Suitable for large study areas where grid-to-grid simulation is infeasible.</p></li>
+<li><p>Suitable for calibration or monte carlo analysis where many simulations are needed.</p></li>
+</ul>
+</dd>
+<dt><em>Disadvantages</em>:</dt><dd><ul class="simple">
+<li><p>Simulation occurs at an intermediate scale, requiring an additional step to downscale or reproject results back onto maps.</p></li>
+<li><p>Some spatial detail is lost due to parameter aggregation.</p></li>
+<li><p>Mapping outputs back to raster resolution requires extra processing.</p></li>
+</ul>
+</dd>
+</dl>
 </section>
 </section>
 <section id="water-balance">
@@ -717,7 +723,7 @@ of interest <span class="math notranslate nohighlight">\(V\)</span> and the cova
 <span class="eqno">(9)<a class="headerlink" href="#equation-eq-downscaling-linear1" title="Link to this equation">#</a></span>\[ \frac{V_{i}}{V} = \frac{W_{i}}{W}\]</div>
 <p>Rearranging yields:</p>
 <div class="math notranslate nohighlight" id="equation-eq-downscaling-linear">
-<span class="eqno">(10)<a class="headerlink" href="#equation-eq-downscaling-linear" title="Link to this equation">#</a></span>\[ V_{i} = W_{i} \cdot \frac{V}{W}\]</div>
+<span class="eqno">(10)<a class="headerlink" href="#equation-eq-downscaling-linear" title="Link to this equation">#</a></span>\[ V_{i} = V \cdot \frac{W_{i}}{W}\]</div>
 </section>
 <section id="variance-downscaling">
 <span id="theory-downscaling-variance"></span><h4>Variance Downscaling<a class="headerlink" href="#variance-downscaling" title="Link to this heading">#</a></h4>
@@ -764,11 +770,11 @@ where present). Beneath it lies the mineral soil storage, divided into
 an unsaturated zone (where water moves vertically through pores) and a
 saturated phreatic zone (fully saturated, driving drainage and lateral
 exchanges with neighboring cells).</p>
-<figure class="align-center" id="id5">
+<figure class="align-center" id="id6">
 <a class="reference external image-reference" href="https://github.com/iporepos/plans-assets/blob/main/docs/figs/model_structure.jpg?raw=true"><img alt="``plans`` model column structure" src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/model_structure.jpg?raw=true" style="width: 75%;" />
 </a>
 <figcaption>
-<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">plans</span></code> model column structure</span><a class="headerlink" href="#id5" title="Link to this image">#</a></p>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">plans</span></code> model column structure</span><a class="headerlink" href="#id6" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <div class="seealso admonition">
@@ -783,11 +789,11 @@ exchanges with neighboring cells).</p>
 component), and <strong>drying</strong> (water is lost through evaporation).
 Together, these processes form a network of storages connected by flows,
 with parameters regulating their behavior (e.g., residence time).</p>
-<figure class="align-center" id="id6">
+<figure class="align-center" id="id7">
 <a class="reference external image-reference" href="https://github.com/iporepos/plans-assets/blob/main/docs/figs/model_phases.jpg?raw=true"><img alt="model phases of filling, spilling, drying and draining" src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/model_phases.jpg?raw=true" style="width: 75%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">model phases of filling, spilling, drying and draining</span><a class="headerlink" href="#id6" title="Link to this image">#</a></p>
+<p><span class="caption-text">model phases of filling, spilling, drying and draining</span><a class="headerlink" href="#id7" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
@@ -805,17 +811,40 @@ with parameters regulating their behavior (e.g., residence time).</p>
 </section>
 <section id="model-scaling">
 <span id="theory-model-scaling"></span><h2>Model Scaling<a class="headerlink" href="#model-scaling" title="Link to this heading">#</a></h2>
-<section id="theory-scaling-soil-moisture">
-<span id="id2"></span><h3>Soil moisture<a class="headerlink" href="#theory-scaling-soil-moisture" title="Link to this heading">#</a></h3>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
-</section>
-<section id="parameters">
-<span id="theory-scaling-parameters"></span><h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">#</a></h3>
+<p>Scaling in <code class="docutils literal notranslate"><span class="pre">plans</span></code> makes use of the concept of Hydrologic Response Units (HRU).
+Theses units are defined by a unique combination of land use class, soil class
+and topographic saturation index. All variables and parameters simulated are
+referred to the scale of the HRU.</p>
+<p>The size of HRU can vary depending on the simulation approach. In the
+<a class="reference internal" href="#theory-g2g"><span class="std std-ref">G2G approach</span></a> the HRU is cell (or pixel) in the raster maps.
+In the <a class="reference internal" href="#theory-hst"><span class="std std-ref">HST approach</span></a> the HRU size is an intermediate set of
+units aggregated by soil, land use and a discretization of the topographic saturation index.</p>
+<section id="scaling-parameters">
+<span id="theory-scaling-parameters"></span><h3>Scaling parameters<a class="headerlink" href="#scaling-parameters" title="Link to this heading">#</a></h3>
+<p>A parameter is a static value attributed to the HRU. In the case of land use,
+it can vary with time, but it is defined as an input prior to the simulation.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">plans</span></code>, parameters usually are given at the basin scale in the
+<a class="reference internal" href="files_index.html#io-parameters-info"><span class="std std-ref">Parameters Info</span></a> table. This means that downscaling is the most
+required process. However, upscaling is also needed for some processing
+steps.</p>
 <section id="theory-upscaling-parameters">
-<span id="id3"></span><h4>Upscaling<a class="headerlink" href="#theory-upscaling-parameters" title="Link to this heading">#</a></h4>
+<span id="id2"></span><h4>Upscaling<a class="headerlink" href="#theory-upscaling-parameters" title="Link to this heading">#</a></h4>
 <p>Model parameters <span class="math notranslate nohighlight">\(V\)</span> of land use and soils are upscaled by
 <a class="reference internal" href="#theory-averaging"><span class="std std-ref">Averaging</span></a>. Equation <a class="reference internal" href="#equation-eq-upscaling-avg">(7)</a> is
 applied over the basin area in the map.</p>
+<p>In the hydrological terms: let <span class="math notranslate nohighlight">\(V_{u}\)</span> be the parameter value in
+HRU units in a basin <span class="math notranslate nohighlight">\(B\)</span> indexed by <span class="math notranslate nohighlight">\(u \in \{1, 2, \ldots, N\}\)</span>.
+This value is upscaled to the basin level <span class="math notranslate nohighlight">\(B\)</span> by area averaging:</p>
+<div class="math notranslate nohighlight" id="equation-eq-upscaling-parameters">
+<span class="eqno">(17)<a class="headerlink" href="#equation-eq-upscaling-parameters" title="Link to this equation">#</a></span>\[ V_{B} = \frac{ \sum_{u=1}^N V_{u} A_{u}}
+             {\sum_{u=1}^N A_{u}}\]</div>
+<p>where</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(V_{B}\)</span> is the upscaled value to basin <span class="math notranslate nohighlight">\(B\)</span>,</p></li>
+<li><p><span class="math notranslate nohighlight">\(V_{u}\)</span> is the parameter value of HRU <span class="math notranslate nohighlight">\(u\)</span>,</p></li>
+<li><p><span class="math notranslate nohighlight">\(A_{u}\)</span> is the area extent of HRU <span class="math notranslate nohighlight">\(u\)</span>,</p></li>
+<li><p><span class="math notranslate nohighlight">\(N\)</span> is the number of HRU contained within the basin</p></li>
+</ul>
 <p>For example, if a basin contains multiple land-use or soil classes,
 the <strong>effective parameter value</strong> for the entire basin is obtained as
 the weighted average of each classes’s parameter value.
@@ -824,14 +853,21 @@ The weights in here correspond to the <strong>area</strong> of each class within
 extent contribute more strongly to the effective, upscaled parameter value.</p>
 </section>
 <section id="theory-downscaling-parameters">
-<span id="id4"></span><h4>Downscaling<a class="headerlink" href="#theory-downscaling-parameters" title="Link to this heading">#</a></h4>
+<span id="id3"></span><h4>Downscaling<a class="headerlink" href="#theory-downscaling-parameters" title="Link to this heading">#</a></h4>
 <p>In contrast to upscaling, The effective basin-scale parameter value
 <span class="math notranslate nohighlight">\(V\)</span> is known a priori from the model parameter table [todo link].
 Once the value is known, the downscaling method applies
 <a class="reference internal" href="#theory-downscaling-linear"><span class="std std-ref">Linear Downscaling</span></a>.</p>
-<p>This means that Equation <a class="reference internal" href="#equation-eq-downscaling-linear">(10)</a> distributes the
-basin-scale parameter value <span class="math notranslate nohighlight">\(V\)</span> back to the individual values <span class="math notranslate nohighlight">\(V_{i}\)</span> by
-applying the provided <strong>downscaling weights</strong> <span class="math notranslate nohighlight">\(W_{i}\)</span> in the attribute table of
+<p>In the hydrological terms: let <span class="math notranslate nohighlight">\(V_{B}\)</span> be the upscaled parameter value in
+a basin <span class="math notranslate nohighlight">\(B\)</span> indexed by <span class="math notranslate nohighlight">\(u \in \{1, 2, \ldots, N\}\)</span> HRU units.
+Also, let <span class="math notranslate nohighlight">\(W_{u}\)</span> be a <strong>downscaling weight</strong> known at the HRU scale,
+and <span class="math notranslate nohighlight">\(W_{B}\)</span> is the averaged downscaling weight value at the basin scale.
+The downscaled value of <span class="math notranslate nohighlight">\(V_{u}\)</span> ay the HRU level is given by linear proportion:</p>
+<div class="math notranslate nohighlight" id="equation-eq-downscaling-parameters">
+<span class="eqno">(18)<a class="headerlink" href="#equation-eq-downscaling-parameters" title="Link to this equation">#</a></span>\[ V_{u} = W_{u} \cdot \frac{V_{B}}{W_{B}}\]</div>
+<p>This means that Equation <a class="reference internal" href="#equation-eq-downscaling-parameters">(18)</a> distributes the
+basin-scale parameter value <span class="math notranslate nohighlight">\(V_{B}\)</span> back to the HRU values <span class="math notranslate nohighlight">\(V_{u}\)</span> by
+applying the provided downscaling weights <span class="math notranslate nohighlight">\(W_{u}\)</span> provided in the attribute table of
 land use or soil classes [todo links].</p>
 <div class="note admonition">
 <p class="admonition-title">Using covariates as downscaling weights</p>
@@ -840,8 +876,23 @@ the use of <strong>covariates</strong>. For example, one might use a theory rela
 indices (e.g., LAI or NDVI [todo link]) as proxies for the distribution of
 land use parameters. The same logic applies to soils information.</p>
 </div>
-<p>.</p>
 </section>
+</section>
+<section id="scaling-soil-moisture">
+<span id="theory-scaling-soil-moisture"></span><h3>Scaling soil moisture<a class="headerlink" href="#scaling-soil-moisture" title="Link to this heading">#</a></h3>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+<section id="theory-upscaling-soil-moisture">
+<span id="id4"></span><h4>Upscaling<a class="headerlink" href="#theory-upscaling-soil-moisture" title="Link to this heading">#</a></h4>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+</section>
+<section id="theory-downscaling-soil-moisture">
+<span id="id5"></span><h4>Upscaling<a class="headerlink" href="#theory-downscaling-soil-moisture" title="Link to this heading">#</a></h4>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
+</section>
+</section>
+<section id="other-variables">
+<span id="theory-scaling-other"></span><h3>Other variables<a class="headerlink" href="#other-variables" title="Link to this heading">#</a></h3>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam, in porttitor lacus lobortis vitae. In a lacinia nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi et tempor sem. Nullam quam dolor, venenatis eget magna ut, accumsan mollis erat.</p>
 </section>
 </section>
 <section id="references">
@@ -945,12 +996,17 @@ land use parameters. The same logic applies to soils information.</p>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-equations">Model Equations</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-scaling">Model Scaling</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#theory-scaling-soil-moisture">Soil moisture</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parameters">Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scaling-parameters">Scaling parameters</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#theory-upscaling-parameters">Upscaling</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#theory-downscaling-parameters">Downscaling</a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scaling-soil-moisture">Scaling soil moisture</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#theory-upscaling-soil-moisture">Upscaling</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#theory-downscaling-soil-moisture">Upscaling</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#other-variables">Other variables</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
