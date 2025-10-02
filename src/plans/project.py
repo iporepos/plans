@@ -899,8 +899,8 @@ class Project(FileSys):
     @staticmethod
     def get_timestamp():
         # compute timestamp
-        _now = datetime.datetime.now()
-        return str(_now.strftime("%Y-%m-%dT%H%M%S"))
+        now = datetime.datetime.now()
+        return str(now.strftime("%Y-%m-%dT%H%M%S"))
 
 
 # ... {develop}
