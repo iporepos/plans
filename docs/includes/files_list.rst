@@ -44,7 +44,7 @@ A time series file containing model forcing data such as precipitation and poten
    Workflow, ":ref:`Required Input File<io-input-files-required>`"
    Data Structure, ":ref:`Time Series<io-timeseries>`"
    File, "``climate_series.csv``"
-   Project Folder, "``{project}/data/climate/{climate-scenario}``"
+   Project Folder, "``{project}/data/climate/{scenario}``"
 
 
 **Required Fields**
@@ -62,7 +62,7 @@ A time series file containing model forcing data such as precipitation and poten
    :language: text
 
 
-.. _io-climate_series_lulc_{lulc-scenario}:
+.. _io-climate_series_lulc_{scenario}:
 
 Climate and Land Use Series
 ------------------------------------------------------------
@@ -95,14 +95,14 @@ scenario. It relates all time steps for a given climate series to a land use map
 
    Workflow, ":ref:`Intermediate File<io-intermediate-files>`"
    Data Structure, ":ref:`Time Series<io-timeseries>`"
-   File, "``climate_series_lulc_{lulc-scenario}.csv``"
-   Project Folder, "``{project}/data/climate/{climate-scenario}``"
+   File, "``climate_series_lulc_{scenario}.csv``"
+   Project Folder, "``{project}/data/climate/{scenario}``"
 
 
 **Required Fields**
 
 .. csv-table::
-   :file: ../data/fields_climate_series_lulc_{lulc-scenario}.csv
+   :file: ../data/fields_climate_series_lulc_{scenario}.csv
    :header-rows: 1
    :widths: auto
    :delim: ;
@@ -110,7 +110,7 @@ scenario. It relates all time steps for a given climate series to a land use map
 
 **File Sample**
 
-.. literalinclude:: ./data/samples/climate_series_lulc_{lulc-scenario}.csv
+.. literalinclude:: ./data/samples/climate_series_lulc_{scenario}.csv
    :language: text
 
 
@@ -373,7 +373,7 @@ A table that links land use class IDs from the LULC maps of a scenario to their 
    Workflow, ":ref:`Required Input File<io-input-files-required>`"
    Data Structure, ":ref:`Attribute Table<io-attribute>`"
    File, "``lulc_attributes.csv``"
-   Project Folder, "``{project}/data/lulc/{lulc-scenario}``"
+   Project Folder, "``{project}/data/lulc/{scenario}``"
 
 
 **Required Fields**
@@ -406,7 +406,7 @@ This time series is an intermediate table that relates all land use maps in a gi
    Workflow, ":ref:`Intermediate File<io-intermediate-files>`"
    Data Structure, ":ref:`Time Series<io-timeseries>`"
    File, "``lulc_series.csv``"
-   Project Folder, "``{project}/data/lulc/{lulc-scenario}``"
+   Project Folder, "``{project}/data/lulc/{scenario}``"
 
 
 **Required Fields**
@@ -449,7 +449,7 @@ A raster map with pixel IDs encoding land use and land cover (LULC) classes for 
    Workflow, ":ref:`Required Input File<io-input-files-required>`"
    Data Structure, ":ref:`Time Quali Raster<io-timequaliraster>`"
    File, "``lulc_{date}.tif``"
-   Project Folder, "``{project}/data/lulc/{lulc-scenario}``"
+   Project Folder, "``{project}/data/lulc/{scenario}``"
    Pixel Units, "id"
    Data Type, "``uint8``"
 
@@ -481,7 +481,7 @@ This files are intermediate maps of parameters related to Land Use. For all para
    Workflow, ":ref:`Intermediate File<io-intermediate-files>`"
    Data Structure, ":ref:`Time Raster<io-timeraster>`"
    File, "``lulc_{date}_{parameter}.tif``"
-   Project Folder, "``{project}/data/lulc/{lulc-scenario}``"
+   Project Folder, "``{project}/data/lulc/{scenario}/parameters``"
    Pixel Units, "misc"
    Data Type, "``float32``"
 
@@ -774,7 +774,7 @@ This files are intermediate maps of parameters related to soils. For all paramet
    Workflow, ":ref:`Intermediate File<io-intermediate-files>`"
    Data Structure, ":ref:`Raster<io-raster>`"
    File, "``soils_{parameter}.tif``"
-   Project Folder, "``{project}/data/soils``"
+   Project Folder, "``{project}/data/soils/parameters``"
    Pixel Units, "misc"
    Data Type, "``float32``"
 

@@ -38,6 +38,7 @@ Print a message
 """
 import glob
 import os.path
+import shutil
 
 # IMPORTS
 # ***********************************************************************
@@ -57,6 +58,7 @@ from pathlib import Path
 # Project-level imports
 # =======================================================================
 import plans
+from plans.config import parse_fields, parse_files
 from tests import conftest
 from tests.conftest import RUN_BENCHMARKS, RUN_BENCHMARKS_XXL, testprint, DATA_DIR
 
@@ -78,6 +80,14 @@ def cleanup_figs(folder, fig_format="jpg"):
     return None
 
 
+def list_spatial_parameters(title):
+    df_files = parse_files()
+    file_name = df_files.loc[df_files["title"] == title, "name"].values[0]
+    df_fields = parse_fields()
+    df_fields = df_fields.query(f"{file_name} == 'w'").copy()
+    return list(df_fields["name"].values)
+
+
 # CLASSES
 # ***********************************************************************
 
@@ -94,10 +104,36 @@ class TestTools(unittest.TestCase):
         """
         cls.project = plans.load_project(str(DATA_DIR / "biboca"))
         cls.project.talk = True
+        cls.soils_parameters = list_spatial_parameters(title="Soils Attributes")
+        cls.lulc_parameters = list_spatial_parameters(title="Land Use Attributes")
+
+    # Assertions methods
+    # -------------------------------------------------------------------
+
+    def assertions_basic(self, folder_run):
+        folder_run = Path(folder_run)
+        self.assertTrue(folder_run.exists())
+        self.assertTrue((folder_run / "runtimes.txt").exists())
+
+    # Cleanup methods
+    # -------------------------------------------------------------------
 
     def cleanup_topo(self):
         cleanup_figs(self.project.folder_topo)
         Path(f"{self.project.folder_topo}/dto.tif").unlink(missing_ok=True)
+
+    def cleanup_parameters(self, parent_folder):
+        folder_parameters = Path(parent_folder) / "parameters"
+        if os.path.isdir(folder_parameters):
+            shutil.rmtree(folder_parameters)
+        # make a again
+        os.makedirs(folder_parameters, exist_ok=True)
+
+    def cleanup_lulc_parameters(self):
+        ls_lulc_scenarios = self.project.list_scenarios_lulc()
+        for scenario in ls_lulc_scenarios:
+            folder_scenario = Path(self.project.folder_lulc) / scenario
+            self.cleanup_parameters(folder_scenario)
 
     def cleanup_lulc_scenarios(self):
         ls_scenarios = self.project.list_scenarios_lulc()
@@ -117,42 +153,195 @@ class TestTools(unittest.TestCase):
                     f"{folder_scenario}/climate_series_lulc_{scenario_lulc}.csv"
                 ).unlink(missing_ok=True)
 
+    # Test analysis_*() methods
+    # -------------------------------------------------------------------
+    def test_analysis(self):
+        self.test_analysis_dto()
+        self.test_analysis_dto_basins()
+        self.test_analysis_lulc_series()
+        self.test_analysis_climate_series_lulc()
+        self.test_analysis_soils_parameters()
+        self.test_analysis_lulc_parameters()
+
     def test_demo(self):
-        # Run tool
+
+        # Call process
+        # ---------------------------------------------------------------
         subp, folder_run = self.project.run_demo()
         # Wait for subprocess to finish
         subp.wait()
 
         # Assertions
+        # ---------------------------------------------------------------
         folder_run = Path(folder_run)
-        self.assertTrue(folder_run.exists())
-        self.assertTrue((folder_run / "runtimes.csv").exists())
+        self.assertions_basic(folder_run=folder_run)
         self.assertTrue((folder_run / "demo_output.csv").exists())
 
+    def test_analysis_dto(self, include_views=True, use_basin=None):
+        # Call process
+        # ---------------------------------------------------------------
+        subp, folder_run = self.project.run_analysis_dto(include_views, use_basin)
+        # Wait for subprocess to finish
+        subp.wait()
+
+        # Assertions
+        # ---------------------------------------------------------------
+        folder_run = Path(folder_run)
+        self.assertions_basic(folder_run=folder_run)
+        self.assertTrue((folder_run / "dto.tif").exists())
+        if include_views:
+            self.assertTrue((folder_run / "dto.jpg").exists())
+
+    def test_analysis_dto_basins(self):
+        # Call processes
+        # ---------------------------------------------------------------
+        self.test_analysis_dto(use_basin="main")
+        self.test_analysis_dto(use_basin="sub01")
+        self.test_analysis_dto(use_basin="sub02")
+        self.test_analysis_dto(use_basin="sub03")
+
+    def test_analysis_lulc_series(self, include_views=True, use_basin=None):
+        # Call process
+        # ---------------------------------------------------------------
+        subp, folder_run = self.project.run_analysis_lulc_series(
+            "mb01", include_views, use_basin
+        )
+        # Wait for subprocess to finish
+        subp.wait()
+
+        # Assertions
+        # ---------------------------------------------------------------
+        folder_run = Path(folder_run)
+        self.assertions_basic(folder_run=folder_run)
+        self.assertTrue((folder_run / "lulc_series.csv").exists())
+
+    def test_analysis_lulc_series_basins(self):
+        self.test_analysis_lulc_series(use_basin="main")
+        self.test_analysis_lulc_series(use_basin="sub01")
+        self.test_analysis_lulc_series(use_basin="sub02")
+        self.test_analysis_lulc_series(use_basin="sub03")
+
+    def test_analysis_climate_series_lulc(self, include_views=True):
+        lulc_scenario = "mb01"
+        # Call process
+        # ---------------------------------------------------------------
+        subp, folder_run = self.project.run_analysis_climate_series_lulc(
+            climate_scenario="observed",
+            lulc_scenario=lulc_scenario,
+            include_views=include_views,
+        )
+        # Wait for subprocess to finish
+        subp.wait()
+
+        # Assertions
+        # ---------------------------------------------------------------
+        folder_run = Path(folder_run)
+        self.assertions_basic(folder_run=folder_run)
+        self.assertTrue(
+            (folder_run / f"climate_series_lulc_{lulc_scenario}.csv").exists()
+        )
+
+    def test_analysis_soils_parameters(self, include_views=True):
+        # Call process
+        # ---------------------------------------------------------------
+        subp, folder_run = self.project.run_analysis_soils_parameters(
+            include_views=include_views,
+        )
+        # Wait for subprocess to finish
+        subp.wait()
+
+        # Assertions
+        # ---------------------------------------------------------------
+        self.assertions_basic(folder_run)
+        # todo assertions!
+
+    def test_analysis_lulc_parameters(self, include_views=True):
+        # Call process
+        # ---------------------------------------------------------------
+        lulc_scenario = "mb01"
+        subp, folder_run = self.project.run_analysis_lulc_parameters(
+            lulc_scenario=lulc_scenario,
+            include_views=include_views,
+        )
+        # Wait for subprocess to finish
+        subp.wait()
+
+        # Assertions
+        # ---------------------------------------------------------------
+        self.assertions_basic(folder_run)
+
+        folder_lulc = self.project.folder_lulc
+        s = lulc_scenario
+        ls_lulcs = glob.glob(f"{folder_lulc}/{s}/lulc_*.tif")
+        ls_names = [os.path.basename(f).replace(".tif", "") for f in ls_lulcs]
+        for n in ls_names:
+            for p in self.lulc_parameters:
+                file_name = f"{n}_{p}.tif"
+                f = Path(folder_run) / file_name
+                self.assertTrue(f.exists())
+                file_name = f"{n}_{p}.jpg"
+                f = Path(folder_run) / file_name
+                self.assertTrue(f.exists())
+                file_name = f"{n}_{p}_main.jpg"
+                f = Path(folder_run) / file_name
+                self.assertTrue(f.exists())
+
+    # Test get_*() methods
+    # -------------------------------------------------------------------
+
+    def _template_get(self):
+        # Clean ups
+        # ---------------------------------------------------------------
+
+        # Call project method
+        # ---------------------------------------------------------------
+
+        # Assertions
+        # ---------------------------------------------------------------
+        pass
+        return True
+
+    def test_gets(self):
+        self.test_get_dto()
+        self.test_get_lulc_series()
+        self.test_analysis_climate_series_lulc()
+        self.test_get_soils_parameters()
+        self.test_get_lulc_parameters()
+
     def test_get_dto(self):
-        # clean up
+
+        # Clean ups
+        # ---------------------------------------------------------------
         self.cleanup_topo()
-        # call method
+
+        # Call project method
+        # ---------------------------------------------------------------
         self.project.get_dto()
-        # assertions
+
+        # Assertions
+        # ---------------------------------------------------------------
         file_tif = Path(self.project.folder_topo) / "dto.tif"
         file_fig = Path(self.project.folder_topo) / "dto.jpg"
         self.assertTrue((file_tif).exists())
         self.assertTrue((file_fig).exists())
 
     def test_get_lulc_series(self):
-        # clean up
+        # Clean ups
+        # ---------------------------------------------------------------
         self.cleanup_lulc_scenarios()
-        # call method
-        skip_scenario = None
+
+        # Call project method
+        # ---------------------------------------------------------------
+        skip_scenario = "mapbiomas"
         self.project.get_lulc_series(skip_lulc_scenario=skip_scenario)
-        # assertions
+
+        # Assertions
+        # ---------------------------------------------------------------
         ls_scenarios = self.project.list_scenarios_lulc()
         for scenario in ls_scenarios:
             if scenario == skip_scenario:
                 pass
             else:
-                # testprint(scenario)
                 folder_scenario = Path(self.project.folder_lulc) / scenario
                 file_csv = Path(folder_scenario) / "lulc_series.csv"
                 self.assertTrue((file_csv).exists())
@@ -161,16 +350,18 @@ class TestTools(unittest.TestCase):
                 for f in ls_rasters:
                     basename = os.path.basename(f).replace(".tif", ".jpg")
                     file_fig = folder_scenario / f"{basename}"
-                    # testprint(file_fig)
                     self.assertTrue((file_fig).exists())
 
     def test_get_climate_series_lulc(self):
-        # clean up
+        # Clean ups
+        # ---------------------------------------------------------------
         self.cleanup_climate_scenarios()
         # call method
         skip_scenario = None
-        self.project.get_climate_lulc_series()
-        # assertions
+        self.project.get_climate_series_lulc()
+
+        # Assertions
+        # ---------------------------------------------------------------
         ls_scenarios = self.project.list_scenarios_climate()
         for scenario in ls_scenarios:
             if scenario == skip_scenario:
@@ -182,66 +373,60 @@ class TestTools(unittest.TestCase):
                 for scenario_lulc in ls_lulc_scenarios:
                     file_csv = (
                         Path(folder_scenario)
-                        / f"climate_{scenario_lulc}_lulc_series.csv"
+                        / f"climate_series_lulc_{scenario_lulc}.csv"
                     )
                     self.assertTrue((file_csv).exists())
 
-    def test_analysis_dto(self, include_views=True, use_basin=None):
-        # Run tool
-        subp, folder_run = self.project.run_analysis_dto(include_views, use_basin)
-        # Wait for subprocess to finish
-        subp.wait()
+    def test_get_soils_parameters(self):
+        # Clean ups
+        # ---------------------------------------------------------------
+        self.cleanup_parameters(self.project.folder_soils)
+
+        # Call project method
+        # ---------------------------------------------------------------
+        self.project.get_soils_parameters()
 
         # Assertions
-        folder_run = Path(folder_run)
-        self.assertTrue(folder_run.exists())
-        self.assertTrue((folder_run / "runtimes.csv").exists())
-        self.assertTrue((folder_run / "dto.tif").exists())
-        if include_views:
-            self.assertTrue((folder_run / "dto.jpg").exists())
+        # ---------------------------------------------------------------
+        for p in self.soils_parameters:
+            file_name = f"parameters/soils_{p}.tif"
+            f = Path(self.project.folder_soils) / file_name
+            self.assertTrue(f.exists())
 
-    def test_analysis_dto_basins(self):
-        self.test_analysis_dto(use_basin="main")
-        self.test_analysis_dto(use_basin="sub01")
-        self.test_analysis_dto(use_basin="sub02")
-        self.test_analysis_dto(use_basin="sub03")
+        return None
 
-    def test_analysis_lulc_series(self, include_views=True, use_basin=None):
-        # Run tool
-        subp, folder_run = self.project.run_analysis_lulc_series(
-            "mb01", include_views, use_basin
-        )
-        # Wait for subprocess to finish
-        subp.wait()
+    def test_get_lulc_parameters(self):
+        # Clean ups
+        # ---------------------------------------------------------------
+        self.cleanup_lulc_parameters()
+
+        # Call project method
+        # ---------------------------------------------------------------
+        selected_lulc_scenario = "mb01"
+        self.project.get_lulc_parameters(lulc_scenario=selected_lulc_scenario)
 
         # Assertions
-        folder_run = Path(folder_run)
-        self.assertTrue(folder_run.exists())
-        self.assertTrue((folder_run / "runtimes.csv").exists())
-        self.assertTrue((folder_run / "lulc_series.csv").exists())
-
-    def test_analysis_lulc_series_basins(self):
-        self.test_analysis_lulc_series(use_basin="main")
-        self.test_analysis_lulc_series(use_basin="sub01")
-        self.test_analysis_lulc_series(use_basin="sub02")
-        self.test_analysis_lulc_series(use_basin="sub03")
-
-    def test_analysis_climate_series_lulc(self, include_views=True):
-        # Run tool
-        subp, folder_run = self.project.run_analysis_climate_series_lulc(
-            climate_scenario="observed",
-            lulc_scenario="mb01",
-            include_views=include_views,
-        )
-        # Wait for subprocess to finish
-        subp.wait()
-
-        # Assertions
-        folder_run = Path(folder_run)
-        self.assertTrue(folder_run.exists())
-        self.assertTrue((folder_run / "runtimes.csv").exists())
-        # self.assertTrue((folder_run / "lulc_series.csv").exists())
-        #
+        # ---------------------------------------------------------------
+        folder_lulc = self.project.folder_lulc
+        if selected_lulc_scenario is None:
+            ls_scenarios = self.project.list_scenarios_lulc()
+        else:
+            ls_scenarios = [selected_lulc_scenario]
+        for s in ls_scenarios:
+            ls_lulcs = glob.glob(f"{folder_lulc}/{s}/lulc_*.tif")
+            ls_names = [os.path.basename(f).replace(".tif", "") for f in ls_lulcs]
+            for n in ls_names:
+                for p in self.lulc_parameters:
+                    file_name = f"{s}/parameters/{n}_{p}.tif"
+                    f = Path(folder_lulc) / file_name
+                    self.assertTrue(f.exists())
+                    file_name = f"{s}/parameters/{n}_{p}.jpg"
+                    f = Path(folder_lulc) / file_name
+                    self.assertTrue(f.exists())
+                    file_name = f"{s}/parameters/{n}_{p}_main.jpg"
+                    f = Path(folder_lulc) / file_name
+                    self.assertTrue(f.exists())
+        return None
 
 
 # ... {develop}

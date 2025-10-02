@@ -696,9 +696,9 @@ class Soils(QualiRaster):
 
         # edit table
         # get table copy from lito
-        df_table_res = map_lito.table[["Id", "Alias", "Name", "Color"]].copy()
-        df_table_col = map_lito.table[["Id", "Alias", "Name", "Color"]].copy()
-        #
+        df_table_res = map_lito.table[["id", "alias", "name", "color"]].copy()
+        df_table_col = map_lito.table[["id", "alias", "name", "color"]].copy()
+        # todo refactor for names
         df_table_res["Name"] = "Residual " + df_table_res["Name"]
         df_table_res["Alias"] = "R" + df_table_res["Alias"]
         #

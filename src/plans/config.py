@@ -48,7 +48,8 @@ from pathlib import Path
 
 # External imports
 # =======================================================================
-# import {module}
+import pandas as pd
+
 # ... {develop}
 
 # Project-level imports
@@ -62,10 +63,22 @@ from pathlib import Path
 # define constants in uppercase
 
 DATA_DIR = Path(__file__).parent / "data"
+FILE_FIELDS = DATA_DIR / "fields.csv"
+FILE_FILES = DATA_DIR / "files.csv"
 # ... {develop}
+
 
 # FUNCTIONS
 # ***********************************************************************
+def parse_files():
+    df = pd.read_csv(FILE_FILES, sep=";")
+    df["ext"] = df["structure"].apply(lambda x: ".tif" if "raster" in x else ".csv")
+    df["file_name"] = df["name"] + df["ext"]
+    return df
+
+
+def parse_fields():
+    return pd.read_csv(FILE_FIELDS, sep=";")
 
 
 # CLASSES

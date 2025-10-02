@@ -2464,6 +2464,8 @@ class Raster(DataSet):
         # accessible values
         self.nodatavalue = self.raster_metadata["NODATA_value"]
         self.cellsize = self.raster_metadata["cellsize"]
+        # stats
+        self.stats = None
 
     def __str__(self):
         dct_meta = self.get_metadata()
@@ -3249,12 +3251,29 @@ class Raster(DataSet):
         uni.set_array(array=self.get_grid_data())
         return uni
 
-    def get_grid_stats(self):
+    def get_stats(self, inplace=False):
         """
         Get basic statistics from flat and cleared grid.
 
+        :return: Dict of basic statistics. If the grid is None, returns None.
+        :rtype: dict or None
+
+        """
+        df = self.get_stats_df()
+        dc = {}
+        for row_dict in df.to_dict(orient="records"):
+            dc[row_dict["statistic"]] = row_dict["value"]
+        if inplace:
+            self.stats = dc
+        else:
+            return dc
+
+    def get_stats_df(self):
+        """
+        Get :class:`pandas.DataFrame` statistics from flat and cleared grid.
+
         :return: DataFrame of basic statistics. If the grid is None, returns None.
-        :rtype: :class:`pandas.DataFrame``` or None
+        :rtype: :class:`pandas.DataFrame` or None
 
         """
         uni = self.get_univar()
@@ -5244,7 +5263,7 @@ class RasterCollection(Collection):
         lst_stats = []
         for i in range(len(self.catalog)):
             s_name = self.catalog[self.field_name].values[i]
-            df_stats = self.collection[s_name].get_grid_stats()
+            df_stats = self.collection[s_name].get_stats_df()
             lst_stats.append(df_stats.copy())
 
         # deploy fields

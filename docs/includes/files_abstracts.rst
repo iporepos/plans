@@ -200,7 +200,7 @@ climate_series
 A time series file containing model forcing data such as precipitation and potential evapotranspiration. It can have a time step as fine as 15 minutes, but daily or hourly series are most common. This file is required for running the model.
 
 
-climate_series_lulc_{lulc-scenario}
+climate_series_lulc_{scenario}
 =============================================================
 
 This time series is a temporal merger or :ref:`io-climate_series` and :ref:`io-lulc_series` for a given Land Use

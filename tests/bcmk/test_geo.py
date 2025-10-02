@@ -48,6 +48,7 @@ import os.path
 import unittest
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 # ... {develop}
@@ -94,48 +95,52 @@ class TestGeo(unittest.TestCase):
         cls.project = plans.load_project(str(DATA_DIR / "biboca"))
         cls.project.talk = True
 
-    def test_downscaling(self):
-        # load data
+    def test_downscaling_parameter_lulc(self):
+        # Load data
+        # ---------------------------------------------------------------
+
         file_data = Path(self.project.folder_lulc) / "mb01/lulc_2023-01-01.tif"
         file_table = Path(self.project.folder_lulc) / "mb01/lulc_attributes.csv"
         lulc = LULC(name=self.project.name, datetime="2023-01-01")
         lulc.load_data(file_data, file_table)
-        # lulc.view(show=True)
-
-        covar_table = lulc.table[["id", "w_ca"]].copy()
-        covar_table.rename(columns={"id": "v", "w_ca": "w"}, inplace=True)
-        print("\n")
-        print(covar_table)
 
         file_data = Path(self.project.folder_basins) / "main/basin.tif"
         basin = AOI()
         basin.load_data(file_data)
-        # basin.view()
 
         file_data = Path(self.project.folder_data) / "parameters_info.csv"
         df = pd.read_csv(file_data, sep=";")
-        upscaled_value = df.loc[df["field"] == "ca", "value"].values[0]
-        print(f"\n >>> Upscaled: {upscaled_value}")
 
+        # setup
+        # ---------------------------------------------------------------
+        lulc_parameter = "w_ck"
+        upscaled_value = df.loc[
+            df["field"] == lulc_parameter.replace("w_", ""), "value"
+        ].values[0]
+        covar_table = lulc.table[["id", lulc_parameter]].copy()
+        covar_table.rename(columns={"id": "v", lulc_parameter: "w"}, inplace=True)
+
+        # Process data
+        # ---------------------------------------------------------------
         array_output = geo.downscale_parameter_to_units(
             upscaled_value=upscaled_value,
             units=lulc.data,
             basin=basin.data,
             covariate_table=covar_table,
         )
+
+        # Handle output
+        # ---------------------------------------------------------------
         raster_parameter = SciRaster()
         raster_parameter.view_specs["cmap"] = "Greens"
         raster_parameter.set_data(grid=array_output)
         raster_parameter.set_raster_metadata(metadata=basin.raster_metadata)
-        print(raster_parameter.get_metadata_df())
+        raster_parameter.apply_aoi_mask(grid_aoi=basin.data)
+        upscaled_value_computed = np.nanmean(raster_parameter.data)
 
-        raster_parameter.view()
-
-        raster_parameter.apply_aoi_mask(grid_aoi=basin.data, inplace=True)
-
-        raster_parameter.view()
-
-        pass
+        # Assertions
+        # ---------------------------------------------------------------
+        self.assertAlmostEqual(first=upscaled_value, second=upscaled_value_computed)
 
 
 # ... {develop}

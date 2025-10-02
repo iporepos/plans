@@ -41,10 +41,9 @@ import pandas as pd
 
 # Project-level imports
 # =======================================================================
-from plans.config import DATA_DIR
+from plans.config import parse_files, parse_fields
 from plans.root import FileSys
 from plans.root import RecordTable
-
 
 # ... {develop}
 
@@ -52,7 +51,6 @@ from plans.root import RecordTable
 # CONSTANTS
 # ***********************************************************************
 # define constants in uppercase
-
 
 # FUNCTIONS
 # ***********************************************************************
@@ -222,13 +220,6 @@ def load_project(project_folder):
 # =======================================================================
 
 
-def handle_input_file(file_path, msg=""):
-    if not os.path.isfile(file_path):
-        raise FileNotFoundError(msg)
-    else:
-        pass
-
-
 # CLASSES
 # ***********************************************************************
 
@@ -242,6 +233,10 @@ class Project(FileSys):
         super().__init__(name=name, alias=alias)
         self.load_data()
         self.talk = True
+
+    def _setup_run_folder(self, tool_name):
+        folder_run = self.make_run_folder(run_name=tool_name.replace("_", "-"))
+        return folder_run
 
     def get_metadata(self):
         # ------------ call super ----------- #
@@ -272,31 +267,23 @@ class Project(FileSys):
         # ... continues in downstream objects ... #
 
     def load_data(self):
-        """
-        Load data from file. Expected to overwrite superior methods.
-
-        :param file_data: file path to data.
-        :type file_data: str
-        :return: None
-        :rtype: None
-        """
         # -------------- overwrite relative path inputs -------------- #
-        file_data = DATA_DIR / "files.csv"
 
         # -------------- implement loading logic -------------- #
 
         # -------------- call loading function -------------- #
-        df = pd.read_csv(file_data, sep=self.file_csv_sep)
-        df = df[["folder", "name"]].copy()
+        self.files_df = parse_files()
+
+        df = self.files_df[["folder", "name"]].copy()
         df.rename(columns={"name": "file"}, inplace=True)
         # handle modifications
         df["folder"] = df["folder"].str.replace("{project}/", "")
         df["folder"] = df["folder"].str.replace("outputs/{id}", "outputs")
         # handle default folders
         df["folder"] = df["folder"].str.replace(
-            "climate/{climate-scenario}", "climate/observed"
+            "climate/{scenario}", "climate/observed"
         )
-        df["folder"] = df["folder"].str.replace("lulc/{lulc-scenario}", "lulc/observed")
+        df["folder"] = df["folder"].str.replace("lulc/{scenario}", "lulc/observed")
         df["folder"] = df["folder"].str.replace("basins/{basin}", "basins/main")
         # set templates as none
         df["file_template"] = None
@@ -354,6 +341,28 @@ class Project(FileSys):
                 ls_scenarios.append(os.path.basename(folder))
         return ls_scenarios
 
+    def retrieve_file(self, title, extras=None):
+        # todo docstring
+        dc = {
+            "project": self.folder_root,
+        }
+        if extras is not None:
+            dc.update(extras)
+        file_name = self.retrieve_file_name(title=title)
+        file_folder = self.retrieve_folder(title=title, formatter=dc)
+        return Path(file_folder) / file_name
+
+    def retrieve_file_name(self, title):
+        file_name = self.files_df.loc[
+            self.files_df["title"] == title, "file_name"
+        ].values[0]
+        return file_name
+
+    def retrieve_folder(self, title, formatter):
+        folder = self.files_df.loc[self.files_df["title"] == title, "folder"].values[0]
+        folder = folder.format(**formatter)
+        return folder
+
     def make_run_folder(self, run_name):
         # todo docstring
         while True:
@@ -365,20 +374,25 @@ class Project(FileSys):
                 os.mkdir(folder_run)
                 break
 
-        return folder_run
+        return os.path.abspath(folder_run)
 
     def run_demo(self):
         # todo docstring
-        run_name = str(self.run_demo.__name__).replace("run_", "")
-        folder_run = os.path.abspath(
-            self.make_run_folder(run_name=run_name.replace("_", "-"))
-        )
+        # set run
+        # ---------------------------------------------------------------
+        tool_name = str(self.run_demo.__name__).replace("run_", "")
+        folder_run = self._setup_run_folder(tool_name=tool_name)
+        # set iputs
+        # ---------------------------------------------------------------
+
+        # set command
+        # ---------------------------------------------------------------
         cmd = [
             sys.executable,
             "-m",
             # tool name
             "plans.tools",
-            run_name,
+            tool_name,
             # arguments
             "--folder",
             folder_run,
@@ -390,30 +404,37 @@ class Project(FileSys):
         if self.talk:
             cmd.append("--talk")
 
-        # Use Popen for async execution
+        # run async execution
+        # ---------------------------------------------------------------
         process = subprocess.Popen(cmd)
+
         return process, folder_run
 
     def run_analysis_dto(self, include_views=True, use_basin=None):
         # todo docstring
-        run_name = str(self.run_analysis_dto.__name__).replace("run_", "")
-        folder_run = os.path.abspath(
-            self.make_run_folder(run_name=run_name.replace("_", "-"))
-        )
+        # set run
+        # ---------------------------------------------------------------
+        tool_name = str(self.run_analysis_dto.__name__).replace("run_", "")
+        folder_run = self._setup_run_folder(tool_name=tool_name)
 
         # set iputs
-        file_ldd = Path(self.folder_topo) / "ldd.tif"
-        handle_input_file(file_ldd, ">> check ldd.tif")
-        if use_basin is not None:
-            file_basin = Path(self.folder_basins) / f"{use_basin}/basin.tif"
-            handle_input_file(file_basin, ">> check basin")
+        # ---------------------------------------------------------------
+        file_ldd = self.retrieve_file(title="Local Drain Direction", extras=None)
+        Project.handle_input_file(file_ldd)
 
+        if use_basin is not None:
+            extras = {"basin": use_basin}
+            file_basin = self.retrieve_file(title="Basin Area", extras=extras)
+            Project.handle_input_file(file_basin)
+
+        # set command
+        # ---------------------------------------------------------------
         cmd = [
             sys.executable,
             "-m",
             # tool name
             "plans.tools",
-            run_name,
+            tool_name,
             # arguments
             "--folder",
             folder_run,
@@ -432,45 +453,54 @@ class Project(FileSys):
         if self.talk:
             cmd.append("--talk")
 
-        # Use Popen for async execution
+        # run async execution
+        # ---------------------------------------------------------------
         process = subprocess.Popen(cmd)
+
         return process, folder_run
 
     def run_analysis_lulc_series(
         self, lulc_scenario, include_views=True, use_basin=None
     ):
         # todo docstring
-        run_name = str(self.run_analysis_lulc_series.__name__).replace("run_", "")
-        folder_run = os.path.abspath(
-            self.make_run_folder(run_name=run_name.replace("_", "-"))
-        )
+        # set run
+        # ---------------------------------------------------------------
+        tool_name = str(self.run_analysis_lulc_series.__name__).replace("run_", "")
+        folder_run = self._setup_run_folder(tool_name=tool_name)
 
         # set iputs
-        folder_lulc_scenario = Path(self.folder_lulc) / lulc_scenario
-        file_lulc = Path(folder_lulc_scenario) / "lulc_attributes.csv"
-        handle_input_file(file_lulc, ">> check lulc_attributes")
-        if use_basin is not None:
-            file_basin = Path(self.folder_basins) / f"{use_basin}/basin.tif"
-            handle_input_file(file_basin, ">> check basin")
+        # ---------------------------------------------------------------
 
+        folder_lulc_scenario = Path(self.folder_lulc) / lulc_scenario
+        extras = {"scenario": lulc_scenario}
+        file_lulc_att = self.retrieve_file(title="Land Use Attributes", extras=extras)
+        Project.handle_input_file(file_lulc_att)
+
+        if use_basin is not None:
+            extras = {"basin": use_basin}
+            file_basin = self.retrieve_file(title="Basin Area", extras=extras)
+            Project.handle_input_file(file_basin)
+
+        # set command
+        # ---------------------------------------------------------------
         cmd = [
             sys.executable,
             "-m",
             "plans.tools",
-            run_name,
+            tool_name,
             "--folder",
             folder_run,
             "--attributes",
-            file_lulc,
+            file_lulc_att,
             "--scenario",
             folder_lulc_scenario,
         ]
 
         if use_basin is not None:
-            cmd = cmd + ["--label", f"{self.name} - {use_basin}"]
+            cmd = cmd + ["--label", f"{self.name} - {lulc_scenario} - {use_basin}"]
             cmd = cmd + ["--aoi", file_basin]
         else:
-            cmd = cmd + ["--label", self.name]
+            cmd = cmd + ["--label", f"{self.name} - {lulc_scenario}"]
 
         if include_views:
             cmd.append("--views")
@@ -478,8 +508,10 @@ class Project(FileSys):
         if self.talk:
             cmd.append("--talk")
 
-        # Use Popen for async execution
+        # run async execution
+        # ---------------------------------------------------------------
         process = subprocess.Popen(cmd)
+
         return process, folder_run
 
     def run_analysis_climate_series_lulc(
@@ -489,41 +521,42 @@ class Project(FileSys):
         include_views=True,
     ):
         # todo docstring
-        run_name = str(self.run_analysis_climate_series_lulc.__name__).replace(
+        # set run
+        # ---------------------------------------------------------------
+        tool_name = str(self.run_analysis_climate_series_lulc.__name__).replace(
             "run_", ""
         )
-        folder_run = os.path.abspath(
-            self.make_run_folder(run_name=run_name.replace("_", "-"))
-        )
+        folder_run = self._setup_run_folder(tool_name=tool_name)
 
         # set iputs
+        # ---------------------------------------------------------------
 
-        file_parameters = Path(self.folder_data) / "parameters_info.csv"
-        handle_input_file(file_parameters, ">> check parameters_info")
+        file_parameters = self.retrieve_file(title="Parameters Info", extras=None)
+        Project.handle_input_file(file_parameters)
 
-        folder_climate_scenario = Path(self.folder_climate) / climate_scenario
-        file_climate = Path(folder_climate_scenario) / "climate_series.csv"
-        handle_input_file(
-            file_climate, f">> check climate_series in {climate_scenario}"
-        )
+        extras = {"scenario": climate_scenario}
+        file_climate_series = self.retrieve_file(title="Climate Series", extras=extras)
+        Project.handle_input_file(file_climate_series)
 
-        folder_lulc_scenario = Path(self.folder_lulc) / lulc_scenario
-        file_lulc = Path(folder_lulc_scenario) / "lulc_series.csv"
-        handle_input_file(file_lulc, f">> check lulc_series in {lulc_scenario}")
+        extras = {"scenario": lulc_scenario}
+        file_lulc_series = self.retrieve_file(title="Land Use Series", extras=extras)
+        Project.handle_input_file(file_lulc_series)
 
+        # set command
+        # ---------------------------------------------------------------
         cmd = [
             sys.executable,
             "-m",
             "plans.tools",
-            run_name,
+            tool_name,
             "--folder",
             folder_run,
             "--parameters",
             file_parameters,
             "--climate",
-            file_climate,
+            file_climate_series,
             "--lulc",
-            file_lulc,
+            file_lulc_series,
             "--label",
             f"{lulc_scenario}",
         ]
@@ -534,20 +567,184 @@ class Project(FileSys):
         if self.talk:
             cmd.append("--talk")
 
-        # Use Popen for async execution
+        # run async execution
+        # ---------------------------------------------------------------
         process = subprocess.Popen(cmd)
+
+        return process, folder_run
+
+    def run_analysis_soils_parameters(self, include_views=True):
+        # todo docstring
+        # set run
+        # ---------------------------------------------------------------
+        tool_name = str(self.run_analysis_soils_parameters.__name__).replace("run_", "")
+        folder_run = self._setup_run_folder(tool_name=tool_name)
+
+        # set iputs
+        # ---------------------------------------------------------------
+        extras = None
+        file_parameters = self.retrieve_file(title="Parameters Info", extras=extras)
+        Project.handle_input_file(file_parameters)
+
+        extras = None
+        file_soils_att = self.retrieve_file(title="Soils Attributes", extras=extras)
+        Project.handle_input_file(file_soils_att)
+
+        extras = None
+        file_soils = self.retrieve_file(title="Soils Map", extras=extras)
+        Project.handle_input_file(file_soils)
+
+        extras = {"basin": "main"}
+        file_basin = self.retrieve_file(title="Basin Area", extras=extras)
+        Project.handle_input_file(file_basin)
+
+        # set command
+        # ---------------------------------------------------------------
+        cmd = [
+            sys.executable,
+            "-m",
+            "plans.tools",
+            tool_name,
+            "--folder",
+            folder_run,
+            "--parameters",
+            file_parameters,
+            "--attributes",
+            file_soils_att,
+            "--soils",
+            file_soils,
+            "--basin",
+            file_basin,
+            "--label",
+            f"{self.name}",
+        ]
+
+        if include_views:
+            cmd.append("--views")
+
+        if self.talk:
+            cmd.append("--talk")
+
+        # run async execution
+        # ---------------------------------------------------------------
+        process = subprocess.Popen(cmd)
+
+        return process, folder_run
+
+    def run_analysis_lulc_parameters(self, lulc_scenario, include_views=True):
+        # todo docstring
+        # set run
+        # ---------------------------------------------------------------
+        tool_name = str(self.run_analysis_lulc_parameters.__name__).replace("run_", "")
+        folder_run = self._setup_run_folder(tool_name=tool_name)
+
+        # set iputs
+        # ---------------------------------------------------------------
+        extras = None
+        file_parameters = self.retrieve_file(title="Parameters Info", extras=extras)
+        Project.handle_input_file(file_parameters)
+
+        extras = {"scenario": lulc_scenario}
+        file_lulc_attr = self.retrieve_file(title="Land Use Attributes", extras=extras)
+        Project.handle_input_file(file_lulc_attr)
+
+        folder_lulc_scenario = Path(self.folder_lulc) / lulc_scenario
+
+        extras = {"basin": "main"}
+        file_basin = self.retrieve_file(title="Basin Area", extras=extras)
+        Project.handle_input_file(file_basin)
+
+        # set command
+        # ---------------------------------------------------------------
+        cmd = [
+            sys.executable,
+            "-m",
+            "plans.tools",
+            tool_name,
+            "--folder",
+            folder_run,
+            "--parameters",
+            file_parameters,
+            "--attributes",
+            file_lulc_attr,
+            "--scenario",
+            folder_lulc_scenario,
+            "--basin",
+            file_basin,
+            "--label",
+            f"{self.name} - {lulc_scenario}",
+        ]
+
+        if include_views:
+            cmd.append("--views")
+
+        if self.talk:
+            cmd.append("--talk")
+
+        # run async execution
+        # ---------------------------------------------------------------
+        process = subprocess.Popen(cmd)
+
         return process, folder_run
 
     def get_dto(self):
         # todo docstring
+        # run
+        # ---------------------------------------------------------------
         subp, folder_run = self.run_analysis_dto(include_views=True, use_basin=None)
         subp.wait()
-        shutil.copy(src=f"{folder_run}/dto.tif", dst=f"{self.folder_topo}/dto.tif")
-        shutil.copy(src=f"{folder_run}/dto.jpg", dst=f"{self.folder_topo}/dto.jpg")
-        ## shutil.rmtree(folder_run)
+
+        # copy files
+        # ---------------------------------------------------------------
+        Project.copy_output_files(
+            folder_output=folder_run,
+            folder_dst=self.folder_topo,
+            include_runfiles=False,
+        )
         return None
 
-    def get_climate_lulc_series(
+    def get_lulc_series(self, lulc_scenario=None, skip_lulc_scenario=None):
+        # todo docstring
+
+        # setup
+        # ---------------------------------------------------------------
+        ls_scenarios = self.list_scenarios_lulc()
+        if lulc_scenario is not None:
+            ls_scenarios = [lulc_scenario]
+        ls_processes = []
+        ls_folders_run = []
+        ls_folders_scenarios = []
+
+        # run loop
+        # ---------------------------------------------------------------
+        for scenario_name in ls_scenarios:
+            if scenario_name == skip_lulc_scenario:
+                pass
+            else:
+                folder_scenario = Path(self.folder_lulc) / scenario_name
+                subp, folder_run = self.run_analysis_lulc_series(
+                    lulc_scenario=scenario_name, include_views=True, use_basin=None
+                )
+                ls_processes.append(subp)
+                ls_folders_run.append(folder_run)
+                ls_folders_scenarios.append(folder_scenario)
+        for subp in ls_processes:
+            subp.wait()
+
+        # copy files
+        # ---------------------------------------------------------------
+        for i in range(len(ls_folders_run)):
+            folder_run = ls_folders_run[i]
+            folder_scenario = ls_folders_scenarios[i]
+            Project.copy_output_files(
+                folder_output=folder_run,
+                folder_dst=folder_scenario,
+                include_runfiles=False,
+            )
+
+        return None
+
+    def get_climate_series_lulc(
         self,
         climate_scenario=None,
         lulc_scenario=None,
@@ -555,7 +752,8 @@ class Project(FileSys):
         skip_lulc_scenario=None,
     ):
         # todo docstring
-        # set lists of scenarios
+        # setup
+        # ---------------------------------------------------------------
         ls_lulc_scenarios = self.list_scenarios_lulc()
         if lulc_scenario is not None:
             ls_lulc_scenarios = [lulc_scenario]
@@ -563,11 +761,12 @@ class Project(FileSys):
         if climate_scenario is not None:
             ls_climate_scenarios = [climate_scenario]
 
+        # run loop
+        # ---------------------------------------------------------------
         # setup lists
         ls_processes = []
         ls_folders_run = []
         ls_folders_scenarios = []
-        ls_l_cenarios = []
         for c_scenario in ls_climate_scenarios:
             for l_scenario in ls_lulc_scenarios:
                 if c_scenario == skip_climate_scenario:
@@ -584,60 +783,118 @@ class Project(FileSys):
                     ls_processes.append(subp)
                     ls_folders_run.append(folder_run)
                     ls_folders_scenarios.append(folder_scenario)
-                    ls_l_cenarios.append(l_scenario)
         for subp in ls_processes:
             subp.wait()
 
-        # move files
+        # copy files
+        # ---------------------------------------------------------------
         for i in range(len(ls_folders_run)):
             folder_run = ls_folders_run[i]
             folder_scenario = ls_folders_scenarios[i]
-            scenario_lulc = ls_l_cenarios[i]
-            file_name = "climate_series_lulc_{}.csv".format(scenario_lulc)
-            shutil.copy(
-                src=f"{folder_run}/{file_name}", dst=f"{folder_scenario}/{file_name}"
+            Project.copy_output_files(
+                folder_output=folder_run,
+                folder_dst=folder_scenario,
+                include_runfiles=False,
             )
-            ## shutil.rmtree(folder_run)
 
         return None
 
-    def get_lulc_series(self, lulc_scenario=None, skip_lulc_scenario=None):
-        # todo docstring
+    def get_soils_parameters(self):
+        # run
+        # ---------------------------------------------------------------
+        subp, folder_run = self.run_analysis_soils_parameters(include_views=self.talk)
+        subp.wait()
+
+        # move files
+        # ---------------------------------------------------------------
+
+        folder_parameters = Path(self.folder_soils) / "parameters"
+        os.makedirs(folder_parameters, exist_ok=True)
+
+        Project.copy_output_files(
+            folder_output=folder_run,
+            folder_dst=folder_parameters,
+            include_runfiles=False,
+        )
+        return None
+
+    def get_lulc_parameters(self, lulc_scenario=None, skip_lulc_scenario=None):
+
         ls_scenarios = self.list_scenarios_lulc()
+
         if lulc_scenario is not None:
             ls_scenarios = [lulc_scenario]
+
         ls_processes = []
-        ls_folders_run = []
-        ls_folders_scenarios = []
-        # run analysis for all scenarios
-        for scenario_name in ls_scenarios:
-            if scenario_name == skip_lulc_scenario:
+        ls_folder_run = []
+        # run loop
+        # ---------------------------------------------------------------
+        for s in ls_scenarios:
+            if s == skip_lulc_scenario:
                 pass
             else:
-                folder_scenario = Path(self.folder_lulc) / scenario_name
-                subp, folder_run = self.run_analysis_lulc_series(
-                    lulc_scenario=scenario_name, include_views=True, use_basin=None
+                subp, folder_run = self.run_analysis_lulc_parameters(
+                    lulc_scenario=s, include_views=self.talk
                 )
                 ls_processes.append(subp)
-                ls_folders_run.append(folder_run)
-                ls_folders_scenarios.append(folder_scenario)
-        for subp in ls_processes:
-            subp.wait()
-        # move files
-        for i in range(len(ls_folders_run)):
-            folder_run = ls_folders_run[i]
-            folder_scenario = ls_folders_scenarios[i]
-            file_name = "lulc_series.csv"
-            shutil.copy(
-                src=f"{folder_run}/{file_name}", dst=f"{folder_scenario}/{file_name}"
-            )
-            ls_figs = glob.glob(f"{folder_run}/*.jpg")
-            for f in ls_figs:
-                file_fig_name = os.path.basename(f)
-                shutil.copy(f, f"{folder_scenario}/{file_fig_name}")
-            ## shutil.rmtree(folder_run)
+                ls_folder_run.append(folder_run)
 
+        for sub in ls_processes:
+            sub.wait()
+
+        # move files
+        # ---------------------------------------------------------------
+        for i in range(len(ls_scenarios)):
+            scenario = ls_scenarios[i]
+            folder_run = ls_folder_run[i]
+            folder_parameters = Path(self.folder_lulc) / f"{scenario}/parameters"
+            os.makedirs(folder_parameters, exist_ok=True)
+
+            Project.copy_output_files(
+                folder_output=folder_run,
+                folder_dst=folder_parameters,
+                include_runfiles=False,
+            )
+            return None
+
+    @staticmethod
+    def copy_output_files(folder_output, folder_dst, include_runfiles=False):
+        # list files
+        ls_maps = glob.glob(f"{folder_output}/*.tif")
+        ls_figs = glob.glob(f"{folder_output}/*.jpg")
+        ls_tbls = glob.glob(f"{folder_output}/*.csv")
+        ls_runs = []
+        if include_runfiles:
+            ls_txt = glob.glob(f"{folder_output}/*.txt")
+            ls_runs = ls_txt[:]
+        ls_files = ls_maps + ls_tbls + ls_figs + ls_runs
+        if len(ls_files) == 0:
+            return None
+        # copy loop
+        for f in ls_files:
+            file_name = os.path.basename(f)
+            f_dst = Path(folder_dst) / file_name
+            shutil.copy(src=f, dst=f_dst)
         return None
+
+    @staticmethod
+    def move_output_files(folder_output, folder_dst, include_runfiles=False):
+        Project.copy_output_files(
+            folder_output=folder_output,
+            folder_dst=folder_dst,
+            include_runfiles=include_runfiles,
+        )
+        shutil.rmtree(folder_output)
+        return None
+
+    @staticmethod
+    def handle_input_file(file_path):
+        file_name = os.path.basename(file_path)
+        parent_folder = Path(file_path).parent.absolute()
+        if not os.path.isfile(file_path):
+            raise FileNotFoundError(f">>> check {file_name} in {parent_folder}")
+        else:
+            pass
 
     @staticmethod
     def get_timestamp():

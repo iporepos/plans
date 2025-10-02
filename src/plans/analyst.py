@@ -314,7 +314,7 @@ class Univar(DataSet):
         """
         Assesses basic statistics of the variable field.
 
-        :return: DataFrame with statistics (Count, Sum, Mean, SD, Min, percentiles, Max) and their values.
+        :return: DataFrame with statistics and their values.
         :rtype: :class:`pandas.DataFrame`
         """
 

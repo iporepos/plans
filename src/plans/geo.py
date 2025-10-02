@@ -462,14 +462,8 @@ def downscale_linear(scalar, covariate, mode="mean", scalar_region=None):
     # compute upscaled
     covariate_upscaled = funcs[mode](scalar_region_nan * covariate)
 
-    print(scalar)
-    print(covariate_upscaled)
-
+    # apply linear downscaling formula
     covariate_normalized = covariate / covariate_upscaled
-    plt.title(np.mean(covariate_normalized))
-    plt.imshow(covariate_normalized)
-    plt.show()
-
     return scalar * covariate_normalized
 
 
