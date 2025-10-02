@@ -423,10 +423,9 @@
 
 <span class="c1"># Project-level imports</span>
 <span class="c1"># =======================================================================</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">plans.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">DATA_DIR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plans.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_files</span><span class="p">,</span> <span class="n">parse_fields</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">plans.root</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileSys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">plans.root</span><span class="w"> </span><span class="kn">import</span> <span class="n">RecordTable</span>
-
 
 <span class="c1"># ... {develop}</span>
 
@@ -434,7 +433,6 @@
 <span class="c1"># CONSTANTS</span>
 <span class="c1"># ***********************************************************************</span>
 <span class="c1"># define constants in uppercase</span>
-
 
 <span class="c1"># FUNCTIONS</span>
 <span class="c1"># ***********************************************************************</span>
@@ -610,16 +608,6 @@
 <span class="c1"># =======================================================================</span>
 
 
-<div class="viewcode-block" id="handle_input_file">
-<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.handle_input_file">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">handle_input_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">pass</span></div>
-
-
-
 <span class="c1"># CLASSES</span>
 <span class="c1"># ***********************************************************************</span>
 
@@ -637,6 +625,13 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">talk</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="Project._setup_run_folder">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project._setup_run_folder">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_run_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">):</span>
+        <span class="n">folder_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_run_folder</span><span class="p">(</span><span class="n">run_name</span><span class="o">=</span><span class="n">tool_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">folder_run</span></div>
 
 
 <div class="viewcode-block" id="Project.get_metadata">
@@ -676,31 +671,23 @@
 <div class="viewcode-block" id="Project.load_data">
 <a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.load_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Load data from file. Expected to overwrite superior methods.</span>
-
-<span class="sd">        :param file_data: file path to data.</span>
-<span class="sd">        :type file_data: str</span>
-<span class="sd">        :return: None</span>
-<span class="sd">        :rtype: None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># -------------- overwrite relative path inputs -------------- #</span>
-        <span class="n">file_data</span> <span class="o">=</span> <span class="n">DATA_DIR</span> <span class="o">/</span> <span class="s2">&quot;files.csv&quot;</span>
 
         <span class="c1"># -------------- implement loading logic -------------- #</span>
 
         <span class="c1"># -------------- call loading function -------------- #</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_data</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_csv_sep</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;folder&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">files_df</span> <span class="o">=</span> <span class="n">parse_files</span><span class="p">()</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">files_df</span><span class="p">[[</span><span class="s2">&quot;folder&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># handle modifications</span>
         <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{project}</span><span class="s2">/&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;outputs/</span><span class="si">{id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;outputs&quot;</span><span class="p">)</span>
         <span class="c1"># handle default folders</span>
         <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-            <span class="s2">&quot;climate/{climate-scenario}&quot;</span><span class="p">,</span> <span class="s2">&quot;climate/observed&quot;</span>
+            <span class="s2">&quot;climate/</span><span class="si">{scenario}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;climate/observed&quot;</span>
         <span class="p">)</span>
-        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;lulc/{lulc-scenario}&quot;</span><span class="p">,</span> <span class="s2">&quot;lulc/observed&quot;</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;lulc/</span><span class="si">{scenario}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;lulc/observed&quot;</span><span class="p">)</span>
         <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;basins/</span><span class="si">{basin}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;basins/main&quot;</span><span class="p">)</span>
         <span class="c1"># set templates as none</span>
         <span class="n">df</span><span class="p">[</span><span class="s2">&quot;file_template&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -774,6 +761,37 @@
         <span class="k">return</span> <span class="n">ls_scenarios</span></div>
 
 
+<div class="viewcode-block" id="Project.retrieve_file">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.retrieve_file">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">extras</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># todo docstring</span>
+        <span class="n">dc</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">folder_root</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">extras</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extras</span><span class="p">)</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_file_name</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
+        <span class="n">file_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_folder</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="n">dc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_folder</span><span class="p">)</span> <span class="o">/</span> <span class="n">file_name</span></div>
+
+
+<div class="viewcode-block" id="Project.retrieve_file_name">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.retrieve_file_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_file_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">files_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">files_df</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">title</span><span class="p">,</span> <span class="s2">&quot;file_name&quot;</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">file_name</span></div>
+
+
+<div class="viewcode-block" id="Project.retrieve_folder">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.retrieve_folder">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">formatter</span><span class="p">):</span>
+        <span class="n">folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">files_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">files_df</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">title</span><span class="p">,</span> <span class="s2">&quot;folder&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">folder</span> <span class="o">=</span> <span class="n">folder</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">folder</span></div>
+
+
 <div class="viewcode-block" id="Project.make_run_folder">
 <a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.make_run_folder">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">make_run_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_name</span><span class="p">):</span>
@@ -787,23 +805,28 @@
                 <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">folder_run</span><span class="p">)</span>
                 <span class="k">break</span>
 
-        <span class="k">return</span> <span class="n">folder_run</span></div>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">folder_run</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Project.run_demo">
 <a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.run_demo">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run_demo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># todo docstring</span>
-        <span class="n">run_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_demo</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;run_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="n">folder_run</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">make_run_folder</span><span class="p">(</span><span class="n">run_name</span><span class="o">=</span><span class="n">run_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">))</span>
-        <span class="p">)</span>
+        <span class="c1"># set run</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="n">tool_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_demo</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;run_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">folder_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_run_folder</span><span class="p">(</span><span class="n">tool_name</span><span class="o">=</span><span class="n">tool_name</span><span class="p">)</span>
+        <span class="c1"># set iputs</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+
+        <span class="c1"># set command</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
         <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span>
             <span class="s2">&quot;-m&quot;</span><span class="p">,</span>
             <span class="c1"># tool name</span>
             <span class="s2">&quot;plans.tools&quot;</span><span class="p">,</span>
-            <span class="n">run_name</span><span class="p">,</span>
+            <span class="n">tool_name</span><span class="p">,</span>
             <span class="c1"># arguments</span>
             <span class="s2">&quot;--folder&quot;</span><span class="p">,</span>
             <span class="n">folder_run</span><span class="p">,</span>
@@ -815,8 +838,10 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">talk</span><span class="p">:</span>
             <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--talk&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Use Popen for async execution</span>
+        <span class="c1"># run async execution</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
         <span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">process</span><span class="p">,</span> <span class="n">folder_run</span></div>
 
 
@@ -824,24 +849,29 @@
 <a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.run_analysis_dto">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run_analysis_dto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_views</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_basin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># todo docstring</span>
-        <span class="n">run_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_analysis_dto</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;run_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="n">folder_run</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">make_run_folder</span><span class="p">(</span><span class="n">run_name</span><span class="o">=</span><span class="n">run_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">))</span>
-        <span class="p">)</span>
+        <span class="c1"># set run</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="n">tool_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_analysis_dto</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;run_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">folder_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_run_folder</span><span class="p">(</span><span class="n">tool_name</span><span class="o">=</span><span class="n">tool_name</span><span class="p">)</span>
 
         <span class="c1"># set iputs</span>
-        <span class="n">file_ldd</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_topo</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;ldd.tif&quot;</span>
-        <span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_ldd</span><span class="p">,</span> <span class="s2">&quot;&gt;&gt; check ldd.tif&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">use_basin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">file_basin</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_basins</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">use_basin</span><span class="si">}</span><span class="s2">/basin.tif&quot;</span>
-            <span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_basin</span><span class="p">,</span> <span class="s2">&quot;&gt;&gt; check basin&quot;</span><span class="p">)</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="n">file_ldd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_file</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Local Drain Direction&quot;</span><span class="p">,</span> <span class="n">extras</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">Project</span><span class="o">.</span><span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_ldd</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">use_basin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">extras</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;basin&quot;</span><span class="p">:</span> <span class="n">use_basin</span><span class="p">}</span>
+            <span class="n">file_basin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_file</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Basin Area&quot;</span><span class="p">,</span> <span class="n">extras</span><span class="o">=</span><span class="n">extras</span><span class="p">)</span>
+            <span class="n">Project</span><span class="o">.</span><span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_basin</span><span class="p">)</span>
+
+        <span class="c1"># set command</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
         <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span>
             <span class="s2">&quot;-m&quot;</span><span class="p">,</span>
             <span class="c1"># tool name</span>
             <span class="s2">&quot;plans.tools&quot;</span><span class="p">,</span>
-            <span class="n">run_name</span><span class="p">,</span>
+            <span class="n">tool_name</span><span class="p">,</span>
             <span class="c1"># arguments</span>
             <span class="s2">&quot;--folder&quot;</span><span class="p">,</span>
             <span class="n">folder_run</span><span class="p">,</span>
@@ -860,8 +890,10 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">talk</span><span class="p">:</span>
             <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--talk&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Use Popen for async execution</span>
+        <span class="c1"># run async execution</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
         <span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">process</span><span class="p">,</span> <span class="n">folder_run</span></div>
 
 
@@ -871,37 +903,44 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">lulc_scenario</span><span class="p">,</span> <span class="n">include_views</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_basin</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
         <span class="c1"># todo docstring</span>
-        <span class="n">run_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_analysis_lulc_series</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;run_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="n">folder_run</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">make_run_folder</span><span class="p">(</span><span class="n">run_name</span><span class="o">=</span><span class="n">run_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">))</span>
-        <span class="p">)</span>
+        <span class="c1"># set run</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="n">tool_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_analysis_lulc_series</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;run_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">folder_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_run_folder</span><span class="p">(</span><span class="n">tool_name</span><span class="o">=</span><span class="n">tool_name</span><span class="p">)</span>
 
         <span class="c1"># set iputs</span>
-        <span class="n">folder_lulc_scenario</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_lulc</span><span class="p">)</span> <span class="o">/</span> <span class="n">lulc_scenario</span>
-        <span class="n">file_lulc</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">folder_lulc_scenario</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;lulc_attributes.csv&quot;</span>
-        <span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_lulc</span><span class="p">,</span> <span class="s2">&quot;&gt;&gt; check lulc_attributes&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">use_basin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">file_basin</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_basins</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">use_basin</span><span class="si">}</span><span class="s2">/basin.tif&quot;</span>
-            <span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_basin</span><span class="p">,</span> <span class="s2">&quot;&gt;&gt; check basin&quot;</span><span class="p">)</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
 
+        <span class="n">folder_lulc_scenario</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_lulc</span><span class="p">)</span> <span class="o">/</span> <span class="n">lulc_scenario</span>
+        <span class="n">extras</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;scenario&quot;</span><span class="p">:</span> <span class="n">lulc_scenario</span><span class="p">}</span>
+        <span class="n">file_lulc_att</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_file</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Land Use Attributes&quot;</span><span class="p">,</span> <span class="n">extras</span><span class="o">=</span><span class="n">extras</span><span class="p">)</span>
+        <span class="n">Project</span><span class="o">.</span><span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_lulc_att</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">use_basin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">extras</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;basin&quot;</span><span class="p">:</span> <span class="n">use_basin</span><span class="p">}</span>
+            <span class="n">file_basin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_file</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Basin Area&quot;</span><span class="p">,</span> <span class="n">extras</span><span class="o">=</span><span class="n">extras</span><span class="p">)</span>
+            <span class="n">Project</span><span class="o">.</span><span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_basin</span><span class="p">)</span>
+
+        <span class="c1"># set command</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
         <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span>
             <span class="s2">&quot;-m&quot;</span><span class="p">,</span>
             <span class="s2">&quot;plans.tools&quot;</span><span class="p">,</span>
-            <span class="n">run_name</span><span class="p">,</span>
+            <span class="n">tool_name</span><span class="p">,</span>
             <span class="s2">&quot;--folder&quot;</span><span class="p">,</span>
             <span class="n">folder_run</span><span class="p">,</span>
             <span class="s2">&quot;--attributes&quot;</span><span class="p">,</span>
-            <span class="n">file_lulc</span><span class="p">,</span>
+            <span class="n">file_lulc_att</span><span class="p">,</span>
             <span class="s2">&quot;--scenario&quot;</span><span class="p">,</span>
             <span class="n">folder_lulc_scenario</span><span class="p">,</span>
         <span class="p">]</span>
 
         <span class="k">if</span> <span class="n">use_basin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmd</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;--label&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">use_basin</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmd</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;--label&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">lulc_scenario</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">use_basin</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
             <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmd</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;--aoi&quot;</span><span class="p">,</span> <span class="n">file_basin</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmd</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;--label&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmd</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;--label&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">lulc_scenario</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">include_views</span><span class="p">:</span>
             <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--views&quot;</span><span class="p">)</span>
@@ -909,8 +948,10 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">talk</span><span class="p">:</span>
             <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--talk&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Use Popen for async execution</span>
+        <span class="c1"># run async execution</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
         <span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">process</span><span class="p">,</span> <span class="n">folder_run</span></div>
 
 
@@ -923,41 +964,42 @@
         <span class="n">include_views</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># todo docstring</span>
-        <span class="n">run_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_analysis_climate_series_lulc</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+        <span class="c1"># set run</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="n">tool_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_analysis_climate_series_lulc</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
             <span class="s2">&quot;run_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
         <span class="p">)</span>
-        <span class="n">folder_run</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">make_run_folder</span><span class="p">(</span><span class="n">run_name</span><span class="o">=</span><span class="n">run_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">))</span>
-        <span class="p">)</span>
+        <span class="n">folder_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_run_folder</span><span class="p">(</span><span class="n">tool_name</span><span class="o">=</span><span class="n">tool_name</span><span class="p">)</span>
 
         <span class="c1"># set iputs</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
 
-        <span class="n">file_parameters</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_data</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;parameters_info.csv&quot;</span>
-        <span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_parameters</span><span class="p">,</span> <span class="s2">&quot;&gt;&gt; check parameters_info&quot;</span><span class="p">)</span>
+        <span class="n">file_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_file</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Parameters Info&quot;</span><span class="p">,</span> <span class="n">extras</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">Project</span><span class="o">.</span><span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_parameters</span><span class="p">)</span>
 
-        <span class="n">folder_climate_scenario</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_climate</span><span class="p">)</span> <span class="o">/</span> <span class="n">climate_scenario</span>
-        <span class="n">file_climate</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">folder_climate_scenario</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;climate_series.csv&quot;</span>
-        <span class="n">handle_input_file</span><span class="p">(</span>
-            <span class="n">file_climate</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;&gt;&gt; check climate_series in </span><span class="si">{</span><span class="n">climate_scenario</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="n">extras</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;scenario&quot;</span><span class="p">:</span> <span class="n">climate_scenario</span><span class="p">}</span>
+        <span class="n">file_climate_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_file</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Climate Series&quot;</span><span class="p">,</span> <span class="n">extras</span><span class="o">=</span><span class="n">extras</span><span class="p">)</span>
+        <span class="n">Project</span><span class="o">.</span><span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_climate_series</span><span class="p">)</span>
 
-        <span class="n">folder_lulc_scenario</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_lulc</span><span class="p">)</span> <span class="o">/</span> <span class="n">lulc_scenario</span>
-        <span class="n">file_lulc</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">folder_lulc_scenario</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;lulc_series.csv&quot;</span>
-        <span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_lulc</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;&gt;&gt; check lulc_series in </span><span class="si">{</span><span class="n">lulc_scenario</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">extras</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;scenario&quot;</span><span class="p">:</span> <span class="n">lulc_scenario</span><span class="p">}</span>
+        <span class="n">file_lulc_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_file</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Land Use Series&quot;</span><span class="p">,</span> <span class="n">extras</span><span class="o">=</span><span class="n">extras</span><span class="p">)</span>
+        <span class="n">Project</span><span class="o">.</span><span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_lulc_series</span><span class="p">)</span>
 
+        <span class="c1"># set command</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
         <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span>
             <span class="s2">&quot;-m&quot;</span><span class="p">,</span>
             <span class="s2">&quot;plans.tools&quot;</span><span class="p">,</span>
-            <span class="n">run_name</span><span class="p">,</span>
+            <span class="n">tool_name</span><span class="p">,</span>
             <span class="s2">&quot;--folder&quot;</span><span class="p">,</span>
             <span class="n">folder_run</span><span class="p">,</span>
             <span class="s2">&quot;--parameters&quot;</span><span class="p">,</span>
             <span class="n">file_parameters</span><span class="p">,</span>
             <span class="s2">&quot;--climate&quot;</span><span class="p">,</span>
-            <span class="n">file_climate</span><span class="p">,</span>
+            <span class="n">file_climate_series</span><span class="p">,</span>
             <span class="s2">&quot;--lulc&quot;</span><span class="p">,</span>
-            <span class="n">file_lulc</span><span class="p">,</span>
+            <span class="n">file_lulc_series</span><span class="p">,</span>
             <span class="s2">&quot;--label&quot;</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lulc_scenario</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
         <span class="p">]</span>
@@ -968,8 +1010,130 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">talk</span><span class="p">:</span>
             <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--talk&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Use Popen for async execution</span>
+        <span class="c1"># run async execution</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
         <span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">process</span><span class="p">,</span> <span class="n">folder_run</span></div>
+
+
+<div class="viewcode-block" id="Project.run_analysis_soils_parameters">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.run_analysis_soils_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_analysis_soils_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_views</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># todo docstring</span>
+        <span class="c1"># set run</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="n">tool_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_analysis_soils_parameters</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;run_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">folder_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_run_folder</span><span class="p">(</span><span class="n">tool_name</span><span class="o">=</span><span class="n">tool_name</span><span class="p">)</span>
+
+        <span class="c1"># set iputs</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="n">extras</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">file_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_file</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Parameters Info&quot;</span><span class="p">,</span> <span class="n">extras</span><span class="o">=</span><span class="n">extras</span><span class="p">)</span>
+        <span class="n">Project</span><span class="o">.</span><span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_parameters</span><span class="p">)</span>
+
+        <span class="n">extras</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">file_soils_att</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_file</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Soils Attributes&quot;</span><span class="p">,</span> <span class="n">extras</span><span class="o">=</span><span class="n">extras</span><span class="p">)</span>
+        <span class="n">Project</span><span class="o">.</span><span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_soils_att</span><span class="p">)</span>
+
+        <span class="n">extras</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">file_soils</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_file</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Soils Map&quot;</span><span class="p">,</span> <span class="n">extras</span><span class="o">=</span><span class="n">extras</span><span class="p">)</span>
+        <span class="n">Project</span><span class="o">.</span><span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_soils</span><span class="p">)</span>
+
+        <span class="n">extras</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;basin&quot;</span><span class="p">:</span> <span class="s2">&quot;main&quot;</span><span class="p">}</span>
+        <span class="n">file_basin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_file</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Basin Area&quot;</span><span class="p">,</span> <span class="n">extras</span><span class="o">=</span><span class="n">extras</span><span class="p">)</span>
+        <span class="n">Project</span><span class="o">.</span><span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_basin</span><span class="p">)</span>
+
+        <span class="c1"># set command</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span>
+            <span class="s2">&quot;-m&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;plans.tools&quot;</span><span class="p">,</span>
+            <span class="n">tool_name</span><span class="p">,</span>
+            <span class="s2">&quot;--folder&quot;</span><span class="p">,</span>
+            <span class="n">folder_run</span><span class="p">,</span>
+            <span class="s2">&quot;--parameters&quot;</span><span class="p">,</span>
+            <span class="n">file_parameters</span><span class="p">,</span>
+            <span class="s2">&quot;--attributes&quot;</span><span class="p">,</span>
+            <span class="n">file_soils_att</span><span class="p">,</span>
+            <span class="s2">&quot;--soils&quot;</span><span class="p">,</span>
+            <span class="n">file_soils</span><span class="p">,</span>
+            <span class="s2">&quot;--basin&quot;</span><span class="p">,</span>
+            <span class="n">file_basin</span><span class="p">,</span>
+            <span class="s2">&quot;--label&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">include_views</span><span class="p">:</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--views&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">talk</span><span class="p">:</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--talk&quot;</span><span class="p">)</span>
+
+        <span class="c1"># run async execution</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">process</span><span class="p">,</span> <span class="n">folder_run</span></div>
+
+
+<div class="viewcode-block" id="Project.run_analysis_lulc_parameters">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.run_analysis_lulc_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_analysis_lulc_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lulc_scenario</span><span class="p">,</span> <span class="n">include_views</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># todo docstring</span>
+        <span class="c1"># set run</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="n">tool_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_analysis_lulc_parameters</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;run_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">folder_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_run_folder</span><span class="p">(</span><span class="n">tool_name</span><span class="o">=</span><span class="n">tool_name</span><span class="p">)</span>
+
+        <span class="c1"># set iputs</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="n">extras</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">file_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_file</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Parameters Info&quot;</span><span class="p">,</span> <span class="n">extras</span><span class="o">=</span><span class="n">extras</span><span class="p">)</span>
+        <span class="n">Project</span><span class="o">.</span><span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_parameters</span><span class="p">)</span>
+
+        <span class="n">extras</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;scenario&quot;</span><span class="p">:</span> <span class="n">lulc_scenario</span><span class="p">}</span>
+        <span class="n">file_lulc_attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_file</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Land Use Attributes&quot;</span><span class="p">,</span> <span class="n">extras</span><span class="o">=</span><span class="n">extras</span><span class="p">)</span>
+        <span class="n">Project</span><span class="o">.</span><span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_lulc_attr</span><span class="p">)</span>
+
+        <span class="n">folder_lulc_scenario</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_lulc</span><span class="p">)</span> <span class="o">/</span> <span class="n">lulc_scenario</span>
+
+        <span class="n">extras</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;basin&quot;</span><span class="p">:</span> <span class="s2">&quot;main&quot;</span><span class="p">}</span>
+        <span class="n">file_basin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_file</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Basin Area&quot;</span><span class="p">,</span> <span class="n">extras</span><span class="o">=</span><span class="n">extras</span><span class="p">)</span>
+        <span class="n">Project</span><span class="o">.</span><span class="n">handle_input_file</span><span class="p">(</span><span class="n">file_basin</span><span class="p">)</span>
+
+        <span class="c1"># set command</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span>
+            <span class="s2">&quot;-m&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;plans.tools&quot;</span><span class="p">,</span>
+            <span class="n">tool_name</span><span class="p">,</span>
+            <span class="s2">&quot;--folder&quot;</span><span class="p">,</span>
+            <span class="n">folder_run</span><span class="p">,</span>
+            <span class="s2">&quot;--parameters&quot;</span><span class="p">,</span>
+            <span class="n">file_parameters</span><span class="p">,</span>
+            <span class="s2">&quot;--attributes&quot;</span><span class="p">,</span>
+            <span class="n">file_lulc_attr</span><span class="p">,</span>
+            <span class="s2">&quot;--scenario&quot;</span><span class="p">,</span>
+            <span class="n">folder_lulc_scenario</span><span class="p">,</span>
+            <span class="s2">&quot;--basin&quot;</span><span class="p">,</span>
+            <span class="n">file_basin</span><span class="p">,</span>
+            <span class="s2">&quot;--label&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">lulc_scenario</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">include_views</span><span class="p">:</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--views&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">talk</span><span class="p">:</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--talk&quot;</span><span class="p">)</span>
+
+        <span class="c1"># run async execution</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">process</span><span class="p">,</span> <span class="n">folder_run</span></div>
 
 
@@ -977,17 +1141,68 @@
 <a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.get_dto">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_dto</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># todo docstring</span>
+        <span class="c1"># run</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
         <span class="n">subp</span><span class="p">,</span> <span class="n">folder_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_analysis_dto</span><span class="p">(</span><span class="n">include_views</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_basin</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">subp</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder_run</span><span class="si">}</span><span class="s2">/dto.tif&quot;</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_topo</span><span class="si">}</span><span class="s2">/dto.tif&quot;</span><span class="p">)</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder_run</span><span class="si">}</span><span class="s2">/dto.jpg&quot;</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_topo</span><span class="si">}</span><span class="s2">/dto.jpg&quot;</span><span class="p">)</span>
-        <span class="c1">## shutil.rmtree(folder_run)</span>
+
+        <span class="c1"># copy files</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="n">Project</span><span class="o">.</span><span class="n">copy_output_files</span><span class="p">(</span>
+            <span class="n">folder_output</span><span class="o">=</span><span class="n">folder_run</span><span class="p">,</span>
+            <span class="n">folder_dst</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_topo</span><span class="p">,</span>
+            <span class="n">include_runfiles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="Project.get_climate_lulc_series">
-<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.get_climate_lulc_series">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_climate_lulc_series</span><span class="p">(</span>
+<div class="viewcode-block" id="Project.get_lulc_series">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.get_lulc_series">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_lulc_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lulc_scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_lulc_scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># todo docstring</span>
+
+        <span class="c1"># setup</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="n">ls_scenarios</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_scenarios_lulc</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">lulc_scenario</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ls_scenarios</span> <span class="o">=</span> <span class="p">[</span><span class="n">lulc_scenario</span><span class="p">]</span>
+        <span class="n">ls_processes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ls_folders_run</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ls_folders_scenarios</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># run loop</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="k">for</span> <span class="n">scenario_name</span> <span class="ow">in</span> <span class="n">ls_scenarios</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">scenario_name</span> <span class="o">==</span> <span class="n">skip_lulc_scenario</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">folder_scenario</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_lulc</span><span class="p">)</span> <span class="o">/</span> <span class="n">scenario_name</span>
+                <span class="n">subp</span><span class="p">,</span> <span class="n">folder_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_analysis_lulc_series</span><span class="p">(</span>
+                    <span class="n">lulc_scenario</span><span class="o">=</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">include_views</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_basin</span><span class="o">=</span><span class="kc">None</span>
+                <span class="p">)</span>
+                <span class="n">ls_processes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subp</span><span class="p">)</span>
+                <span class="n">ls_folders_run</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">folder_run</span><span class="p">)</span>
+                <span class="n">ls_folders_scenarios</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">folder_scenario</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">subp</span> <span class="ow">in</span> <span class="n">ls_processes</span><span class="p">:</span>
+            <span class="n">subp</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+        <span class="c1"># copy files</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ls_folders_run</span><span class="p">)):</span>
+            <span class="n">folder_run</span> <span class="o">=</span> <span class="n">ls_folders_run</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">folder_scenario</span> <span class="o">=</span> <span class="n">ls_folders_scenarios</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">Project</span><span class="o">.</span><span class="n">copy_output_files</span><span class="p">(</span>
+                <span class="n">folder_output</span><span class="o">=</span><span class="n">folder_run</span><span class="p">,</span>
+                <span class="n">folder_dst</span><span class="o">=</span><span class="n">folder_scenario</span><span class="p">,</span>
+                <span class="n">include_runfiles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Project.get_climate_series_lulc">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.get_climate_series_lulc">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_climate_series_lulc</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">climate_scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">lulc_scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -995,7 +1210,8 @@
         <span class="n">skip_lulc_scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># todo docstring</span>
-        <span class="c1"># set lists of scenarios</span>
+        <span class="c1"># setup</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
         <span class="n">ls_lulc_scenarios</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_scenarios_lulc</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">lulc_scenario</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ls_lulc_scenarios</span> <span class="o">=</span> <span class="p">[</span><span class="n">lulc_scenario</span><span class="p">]</span>
@@ -1003,11 +1219,12 @@
         <span class="k">if</span> <span class="n">climate_scenario</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ls_climate_scenarios</span> <span class="o">=</span> <span class="p">[</span><span class="n">climate_scenario</span><span class="p">]</span>
 
+        <span class="c1"># run loop</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
         <span class="c1"># setup lists</span>
         <span class="n">ls_processes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">ls_folders_run</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">ls_folders_scenarios</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">ls_l_cenarios</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">c_scenario</span> <span class="ow">in</span> <span class="n">ls_climate_scenarios</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">l_scenario</span> <span class="ow">in</span> <span class="n">ls_lulc_scenarios</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">c_scenario</span> <span class="o">==</span> <span class="n">skip_climate_scenario</span><span class="p">:</span>
@@ -1024,63 +1241,133 @@
                     <span class="n">ls_processes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subp</span><span class="p">)</span>
                     <span class="n">ls_folders_run</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">folder_run</span><span class="p">)</span>
                     <span class="n">ls_folders_scenarios</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">folder_scenario</span><span class="p">)</span>
-                    <span class="n">ls_l_cenarios</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l_scenario</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">subp</span> <span class="ow">in</span> <span class="n">ls_processes</span><span class="p">:</span>
             <span class="n">subp</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
 
-        <span class="c1"># move files</span>
+        <span class="c1"># copy files</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ls_folders_run</span><span class="p">)):</span>
             <span class="n">folder_run</span> <span class="o">=</span> <span class="n">ls_folders_run</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="n">folder_scenario</span> <span class="o">=</span> <span class="n">ls_folders_scenarios</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">scenario_lulc</span> <span class="o">=</span> <span class="n">ls_l_cenarios</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">file_name</span> <span class="o">=</span> <span class="s2">&quot;climate_series_lulc_</span><span class="si">{}</span><span class="s2">.csv&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scenario_lulc</span><span class="p">)</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span>
-                <span class="n">src</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder_run</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder_scenario</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">Project</span><span class="o">.</span><span class="n">copy_output_files</span><span class="p">(</span>
+                <span class="n">folder_output</span><span class="o">=</span><span class="n">folder_run</span><span class="p">,</span>
+                <span class="n">folder_dst</span><span class="o">=</span><span class="n">folder_scenario</span><span class="p">,</span>
+                <span class="n">include_runfiles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="c1">## shutil.rmtree(folder_run)</span>
 
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="Project.get_lulc_series">
-<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.get_lulc_series">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_lulc_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lulc_scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_lulc_scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># todo docstring</span>
+<div class="viewcode-block" id="Project.get_soils_parameters">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.get_soils_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_soils_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># run</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="n">subp</span><span class="p">,</span> <span class="n">folder_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_analysis_soils_parameters</span><span class="p">(</span><span class="n">include_views</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">talk</span><span class="p">)</span>
+        <span class="n">subp</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+        <span class="c1"># move files</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+
+        <span class="n">folder_parameters</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_soils</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;parameters&quot;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">folder_parameters</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">Project</span><span class="o">.</span><span class="n">copy_output_files</span><span class="p">(</span>
+            <span class="n">folder_output</span><span class="o">=</span><span class="n">folder_run</span><span class="p">,</span>
+            <span class="n">folder_dst</span><span class="o">=</span><span class="n">folder_parameters</span><span class="p">,</span>
+            <span class="n">include_runfiles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Project.get_lulc_parameters">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.get_lulc_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_lulc_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lulc_scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_lulc_scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
         <span class="n">ls_scenarios</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_scenarios_lulc</span><span class="p">()</span>
+
         <span class="k">if</span> <span class="n">lulc_scenario</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ls_scenarios</span> <span class="o">=</span> <span class="p">[</span><span class="n">lulc_scenario</span><span class="p">]</span>
+
         <span class="n">ls_processes</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">ls_folders_run</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">ls_folders_scenarios</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># run analysis for all scenarios</span>
-        <span class="k">for</span> <span class="n">scenario_name</span> <span class="ow">in</span> <span class="n">ls_scenarios</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">scenario_name</span> <span class="o">==</span> <span class="n">skip_lulc_scenario</span><span class="p">:</span>
+        <span class="n">ls_folder_run</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># run loop</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ls_scenarios</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="n">skip_lulc_scenario</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">folder_scenario</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_lulc</span><span class="p">)</span> <span class="o">/</span> <span class="n">scenario_name</span>
-                <span class="n">subp</span><span class="p">,</span> <span class="n">folder_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_analysis_lulc_series</span><span class="p">(</span>
-                    <span class="n">lulc_scenario</span><span class="o">=</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">include_views</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_basin</span><span class="o">=</span><span class="kc">None</span>
+                <span class="n">subp</span><span class="p">,</span> <span class="n">folder_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_analysis_lulc_parameters</span><span class="p">(</span>
+                    <span class="n">lulc_scenario</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">include_views</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">talk</span>
                 <span class="p">)</span>
                 <span class="n">ls_processes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subp</span><span class="p">)</span>
-                <span class="n">ls_folders_run</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">folder_run</span><span class="p">)</span>
-                <span class="n">ls_folders_scenarios</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">folder_scenario</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">subp</span> <span class="ow">in</span> <span class="n">ls_processes</span><span class="p">:</span>
-            <span class="n">subp</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-        <span class="c1"># move files</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ls_folders_run</span><span class="p">)):</span>
-            <span class="n">folder_run</span> <span class="o">=</span> <span class="n">ls_folders_run</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">folder_scenario</span> <span class="o">=</span> <span class="n">ls_folders_scenarios</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">file_name</span> <span class="o">=</span> <span class="s2">&quot;lulc_series.csv&quot;</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span>
-                <span class="n">src</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder_run</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder_scenario</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-            <span class="n">ls_figs</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder_run</span><span class="si">}</span><span class="s2">/*.jpg&quot;</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">ls_figs</span><span class="p">:</span>
-                <span class="n">file_fig_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder_scenario</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">file_fig_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="c1">## shutil.rmtree(folder_run)</span>
+                <span class="n">ls_folder_run</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">folder_run</span><span class="p">)</span>
 
+        <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">ls_processes</span><span class="p">:</span>
+            <span class="n">sub</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+        <span class="c1"># move files</span>
+        <span class="c1"># ---------------------------------------------------------------</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ls_scenarios</span><span class="p">)):</span>
+            <span class="n">scenario</span> <span class="o">=</span> <span class="n">ls_scenarios</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">folder_run</span> <span class="o">=</span> <span class="n">ls_folder_run</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">folder_parameters</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_lulc</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">scenario</span><span class="si">}</span><span class="s2">/parameters&quot;</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">folder_parameters</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">Project</span><span class="o">.</span><span class="n">copy_output_files</span><span class="p">(</span>
+                <span class="n">folder_output</span><span class="o">=</span><span class="n">folder_run</span><span class="p">,</span>
+                <span class="n">folder_dst</span><span class="o">=</span><span class="n">folder_parameters</span><span class="p">,</span>
+                <span class="n">include_runfiles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Project.copy_output_files">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.copy_output_files">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy_output_files</span><span class="p">(</span><span class="n">folder_output</span><span class="p">,</span> <span class="n">folder_dst</span><span class="p">,</span> <span class="n">include_runfiles</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># list files</span>
+        <span class="n">ls_maps</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder_output</span><span class="si">}</span><span class="s2">/*.tif&quot;</span><span class="p">)</span>
+        <span class="n">ls_figs</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder_output</span><span class="si">}</span><span class="s2">/*.jpg&quot;</span><span class="p">)</span>
+        <span class="n">ls_tbls</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder_output</span><span class="si">}</span><span class="s2">/*.csv&quot;</span><span class="p">)</span>
+        <span class="n">ls_runs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">include_runfiles</span><span class="p">:</span>
+            <span class="n">ls_txt</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder_output</span><span class="si">}</span><span class="s2">/*.txt&quot;</span><span class="p">)</span>
+            <span class="n">ls_runs</span> <span class="o">=</span> <span class="n">ls_txt</span><span class="p">[:]</span>
+        <span class="n">ls_files</span> <span class="o">=</span> <span class="n">ls_maps</span> <span class="o">+</span> <span class="n">ls_tbls</span> <span class="o">+</span> <span class="n">ls_figs</span> <span class="o">+</span> <span class="n">ls_runs</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ls_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="c1"># copy loop</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">ls_files</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">f_dst</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">folder_dst</span><span class="p">)</span> <span class="o">/</span> <span class="n">file_name</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">f_dst</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Project.move_output_files">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.move_output_files">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">move_output_files</span><span class="p">(</span><span class="n">folder_output</span><span class="p">,</span> <span class="n">folder_dst</span><span class="p">,</span> <span class="n">include_runfiles</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">Project</span><span class="o">.</span><span class="n">copy_output_files</span><span class="p">(</span>
+            <span class="n">folder_output</span><span class="o">=</span><span class="n">folder_output</span><span class="p">,</span>
+            <span class="n">folder_dst</span><span class="o">=</span><span class="n">folder_dst</span><span class="p">,</span>
+            <span class="n">include_runfiles</span><span class="o">=</span><span class="n">include_runfiles</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">folder_output</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Project.handle_input_file">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.handle_input_file">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_input_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="n">parent_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&gt;&gt;&gt; check </span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">parent_folder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="Project.get_timestamp">
