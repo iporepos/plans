@@ -774,7 +774,11 @@
 <span class="sd">    :rtype: matplotlib.colors.ListedColormap</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">base_cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">base_cmap_name</span><span class="p">)</span>  <span class="c1"># Get colormap by name</span>
-    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">base_cmap</span><span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="p">(</span><span class="n">n_classes</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_classes</span><span class="p">)]</span>
+    <span class="n">divider</span> <span class="o">=</span> <span class="n">n_classes</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">n_classes</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">divider</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">base_cmap</span><span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="p">(</span><span class="n">divider</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_classes</span><span class="p">)]</span>
     <span class="c1"># get custom ok new</span>
     <span class="n">custom_cmap</span> <span class="o">=</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">ListedColormap</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">custom_cmap</span></div>
