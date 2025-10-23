@@ -34,19 +34,25 @@ Print a message
     print("Hello world!")
     # [Output] >> 'Hello world!'
 
-
 """
 # LOOP COMMENTS
 # ***********************************************************************
 # Launch, Observe, Optimize, Progress
 
+# todo --- DRY refactor
+#  implement a class-based (OOP) logic. This will reduce
+#  severely the code repetition for every tool
+
+# todo --- DRY refactor
+#  implement tools.py as a package. This will make
+#  the system better for target edits
+
 # todo --- KISS improvements
 #  main() can be improved by parsing a tools.csv file with all tools specs
 #  stored in a smart way
 
-# todo --- DRY refactor
-#  implement a class-based (OOP) logic. This will reduce
-#  severely the code repetition for every tool
+# todo --- Logging
+#  wait for major upgrades for developing logging
 
 # todo --- DOCS improvements
 #  wait for major upgrades for developing consistent docstrings

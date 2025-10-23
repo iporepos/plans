@@ -41,18 +41,33 @@ In a lacinia nisl.
 
 """
 
+# IMPORTS
+# ***********************************************************************
+# import modules from other libs
+
+# Native imports
+# =======================================================================
 import os
+
+# External imports
+# =======================================================================
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import matplotlib.colors as mcolors
+
+# Project-level imports
+# =======================================================================
 from plans import viewer
 from plans.root import DataSet
 
 
-# --------- Functions -----------
+# FUNCTIONS
+# ***********************************************************************
+
+
 def linear(x, c0, c1):
     """Linear function f(x) = c0 + c1 * x
 
@@ -100,7 +115,8 @@ def power_zero(x, c0, c1):
     return c1 * (np.power((x), c0))
 
 
-# --------- Objects -----------
+# CLASSES
+# ***********************************************************************
 
 
 class Univar(DataSet):
@@ -125,49 +141,6 @@ class Univar(DataSet):
         self.stats_df = None
         self.freq_df = None
         self.weibull_df = None
-
-    def _set_view_specs(self):
-        """
-        Set view specifications. Expected to overwrite superior methods.
-
-        :return: None
-        :rtype: None
-        """
-        super()._set_view_specs()
-        self.view_specs.update(
-            {
-                "title": "View of {}".format(self.name),
-                "width": viewer.FIG_SIZES["M"]["w"],
-                "height": viewer.FIG_SIZES["M"]["h"],
-                "yvar_field": self.varfield,
-                "xvar": "i",
-                "yvar": self.varname,
-                "xlabel": self.varname,
-                "xlabel_cdf": "P(X)",
-                "ylabel": self.units,
-                "color": self.color,
-                "color_hist": "tab:grey",
-                "color_cdf": "blue",
-                "alpha": 0.4,
-                "range": None,
-                "xlim": None,
-                "subtitle_scatter": "Distribution",
-                "subtitle_hist": "Histogram",
-                "subtitle_cdf": "CDF",
-                "plot_mean": True,
-                "hist_density": True,
-                "bins": 20,
-                "mode": "full",
-                "ax_scatter": 0,
-                "ax_histh": 1,
-                "ax_cdf": 2,
-                "x_stats": 0.01,
-                "scheme_cmap": None,
-                "cmap": "viridis",
-                "colorize_scatter": False,
-            }
-        )
-        return None
 
     def load_data(self, file_data):
         """
@@ -560,8 +533,8 @@ class Univar(DataSet):
             "width": 4 * 1.618,
             "height": 4,
             "xlabel": "value",
-            "ylim": (0, 0.1),
-            "xlim": (
+            "range": (0, 0.1),
+            "range_x": (
                 0.95 * np.min(self.data[self.varfield]),
                 1.05 * np.max(self.data[self.varfield]),
             ),
@@ -591,8 +564,8 @@ class Univar(DataSet):
 
         # Calculate quantiles
         data = pd.Series(self.data[self.varfield])
-        # filter data to xlim
-        data = data[data.between(specs["xlim"][0], specs["xlim"][1])]
+        # filter data to range x
+        data = data[data.between(specs["range_x"][0], specs["range_x"][1])]
         if specs["quantiles"]:
             quantiles = data.quantile(np.linspace(0, 1, specs["n_classes"] + 1))
         else:
@@ -649,8 +622,8 @@ class Univar(DataSet):
             )
 
         plt.xlabel(specs["xlabel"])
-        plt.ylim(specs["ylim"])
-        plt.xlim(specs["xlim"])
+        plt.ylim(specs["range"])
+        plt.xlim(specs["range_x"])
         plt.grid(specs["grid"])
         # Optionally, add vertical lines for each quantile and annotate them
         mu = np.mean(self.data)
@@ -720,7 +693,7 @@ class Univar(DataSet):
             "height": 4,
             "xlabel": "value",
             "range": (0.95 * np.min(data), 1.05 * np.max(data)),
-            "xlim": (-3, 3),
+            "range_x": (-3, 3),
             "subtitle": None,
         }
         # handle inputs specs
@@ -744,11 +717,11 @@ class Univar(DataSet):
         plt.title(specs["title"])
         plt.scatter(_df["T-Quantiles"], _df["Data"], marker=".", color="tab:grey")
         plt.ylim([_df["Data"].min(), _df["Data"].max()])
-        plt.xlim(specs["xlim"])
+        plt.xlim(specs["range_x"])
         plt.xlabel("Normal Theoretical Quantiles")
         plt.ylabel("Data Empirical Quantiles")
         plt.gca().set_aspect(
-            (specs["xlim"][1] - specs["xlim"][0])
+            (specs["range_x"][1] - specs["range_x"][0])
             / (_df["Data"].max() - _df["Data"].min())
         )
 
@@ -775,7 +748,7 @@ class Univar(DataSet):
         y_mu = np.nanmean(self.data[self.varfield])
 
         # ------- handle specs issues --------
-        ylim = specs["range"]
+        range_data = specs["range"]
         if specs["range"] is None:
             p_low = self.stats_df.loc[
                 self.stats_df["statistic"] == "p01", "value"
@@ -785,7 +758,7 @@ class Univar(DataSet):
             ].values[0]
             rng = p_hi - p_low
             rng_margin = rng * 0.1
-            ylim = (p_low - rng_margin, p_hi + rng_margin)
+            range_data = (p_low - rng_margin, p_hi + rng_margin)
 
         # ------------ title ------------
         if specs["title"] is not None:
@@ -794,9 +767,15 @@ class Univar(DataSet):
         # ------------ setup axes ------------
         fig = self._build_axes(fig=fig, gs=gs, specs=specs)
         all_axes = fig.get_axes()
-        ax_scatter = all_axes[specs["ax_scatter"]]
-        ax_histh = all_axes[specs["ax_histh"]]
-        ax_cdf = all_axes[specs["ax_cdf"]]
+        ax_data = all_axes[specs["ax_data"]]
+
+        ax_histh = False
+        if specs["ax_histh"]:
+            ax_histh = all_axes[specs["ax_histh"]]
+
+        ax_cdf = False
+        if specs["ax_cdf"]:
+            ax_cdf = all_axes[specs["ax_cdf"]]
 
         # ensure clean data
         df_clean = self.data.dropna()
@@ -805,17 +784,18 @@ class Univar(DataSet):
         # ------------ scatter plot ------------
         x_rng = Univar.plot_scatter(
             data=data,
-            ax=ax_scatter,
-            ylim=ylim,
+            ax=ax_data,
+            range_data=range_data,
             specs=specs,
             formatter=formatter,
+            x_factor=2,
         )
 
         # ------------ hist plot ------------
         Univar.plot_histh(
             data=data,
             ax=ax_histh,
-            ylim=ylim,
+            range_data=range_data,
             specs=specs,
             formatter=formatter,
         )
@@ -824,7 +804,7 @@ class Univar(DataSet):
         Univar.plot_cdf(
             cdf_df=self.weibull_df,
             ax=ax_cdf,
-            ylim=ylim,
+            range_data=range_data,
             specs=specs,
             formatter=formatter,
         )
@@ -833,7 +813,7 @@ class Univar(DataSet):
         if specs["plot_mean"]:
             y_mu = np.nanmean(data)
             Univar.plot_mean(
-                ax_scatter,
+                ax_data,
                 y_mu=y_mu,
                 xmin=x_rng[0],
                 xmax=x_rng[1],
@@ -854,7 +834,11 @@ class Univar(DataSet):
         # ------------ Plot stats ------------
         if specs["mode"] == "full":
             x_stats = specs["x_stats"]
-            fig = Univar.plot_stats(fig=fig, stats_df=self.stats_df, x=x_stats, y=0.3)
+            x_stats_sep = specs["x_stats_sep"]
+            y_stats = specs["y_stats"]
+            fig = Univar.plot_stats(
+                fig=fig, stats_df=self.stats_df, x=x_stats, y=y_stats, sep=x_stats_sep
+            )
 
         # send back
         return fig
@@ -870,7 +854,10 @@ class Univar(DataSet):
             fig.add_subplot(gs[2:10, 2:10])
             fig.add_subplot(gs[2:10, 13:18])
             fig.add_subplot(gs[2:10, 19:])
-
+        else:
+            fig.add_subplot(gs[2:10, 2:10])
+            fig.add_subplot(gs[2:10, 13:18])
+            fig.add_subplot(gs[2:10, 19:])
         return fig
 
     def _get_fig_specs(self):
@@ -902,6 +889,51 @@ class Univar(DataSet):
 
         return specs
 
+    def _set_view_specs(self):
+        """
+        Set view specifications. Expected to overwrite superior methods.
+
+        :return: None
+        :rtype: None
+        """
+        super()._set_view_specs()
+        self.view_specs.update(
+            {
+                "title": "View of {}".format(self.name),
+                "width": viewer.FIG_SIZES["M"]["w"],
+                "height": viewer.FIG_SIZES["M"]["h"],
+                "yvar_field": self.varfield,
+                "xvar": "i",
+                "yvar": self.varname,
+                "xlabel": self.varname,
+                "xlabel_cdf": "P(X)",
+                "ylabel": self.units,
+                "color": self.color,
+                "color_hist": "tab:grey",
+                "color_cdf": "blue",
+                "alpha": 0.4,
+                "range": None,
+                "range_x": None,
+                "subtitle_scatter": "Distribution",
+                "subtitle_hist": "Histogram",
+                "subtitle_cdf": "CDF",
+                "plot_mean": True,
+                "hist_density": True,
+                "bins": 20,
+                "mode": "full",
+                "ax_data": 0,
+                "ax_histh": 1,
+                "ax_cdf": 2,
+                "x_stats": 0.01,
+                "x_stats_sep": 0.2,
+                "y_stats": 0.3,
+                "scheme_cmap": None,
+                "cmap": "viridis",
+                "colorize_scatter": False,
+            }
+        )
+        return None
+
     def view(self, show=True, return_fig=False):
         # todo [docstring]
 
@@ -927,83 +959,87 @@ class Univar(DataSet):
     @staticmethod
     def plot_mean(ax, y_mu, xmin, xmax):
         # todo [docstring]
-        ax.hlines(
-            y=y_mu,
-            xmin=xmin,
-            xmax=xmax,
-            colors="red",
-        )
-        ax.annotate(
-            r" $\mu$ = {}".format(round(y_mu, 2)),
-            xy=(xmin, y_mu),
-            xytext=(1, 3),
-            textcoords="offset points",
-            color="red",
-        )
+        if ax:
+            ax.hlines(
+                y=y_mu,
+                xmin=xmin,
+                xmax=xmax,
+                colors="red",
+            )
+            ax.annotate(
+                r" $\mu$ = {}".format(round(y_mu, 2)),
+                xy=(xmin, y_mu),
+                xytext=(1, 3),
+                textcoords="offset points",
+                color="red",
+            )
         return None
 
     @staticmethod
-    def plot_scatter(data, ax, ylim, specs, x_factor=4, formatter=None):
+    def plot_scatter(data, ax, range_data, specs, formatter=None, x_factor=4):
         # todo [docstring]
-        x_values = np.arange(len(data))
-        # handle scheme
-        if specs["colorize_scatter"]:
-            color_data = Univar.classify(
-                data=data, n_classes=5, scheme=specs["scheme_cmap"]
-            )
-            color_cmap = viewer.get_discrete_cmap(
-                n_classes=5, base_cmap_name=specs["cmap"]
-            )
-            # plot
-            ax.scatter(
-                x_values,
-                data,
-                marker=".",
-                c=color_data,
-                cmap=color_cmap,
-                alpha=specs["alpha"],
-                s=0.8 * viewer.MM_TO_PT,
-            )
+        if ax:
+            x_values = np.arange(len(data))
+            # handle scheme
+            if specs["colorize_scatter"]:
+                color_data = Univar.classify(
+                    data=data, n_classes=5, scheme=specs["scheme_cmap"]
+                )
+                color_cmap = viewer.get_discrete_cmap(
+                    n_classes=5, base_cmap_name=specs["cmap"]
+                )
+                # plot
+                ax.scatter(
+                    x_values,
+                    data,
+                    marker=".",
+                    c=color_data,
+                    cmap=color_cmap,
+                    alpha=specs["alpha"],
+                    s=0.8 * viewer.MM_TO_PT,
+                )
+            else:
+                ax.scatter(
+                    x_values,
+                    data,
+                    marker=".",
+                    color=specs["color"],
+                    alpha=specs["alpha"],
+                    s=0.8 * viewer.MM_TO_PT,
+                )
+
+            if specs["subtitle_scatter"] is not None:
+                ax.set_title(specs["subtitle_scatter"], loc="left")
+            ax.set_ylim(range_data)
+            ax.set_xlabel(specs["xlabel"])
+            ax.set_ylabel(specs["ylabel"])
+            ax.grid(axis="x", visible=False)
+            if formatter is not None:
+                ax.yaxis.set_major_formatter(formatter)
+
+            # handle x axis
+            n_size = len(data)
+            x_low = -x_factor * n_size
+            x_hi = n_size + (x_factor * n_size)
+            ax.set_xlim(x_low, x_hi)
+            ax.set_xticks([])
+
+            # handle cbars
+            # ------------ cbar plot ------------
+            if specs["colorize_scatter"]:
+                Univar.plot_cbar(
+                    data=data,
+                    ax=ax,
+                    scheme=specs["scheme_cmap"],
+                    cmap=specs["cmap"],
+                    side="right",
+                )
+            return (x_low, x_hi)
         else:
-            ax.scatter(
-                x_values,
-                data,
-                marker=".",
-                color=specs["color"],
-                alpha=specs["alpha"],
-                s=0.8 * viewer.MM_TO_PT,
-            )
-
-        if specs["subtitle_scatter"] is not None:
-            ax.set_title(specs["subtitle_scatter"], loc="left")
-        ax.set_ylim(ylim)
-        ax.set_xlabel(specs["xlabel"])
-        ax.set_ylabel(specs["ylabel"])
-        ax.grid(axis="x", visible=False)
-        if formatter is not None:
-            ax.yaxis.set_major_formatter(formatter)
-
-        # handle x axis
-        n_size = len(data)
-        x_low = -x_factor * n_size
-        x_hi = n_size + (x_factor * n_size)
-        ax.set_xlim(x_low, x_hi)
-        ax.set_xticks([])
-
-        # handle cbars
-        # ------------ cbar plot ------------
-        if specs["colorize_scatter"]:
-            Univar.plot_cbar(
-                data=data,
-                ax=ax,
-                scheme=specs["scheme_cmap"],
-                cmap=specs["cmap"],
-                side="right",
-            )
-        return (x_low, x_hi)
+            return None
 
     @staticmethod
-    def plot_histh(data, ax, ylim, specs, formatter=None):
+    def plot_histh(data, ax, range_data, specs, formatter=None):
         # todo [docstring]
 
         # ------- local functions --------
@@ -1015,51 +1051,54 @@ class Univar(DataSet):
                 _id = len(std_values) - 1
             return std_values[_id]
 
-        # Standard x-axis maximum values for hist
-        sdmax1 = list(np.linspace(1, 9, 9) / 100)
-        sdmax2 = list(np.linspace(10, 100, 10) / 100)
-        standard_max_values = sdmax1 + sdmax2
+        h = None
+        if ax:
+            # Standard x-axis maximum values for hist
+            sdmax1 = list(np.linspace(1, 9, 9) / 100)
+            sdmax2 = list(np.linspace(10, 100, 10) / 100)
+            standard_max_values = sdmax1 + sdmax2
 
-        # plot horizontal hist
-        h = ax.hist(
-            data,
-            bins=specs["bins"],
-            color=specs["color_hist"],
-            alpha=1,
-            orientation="horizontal",
-            weights=np.ones(len(data)) / len(data),
-        )
-        ax.xaxis.set_major_formatter(mticker.PercentFormatter(1))
-        if specs["subtitle_hist"] is not None:
-            ax.set_title(specs["subtitle_hist"], loc="left")
+            # plot horizontal hist
+            h = ax.hist(
+                data,
+                bins=specs["bins"],
+                color=specs["color_hist"],
+                alpha=1,
+                orientation="horizontal",
+                weights=np.ones(len(data)) / len(data),
+            )
+            ax.xaxis.set_major_formatter(mticker.PercentFormatter(1))
+            if specs["subtitle_hist"] is not None:
+                ax.set_title(specs["subtitle_hist"], loc="left")
 
-        # Get the maximum value from the data
-        xmax = _get_max(standard_max_values, h[0]) * 1.1
-        ax.set_xlim(0, xmax)
-        ax.set_ylim(ylim)
-        ax.set_xlabel("%")
-        ax.set_ylabel(specs["ylabel"])
-        if formatter is not None:
-            ax.yaxis.set_major_formatter(formatter)
+            # Get the maximum value from the data
+            xmax = _get_max(standard_max_values, h[0]) * 1.1
+            ax.set_xlim(0, xmax)
+            ax.set_ylim(range_data)
+            ax.set_xlabel("%")
+            ax.set_ylabel(specs["ylabel"])
+            if formatter is not None:
+                ax.yaxis.set_major_formatter(formatter)
         return h
 
     @staticmethod
-    def plot_cdf(cdf_df, ax, ylim, specs, formatter=None):
+    def plot_cdf(cdf_df, ax, range_data, specs, formatter=None):
         # todo [docstring]
-        ax.plot(cdf_df["P(X)"], cdf_df["Data"], color=specs["color_cdf"])
-        if specs["subtitle_cdf"] is not None:
-            ax.set_title(specs["subtitle_cdf"], loc="left")
-        ax.set_xlabel(specs["xlabel_cdf"])
-        ax.set_xlim(-0.05, 1.05)
-        ax.set_ylim(ylim)
-        if formatter is not None:
-            ax.yaxis.set_major_formatter(formatter)
-        ax.set_yticklabels([])
-        ax.xaxis.set_major_formatter(mticker.PercentFormatter(1))
+        if ax:
+            ax.plot(cdf_df["P(X)"], cdf_df["Data"], color=specs["color_cdf"])
+            if specs["subtitle_cdf"] is not None:
+                ax.set_title(specs["subtitle_cdf"], loc="left")
+            ax.set_xlabel(specs["xlabel_cdf"])
+            ax.set_xlim(-0.05, 1.05)
+            ax.set_ylim(range_data)
+            if formatter is not None:
+                ax.yaxis.set_major_formatter(formatter)
+            ax.set_yticklabels([])
+            ax.xaxis.set_major_formatter(mticker.PercentFormatter(1))
         return None
 
     @staticmethod
-    def plot_stats(fig, stats_df, x=0.5, y=0.4):
+    def plot_stats(fig, stats_df, x=0.5, y=0.4, sep=0.2):
         # todo [docstring]
 
         # Helper function to plot a single column of stats
@@ -1120,7 +1159,7 @@ class Univar(DataSet):
             "p90",
             "p95",
         ]
-        _plot_column(x + 0.20, ls_stats_col2, y - 0.01)
+        _plot_column(x + sep, ls_stats_col2, y - 0.01)
 
         return fig
 
@@ -1132,6 +1171,11 @@ class Univar(DataSet):
 
         # handle bins
         bins = Univar.get_bins(data=data, n_bins=n_classes, scheme=scheme)
+
+        # handle egde cases
+        n_bins = len(bins)
+        if n_bins <= n_classes:
+            n_classes = n_bins - 1
 
         # handle colors
         custom_cmap = viewer.get_discrete_cmap(n_classes=n_classes, base_cmap_name=cmap)
@@ -1741,7 +1785,7 @@ class GeoUnivar(Univar):
             {
                 "subtitle_map": "Map",
                 "ax_map": 0,
-                "ax_scatter": 1,
+                "ax_data": 1,
                 "ax_histh": 2,
                 "ax_cdf": 3,
                 "x_stats": 0.55,
@@ -1859,7 +1903,7 @@ class GeoUnivar(Univar):
         if specs["cbar_scatter"]:
             Univar.plot_cbar(
                 data=self.data[specs["yvar_field"]].values,
-                ax=all_axes[specs["ax_scatter"]],
+                ax=all_axes[specs["ax_data"]],
                 scheme=specs["scheme_cmap"],
                 cmap=specs["cmap"],
             )
@@ -2104,7 +2148,7 @@ class Bivar:
             "title": "View of {}".format(self.name),
             "width": 6,
             "height": 6,
-            "xlim": [self.data[self.xname].min(), self.data[self.xname].max()],
+            "range_x": [self.data[self.xname].min(), self.data[self.xname].max()],
             "range": [self.data[self.yname].min(), self.data[self.yname].max()],
             "xlabel": self.xname,
             "ylabel": self.yname,
@@ -2137,7 +2181,7 @@ class Bivar:
         )
         plt.xlabel(specs["xlabel"])
         plt.ylabel(specs["ylabel"])
-        plt.xlim(specs["xlim"])
+        plt.xlim(specs["range_x"])
         plt.ylim(specs["range"])
 
         # x hist
@@ -2152,7 +2196,7 @@ class Bivar:
             alpha=1,
             weights=np.ones(len(self.data)) / len(self.data),
         )
-        plt.xlim(specs["xlim"])
+        plt.xlim(specs["range_x"])
 
         # y hist
         ay_histy = fig.add_subplot(gs[1:, 2], sharey=ax)
@@ -2218,7 +2262,7 @@ class Bivar:
             "title": "View of {} {} Model".format(self.name, model_type),
             "width": 8,
             "height": 8,
-            "xlim": [self.data[self.xname].min(), self.data[self.xname].max()],
+            "range_x": [self.data[self.xname].min(), self.data[self.xname].max()],
             "range": [self.data[self.yname].min(), self.data[self.yname].max()],
             "elim": [
                 -1.5 * self.models[model_type]["Data"]["e_Mean"].max(),
@@ -2238,7 +2282,7 @@ class Bivar:
         # get some ranges
         e_range = specs["elim"][1] - specs["elim"][0]
         e_range_10 = e_range / 20
-        x_range = specs["xlim"][1] - specs["xlim"][0]
+        x_range = specs["range_x"][1] - specs["range_x"][0]
         x_range_10 = x_range / 10
 
         # -------------- start plot
@@ -2269,7 +2313,7 @@ class Bivar:
         )
         plt.xlabel(self.xname)
         plt.ylabel(self.yname)
-        plt.xlim(specs["xlim"])
+        plt.xlim(specs["range_x"])
         plt.ylim(specs["range"])
 
         # ----------------- error -----------------
@@ -2288,20 +2332,20 @@ class Bivar:
         # mean line
         plt.hlines(
             y=e_mean,
-            xmin=specs["xlim"][0],
-            xmax=specs["xlim"][1],
+            xmin=specs["range_x"][0],
+            xmax=specs["range_x"][1],
             color="tab:red",
             alpha=0.4,
         )
         plt.text(
             y=e_mean + e_range_10,
-            x=specs["xlim"][1] - (3 * x_range_10),
+            x=specs["range_x"][1] - (3 * x_range_10),
             s=r"$\mu$: " + str(round(e_mean, 2)),
             color="tab:red",
         )
         plt.xlabel(self.xname)
         plt.ylabel(r"$\epsilon$")
-        plt.xlim(specs["xlim"])
+        plt.xlim(specs["range_x"])
         plt.ylim(specs["elim"])
 
         # ----------------- error hist -----------------
@@ -2351,7 +2395,7 @@ class Bivar:
 
         plt.xlabel(self.xname)
         plt.ylabel(r"$\sigma^2$")
-        plt.xlim(specs["xlim"])
+        plt.xlim(specs["range_x"])
         plt.ylim([0, 1.5 * np.max(vct_var)])
 
         # show or save
@@ -2802,7 +2846,7 @@ class Bayes:
             "height": 5,
             "xlabel": "value",
             "range": (0, 1),
-            "xlim": (0, 1),
+            "range_x": (0, 1),
             "subtitle": None,
         }
         # handle inputs specs

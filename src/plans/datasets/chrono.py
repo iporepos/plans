@@ -61,6 +61,7 @@ class RainSeries(TimeSeries):
         # Use the superior initialization from the parent class (TimeSeries)
         super().__init__(name, alias=alias)
         self.varname = "Rain"
+        self.varalias = "ppt"
         self.varfield = "ppt"
         self.units = "mm"
         # Overwrite attributes specific to RainSeries
@@ -169,6 +170,7 @@ class ETSeries(TimeSeries):
         # Use the superior initialization from the parent class (TimeSeries)
         super().__init__(name, alias=alias)
         self.varname = "PET"
+        self.varalias = "PET"
         self.varfield = "pet"
         self.units = "mm"
         # Overwrite attributes specific

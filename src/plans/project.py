@@ -229,10 +229,16 @@ def load_project(project_folder):
 
 class Project(FileSys):
 
+    # Dunder methods
+    # -------------------------------------------------------------------
     def __init__(self, name, alias=None):
         super().__init__(name=name, alias=alias)
         self.load_data()
         self.talk = True
+
+    def __str__(self):
+        s = f"Project: {self.name}\nFolder base: {self.folder_base}\nFolder root: {self.folder_root}"
+        return s
 
     def _setup_run_folder(self, tool_name):
         folder_run = self.make_run_folder(run_name=tool_name.replace("_", "-"))
