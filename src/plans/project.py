@@ -234,27 +234,20 @@ class Project(FileSys):
     def __init__(self, name, alias=None):
         super().__init__(name=name, alias=alias)
         self.load_data()
-        self.talk = True
+        self.verbose = True
 
     def __str__(self):
         s = f"Project: {self.name}\nFolder base: {self.folder_base}\nFolder root: {self.folder_root}"
         return s
 
+    # Internal methods
+    # -------------------------------------------------------------------
     def _setup_run_folder(self, tool_name):
         folder_run = self.make_run_folder(run_name=tool_name.replace("_", "-"))
         return folder_run
 
-    def get_metadata(self):
-        # ------------ call super ----------- #
-        dict_meta = super().get_metadata()
-
-        # removals
-
-        dict_meta.pop(self.field_size)
-        dict_meta.pop(self.field_file_data)
-
-        return dict_meta
-
+    # Set methods
+    # -------------------------------------------------------------------
     def setter(self, dict_setter, load_data=False):
         # ignores
         dict_setter[self.field_size] = None
@@ -272,6 +265,26 @@ class Project(FileSys):
 
         # ... continues in downstream objects ... #
 
+    def setup(self):
+        super().setup()
+        df = self.get_metadata_df()
+        df.to_csv(self.folder_data + "/project_info.csv", sep=";", index=False)
+        return None
+
+    def update(self):
+        super().update()
+        if self.folder_root is not None:
+            self.folder_data = str(Path(self.folder_root) / "data")
+
+            self.folder_outputs = str(Path(self.folder_root) / "outputs")
+            self.folder_topo = str(Path(self.folder_data) / "topo")
+            self.folder_soils = str(Path(self.folder_data) / "soils")
+            self.folder_basins = str(Path(self.folder_data) / "basins")
+            self.folder_climate = str(Path(self.folder_data) / "climate")
+            self.folder_lulc = str(Path(self.folder_data) / "lulc")
+
+    # Data methods
+    # -------------------------------------------------------------------
     def load_data(self):
         # -------------- overwrite relative path inputs -------------- #
 
@@ -300,75 +313,8 @@ class Project(FileSys):
 
         return None
 
-    def setup(self):
-        super().setup()
-        df = self.get_metadata_df()
-        df.to_csv(self.folder_data + "/project_info.csv", sep=";", index=False)
-        return None
-
-    def update(self):
-        super().update()
-        if self.folder_root is not None:
-
-            self.folder_data = str(Path(self.folder_root) / "data")
-
-            self.folder_outputs = str(Path(self.folder_root) / "outputs")
-            self.folder_topo = str(Path(self.folder_data) / "topo")
-            self.folder_soils = str(Path(self.folder_data) / "soils")
-            self.folder_basins = str(Path(self.folder_data) / "basins")
-            self.folder_climate = str(Path(self.folder_data) / "climate")
-            self.folder_lulc = str(Path(self.folder_data) / "lulc")
-
-    def list_basins(self):
-        # todo docstring
-        return os.listdir(self.folder_basins)
-
-    def list_scenarios_climate(self):
-        # todo docstring
-        ls_folder_names = os.listdir(self.folder_climate)
-        ls_folders = [Path(self.folder_climate) / folder for folder in ls_folder_names]
-        # check if has climate series
-        ls_scenarios = []
-        for folder in ls_folders:
-            file_csv = folder / "climate_series.csv"
-            if os.path.exists(file_csv):
-                ls_scenarios.append(os.path.basename(folder))
-        return ls_scenarios
-
-    def list_scenarios_lulc(self):
-        # todo docstring
-        ls_folder_names = os.listdir(self.folder_lulc)
-        ls_folders = [Path(self.folder_lulc) / folder for folder in ls_folder_names]
-        # check if has lulc-style raster maps
-        ls_scenarios = []
-        for folder in ls_folders:
-            ls_tifs = glob.glob(f"{folder}/lulc_*.tif")
-            if len(ls_tifs) > 0:
-                ls_scenarios.append(os.path.basename(folder))
-        return ls_scenarios
-
-    def retrieve_file(self, title, extras=None):
-        # todo docstring
-        dc = {
-            "project": self.folder_root,
-        }
-        if extras is not None:
-            dc.update(extras)
-        file_name = self.retrieve_file_name(title=title)
-        file_folder = self.retrieve_folder(title=title, formatter=dc)
-        return Path(file_folder) / file_name
-
-    def retrieve_file_name(self, title):
-        file_name = self.files_df.loc[
-            self.files_df["title"] == title, "file_name"
-        ].values[0]
-        return file_name
-
-    def retrieve_folder(self, title, formatter):
-        folder = self.files_df.loc[self.files_df["title"] == title, "folder"].values[0]
-        folder = folder.format(**formatter)
-        return folder
-
+    # Make methods
+    # -------------------------------------------------------------------
     def make_run_folder(self, run_name):
         # todo docstring
         while True:
@@ -381,6 +327,72 @@ class Project(FileSys):
                 break
 
         return os.path.abspath(folder_run)
+
+    # Get methods
+    # -------------------------------------------------------------------
+    def get_metadata(self):
+        # ------------ call super ----------- #
+        dict_meta = super().get_metadata()
+
+        # removals
+
+        dict_meta.pop(self.field_size)
+        dict_meta.pop(self.field_file_data)
+
+        return dict_meta
+
+    def get_list_basins(self):
+        # todo docstring
+        return os.listdir(self.folder_basins)
+
+    def get_list_scenarios_climate(self):
+        # todo docstring
+        ls_folder_names = os.listdir(self.folder_climate)
+        ls_folders = [Path(self.folder_climate) / folder for folder in ls_folder_names]
+        # check if has climate series
+        ls_scenarios = []
+        for folder in ls_folders:
+            file_csv = folder / "climate_series.csv"
+            if os.path.exists(file_csv):
+                ls_scenarios.append(os.path.basename(folder))
+        return ls_scenarios
+
+    def get_list_scenarios_lulc(self):
+        # todo docstring
+        ls_folder_names = os.listdir(self.folder_lulc)
+        ls_folders = [Path(self.folder_lulc) / folder for folder in ls_folder_names]
+        # check if has lulc-style raster maps
+        ls_scenarios = []
+        for folder in ls_folders:
+            ls_tifs = glob.glob(f"{folder}/lulc_*.tif")
+            if len(ls_tifs) > 0:
+                ls_scenarios.append(os.path.basename(folder))
+        return ls_scenarios
+
+    def get_file(self, title, extras=None):
+        # todo docstring
+        dc = {
+            "project": self.folder_root,
+        }
+        if extras is not None:
+            dc.update(extras)
+        file_name = self.get_file_name(title=title)
+        file_folder = self.get_folder(title=title, formatter=dc)
+        return Path(file_folder) / file_name
+
+    def get_file_name(self, title):
+        file_name = self.files_df.loc[
+            self.files_df["title"] == title, "file_name"
+        ].values[0]
+        return file_name
+
+    def get_folder(self, title, formatter):
+        folder = self.files_df.loc[self.files_df["title"] == title, "folder"].values[0]
+        folder = folder.format(**formatter)
+        return folder
+
+    # Run methods
+    # -------------------------------------------------------------------
 
     def run_demo(self):
         # todo docstring
@@ -397,18 +409,22 @@ class Project(FileSys):
             sys.executable,
             "-m",
             # tool name
-            "plans.tools",
-            tool_name,
+            f"plans.tools.{tool_name}",
             # arguments
-            "--folder",
+            "--output",
             folder_run,
+            "--label",
+            self.name,
+            "--project",
+            self.name,
+            # special args
             "--input1",
             "./tests/data/DataSet_data.csv",
             "--input2",
             "./tests/data/DataSet_data.csv",
         ]
-        if self.talk:
-            cmd.append("--talk")
+        if self.verbose:
+            cmd.append("--verbose")
 
         # run async execution
         # ---------------------------------------------------------------
@@ -425,12 +441,12 @@ class Project(FileSys):
 
         # set iputs
         # ---------------------------------------------------------------
-        file_ldd = self.retrieve_file(title="Local Drain Direction", extras=None)
+        file_ldd = self.get_file(title="Local Drain Direction", extras=None)
         Project.handle_input_file(file_ldd)
 
         if use_basin is not None:
             extras = {"basin": use_basin}
-            file_basin = self.retrieve_file(title="Basin Area", extras=extras)
+            file_basin = self.get_file(title="Basin Area", extras=extras)
             Project.handle_input_file(file_basin)
 
         # set command
@@ -438,26 +454,26 @@ class Project(FileSys):
         cmd = [
             sys.executable,
             "-m",
-            # tool name
-            "plans.tools",
-            tool_name,
+            f"plans.tools.{tool_name}",
             # arguments
-            "--folder",
+            "--output",
             folder_run,
             "--ldd",
             file_ldd,
             "--label",
             self.name,
+            "--project",
+            self.name,
         ]
 
         if use_basin is not None:
-            cmd = cmd + ["--basin", file_basin]
+            cmd = cmd + ["--aoi", file_basin]
 
         if include_views:
             cmd.append("--views")
 
-        if self.talk:
-            cmd.append("--talk")
+        if self.verbose:
+            cmd.append("--verbose")
 
         # run async execution
         # ---------------------------------------------------------------
@@ -466,7 +482,7 @@ class Project(FileSys):
         return process, folder_run
 
     def run_analysis_lulc_series(
-        self, lulc_scenario, include_views=True, use_basin=None
+        self, lulc_scenario, include_views=True, use_basin=None, use_old=False
     ):
         # todo docstring
         # set run
@@ -476,15 +492,14 @@ class Project(FileSys):
 
         # set iputs
         # ---------------------------------------------------------------
-
         folder_lulc_scenario = Path(self.folder_lulc) / lulc_scenario
         extras = {"scenario": lulc_scenario}
-        file_lulc_att = self.retrieve_file(title="Land Use Attributes", extras=extras)
+        file_lulc_att = self.get_file(title="Land Use Attributes", extras=extras)
         Project.handle_input_file(file_lulc_att)
 
         if use_basin is not None:
             extras = {"basin": use_basin}
-            file_basin = self.retrieve_file(title="Basin Area", extras=extras)
+            file_basin = self.get_file(title="Basin Area", extras=extras)
             Project.handle_input_file(file_basin)
 
         # set command
@@ -492,27 +507,32 @@ class Project(FileSys):
         cmd = [
             sys.executable,
             "-m",
-            "plans.tools",
-            tool_name,
-            "--folder",
+            f"plans.tools.{tool_name}",
+            "--output",
             folder_run,
             "--attributes",
             file_lulc_att,
             "--scenario",
             folder_lulc_scenario,
+            "--project",
+            self.name,
         ]
 
         if use_basin is not None:
-            cmd = cmd + ["--label", f"{self.name} - {lulc_scenario} - {use_basin}"]
+            # customize label
+            tool_label = f"{self.name} - {lulc_scenario} - {use_basin}"
+            cmd = cmd + ["--label", tool_label]
+            # add aoi to cmd
             cmd = cmd + ["--aoi", file_basin]
         else:
-            cmd = cmd + ["--label", f"{self.name} - {lulc_scenario}"]
+            tool_label = f"{self.name} - {lulc_scenario}"
+            cmd = cmd + ["--label", tool_label]
 
         if include_views:
             cmd.append("--views")
 
-        if self.talk:
-            cmd.append("--talk")
+        if self.verbose:
+            cmd.append("--verbose")
 
         # run async execution
         # ---------------------------------------------------------------
@@ -537,15 +557,15 @@ class Project(FileSys):
         # set iputs
         # ---------------------------------------------------------------
 
-        file_parameters = self.retrieve_file(title="Parameters Info", extras=None)
+        file_parameters = self.get_file(title="Parameters Info", extras=None)
         Project.handle_input_file(file_parameters)
 
         extras = {"scenario": climate_scenario}
-        file_climate_series = self.retrieve_file(title="Climate Series", extras=extras)
+        file_climate_series = self.get_file(title="Climate Series", extras=extras)
         Project.handle_input_file(file_climate_series)
 
         extras = {"scenario": lulc_scenario}
-        file_lulc_series = self.retrieve_file(title="Land Use Series", extras=extras)
+        file_lulc_series = self.get_file(title="Land Use Series", extras=extras)
         Project.handle_input_file(file_lulc_series)
 
         # set command
@@ -553,9 +573,8 @@ class Project(FileSys):
         cmd = [
             sys.executable,
             "-m",
-            "plans.tools",
-            tool_name,
-            "--folder",
+            f"plans.tools.{tool_name}",
+            "--output",
             folder_run,
             "--parameters",
             file_parameters,
@@ -565,13 +584,15 @@ class Project(FileSys):
             file_lulc_series,
             "--label",
             f"{lulc_scenario}",
+            "--project",
+            self.name,
         ]
 
         if include_views:
             cmd.append("--views")
 
-        if self.talk:
-            cmd.append("--talk")
+        if self.verbose:
+            cmd.append("--verbose")
 
         # run async execution
         # ---------------------------------------------------------------
@@ -589,19 +610,19 @@ class Project(FileSys):
         # set iputs
         # ---------------------------------------------------------------
         extras = None
-        file_parameters = self.retrieve_file(title="Parameters Info", extras=extras)
+        file_parameters = self.get_file(title="Parameters Info", extras=extras)
         Project.handle_input_file(file_parameters)
 
         extras = None
-        file_soils_att = self.retrieve_file(title="Soils Attributes", extras=extras)
+        file_soils_att = self.get_file(title="Soils Attributes", extras=extras)
         Project.handle_input_file(file_soils_att)
 
         extras = None
-        file_soils = self.retrieve_file(title="Soils Map", extras=extras)
+        file_soils = self.get_file(title="Soils Map", extras=extras)
         Project.handle_input_file(file_soils)
 
         extras = {"basin": "main"}
-        file_basin = self.retrieve_file(title="Basin Area", extras=extras)
+        file_basin = self.get_file(title="Basin Area", extras=extras)
         Project.handle_input_file(file_basin)
 
         # set command
@@ -609,9 +630,8 @@ class Project(FileSys):
         cmd = [
             sys.executable,
             "-m",
-            "plans.tools",
-            tool_name,
-            "--folder",
+            f"plans.tools.{tool_name}",
+            "--output",
             folder_run,
             "--parameters",
             file_parameters,
@@ -619,17 +639,19 @@ class Project(FileSys):
             file_soils_att,
             "--soils",
             file_soils,
-            "--basin",
+            "--aoi",
             file_basin,
             "--label",
-            f"{self.name}",
+            self.name,
+            "--project",
+            self.name,
         ]
 
         if include_views:
             cmd.append("--views")
 
-        if self.talk:
-            cmd.append("--talk")
+        if self.verbose:
+            cmd.append("--verbose")
 
         # run async execution
         # ---------------------------------------------------------------
@@ -637,6 +659,7 @@ class Project(FileSys):
 
         return process, folder_run
 
+    # todo refactor --- move to plans.tools
     def run_analysis_lulc_parameters(self, lulc_scenario, include_views=True):
         # todo docstring
         # set run
@@ -647,17 +670,17 @@ class Project(FileSys):
         # set iputs
         # ---------------------------------------------------------------
         extras = None
-        file_parameters = self.retrieve_file(title="Parameters Info", extras=extras)
+        file_parameters = self.get_file(title="Parameters Info", extras=extras)
         Project.handle_input_file(file_parameters)
 
         extras = {"scenario": lulc_scenario}
-        file_lulc_attr = self.retrieve_file(title="Land Use Attributes", extras=extras)
+        file_lulc_attr = self.get_file(title="Land Use Attributes", extras=extras)
         Project.handle_input_file(file_lulc_attr)
 
         folder_lulc_scenario = Path(self.folder_lulc) / lulc_scenario
 
         extras = {"basin": "main"}
-        file_basin = self.retrieve_file(title="Basin Area", extras=extras)
+        file_basin = self.get_file(title="Basin Area", extras=extras)
         Project.handle_input_file(file_basin)
 
         # set command
@@ -665,9 +688,8 @@ class Project(FileSys):
         cmd = [
             sys.executable,
             "-m",
-            "plans.tools",
-            tool_name,
-            "--folder",
+            f"plans.tools.{tool_name}",
+            "--output",
             folder_run,
             "--parameters",
             file_parameters,
@@ -675,17 +697,19 @@ class Project(FileSys):
             file_lulc_attr,
             "--scenario",
             folder_lulc_scenario,
-            "--basin",
+            "--aoi",
             file_basin,
             "--label",
             f"{self.name} - {lulc_scenario}",
+            "--project",
+            self.name,
         ]
 
         if include_views:
             cmd.append("--views")
 
-        if self.talk:
-            cmd.append("--talk")
+        if self.verbose:
+            cmd.append("--verbose")
 
         # run async execution
         # ---------------------------------------------------------------
@@ -693,7 +717,9 @@ class Project(FileSys):
 
         return process, folder_run
 
-    def get_dto(self):
+    # Generate methods
+    # -------------------------------------------------------------------
+    def generate_dto(self):
         # todo docstring
         # run
         # ---------------------------------------------------------------
@@ -709,12 +735,11 @@ class Project(FileSys):
         )
         return None
 
-    def get_lulc_series(self, lulc_scenario=None, skip_lulc_scenario=None):
+    def generate_lulc_series(self, lulc_scenario=None, skip_lulc_scenario=None):
         # todo docstring
-
         # setup
         # ---------------------------------------------------------------
-        ls_scenarios = self.list_scenarios_lulc()
+        ls_scenarios = self.get_list_scenarios_lulc()
         if lulc_scenario is not None:
             ls_scenarios = [lulc_scenario]
         ls_processes = []
@@ -750,7 +775,7 @@ class Project(FileSys):
 
         return None
 
-    def get_climate_series_lulc(
+    def generate_climate_series_lulc(
         self,
         climate_scenario=None,
         lulc_scenario=None,
@@ -760,10 +785,10 @@ class Project(FileSys):
         # todo docstring
         # setup
         # ---------------------------------------------------------------
-        ls_lulc_scenarios = self.list_scenarios_lulc()
+        ls_lulc_scenarios = self.get_list_scenarios_lulc()
         if lulc_scenario is not None:
             ls_lulc_scenarios = [lulc_scenario]
-        ls_climate_scenarios = self.list_scenarios_climate()
+        ls_climate_scenarios = self.get_list_scenarios_climate()
         if climate_scenario is not None:
             ls_climate_scenarios = [climate_scenario]
 
@@ -805,10 +830,12 @@ class Project(FileSys):
 
         return None
 
-    def get_soils_parameters(self):
+    def generate_soils_parameters(self):
         # run
         # ---------------------------------------------------------------
-        subp, folder_run = self.run_analysis_soils_parameters(include_views=self.talk)
+        subp, folder_run = self.run_analysis_soils_parameters(
+            include_views=self.verbose
+        )
         subp.wait()
 
         # move files
@@ -824,9 +851,9 @@ class Project(FileSys):
         )
         return None
 
-    def get_lulc_parameters(self, lulc_scenario=None, skip_lulc_scenario=None):
+    def generate_lulc_parameters(self, lulc_scenario=None, skip_lulc_scenario=None):
 
-        ls_scenarios = self.list_scenarios_lulc()
+        ls_scenarios = self.get_list_scenarios_lulc()
 
         if lulc_scenario is not None:
             ls_scenarios = [lulc_scenario]
@@ -840,7 +867,7 @@ class Project(FileSys):
                 pass
             else:
                 subp, folder_run = self.run_analysis_lulc_parameters(
-                    lulc_scenario=s, include_views=self.talk
+                    lulc_scenario=s, include_views=self.verbose
                 )
                 ls_processes.append(subp)
                 ls_folder_run.append(folder_run)
@@ -863,19 +890,27 @@ class Project(FileSys):
             )
             return None
 
+    # Static methods
+    # -------------------------------------------------------------------
     @staticmethod
     def copy_output_files(folder_output, folder_dst, include_runfiles=False):
         # list files
         ls_maps = glob.glob(f"{folder_output}/*.tif")
         ls_figs = glob.glob(f"{folder_output}/*.jpg")
         ls_tbls = glob.glob(f"{folder_output}/*.csv")
+
+        # handle runfiles
         ls_runs = []
+        ls_formats = ["txt", "rst", "md", "tex", "html"]
         if include_runfiles:
-            ls_txt = glob.glob(f"{folder_output}/*.txt")
-            ls_runs = ls_txt[:]
+            for fmt in ls_formats:
+                ls_lcl = glob.glob(f"{folder_output}/*.{fmt}")
+                ls_runs = ls_runs[:] + ls_lcl[:]
         ls_files = ls_maps + ls_tbls + ls_figs + ls_runs
+
         if len(ls_files) == 0:
             return None
+
         # copy loop
         for f in ls_files:
             file_name = os.path.basename(f)

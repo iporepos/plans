@@ -511,7 +511,7 @@ class DownscaledModel(UpscaledModel):
             folder=self.folder_data_lulc,
             file_table=self.file_data_lulc_table,
             name_pattern=self.filename_data_lulc.replace(".tif", ""),
-            talk=False,
+            verbose=False,
         )
         self.lulc_maps_ls = list(self.data_lulc.collection.keys())
         return None

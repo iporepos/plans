@@ -103,7 +103,7 @@ class TestTools(unittest.TestCase):
         Prepare project
         """
         cls.project = plans.load_project(str(DATA_DIR / "biboca"))
-        cls.project.talk = True
+        cls.project.verbose = True
         cls.soils_parameters = list_spatial_parameters(title="Soils Attributes")
         cls.lulc_parameters = list_spatial_parameters(title="Land Use Attributes")
 
@@ -113,7 +113,8 @@ class TestTools(unittest.TestCase):
     def assertions_basic(self, folder_run):
         folder_run = Path(folder_run)
         self.assertTrue(folder_run.exists())
-        self.assertTrue((folder_run / "runtimes.txt").exists())
+        self.assertTrue((folder_run / "report.txt").exists())
+        self.assertTrue((folder_run / "runtimes.csv").exists())
 
     # Cleanup methods
     # -------------------------------------------------------------------
@@ -130,23 +131,23 @@ class TestTools(unittest.TestCase):
         os.makedirs(folder_parameters, exist_ok=True)
 
     def cleanup_lulc_parameters(self):
-        ls_lulc_scenarios = self.project.list_scenarios_lulc()
+        ls_lulc_scenarios = self.project.get_list_scenarios_lulc()
         for scenario in ls_lulc_scenarios:
             folder_scenario = Path(self.project.folder_lulc) / scenario
             self.cleanup_parameters(folder_scenario)
 
     def cleanup_lulc_scenarios(self):
-        ls_scenarios = self.project.list_scenarios_lulc()
+        ls_scenarios = self.project.get_list_scenarios_lulc()
         for scenario in ls_scenarios:
             folder_scenario = f"{self.project.folder_lulc}/{scenario}"
             cleanup_figs(folder_scenario)
             Path(f"{folder_scenario}/lulc_series.csv").unlink(missing_ok=True)
 
     def cleanup_climate_scenarios(self):
-        ls_scenarios = self.project.list_scenarios_climate()
+        ls_scenarios = self.project.get_list_scenarios_climate()
         for scenario in ls_scenarios:
             folder_scenario = f"{self.project.folder_climate}/{scenario}"
-            ls_lulc_scenarios = self.project.list_scenarios_lulc()
+            ls_lulc_scenarios = self.project.get_list_scenarios_lulc()
             # cleanup_figs(folder_scenario)
             for scenario_lulc in ls_lulc_scenarios:
                 Path(
@@ -164,7 +165,14 @@ class TestTools(unittest.TestCase):
         self.test_analysis_lulc_parameters()
 
     def test_demo(self):
+        """
+        Run with:
 
+        .. code-block:: python
+
+            python -m unittest -v tests.bcmk.test_tools.TestTools.test_demo
+
+        """
         # Call process
         # ---------------------------------------------------------------
         subp, folder_run = self.project.run_demo()
@@ -178,6 +186,15 @@ class TestTools(unittest.TestCase):
         self.assertTrue((folder_run / "demo_output.csv").exists())
 
     def test_analysis_dto(self, include_views=True, use_basin=None):
+        """
+        Run with:
+
+        .. code-block:: python
+
+            python -m unittest -v tests.bcmk.test_tools.TestTools.test_analysis_dto
+
+        """
+        print("\n")
         # Call process
         # ---------------------------------------------------------------
         subp, folder_run = self.project.run_analysis_dto(include_views, use_basin)
@@ -193,6 +210,14 @@ class TestTools(unittest.TestCase):
             self.assertTrue((folder_run / "dto.jpg").exists())
 
     def test_analysis_dto_basins(self):
+        """
+        Run with:
+
+        .. code-block:: python
+
+            python -m unittest -v tests.bcmk.test_tools.TestTools.test_analysis_dto_basins
+
+        """
         # Call processes
         # ---------------------------------------------------------------
         self.test_analysis_dto(use_basin="main")
@@ -201,6 +226,16 @@ class TestTools(unittest.TestCase):
         self.test_analysis_dto(use_basin="sub03")
 
     def test_analysis_lulc_series(self, include_views=True, use_basin=None):
+        """
+        Run with:
+
+        .. code-block:: python
+
+            python -m unittest -v tests.bcmk.test_tools.TestTools.test_analysis_lulc_series
+
+
+        """
+        print("\n")
         # Call process
         # ---------------------------------------------------------------
         subp, folder_run = self.project.run_analysis_lulc_series(
@@ -216,12 +251,29 @@ class TestTools(unittest.TestCase):
         self.assertTrue((folder_run / "lulc_series.csv").exists())
 
     def test_analysis_lulc_series_basins(self):
+        """
+        Run with:
+
+        .. code-block:: python
+
+            python -m unittest -v tests.bcmk.test_tools.TestTools.test_analysis_dto
+
+        """
         self.test_analysis_lulc_series(use_basin="main")
         self.test_analysis_lulc_series(use_basin="sub01")
         self.test_analysis_lulc_series(use_basin="sub02")
         self.test_analysis_lulc_series(use_basin="sub03")
 
     def test_analysis_climate_series_lulc(self, include_views=True):
+        """
+        Run with:
+
+        .. code-block:: python
+
+            python -m unittest -v tests.bcmk.test_tools.TestTools.test_analysis_climate_series_lulc
+
+        """
+        print("\n")
         lulc_scenario = "mb01"
         # Call process
         # ---------------------------------------------------------------
@@ -242,6 +294,15 @@ class TestTools(unittest.TestCase):
         )
 
     def test_analysis_soils_parameters(self, include_views=True):
+        """
+        Run with:
+
+        .. code-block:: python
+
+            python -m unittest -v tests.bcmk.test_tools.TestTools.test_analysis_soils_parameters
+
+        """
+        print("\n")
         # Call process
         # ---------------------------------------------------------------
         subp, folder_run = self.project.run_analysis_soils_parameters(
@@ -256,6 +317,15 @@ class TestTools(unittest.TestCase):
         # todo assertions!
 
     def test_analysis_lulc_parameters(self, include_views=True):
+        """
+        Run with:
+
+        .. code-block:: python
+
+            python -m unittest -v tests.bcmk.test_tools.TestTools.test_analysis_lulc_parameters
+
+        """
+        print("\n")
         # Call process
         # ---------------------------------------------------------------
         lulc_scenario = "mb01"
@@ -316,7 +386,7 @@ class TestTools(unittest.TestCase):
 
         # Call project method
         # ---------------------------------------------------------------
-        self.project.get_dto()
+        self.project.generate_dto()
 
         # Assertions
         # ---------------------------------------------------------------
@@ -333,11 +403,11 @@ class TestTools(unittest.TestCase):
         # Call project method
         # ---------------------------------------------------------------
         skip_scenario = "mapbiomas"
-        self.project.get_lulc_series(skip_lulc_scenario=skip_scenario)
+        self.project.generate_lulc_series(skip_lulc_scenario=skip_scenario)
 
         # Assertions
         # ---------------------------------------------------------------
-        ls_scenarios = self.project.list_scenarios_lulc()
+        ls_scenarios = self.project.get_list_scenarios_lulc()
         for scenario in ls_scenarios:
             if scenario == skip_scenario:
                 pass
@@ -358,18 +428,18 @@ class TestTools(unittest.TestCase):
         self.cleanup_climate_scenarios()
         # call method
         skip_scenario = None
-        self.project.get_climate_series_lulc()
+        self.project.generate_climate_series_lulc()
 
         # Assertions
         # ---------------------------------------------------------------
-        ls_scenarios = self.project.list_scenarios_climate()
+        ls_scenarios = self.project.get_list_scenarios_climate()
         for scenario in ls_scenarios:
             if scenario == skip_scenario:
                 pass
             else:
                 # testprint(scenario)
                 folder_scenario = Path(self.project.folder_climate) / scenario
-                ls_lulc_scenarios = self.project.list_scenarios_lulc()
+                ls_lulc_scenarios = self.project.get_list_scenarios_lulc()
                 for scenario_lulc in ls_lulc_scenarios:
                     file_csv = (
                         Path(folder_scenario)
@@ -384,7 +454,7 @@ class TestTools(unittest.TestCase):
 
         # Call project method
         # ---------------------------------------------------------------
-        self.project.get_soils_parameters()
+        self.project.generate_soils_parameters()
 
         # Assertions
         # ---------------------------------------------------------------
@@ -403,13 +473,13 @@ class TestTools(unittest.TestCase):
         # Call project method
         # ---------------------------------------------------------------
         selected_lulc_scenario = "mb01"
-        self.project.get_lulc_parameters(lulc_scenario=selected_lulc_scenario)
+        self.project.generate_lulc_parameters(lulc_scenario=selected_lulc_scenario)
 
         # Assertions
         # ---------------------------------------------------------------
         folder_lulc = self.project.folder_lulc
         if selected_lulc_scenario is None:
-            ls_scenarios = self.project.list_scenarios_lulc()
+            ls_scenarios = self.project.get_list_scenarios_lulc()
         else:
             ls_scenarios = [selected_lulc_scenario]
         for s in ls_scenarios:

@@ -93,7 +93,7 @@ class TestGeo(unittest.TestCase):
         Prepare project
         """
         cls.project = plans.load_project(str(DATA_DIR / "biboca"))
-        cls.project.talk = True
+        cls.project.verbose = True
 
     def test_downscaling_parameter_lulc(self):
         # Load data

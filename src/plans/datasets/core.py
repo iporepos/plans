@@ -3059,7 +3059,7 @@ class Raster(DataSet):
         else:
             if filename is None:
                 filename = self.name
-            flenm = folder + "/" + filename + ".tif"
+            flenm = str(folder) + "/" + filename + ".tif"
             Raster.write_tif(
                 grid_output=self.data,
                 dc_metadata=self.raster_metadata,
@@ -4953,84 +4953,74 @@ class RasterCollection(Collection):
 
         return None
 
+    # todo [develop] -- optimize
+    # todo [develop] -- parallel loading
     def load_folder(
         self,
         folder,
         name_pattern,
-        talk=False,
+        is_series=False,
+        file_table=None,
+        verbose=False,
         file_format="tif",
-        parallel=False,
-        isseries=False,
+        logger=None,
     ):
         """
-        Load all rasters from a folder by following a name pattern. Datetime is expected to be at the end of name before file extension.
+        Load all rasters from a folder by following a name pattern.
 
         :param folder: path to folder
         :type folder: str
         :param name_pattern: name pattern. example map_*
         :type name_pattern: str
-        :param talk: option for printing messages
-        :type talk: bool
+        :param is_series: flag to handle datetime
+        :type is_series: bool
+        :param file_table: file path to qualiraster table
+        :type file_table: str or Path
+        :param verbose: option for printing messages
+        :type verbose: bool
         :param file_format: file extension.
         :type file_format: str
-        :param parallel: flag to use parallel processing
-        :type parallel: bool
-
-
         """
+
+        def print_msg(msg, logger, verbose=True):
+            if verbose:
+                if logger is None:
+                    print(msg)
+                else:
+                    logger.info(msg)
+
         # list files
         lst_maps = glob.glob("{}/{}.{}".format(folder, name_pattern, file_format))
         lst_prjs = glob.glob("{}/{}.prj".format(folder, name_pattern))
 
-        if talk:
-            print("loading folder...")
+        msg = "loading folder: {} files".format(len(lst_maps))
+        print_msg(msg, logger, verbose)
 
-        if parallel:
-            pass
-            # todo [develop] -- parallel loading
-            """
-            import threading
-            # Prepare data for parallel processing
-            file_info_list = [
-                (
-                    os.path.basename(asc_file).split(".")[0],
-                    asc_file.split("_")[-1].split(".")[0],
-                    asc_file,
-                    prj_file,
-                    file_table,
-                )
-                for asc_file, prj_file in zip(lst_maps, lst_prjs)
-            ]
+        # enter serial loop
+        # -------------------------------------------------------
+        n = 1
+        for i in range(len(lst_maps)):
 
-            threads = []
-            for file_info in file_info_list:
-                # print(file_info)
-                thread = threading.Thread(target=self.w_load_file, args=(file_info,))
-                threads.append(thread)
-                thread.start()
+            map_file = lst_maps[i]
 
-            # Wait for all threads to complete
-            for thread in threads:
-                thread.join()
-            """
-        else:
-            # enter serial loop
-            for i in range(len(lst_maps)):
-                map_file = lst_maps[i]
-                # handle missing projection files
-                if len(lst_prjs) > 0:
-                    prj_file = lst_prjs[i]
-                else:
-                    prj_file = None
-                # get name
-                s_name = os.path.basename(map_file).split(".")[0]
+            # handle missing projection files
+            if len(lst_prjs) > 0:
+                prj_file = lst_prjs[i]
+            else:
+                prj_file = None
 
-                if talk:
-                    print(f"loading {s_name}")
-                # load
-                if isseries:
-                    # get local datetime
-                    s_date_map = map_file.split("_")[-1].split(".")[0]
+            # get name
+            s_name = os.path.basename(map_file).split(".")[0]
+
+            # load file
+
+            # handle if is a series map
+            if is_series:
+                # get local datetime assuming is ar
+                s_date_map = map_file.split("_")[-1].split(".")[0]
+
+                if file_table is None:
+                    # simple raster series
                     self.load_data(
                         name=s_name,
                         datetime=s_date_map,
@@ -5038,11 +5028,36 @@ class RasterCollection(Collection):
                         prj_file=prj_file,
                     )
                 else:
+                    # quali raster series
+                    self.load_data(
+                        name=s_name,
+                        datetime=s_date_map,
+                        file_data=map_file,
+                        file_table=file_table,
+                        file_prj=prj_file,
+                    )
+            else:
+                if file_table is None:
+                    # simple raster collection
                     self.load_data(
                         name=s_name,
                         file_data=map_file,
                         prj_file=prj_file,
                     )
+                else:
+                    # quali raster collection
+                    self.load_data(
+                        name=s_name,
+                        file_data=map_file,
+                        prj_file=prj_file,
+                        file_table=file_table,
+                    )
+
+            # messages
+            p = 100 * (n / len(lst_maps))
+            msg = "[{:7.2f}%] loaded: {}.{}".format(p, s_name, file_format)
+            print_msg(msg, logger, verbose)
+            n = n + 1
 
         self.update(details=True)
         return None
@@ -5577,32 +5592,22 @@ class RasterSeries(RasterCollection):
         return None
 
     def load_folder(
-        self, folder, name_pattern, talk=False, file_format="tif", parallel=False
+        self,
+        folder,
+        name_pattern,
+        file_table=None,
+        verbose=False,
+        file_format="tif",
+        logger=None,
     ):
-        """
-        Load all rasters from a folder by following a name pattern.
-        Datetime is expected to be at the end of name before file extension.
-
-        :param folder: path to folder
-        :type folder: str
-        :param name_pattern: name pattern. example map_*
-        :type name_pattern: str
-        :param talk: option for printing messages
-        :type talk: bool
-        :param file_format: file extension.
-        :type file_format: str
-        :param parallel: flag to use parallel processing
-        :type parallel: bool
-
-
-        """
         super().load_folder(
             folder=folder,
             name_pattern=name_pattern,
-            talk=talk,
+            is_series=True,
+            file_table=file_table,
+            verbose=verbose,
             file_format=file_format,
-            parallel=parallel,
-            isseries=True,
+            logger=logger,
         )
         return None
 
@@ -5754,7 +5759,6 @@ class QualiRasterSeries(RasterSeries):
         :param clear: option for clear table from unfound values. default: True
         :type clear: bool
 
-
         """
         if len(self.catalog) == 0:
             pass
@@ -5779,13 +5783,6 @@ class QualiRasterSeries(RasterSeries):
         return None
 
     def append(self, raster):
-        """
-        Append a :class:`Raster` base_object to collection.
-        Pre-existing objects with the same :class:`Raster.name` attribute are replaced
-
-        :param raster: incoming :class:`Raster` to append
-        :type raster: :class:`Raster`
-        """
         super().append(new_object=raster)
         self.update_table()
         return None
@@ -5840,93 +5837,24 @@ class QualiRasterSeries(RasterSeries):
         )
 
     # todo [DRY] -- this seems duplicated except by the file_table parameters
+
     def load_folder(
         self,
         folder,
-        file_table,
         name_pattern,
-        talk=False,
+        file_table,
+        verbose=False,
         file_format="tif",
-        parallel=False,
+        logger=None,
     ):
-        """
-        Load all rasters from a folder by following a name pattern.
-        Datetime is expected to be at the end of name before file extension.
-
-        :param folder: path to folder
-        :type folder: str
-        :param file_table: path to file table
-        :type file_table: str
-        :param name_pattern: name pattern. example map_*
-        :type name_pattern: str
-        :param talk: option for printing messages
-        :type talk: bool
-        :param file_format: file extension.
-        :type file_format: str
-        :param parallel: flag to use parallel processing
-        :type parallel: bool
-
-
-        """
-        # list files
-        lst_maps = glob.glob("{}/{}.{}".format(folder, name_pattern, file_format))
-        lst_prjs = glob.glob("{}/{}.prj".format(folder, name_pattern))
-
-        if talk:
-            print("loading folder...")
-
-        if parallel:
-            pass
-            # todo [develop] -- parallel loading
-            """
-            import threading
-            # Prepare data for parallel processing
-            file_info_list = [
-                (
-                    os.path.basename(asc_file).split(".")[0],
-                    asc_file.split("_")[-1].split(".")[0],
-                    asc_file,
-                    prj_file,
-                    file_table,
-                )
-                for asc_file, prj_file in zip(lst_maps, lst_prjs)
-            ]
-
-            threads = []
-            for file_info in file_info_list:
-                # print(file_info)
-                thread = threading.Thread(target=self.w_load_file, args=(file_info,))
-                threads.append(thread)
-                thread.start()
-
-            # Wait for all threads to complete
-            for thread in threads:
-                thread.join()
-            """
-        else:
-            # enter serial loop
-            for i in range(len(lst_maps)):
-                map_file = lst_maps[i]
-                # handle missing projection files
-                if len(lst_prjs) > 0:
-                    prj_file = lst_prjs[i]
-                else:
-                    prj_file = None
-                # get name
-                s_name = os.path.basename(map_file).split(".")[0]
-                # get local datetime
-                s_date_map = map_file.split("_")[-1].split(".")[0]
-                if talk:
-                    print(f"loading {s_name}")
-                # load
-                self.load_data(
-                    name=s_name,
-                    datetime=s_date_map,
-                    file_data=map_file,
-                    file_table=file_table,
-                    file_prj=prj_file,
-                )
-        self.update(details=True)
+        super().load_folder(
+            folder=folder,
+            name_pattern=name_pattern,
+            file_table=file_table,
+            verbose=verbose,
+            file_format=file_format,
+            logger=logger,
+        )
         return None
 
     def get_series_areas(self):
