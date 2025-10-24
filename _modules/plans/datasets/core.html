@@ -3694,7 +3694,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
-            <span class="n">flenm</span> <span class="o">=</span> <span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;.tif&quot;</span>
+            <span class="n">flenm</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;.tif&quot;</span>
             <span class="n">Raster</span><span class="o">.</span><span class="n">write_tif</span><span class="p">(</span>
                 <span class="n">grid_output</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
                 <span class="n">dc_metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">raster_metadata</span><span class="p">,</span>
@@ -5781,86 +5781,76 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
+    <span class="c1"># todo [develop] -- optimize</span>
+    <span class="c1"># todo [develop] -- parallel loading</span>
 <div class="viewcode-block" id="RasterCollection.load_folder">
 <a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.RasterCollection.load_folder">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_folder</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">folder</span><span class="p">,</span>
         <span class="n">name_pattern</span><span class="p">,</span>
-        <span class="n">talk</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">is_series</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">file_table</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">file_format</span><span class="o">=</span><span class="s2">&quot;tif&quot;</span><span class="p">,</span>
-        <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">isseries</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Load all rasters from a folder by following a name pattern. Datetime is expected to be at the end of name before file extension.</span>
+<span class="sd">        Load all rasters from a folder by following a name pattern.</span>
 
 <span class="sd">        :param folder: path to folder</span>
 <span class="sd">        :type folder: str</span>
 <span class="sd">        :param name_pattern: name pattern. example map_*</span>
 <span class="sd">        :type name_pattern: str</span>
-<span class="sd">        :param talk: option for printing messages</span>
-<span class="sd">        :type talk: bool</span>
+<span class="sd">        :param is_series: flag to handle datetime</span>
+<span class="sd">        :type is_series: bool</span>
+<span class="sd">        :param file_table: file path to qualiraster table</span>
+<span class="sd">        :type file_table: str or Path</span>
+<span class="sd">        :param verbose: option for printing messages</span>
+<span class="sd">        :type verbose: bool</span>
 <span class="sd">        :param file_format: file extension.</span>
 <span class="sd">        :type file_format: str</span>
-<span class="sd">        :param parallel: flag to use parallel processing</span>
-<span class="sd">        :type parallel: bool</span>
-
-
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">print_msg</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
         <span class="c1"># list files</span>
         <span class="n">lst_maps</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">name_pattern</span><span class="p">,</span> <span class="n">file_format</span><span class="p">))</span>
         <span class="n">lst_prjs</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.prj&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">name_pattern</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="n">talk</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;loading folder...&quot;</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;loading folder: </span><span class="si">{}</span><span class="s2"> files&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lst_maps</span><span class="p">))</span>
+        <span class="n">print_msg</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
-            <span class="k">pass</span>
-            <span class="c1"># todo [develop] -- parallel loading</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            import threading</span>
-<span class="sd">            # Prepare data for parallel processing</span>
-<span class="sd">            file_info_list = [</span>
-<span class="sd">                (</span>
-<span class="sd">                    os.path.basename(asc_file).split(&quot;.&quot;)[0],</span>
-<span class="sd">                    asc_file.split(&quot;_&quot;)[-1].split(&quot;.&quot;)[0],</span>
-<span class="sd">                    asc_file,</span>
-<span class="sd">                    prj_file,</span>
-<span class="sd">                    file_table,</span>
-<span class="sd">                )</span>
-<span class="sd">                for asc_file, prj_file in zip(lst_maps, lst_prjs)</span>
-<span class="sd">            ]</span>
+        <span class="c1"># enter serial loop</span>
+        <span class="c1"># -------------------------------------------------------</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lst_maps</span><span class="p">)):</span>
 
-<span class="sd">            threads = []</span>
-<span class="sd">            for file_info in file_info_list:</span>
-<span class="sd">                # print(file_info)</span>
-<span class="sd">                thread = threading.Thread(target=self.w_load_file, args=(file_info,))</span>
-<span class="sd">                threads.append(thread)</span>
-<span class="sd">                thread.start()</span>
+            <span class="n">map_file</span> <span class="o">=</span> <span class="n">lst_maps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
-<span class="sd">            # Wait for all threads to complete</span>
-<span class="sd">            for thread in threads:</span>
-<span class="sd">                thread.join()</span>
-<span class="sd">            &quot;&quot;&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># enter serial loop</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lst_maps</span><span class="p">)):</span>
-                <span class="n">map_file</span> <span class="o">=</span> <span class="n">lst_maps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="c1"># handle missing projection files</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst_prjs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">prj_file</span> <span class="o">=</span> <span class="n">lst_prjs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">prj_file</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="c1"># get name</span>
-                <span class="n">s_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">map_file</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># handle missing projection files</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst_prjs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">prj_file</span> <span class="o">=</span> <span class="n">lst_prjs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">prj_file</span> <span class="o">=</span> <span class="kc">None</span>
 
-                <span class="k">if</span> <span class="n">talk</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;loading </span><span class="si">{</span><span class="n">s_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="c1"># load</span>
-                <span class="k">if</span> <span class="n">isseries</span><span class="p">:</span>
-                    <span class="c1"># get local datetime</span>
-                    <span class="n">s_date_map</span> <span class="o">=</span> <span class="n">map_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># get name</span>
+            <span class="n">s_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">map_file</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># load file</span>
+
+            <span class="c1"># handle if is a series map</span>
+            <span class="k">if</span> <span class="n">is_series</span><span class="p">:</span>
+                <span class="c1"># get local datetime assuming is ar</span>
+                <span class="n">s_date_map</span> <span class="o">=</span> <span class="n">map_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">file_table</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># simple raster series</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
                         <span class="n">name</span><span class="o">=</span><span class="n">s_name</span><span class="p">,</span>
                         <span class="n">datetime</span><span class="o">=</span><span class="n">s_date_map</span><span class="p">,</span>
@@ -5868,11 +5858,36 @@
                         <span class="n">prj_file</span><span class="o">=</span><span class="n">prj_file</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># quali raster series</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
+                        <span class="n">name</span><span class="o">=</span><span class="n">s_name</span><span class="p">,</span>
+                        <span class="n">datetime</span><span class="o">=</span><span class="n">s_date_map</span><span class="p">,</span>
+                        <span class="n">file_data</span><span class="o">=</span><span class="n">map_file</span><span class="p">,</span>
+                        <span class="n">file_table</span><span class="o">=</span><span class="n">file_table</span><span class="p">,</span>
+                        <span class="n">file_prj</span><span class="o">=</span><span class="n">prj_file</span><span class="p">,</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">file_table</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># simple raster collection</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
                         <span class="n">name</span><span class="o">=</span><span class="n">s_name</span><span class="p">,</span>
                         <span class="n">file_data</span><span class="o">=</span><span class="n">map_file</span><span class="p">,</span>
                         <span class="n">prj_file</span><span class="o">=</span><span class="n">prj_file</span><span class="p">,</span>
                     <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># quali raster collection</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
+                        <span class="n">name</span><span class="o">=</span><span class="n">s_name</span><span class="p">,</span>
+                        <span class="n">file_data</span><span class="o">=</span><span class="n">map_file</span><span class="p">,</span>
+                        <span class="n">prj_file</span><span class="o">=</span><span class="n">prj_file</span><span class="p">,</span>
+                        <span class="n">file_table</span><span class="o">=</span><span class="n">file_table</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+            <span class="c1"># messages</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst_maps</span><span class="p">))</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">{:7.2f}</span><span class="s2">%] loaded: </span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">s_name</span><span class="p">,</span> <span class="n">file_format</span><span class="p">)</span>
+            <span class="n">print_msg</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">details</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
@@ -6467,32 +6482,22 @@
 <div class="viewcode-block" id="RasterSeries.load_folder">
 <a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.RasterSeries.load_folder">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_folder</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">name_pattern</span><span class="p">,</span> <span class="n">talk</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s2">&quot;tif&quot;</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">folder</span><span class="p">,</span>
+        <span class="n">name_pattern</span><span class="p">,</span>
+        <span class="n">file_table</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">file_format</span><span class="o">=</span><span class="s2">&quot;tif&quot;</span><span class="p">,</span>
+        <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Load all rasters from a folder by following a name pattern.</span>
-<span class="sd">        Datetime is expected to be at the end of name before file extension.</span>
-
-<span class="sd">        :param folder: path to folder</span>
-<span class="sd">        :type folder: str</span>
-<span class="sd">        :param name_pattern: name pattern. example map_*</span>
-<span class="sd">        :type name_pattern: str</span>
-<span class="sd">        :param talk: option for printing messages</span>
-<span class="sd">        :type talk: bool</span>
-<span class="sd">        :param file_format: file extension.</span>
-<span class="sd">        :type file_format: str</span>
-<span class="sd">        :param parallel: flag to use parallel processing</span>
-<span class="sd">        :type parallel: bool</span>
-
-
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">load_folder</span><span class="p">(</span>
             <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span>
             <span class="n">name_pattern</span><span class="o">=</span><span class="n">name_pattern</span><span class="p">,</span>
-            <span class="n">talk</span><span class="o">=</span><span class="n">talk</span><span class="p">,</span>
+            <span class="n">is_series</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">file_table</span><span class="o">=</span><span class="n">file_table</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">file_format</span><span class="o">=</span><span class="n">file_format</span><span class="p">,</span>
-            <span class="n">parallel</span><span class="o">=</span><span class="n">parallel</span><span class="p">,</span>
-            <span class="n">isseries</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
@@ -6668,7 +6673,6 @@
 <span class="sd">        :param clear: option for clear table from unfound values. default: True</span>
 <span class="sd">        :type clear: bool</span>
 
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">pass</span>
@@ -6696,13 +6700,6 @@
 <div class="viewcode-block" id="QualiRasterSeries.append">
 <a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.QualiRasterSeries.append">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raster</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Append a :class:`Raster` base_object to collection.</span>
-<span class="sd">        Pre-existing objects with the same :class:`Raster.name` attribute are replaced</span>
-
-<span class="sd">        :param raster: incoming :class:`Raster` to append</span>
-<span class="sd">        :type raster: :class:`Raster`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_object</span><span class="o">=</span><span class="n">raster</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_table</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">None</span></div>
@@ -6764,95 +6761,26 @@
 
 
     <span class="c1"># todo [DRY] -- this seems duplicated except by the file_table parameters</span>
+
 <div class="viewcode-block" id="QualiRasterSeries.load_folder">
 <a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.QualiRasterSeries.load_folder">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_folder</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">folder</span><span class="p">,</span>
-        <span class="n">file_table</span><span class="p">,</span>
         <span class="n">name_pattern</span><span class="p">,</span>
-        <span class="n">talk</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">file_table</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">file_format</span><span class="o">=</span><span class="s2">&quot;tif&quot;</span><span class="p">,</span>
-        <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Load all rasters from a folder by following a name pattern.</span>
-<span class="sd">        Datetime is expected to be at the end of name before file extension.</span>
-
-<span class="sd">        :param folder: path to folder</span>
-<span class="sd">        :type folder: str</span>
-<span class="sd">        :param file_table: path to file table</span>
-<span class="sd">        :type file_table: str</span>
-<span class="sd">        :param name_pattern: name pattern. example map_*</span>
-<span class="sd">        :type name_pattern: str</span>
-<span class="sd">        :param talk: option for printing messages</span>
-<span class="sd">        :type talk: bool</span>
-<span class="sd">        :param file_format: file extension.</span>
-<span class="sd">        :type file_format: str</span>
-<span class="sd">        :param parallel: flag to use parallel processing</span>
-<span class="sd">        :type parallel: bool</span>
-
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># list files</span>
-        <span class="n">lst_maps</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">name_pattern</span><span class="p">,</span> <span class="n">file_format</span><span class="p">))</span>
-        <span class="n">lst_prjs</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.prj&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">name_pattern</span><span class="p">))</span>
-
-        <span class="k">if</span> <span class="n">talk</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;loading folder...&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
-            <span class="k">pass</span>
-            <span class="c1"># todo [develop] -- parallel loading</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            import threading</span>
-<span class="sd">            # Prepare data for parallel processing</span>
-<span class="sd">            file_info_list = [</span>
-<span class="sd">                (</span>
-<span class="sd">                    os.path.basename(asc_file).split(&quot;.&quot;)[0],</span>
-<span class="sd">                    asc_file.split(&quot;_&quot;)[-1].split(&quot;.&quot;)[0],</span>
-<span class="sd">                    asc_file,</span>
-<span class="sd">                    prj_file,</span>
-<span class="sd">                    file_table,</span>
-<span class="sd">                )</span>
-<span class="sd">                for asc_file, prj_file in zip(lst_maps, lst_prjs)</span>
-<span class="sd">            ]</span>
-
-<span class="sd">            threads = []</span>
-<span class="sd">            for file_info in file_info_list:</span>
-<span class="sd">                # print(file_info)</span>
-<span class="sd">                thread = threading.Thread(target=self.w_load_file, args=(file_info,))</span>
-<span class="sd">                threads.append(thread)</span>
-<span class="sd">                thread.start()</span>
-
-<span class="sd">            # Wait for all threads to complete</span>
-<span class="sd">            for thread in threads:</span>
-<span class="sd">                thread.join()</span>
-<span class="sd">            &quot;&quot;&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># enter serial loop</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lst_maps</span><span class="p">)):</span>
-                <span class="n">map_file</span> <span class="o">=</span> <span class="n">lst_maps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="c1"># handle missing projection files</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst_prjs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">prj_file</span> <span class="o">=</span> <span class="n">lst_prjs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">prj_file</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="c1"># get name</span>
-                <span class="n">s_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">map_file</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="c1"># get local datetime</span>
-                <span class="n">s_date_map</span> <span class="o">=</span> <span class="n">map_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">talk</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;loading </span><span class="si">{</span><span class="n">s_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="c1"># load</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
-                    <span class="n">name</span><span class="o">=</span><span class="n">s_name</span><span class="p">,</span>
-                    <span class="n">datetime</span><span class="o">=</span><span class="n">s_date_map</span><span class="p">,</span>
-                    <span class="n">file_data</span><span class="o">=</span><span class="n">map_file</span><span class="p">,</span>
-                    <span class="n">file_table</span><span class="o">=</span><span class="n">file_table</span><span class="p">,</span>
-                    <span class="n">file_prj</span><span class="o">=</span><span class="n">prj_file</span><span class="p">,</span>
-                <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">details</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">load_folder</span><span class="p">(</span>
+            <span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span>
+            <span class="n">name_pattern</span><span class="o">=</span><span class="n">name_pattern</span><span class="p">,</span>
+            <span class="n">file_table</span><span class="o">=</span><span class="n">file_table</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">file_format</span><span class="o">=</span><span class="n">file_format</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
