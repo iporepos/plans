@@ -417,29 +417,63 @@
 <span class="sd">In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.</span>
 <span class="sd">In a lacinia nisl.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># IMPORTS</span>
+<span class="c1"># ***********************************************************************</span>
+<span class="c1"># import modules from other libs</span>
 
-<span class="c1"># native imports</span>
+<span class="c1"># Native imports</span>
+<span class="c1"># =======================================================================</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">glob</span><span class="o">,</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">shutil</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="c1"># basic imports</span>
+<span class="c1"># ... {develop}</span>
+
+<span class="c1"># External imports</span>
+<span class="c1"># =======================================================================</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
 
-<span class="c1"># qgis imports</span>
+<span class="c1"># qgis</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">processing</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">osgeo</span><span class="w"> </span><span class="kn">import</span> <span class="n">gdal</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qgis.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">QgsCoordinateReferenceSystem</span>
 
-<span class="c1"># plugin imports</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">plans</span><span class="w"> </span><span class="kn">import</span> <span class="n">geo</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">plans.parsers</span><span class="w"> </span><span class="kn">import</span> <span class="n">qgdal</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Raster</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">DC_NODATA</span>
+<span class="c1"># ... {develop}</span>
 
-<span class="c1"># ----------------- MODULE CONSTANTS ----------------- #</span>
+<span class="c1"># Project-level imports</span>
+<span class="c1"># =======================================================================</span>
+<span class="c1"># WARNING: plans.geo must be located under plugins folder of QGIS</span>
+<span class="c1"># from plans import geo</span>
+<span class="c1"># ... {develop}</span>
+
+
+<span class="c1"># CONSTANTS</span>
+<span class="c1"># ***********************************************************************</span>
+<span class="c1"># define constants in uppercase</span>
+
+<span class="c1"># CONSTANTS -- Project-level</span>
+<span class="c1"># =======================================================================</span>
+<span class="c1"># ... {develop}</span>
+
+<span class="n">DC_NODATA</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;byte&quot;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span>  <span class="c1"># categorical/boolean maps</span>
+    <span class="s2">&quot;uint8&quot;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span>  <span class="c1"># categorical/boolean maps</span>
+    <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># zone maps</span>
+    <span class="s2">&quot;float16&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">99999</span><span class="p">,</span>  <span class="c1"># fuzzy maps</span>
+    <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">99999</span><span class="p">,</span>  <span class="c1"># scientific maps</span>
+<span class="p">}</span>
+
+<span class="c1"># setup types</span>
+<span class="n">DC_GDAL_TYPES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;byte&quot;</span><span class="p">:</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Byte</span><span class="p">,</span>
+    <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Int16</span><span class="p">,</span>
+    <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_UInt16</span><span class="p">,</span>
+    <span class="s2">&quot;int16&quot;</span><span class="p">:</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Int16</span><span class="p">,</span>
+    <span class="s2">&quot;float16&quot;</span><span class="p">:</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Float32</span><span class="p">,</span>
+    <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Float32</span><span class="p">,</span>
+<span class="p">}</span>
 
 <span class="c1"># provider base</span>
 <span class="n">DC_PROVIDERS</span> <span class="o">=</span> <span class="p">{</span>
@@ -459,30 +493,146 @@
     <span class="s2">&quot;102033&quot;</span><span class="p">:</span> <span class="s2">&quot;+proj=pipeline +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=push +v_3 +step +proj=cart +ellps=WGS84 +step +proj=helmert +x=57 +y=-1 +z=41 +step +inv +proj=cart +ellps=aust_SA +step +proj=pop +v_3 +step +proj=aea +lat_0=-32 +lon_0=-60 +lat_1=-5 +lat_2=-42 +x_0=0 +y_0=0 +ellps=aust_SA&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="c1"># -------------------------------------------------------------------------------------</span>
-<span class="c1"># STANDALONE ROUTINES</span>
+
+<span class="c1"># FUNCTIONS</span>
+<span class="c1"># ***********************************************************************</span>
+
+<span class="c1"># FUNCTIONS -- Project-level</span>
+<span class="c1"># =======================================================================</span>
 <span class="c1"># This routines work without expecting any sort of folder struture</span>
 
 
+<span class="c1"># todo [test script]</span>
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
+<div class="viewcode-block" id="get_cellsize">
+<a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_cellsize">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_cellsize</span><span class="p">(</span><span class="n">file_input</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the cell size (resolution) of a raster file.</span>
+
+<span class="sd">    :param file_input: Path to the input raster file.</span>
+<span class="sd">    :param type: str</span>
+<span class="sd">    :return: The cell size of the raster.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Open the raster file using gdal</span>
+    <span class="n">raster_input</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">file_input</span><span class="p">)</span>
+    <span class="n">raster_geotransform</span> <span class="o">=</span> <span class="n">raster_input</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">()</span>
+    <span class="n">cellsize</span> <span class="o">=</span> <span class="n">raster_geotransform</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># -- Close the raster</span>
+    <span class="n">raster_input</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">cellsize</span></div>
+
+
+
+<span class="c1"># todo [test script]</span>
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
+<div class="viewcode-block" id="read_raster">
+<a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.read_raster">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="p">,</span> <span class="n">n_band</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read a raster (GeoTIFF) file</span>
+
+<span class="sd">    :param file_input: path to raster file</span>
+<span class="sd">    :type file_input: str</span>
+<span class="sd">    :param n_band: number of the band to read</span>
+<span class="sd">    :type n_band: int</span>
+<span class="sd">    :param metadata: option to return</span>
+<span class="sd">    :type metadata: bool</span>
+<span class="sd">    :return: dictionary with &quot;data&quot; and (optional) &quot;metadata&quot;</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># LOAD</span>
+    <span class="c1"># Open the raster file using gdal</span>
+    <span class="n">raster_input</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">file_input</span><span class="p">)</span>
+    <span class="c1"># Get the raster band</span>
+    <span class="n">band_input</span> <span class="o">=</span> <span class="n">raster_input</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Read the raster data as a numpy array</span>
+    <span class="n">grid_input</span> <span class="o">=</span> <span class="n">band_input</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">()</span>
+    <span class="n">dc_output</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">grid_input</span><span class="p">}</span>
+    <span class="c1"># -- Collect useful metadata</span>
+    <span class="k">if</span> <span class="n">metadata</span><span class="p">:</span>
+        <span class="n">dc_metadata</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">dc_metadata</span><span class="p">[</span><span class="s2">&quot;raster_x_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">raster_input</span><span class="o">.</span><span class="n">RasterXSize</span>
+        <span class="n">dc_metadata</span><span class="p">[</span><span class="s2">&quot;raster_y_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">raster_input</span><span class="o">.</span><span class="n">RasterYSize</span>
+        <span class="n">dc_metadata</span><span class="p">[</span><span class="s2">&quot;raster_projection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">raster_input</span><span class="o">.</span><span class="n">GetProjection</span><span class="p">()</span>
+        <span class="n">dc_metadata</span><span class="p">[</span><span class="s2">&quot;raster_geotransform&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">raster_input</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">()</span>
+        <span class="n">dc_metadata</span><span class="p">[</span><span class="s2">&quot;cellsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dc_metadata</span><span class="p">[</span><span class="s2">&quot;raster_geotransform&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># append to output</span>
+        <span class="n">dc_output</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dc_metadata</span>
+    <span class="c1"># -- Close the raster</span>
+    <span class="n">raster_input</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">dc_output</span></div>
+
+
+
+<span class="c1"># todo [test script]</span>
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
+<div class="viewcode-block" id="write_raster">
+<a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.write_raster">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_raster</span><span class="p">(</span><span class="n">grid_output</span><span class="p">,</span> <span class="n">dc_metadata</span><span class="p">,</span> <span class="n">file_output</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">,</span> <span class="n">n_band</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write a numpy array to raster</span>
+
+<span class="sd">    :param grid_output: 2D numpy array</span>
+<span class="sd">    :type grid_output: :class:`numpy.ndarray`</span>
+<span class="sd">    :param dc_metadata: dict with metadata</span>
+<span class="sd">    :type dc_metadata: dict</span>
+<span class="sd">    :param file_output: path to output raster file</span>
+<span class="sd">    :type file_output: str</span>
+<span class="sd">    :param dtype: output raster data type (&quot;byte&quot;, &quot;int&quot; -- else defaults to float32)</span>
+<span class="sd">    :type dtype: str</span>
+<span class="sd">    :param n_band: number of the band to read</span>
+<span class="sd">    :type n_band: int</span>
+<span class="sd">    :return:</span>
+<span class="sd">    :rtype:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get the driver to create the new raster</span>
+    <span class="n">driver</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s2">&quot;GTiff&quot;</span><span class="p">)</span>
+
+    <span class="c1"># get metadata</span>
+    <span class="n">raster_x_size</span> <span class="o">=</span> <span class="n">grid_output</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># dc_metadata[&quot;raster_x_size&quot;]</span>
+    <span class="n">raster_y_size</span> <span class="o">=</span> <span class="n">grid_output</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># dc_metadata[&quot;raster_y_size&quot;]</span>
+    <span class="n">raster_projection</span> <span class="o">=</span> <span class="n">dc_metadata</span><span class="p">[</span><span class="s2">&quot;raster_projection&quot;</span><span class="p">]</span>
+    <span class="n">raster_geotransform</span> <span class="o">=</span> <span class="n">dc_metadata</span><span class="p">[</span><span class="s2">&quot;raster_geotransform&quot;</span><span class="p">]</span>
+
+    <span class="c1"># create the raster</span>
+    <span class="n">raster_output</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span>
+        <span class="n">file_output</span><span class="p">,</span> <span class="n">raster_x_size</span><span class="p">,</span> <span class="n">raster_y_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">DC_GDAL_TYPES</span><span class="p">[</span><span class="n">dtype</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="c1"># Set the projection and geotransform of the new raster to match the original</span>
+    <span class="n">raster_output</span><span class="o">.</span><span class="n">SetProjection</span><span class="p">(</span><span class="n">raster_projection</span><span class="p">)</span>
+    <span class="n">raster_output</span><span class="o">.</span><span class="n">SetGeoTransform</span><span class="p">(</span><span class="n">raster_geotransform</span><span class="p">)</span>
+    <span class="c1"># Write the new data to the new raster</span>
+    <span class="n">raster_output</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="n">n_band</span><span class="p">)</span><span class="o">.</span><span class="n">WriteArray</span><span class="p">(</span><span class="n">grid_output</span><span class="p">)</span>
+    <span class="c1"># Close</span>
+    <span class="n">raster_output</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">file_output</span></div>
+
+
+
+<span class="c1"># todo [test script]</span>
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="clip_layer">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.clip_layer">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">clip_layer</span><span class="p">(</span>
     <span class="n">db_input</span><span class="p">,</span> <span class="n">layer_input</span><span class="p">,</span> <span class="n">db_overlay</span><span class="p">,</span> <span class="n">layer_overlay</span><span class="p">,</span> <span class="n">db_output</span><span class="p">,</span> <span class="n">layer_output</span>
 <span class="p">):</span>
-    <span class="n">processing</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-        <span class="s2">&quot;native:clip&quot;</span><span class="p">,</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;INPUT&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">db_input</span><span class="si">}</span><span class="s2">|layername=</span><span class="si">{</span><span class="n">layer_input</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;OVERLAY&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">db_overlay</span><span class="si">}</span><span class="s2">|layername=</span><span class="si">{</span><span class="n">layer_overlay</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;OUTPUT&quot;</span><span class="p">:</span> <span class="s2">&quot;ogr:dbname=&#39;</span><span class="si">{}</span><span class="s2">&#39; table=</span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> (geom)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">db_output</span><span class="p">,</span> <span class="n">layer_output</span>
-            <span class="p">),</span>
-        <span class="p">},</span>
-    <span class="p">)</span>
+    <span class="c1"># todo docstring</span>
+    <span class="n">dc_specs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;INPUT&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">db_input</span><span class="si">}</span><span class="s2">|layername=</span><span class="si">{</span><span class="n">layer_input</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;OVERLAY&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">db_overlay</span><span class="si">}</span><span class="s2">|layername=</span><span class="si">{</span><span class="n">layer_overlay</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;OUTPUT&quot;</span><span class="p">:</span> <span class="s2">&quot;ogr:dbname=&#39;</span><span class="si">{}</span><span class="s2">&#39; table=</span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> (geom)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">db_output</span><span class="p">,</span> <span class="n">layer_output</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="n">processing</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;native:clip&quot;</span><span class="p">,</span> <span class="n">dc_specs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">layer_output</span></div>
 
 
 
+<span class="c1"># todo [test script]</span>
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="reproject_layer">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.reproject_layer">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">reproject_layer</span><span class="p">(</span>
@@ -509,21 +659,21 @@
     <span class="k">if</span> <span class="n">db_output</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">db_output</span> <span class="o">=</span> <span class="n">db_input</span><span class="p">[:]</span>
     <span class="n">output_file</span> <span class="o">=</span> <span class="s2">&quot;ogr:dbname=&#39;</span><span class="si">{}</span><span class="s2">&#39; table=</span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> (geom)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">db_output</span><span class="p">,</span> <span class="n">layer_output</span><span class="p">)</span>
-    <span class="n">processing</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-        <span class="s2">&quot;native:reprojectlayer&quot;</span><span class="p">,</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;INPUT&quot;</span><span class="p">:</span> <span class="n">input_file</span><span class="p">,</span>
-            <span class="s2">&quot;TARGET_CRS&quot;</span><span class="p">:</span> <span class="n">QgsCoordinateReferenceSystem</span><span class="p">(</span>
-                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DC_PROVIDERS</span><span class="p">[</span><span class="n">crs_target</span><span class="p">],</span> <span class="n">crs_target</span><span class="p">)</span>
-            <span class="p">),</span>
-            <span class="s2">&quot;OPERATION&quot;</span><span class="p">:</span> <span class="n">DC_OPERATIONS</span><span class="p">[</span><span class="n">crs_target</span><span class="p">],</span>
-            <span class="s2">&quot;OUTPUT&quot;</span><span class="p">:</span> <span class="n">output_file</span><span class="p">,</span>
-        <span class="p">},</span>
-    <span class="p">)</span>
+
+    <span class="n">dc_specs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;INPUT&quot;</span><span class="p">:</span> <span class="n">input_file</span><span class="p">,</span>
+        <span class="s2">&quot;TARGET_CRS&quot;</span><span class="p">:</span> <span class="n">QgsCoordinateReferenceSystem</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">DC_PROVIDERS</span><span class="p">[</span><span class="n">crs_target</span><span class="p">],</span> <span class="n">crs_target</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="s2">&quot;OPERATION&quot;</span><span class="p">:</span> <span class="n">DC_OPERATIONS</span><span class="p">[</span><span class="n">crs_target</span><span class="p">],</span>
+        <span class="s2">&quot;OUTPUT&quot;</span><span class="p">:</span> <span class="n">output_file</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">processing</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;native:reprojectlayer&quot;</span><span class="p">,</span> <span class="n">dc_specs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">layer_output</span></div>
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="is_bounded_by">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.is_bounded_by">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_bounded_by</span><span class="p">(</span><span class="n">extent_a</span><span class="p">,</span> <span class="n">extent_b</span><span class="p">):</span>
@@ -544,6 +694,7 @@
 
 
 
+<span class="c1"># test in bcmk/qutils_layers.py</span>
 <div class="viewcode-block" id="get_extent_from_raster">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_extent_from_raster">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_extent_from_raster</span><span class="p">(</span><span class="n">file_input</span><span class="p">):</span>
@@ -554,6 +705,33 @@
 <span class="sd">    :type file_input: str</span>
 <span class="sd">    :return: dictionary of bouding box: xmin, xmax, ymin, ymax</span>
 <span class="sd">    :rtype: dict</span>
+
+<span class="sd">    **Example**</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        import importlib.util as iu</span>
+
+<span class="sd">        # define the paths to this module</span>
+<span class="sd">        # ----------------------------------------</span>
+<span class="sd">        the_module = &quot;path/to/plans/qutils.py&quot;</span>
+
+<span class="sd">        # setup module with importlib</span>
+<span class="sd">        # ----------------------------------------</span>
+<span class="sd">        spec = iu.spec_from_file_location(&quot;module&quot;, the_module)</span>
+<span class="sd">        module = iu.module_from_spec(spec)</span>
+<span class="sd">        spec.loader.exec_module(module)</span>
+
+<span class="sd">        # define input and outputs</span>
+<span class="sd">        # ----------------------------------------</span>
+<span class="sd">        file_input = f&quot;path/to/raster.tif&quot;</span>
+
+<span class="sd">        # call the function</span>
+<span class="sd">        # ----------------------------------------</span>
+<span class="sd">        output = module.get_extent_from_raster(file_input)</span>
+
+<span class="sd">        print(output)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">qgis.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">QgsRasterLayer</span>
 
@@ -570,24 +748,56 @@
 
 
 
+<span class="c1"># test in bcmk/qutils_layers.py</span>
 <div class="viewcode-block" id="get_extent_from_vector">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_extent_from_vector">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_extent_from_vector</span><span class="p">(</span><span class="n">db_input</span><span class="p">,</span> <span class="n">layer_name</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_extent_from_vector</span><span class="p">(</span><span class="n">input_db</span><span class="p">,</span> <span class="n">layer_name</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the extent from a vector layer</span>
 
-<span class="sd">    :param db_input: path to geopackage database</span>
-<span class="sd">    :type db_input: str</span>
+<span class="sd">    :param input_db: path to geopackage database</span>
+<span class="sd">    :type input_db: str</span>
 <span class="sd">    :param layer_name: name of the layer in geopackage database</span>
 <span class="sd">    :type layer_name: str</span>
 <span class="sd">    :return: dictionary of bouding box: xmin, xmax, ymin, ymax</span>
 <span class="sd">    :rtype: dict</span>
+
+<span class="sd">    **Example**</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        import importlib.util as iu</span>
+
+<span class="sd">        # define the paths to this module</span>
+<span class="sd">        # ----------------------------------------</span>
+<span class="sd">        the_module = &quot;path/to/plans/qutils.py&quot;</span>
+
+<span class="sd">        # setup module with importlib</span>
+<span class="sd">        # ----------------------------------------</span>
+<span class="sd">        spec = iu.spec_from_file_location(&quot;module&quot;, the_module)</span>
+<span class="sd">        module = iu.module_from_spec(spec)</span>
+<span class="sd">        spec.loader.exec_module(module)</span>
+
+<span class="sd">        # define input and outputs</span>
+<span class="sd">        # ----------------------------------------</span>
+<span class="sd">        input_db = &quot;path/to/data.gpkg&quot;</span>
+<span class="sd">        layer_name = &quot;layer&quot;</span>
+
+<span class="sd">        # call the function</span>
+<span class="sd">        # ----------------------------------------</span>
+<span class="sd">        output = module.get_extent_from_vector(</span>
+<span class="sd">            input_db=input_db,</span>
+<span class="sd">            layer_name=layer_name</span>
+<span class="sd">        )</span>
+
+<span class="sd">        print(output)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">qgis.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">QgsVectorLayer</span>
 
     <span class="c1"># Create the vector layer from the GeoPackage</span>
     <span class="n">layer</span> <span class="o">=</span> <span class="n">QgsVectorLayer</span><span class="p">(</span>
-        <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">|layername=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">db_input</span><span class="p">,</span> <span class="n">layer_name</span><span class="p">),</span> <span class="n">layer_name</span><span class="p">,</span> <span class="s2">&quot;ogr&quot;</span>
+        <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">|layername=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_db</span><span class="p">,</span> <span class="n">layer_name</span><span class="p">),</span> <span class="n">layer_name</span><span class="p">,</span> <span class="s2">&quot;ogr&quot;</span>
     <span class="p">)</span>
     <span class="n">layer_extent</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">extent</span><span class="p">()</span>
     <span class="k">return</span> <span class="p">{</span>
@@ -599,6 +809,7 @@
 
 
 
+<span class="c1"># test in bcmk/qutils_layers.py</span>
 <div class="viewcode-block" id="count_vector_features">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.count_vector_features">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">count_vector_features</span><span class="p">(</span><span class="n">input_db</span><span class="p">,</span> <span class="n">layer_name</span><span class="p">):</span>
@@ -611,6 +822,37 @@
 <span class="sd">    :type layer_name: str</span>
 <span class="sd">    :return: number of features</span>
 <span class="sd">    :rtype: int</span>
+
+<span class="sd">    **Example**</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        import importlib.util as iu</span>
+
+<span class="sd">        # define the paths to this module</span>
+<span class="sd">        # ----------------------------------------</span>
+<span class="sd">        the_module = &quot;path/to/plans/qutils.py&quot;</span>
+
+<span class="sd">        # setup module with importlib</span>
+<span class="sd">        # ----------------------------------------</span>
+<span class="sd">        spec = iu.spec_from_file_location(&quot;module&quot;, the_module)</span>
+<span class="sd">        module = iu.module_from_spec(spec)</span>
+<span class="sd">        spec.loader.exec_module(module)</span>
+
+<span class="sd">        # define input and outputs</span>
+<span class="sd">        # ----------------------------------------</span>
+<span class="sd">        input_db = &quot;path/to/data.gpkg&quot;</span>
+<span class="sd">        layer_name = &quot;layer&quot;</span>
+
+<span class="sd">        # call the function</span>
+<span class="sd">        # ----------------------------------------</span>
+<span class="sd">        output = module.count_vector_features(</span>
+<span class="sd">            input_db=input_db,</span>
+<span class="sd">            layer_name=layer_name</span>
+<span class="sd">        )</span>
+
+<span class="sd">        print(output)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">qgis.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">QgsVectorLayer</span>
 
@@ -622,6 +864,7 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="retrieve_raster_tiles">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.retrieve_raster_tiles">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_raster_tiles</span><span class="p">(</span>
@@ -727,6 +970,7 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="retrieve_upstream_basins">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.retrieve_upstream_basins">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_upstream_basins</span><span class="p">(</span>
@@ -744,7 +988,10 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieves and saves upstream basins for a given set of gauges.</span>
 
-<span class="sd">    This function loads basin and gauge data from GeoPackage files, identifies the upstream basins for each gauge, and then saves the resulting GeoDataFrame to a new GeoPackage file. The upstream basins for each gauge are dissolved into a single feature before saving.</span>
+<span class="sd">    This function loads basin and gauge data from GeoPackage files,</span>
+<span class="sd">    identifies the upstream basins for each gauge, and then saves the</span>
+<span class="sd">    resulting GeoDataFrame to a new GeoPackage file. The upstream basins</span>
+<span class="sd">    for each gauge are dissolved into a single feature before saving.</span>
 
 <span class="sd">    :param db_basins: The path to the GeoPackage database containing the basin features.</span>
 <span class="sd">    :type db_basins: str</span>
@@ -766,9 +1013,9 @@
 <span class="sd">    :type field_basin_down: str</span>
 <span class="sd">    :param field_geometry: The name of the geometry column. Default value = &quot;geometry&quot;</span>
 <span class="sd">    :type field_geometry: str</span>
-<span class="sd">    :return: None</span>
-<span class="sd">    :rtype: None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">plans</span><span class="w"> </span><span class="kn">import</span> <span class="n">geo</span>
+
     <span class="c1"># load from geopackages</span>
     <span class="n">basins</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">db_basins</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer_basin</span><span class="p">)</span>
     <span class="n">gauges</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">db_gauges</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer_gauges</span><span class="p">)</span>
@@ -789,13 +1036,12 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="get_basins_areas">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_basins_areas">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_basins_areas</span><span class="p">(</span><span class="n">file_basins</span><span class="p">,</span> <span class="n">ids_basins</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the area of specified basins from a raster file.</span>
-
-<span class="sd">    This function reads a raster file representing different basins, identifies the cells corresponding to each basin ID provided, calculates the total area for each basin in square kilometers, and returns the results in a dictionary.</span>
 
 <span class="sd">    :param file_basins: The file path to the raster containing the basin IDs.</span>
 <span class="sd">    :type file_basins: str</span>
@@ -803,6 +1049,14 @@
 <span class="sd">    :type ids_basins: list</span>
 <span class="sd">    :return: A dictionary containing the basin IDs and their corresponding upstream areas in square kilometers.</span>
 <span class="sd">    :rtype: dict</span>
+
+<span class="sd">    **Notes**</span>
+
+<span class="sd">    This function reads a raster file representing different basins,</span>
+<span class="sd">    identifies the cells corresponding to each basin ID provided,</span>
+<span class="sd">    calculates the total area for each basin in square kilometers,</span>
+<span class="sd">    and returns the results in a dictionary.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># LOAD BASINS</span>
@@ -839,6 +1093,7 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="get_blank">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_blank">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_blank</span><span class="p">(</span><span class="n">file_input</span><span class="p">,</span> <span class="n">file_output</span><span class="p">,</span> <span class="n">blank_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;byte&quot;</span><span class="p">):</span>
@@ -856,12 +1111,11 @@
 <span class="sd">    :return: file path of output (echo)</span>
 <span class="sd">    :rtype: str</span>
 
-<span class="sd">    # todo [script example]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># LOAD</span>
-    <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">qgdal</span><span class="o">.</span><span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_input</span><span class="p">)</span>
+    <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_input</span><span class="p">)</span>
     <span class="n">grid_input</span> <span class="o">=</span> <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
@@ -876,7 +1130,7 @@
     <span class="c1"># overwrite no data</span>
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">DC_NODATA</span><span class="p">:</span>
         <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;NODATA_value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DC_NODATA</span><span class="p">[</span><span class="n">dtype</span><span class="p">]</span>
-    <span class="n">qgdal</span><span class="o">.</span><span class="n">write_raster</span><span class="p">(</span>
+    <span class="n">write_raster</span><span class="p">(</span>
         <span class="n">grid_output</span><span class="o">=</span><span class="n">grid_output</span><span class="p">,</span>
         <span class="n">dc_metadata</span><span class="o">=</span><span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">],</span>
         <span class="n">file_output</span><span class="o">=</span><span class="n">file_output</span><span class="p">,</span>
@@ -887,14 +1141,12 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="get_boolean">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_boolean">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_boolean</span><span class="p">(</span><span class="n">file_input</span><span class="p">,</span> <span class="n">file_output</span><span class="p">,</span> <span class="n">bool_value</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;ET&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates a boolean raster based on a condition applied to an input raster.</span>
-<span class="sd">    This function reads a raster, applies a user-defined condition (greater than, less than, or equal to)</span>
-<span class="sd">    with a specified value, and creates a new raster where cells meeting the</span>
-<span class="sd">    condition are set to 1 and all others are set to 0. The output is saved as a byte integer raster file.</span>
 
 <span class="sd">    :param file_input: The file path to the input raster.</span>
 <span class="sd">    :type file_input: str</span>
@@ -906,10 +1158,19 @@
 <span class="sd">    :type condition: str</span>
 <span class="sd">    :return: The file path of the created output raster.</span>
 <span class="sd">    :rtype: str</span>
+
+<span class="sd">    **Notes**</span>
+
+<span class="sd">    This function reads a raster, applies a user-defined condition</span>
+<span class="sd">    (greater than, less than, or equal to)</span>
+<span class="sd">    with a specified value, and creates a new raster where cells meeting the</span>
+<span class="sd">    condition are set to 1 and all others are set to 0.</span>
+<span class="sd">    The output is saved as a byte integer raster file.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># LOAD</span>
-    <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">qgdal</span><span class="o">.</span><span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_input</span><span class="p">)</span>
+    <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_input</span><span class="p">)</span>
     <span class="n">grid_input</span> <span class="o">=</span> <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
@@ -929,7 +1190,7 @@
     <span class="c1"># Get the driver to create the new raster</span>
     <span class="c1"># overwrite no data</span>
     <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;NODATA_value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DC_NODATA</span><span class="p">[</span><span class="s2">&quot;byte&quot;</span><span class="p">]</span>
-    <span class="n">qgdal</span><span class="o">.</span><span class="n">write_raster</span><span class="p">(</span>
+    <span class="n">write_raster</span><span class="p">(</span>
         <span class="n">grid_output</span><span class="o">=</span><span class="n">grid_output</span><span class="p">,</span>
         <span class="n">dc_metadata</span><span class="o">=</span><span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">],</span>
         <span class="n">file_output</span><span class="o">=</span><span class="n">file_output</span><span class="p">,</span>
@@ -939,11 +1200,13 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="get_fuzzy">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_fuzzy">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_fuzzy</span><span class="p">(</span><span class="n">file_input</span><span class="p">,</span> <span class="n">file_output</span><span class="p">,</span> <span class="n">low_bound</span><span class="p">,</span> <span class="n">high_bound</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get the Fuzzy map of a linear membership. Reverse bounds to reverse membership.</span>
+<span class="sd">    Get the Fuzzy map of a linear membership.</span>
+<span class="sd">    Reverse bounds to reverse membership.</span>
 
 <span class="sd">    :param file_input: path to raster file input</span>
 <span class="sd">    :type file_input: str</span>
@@ -956,23 +1219,20 @@
 <span class="sd">    :return: path of output (echo)</span>
 <span class="sd">    :rtype: str</span>
 
-<span class="sd">    # todo [script example]</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">processing</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-        <span class="s2">&quot;native:fuzzifyrasterlinearmembership&quot;</span><span class="p">,</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;INPUT&quot;</span><span class="p">:</span> <span class="n">file_input</span><span class="p">,</span>
-            <span class="s2">&quot;BAND&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="s2">&quot;FUZZYLOWBOUND&quot;</span><span class="p">:</span> <span class="n">low_bound</span><span class="p">,</span>
-            <span class="s2">&quot;FUZZYHIGHBOUND&quot;</span><span class="p">:</span> <span class="n">high_bound</span><span class="p">,</span>
-            <span class="s2">&quot;OUTPUT&quot;</span><span class="p">:</span> <span class="n">file_output</span><span class="p">,</span>
-        <span class="p">},</span>
-    <span class="p">)</span>
+    <span class="n">dc_specs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;INPUT&quot;</span><span class="p">:</span> <span class="n">file_input</span><span class="p">,</span>
+        <span class="s2">&quot;BAND&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;FUZZYLOWBOUND&quot;</span><span class="p">:</span> <span class="n">low_bound</span><span class="p">,</span>
+        <span class="s2">&quot;FUZZYHIGHBOUND&quot;</span><span class="p">:</span> <span class="n">high_bound</span><span class="p">,</span>
+        <span class="s2">&quot;OUTPUT&quot;</span><span class="p">:</span> <span class="n">file_output</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">processing</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;native:fuzzifyrasterlinearmembership&quot;</span><span class="p">,</span> <span class="n">dc_specs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">file_output</span></div>
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="get_dem">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_dem">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_dem</span><span class="p">(</span>
@@ -1042,6 +1302,8 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
+<span class="c1"># todo [optimize] using read_raster and write_raster</span>
 <div class="viewcode-block" id="get_downstream_ids">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_downstream_ids">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_downstream_ids</span><span class="p">(</span><span class="n">file_ldd</span><span class="p">,</span> <span class="n">file_basins</span><span class="p">,</span> <span class="n">file_outlets</span><span class="p">):</span>
@@ -1066,10 +1328,9 @@
 <span class="sd">    :return: dictionaty with lists of &quot;Id&quot; and &quot;Downstream_Id&quot;</span>
 <span class="sd">    :rtype: dict</span>
 
-<span class="sd">    # todo [script example]</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># todo [optimize] using qgdal</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">plans</span><span class="w"> </span><span class="kn">import</span> <span class="n">geo</span>
+
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># LOAD LDD</span>
 
@@ -1150,6 +1411,7 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="get_carved_dem">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_carved_dem">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_carved_dem</span><span class="p">(</span><span class="n">file_dem</span><span class="p">,</span> <span class="n">file_rivers</span><span class="p">,</span> <span class="n">file_output</span><span class="p">,</span> <span class="n">wedge_width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">wedge_depth</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
@@ -1172,14 +1434,16 @@
 <span class="sd">    # todo [script example]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">plans</span><span class="w"> </span><span class="kn">import</span> <span class="n">geo</span>
+
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># LOAD DEM</span>
-    <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">qgdal</span><span class="o">.</span><span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_dem</span><span class="p">)</span>
+    <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_dem</span><span class="p">)</span>
     <span class="n">grd_dem</span> <span class="o">=</span> <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># LOAD RIVERs</span>
-    <span class="n">dc_raster2</span> <span class="o">=</span> <span class="n">qgdal</span><span class="o">.</span><span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_rivers</span><span class="p">)</span>
+    <span class="n">dc_raster2</span> <span class="o">=</span> <span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_rivers</span><span class="p">)</span>
     <span class="n">grd_rivers</span> <span class="o">=</span> <span class="n">dc_raster2</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
     <span class="c1"># truncate to byte integer</span>
     <span class="n">grd_rivers</span> <span class="o">=</span> <span class="n">grd_rivers</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
@@ -1198,7 +1462,7 @@
     <span class="c1"># Get the driver to create the new raster</span>
     <span class="c1"># overwrite no data</span>
     <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;NODATA_value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DC_NODATA</span><span class="p">[</span><span class="s2">&quot;float32&quot;</span><span class="p">]</span>
-    <span class="n">qgdal</span><span class="o">.</span><span class="n">write_raster</span><span class="p">(</span>
+    <span class="n">write_raster</span><span class="p">(</span>
         <span class="n">grid_output</span><span class="o">=</span><span class="n">grid_output</span><span class="p">,</span>
         <span class="n">dc_metadata</span><span class="o">=</span><span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">],</span>
         <span class="n">file_output</span><span class="o">=</span><span class="n">file_output</span><span class="p">,</span>
@@ -1208,6 +1472,9 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
+<span class="c1"># todo [docstring]</span>
+<span class="c1"># todo [optimize]</span>
 <div class="viewcode-block" id="get_shalstab">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_shalstab">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_shalstab</span><span class="p">(</span>
@@ -1222,8 +1489,8 @@
     <span class="n">soil_c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">water_p</span><span class="o">=</span><span class="mi">997</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="c1"># todo [docstring]</span>
-    <span class="c1"># todo [optimize]</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">plans</span><span class="w"> </span><span class="kn">import</span> <span class="n">geo</span>
+
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># LOAD SLOPE</span>
 
@@ -1313,6 +1580,7 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="get_tps">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_tps">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_tps</span><span class="p">(</span>
@@ -1336,14 +1604,16 @@
 <span class="sd">    :return: file path of output (echo)</span>
 <span class="sd">    :rtype: str</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">plans</span><span class="w"> </span><span class="kn">import</span> <span class="n">geo</span>
+
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># LOAD TPI</span>
-    <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">qgdal</span><span class="o">.</span><span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_tpi</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_tpi</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">grid_tpi</span> <span class="o">=</span> <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># LOAD UPA</span>
-    <span class="n">dc_raster2</span> <span class="o">=</span> <span class="n">qgdal</span><span class="o">.</span><span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_upa</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">dc_raster2</span> <span class="o">=</span> <span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_upa</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">grid_upa</span> <span class="o">=</span> <span class="n">dc_raster2</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
@@ -1363,7 +1633,7 @@
     <span class="c1"># EXPORT RASTER FILE</span>
     <span class="c1"># Get the driver to create the new raster</span>
     <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;NODATA_value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DC_NODATA</span><span class="p">[</span><span class="s2">&quot;byte&quot;</span><span class="p">]</span>
-    <span class="n">qgdal</span><span class="o">.</span><span class="n">write_raster</span><span class="p">(</span>
+    <span class="n">write_raster</span><span class="p">(</span>
         <span class="n">grid_output</span><span class="o">=</span><span class="n">grid_output</span><span class="p">,</span>
         <span class="n">dc_metadata</span><span class="o">=</span><span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">],</span>
         <span class="n">file_output</span><span class="o">=</span><span class="n">file_output</span><span class="p">,</span>
@@ -1373,6 +1643,7 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="get_twi">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_twi">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_twi</span><span class="p">(</span><span class="n">file_slope</span><span class="p">,</span> <span class="n">file_upa</span><span class="p">,</span> <span class="n">file_output</span><span class="p">):</span>
@@ -1389,14 +1660,16 @@
 <span class="sd">    :rtype: str</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">plans</span><span class="w"> </span><span class="kn">import</span> <span class="n">geo</span>
+
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># LOAD SLOPE</span>
-    <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">qgdal</span><span class="o">.</span><span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_slope</span><span class="p">)</span>
+    <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_slope</span><span class="p">)</span>
     <span class="n">grd_slope</span> <span class="o">=</span> <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># LOAD UPA</span>
-    <span class="n">dc_raster2</span> <span class="o">=</span> <span class="n">qgdal</span><span class="o">.</span><span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_upa</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">dc_raster2</span> <span class="o">=</span> <span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_upa</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">grd_upa</span> <span class="o">=</span> <span class="n">dc_raster2</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
@@ -1408,7 +1681,7 @@
     <span class="c1"># EXPORT RASTER FILE</span>
     <span class="c1"># Get the driver to create the new raster</span>
     <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;NODATA_value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DC_NODATA</span><span class="p">[</span><span class="s2">&quot;float32&quot;</span><span class="p">]</span>
-    <span class="n">qgdal</span><span class="o">.</span><span class="n">write_raster</span><span class="p">(</span>
+    <span class="n">write_raster</span><span class="p">(</span>
         <span class="n">grid_output</span><span class="o">=</span><span class="n">grid_output</span><span class="p">,</span>
         <span class="n">dc_metadata</span><span class="o">=</span><span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">],</span>
         <span class="n">file_output</span><span class="o">=</span><span class="n">file_output</span><span class="p">,</span>
@@ -1418,13 +1691,17 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
+<span class="c1"># todo [docstring]</span>
 <div class="viewcode-block" id="get_dto">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_dto">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_dto</span><span class="p">(</span><span class="n">file_ldd</span><span class="p">,</span> <span class="n">file_output</span><span class="p">):</span>
-    <span class="c1"># todo [docstring]</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">plans</span><span class="w"> </span><span class="kn">import</span> <span class="n">geo</span>
+
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># LOAD LDD</span>
-    <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">qgdal</span><span class="o">.</span><span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_ldd</span><span class="p">)</span>
+    <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_ldd</span><span class="p">)</span>
     <span class="n">grd_ldd</span> <span class="o">=</span> <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
@@ -1438,7 +1715,7 @@
     <span class="c1"># EXPORT RASTER FILE</span>
     <span class="c1"># Get the driver to create the new raster</span>
     <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;NODATA_value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DC_NODATA</span><span class="p">[</span><span class="s2">&quot;float32&quot;</span><span class="p">]</span>
-    <span class="n">qgdal</span><span class="o">.</span><span class="n">write_raster</span><span class="p">(</span>
+    <span class="n">write_raster</span><span class="p">(</span>
         <span class="n">grid_output</span><span class="o">=</span><span class="n">grid_output</span><span class="p">,</span>
         <span class="n">dc_metadata</span><span class="o">=</span><span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">],</span>
         <span class="n">file_output</span><span class="o">=</span><span class="n">file_output</span><span class="p">,</span>
@@ -1448,17 +1725,19 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
+<span class="c1"># todo [docstring]</span>
 <div class="viewcode-block" id="get_path_areas">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_path_areas">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_path_areas</span><span class="p">(</span><span class="n">file_dto</span><span class="p">,</span> <span class="n">dc_basins</span><span class="p">,</span> <span class="n">file_output</span><span class="p">,</span> <span class="n">n_bins</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
-    <span class="c1"># todo [docstring]</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># LOAD DTO</span>
-    <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">Raster</span><span class="o">.</span><span class="n">read_tif</span><span class="p">(</span>
+    <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">read_raster</span><span class="p">(</span>
         <span class="n">file_input</span><span class="o">=</span><span class="n">file_dto</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">grd_dto</span> <span class="o">=</span> <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
     <span class="n">n_cell_size</span> <span class="o">=</span> <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;cellsize&quot;</span><span class="p">]</span>
+
     <span class="c1"># todo [DEV] -- develop feature for handling parameterized units</span>
     <span class="n">n_cell_area</span> <span class="o">=</span> <span class="n">n_cell_size</span> <span class="o">*</span> <span class="n">n_cell_size</span> <span class="o">/</span> <span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>  <span class="c1"># ha units</span>
     <span class="n">n_max</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">grd_dto</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.0</span>
@@ -1470,8 +1749,9 @@
         <span class="c1"># -------------------------------------------------------------------------</span>
         <span class="c1"># LOAD BASIN</span>
         <span class="n">file_basin</span> <span class="o">=</span> <span class="n">dc_basins</span><span class="p">[</span><span class="n">basin_code</span><span class="p">]</span>
-        <span class="n">dc_raster2</span> <span class="o">=</span> <span class="n">Raster</span><span class="o">.</span><span class="n">read_tif</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_basin</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;byte&quot;</span><span class="p">)</span>
+        <span class="n">dc_raster2</span> <span class="o">=</span> <span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_basin</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;byte&quot;</span><span class="p">)</span>
         <span class="n">grd_basin</span> <span class="o">=</span> <span class="n">dc_raster2</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+
         <span class="c1"># -------------------------------------------------------------------------</span>
         <span class="c1"># PROCESS</span>
         <span class="n">grd_output</span> <span class="o">=</span> <span class="n">grd_dto</span> <span class="o">*</span> <span class="n">grd_basin</span>
@@ -1493,6 +1773,7 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="get_htwi">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_htwi">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_htwi</span><span class="p">(</span><span class="n">file_ftwi</span><span class="p">,</span> <span class="n">file_fhand</span><span class="p">,</span> <span class="n">file_output</span><span class="p">,</span> <span class="n">hand_w</span><span class="p">):</span>
@@ -1511,16 +1792,15 @@
 <span class="sd">    :rtype: str</span>
 
 <span class="sd">    # todo [script example]</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># LOAD F-TWI</span>
-    <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">qgdal</span><span class="o">.</span><span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_ftwi</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_ftwi</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">grd_ftwi</span> <span class="o">=</span> <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># LOAD F-HAND</span>
-    <span class="n">dc_raster2</span> <span class="o">=</span> <span class="n">qgdal</span><span class="o">.</span><span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_fhand</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">dc_raster2</span> <span class="o">=</span> <span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_fhand</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">grd_fhand</span> <span class="o">=</span> <span class="n">dc_raster2</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
@@ -1534,7 +1814,7 @@
     <span class="c1"># EXPORT RASTER FILE</span>
     <span class="c1"># Get the driver to create the new raster</span>
     <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;NODATA_value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DC_NODATA</span><span class="p">[</span><span class="s2">&quot;float32&quot;</span><span class="p">]</span>
-    <span class="n">qgdal</span><span class="o">.</span><span class="n">write_raster</span><span class="p">(</span>
+    <span class="n">write_raster</span><span class="p">(</span>
         <span class="n">grid_output</span><span class="o">=</span><span class="n">grid_output</span><span class="p">,</span>
         <span class="n">dc_metadata</span><span class="o">=</span><span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">],</span>
         <span class="n">file_output</span><span class="o">=</span><span class="n">file_output</span><span class="p">,</span>
@@ -1544,6 +1824,7 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="get_htwi_list">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_htwi_list">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_htwi_list</span><span class="p">(</span><span class="n">file_ftwi</span><span class="p">,</span> <span class="n">file_fhand</span><span class="p">,</span> <span class="n">folder_output</span><span class="p">,</span> <span class="n">ls_weights</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">]):</span>
@@ -1558,10 +1839,9 @@
 <span class="sd">    :type folder_output:</span>
 <span class="sd">    :param ls_weights: list of weights to use for each raster</span>
 <span class="sd">    :type ls_weights: list</span>
-<span class="sd">    :return: None</span>
-<span class="sd">    :rtype: None</span>
 
-<span class="sd">    # todo [script example]</span>
+
+
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">ls_weights</span><span class="p">:</span>
@@ -1582,6 +1862,7 @@
 <span class="c1"># This routines expect a pre-set folder structure</span>
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="get_hand">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_hand">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_hand</span><span class="p">(</span>
@@ -1593,8 +1874,14 @@
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the HAND raster map from a DEM.</span>
-<span class="sd">    The DEM must be hydrologically consistent (no sinks).</span>
-<span class="sd">    PLANS-based folder structure is expected</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        The DEM must be hydrologically consistent (no sinks).</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        PLANS-based folder structure is expected</span>
 
 <span class="sd">    :param folder_project: path to output folder</span>
 <span class="sd">    :type folder_project: str</span>
@@ -1612,7 +1899,7 @@
 
 <span class="sd">    :rtype: dict</span>
 
-<span class="sd">    # todo [script example]</span>
+
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># expected folders</span>
@@ -1638,7 +1925,7 @@
 
     <span class="k">if</span> <span class="n">file_drainage</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># -- PCRaster - create material layer with cell x cell (area)</span>
-        <span class="n">cellsize</span> <span class="o">=</span> <span class="n">qgdal</span><span class="o">.</span><span class="n">get_cellsize</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_dem_filled</span><span class="p">)</span>
+        <span class="n">cellsize</span> <span class="o">=</span> <span class="n">get_cellsize</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_dem_filled</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[pc-raster] get material (constant)...&quot;</span><span class="p">)</span>
         <span class="n">file_material</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/material.map&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder_aux</span><span class="p">)</span>
         <span class="n">processing</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
@@ -1765,6 +2052,7 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="setup_topo">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.setup_topo">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">setup_topo</span><span class="p">(</span>
@@ -1782,7 +2070,10 @@
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Setup protocols for getting ``topo`` datasets.</span>
-<span class="sd">    PLANS-based folder structure is expected</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        PLANS-based folder structure is expected</span>
 
 <span class="sd">    :param folder_project: path to main plans project folder</span>
 <span class="sd">    :type folder_project: str</span>
@@ -1891,7 +2182,7 @@
 
     <span class="c1"># get aoi extent</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;get aoi extent...&quot;</span><span class="p">)</span>
-    <span class="n">dict_bbox</span> <span class="o">=</span> <span class="n">get_extent_from_vector</span><span class="p">(</span><span class="n">db_input</span><span class="o">=</span><span class="n">db_project</span><span class="p">,</span> <span class="n">layer_name</span><span class="o">=</span><span class="n">new_layer_aoi</span><span class="p">)</span>
+    <span class="n">dict_bbox</span> <span class="o">=</span> <span class="n">get_extent_from_vector</span><span class="p">(</span><span class="n">input_db</span><span class="o">=</span><span class="n">db_project</span><span class="p">,</span> <span class="n">layer_name</span><span class="o">=</span><span class="n">new_layer_aoi</span><span class="p">)</span>
 
     <span class="c1"># clip and warp dem</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[gdal] clip-n-warp dem...&quot;</span><span class="p">)</span>
@@ -1930,6 +2221,7 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="get_topo">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_topo">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_topo</span><span class="p">(</span>
@@ -1947,7 +2239,10 @@
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get all ``topo`` datasets for running PLANS.</span>
-<span class="sd">    PLANS-based folder structure is expected.</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        PLANS-based folder structure is expected.</span>
 
 <span class="sd">    .. warning::</span>
 
@@ -1971,10 +2266,15 @@
 <span class="sd">    :type translate_to_ascii: bool</span>
 <span class="sd">    :param style_folder: path to folder containing style files</span>
 <span class="sd">    :type style_folder: str</span>
-<span class="sd">    :return: None</span>
-<span class="sd">    :rtype: None</span>
 
-<span class="sd">    Script example (for QGIS Python Console):</span>
+
+
+
+<span class="sd">    **Example**</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        Run this under QGIS python environment</span>
 
 <span class="sd">    .. code-block:: python</span>
 
@@ -2026,7 +2326,7 @@
     <span class="p">}</span>
 
     <span class="c1"># get cellsize</span>
-    <span class="n">cellsize</span> <span class="o">=</span> <span class="n">qgdal</span><span class="o">.</span><span class="n">get_cellsize</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">dict_files</span><span class="p">[</span><span class="s2">&quot;dem&quot;</span><span class="p">])</span>
+    <span class="n">cellsize</span> <span class="o">=</span> <span class="n">get_cellsize</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">dict_files</span><span class="p">[</span><span class="s2">&quot;dem&quot;</span><span class="p">])</span>
 
     <span class="c1"># 4) get rivers blank</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;get main rivers...&quot;</span><span class="p">)</span>
@@ -2352,6 +2652,7 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="retrieve_lulc">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.retrieve_lulc">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_lulc</span><span class="p">(</span>
@@ -2359,7 +2660,10 @@
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieve lulc series maps from a source folder.</span>
-<span class="sd">    PLANS-based folder structure is expected.</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        PLANS-based folder structure is expected.</span>
 
 <span class="sd">    :param folder_src: folder path to source maps -- Files are expected to end with _YYYY-MM-DD.tif</span>
 <span class="sd">    :type folder_src: str</span>
@@ -2373,10 +2677,15 @@
 <span class="sd">    :type file_target: str</span>
 <span class="sd">    :param file_style_src: path to QML style (optional)</span>
 <span class="sd">    :type file_style_src: str</span>
-<span class="sd">    :return: None</span>
-<span class="sd">    :rtype: None</span>
 
-<span class="sd">    Script example (for QGIS Python Console):</span>
+
+
+<span class="sd">    **Example**</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        Run this under QGIS python environment</span>
+
 
 <span class="sd">    .. code-block:: python</span>
 
@@ -2392,7 +2701,6 @@
 <span class="sd">            file_target=&quot;/path/to/dem.tif&quot;,</span>
 <span class="sd">            file_style_src=&quot;/path/to/lulc_mapbiomas.qml&quot;</span>
 <span class="sd">        )</span>
-
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># handle folders</span>
@@ -2417,7 +2725,7 @@
     <span class="p">)</span>
 
     <span class="c1"># find cellsize from target file</span>
-    <span class="n">cellsize</span> <span class="o">=</span> <span class="n">qgdal</span><span class="o">.</span><span class="n">get_cellsize</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_target</span><span class="p">)</span>
+    <span class="n">cellsize</span> <span class="o">=</span> <span class="n">get_cellsize</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_target</span><span class="p">)</span>
 
     <span class="c1"># loop over years</span>
     <span class="n">list_main_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder_src</span><span class="si">}</span><span class="s2">/*_*.tif&quot;</span><span class="p">)</span>
@@ -2487,6 +2795,7 @@
 
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="convert_lulc">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.convert_lulc">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">convert_lulc</span><span class="p">(</span>
@@ -2499,7 +2808,10 @@
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert lulc values from source map.</span>
-<span class="sd">    PLANS-based folder structure is expected.</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        PLANS-based folder structure is expected.</span>
 
 <span class="sd">    :param folder_src: path to sourced maps</span>
 <span class="sd">    :type folder_src: str</span>
@@ -2513,10 +2825,14 @@
 <span class="sd">    :type id_src: str</span>
 <span class="sd">    :param file_style: path to converted style QML file</span>
 <span class="sd">    :type file_style: str</span>
-<span class="sd">    :return: None</span>
-<span class="sd">    :rtype: None</span>
 
-<span class="sd">    Script example (for QGIS Python Console):</span>
+
+<span class="sd">    **Example**</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        Run this under QGIS python environment</span>
+
 
 <span class="sd">    .. code-block:: python</span>
 
@@ -2533,7 +2849,10 @@
 <span class="sd">            file_style=&quot;/path/to/folder/lulc.qml&quot;</span>
 <span class="sd">        )</span>
 
+
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">plans</span><span class="w"> </span><span class="kn">import</span> <span class="n">geo</span>
+
     <span class="c1"># handle folders</span>
     <span class="n">folder_lulc</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/inputs/lulc/obs&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder_project</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[pandas] read table&quot;</span><span class="p">)</span>
@@ -2558,7 +2877,7 @@
         <span class="c1"># -------------------------------------------------------------------------</span>
         <span class="c1"># LOAD</span>
         <span class="c1"># Open the raster file using gdal</span>
-        <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">qgdal</span><span class="o">.</span><span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_input</span><span class="p">)</span>
+        <span class="n">dc_raster</span> <span class="o">=</span> <span class="n">read_raster</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">file_input</span><span class="p">)</span>
         <span class="n">grid_input</span> <span class="o">=</span> <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[geo] </span><span class="si">{</span><span class="n">s_date</span><span class="si">}</span><span class="s2"> -- apply conversion&quot;</span><span class="p">)</span>
@@ -2575,7 +2894,7 @@
         <span class="n">file_output_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;lulc_</span><span class="si">{</span><span class="n">s_date</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">file_output</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder_lulc</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">file_output_name</span><span class="si">}</span><span class="s2">.tif&quot;</span>
         <span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;NODATA_value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DC_NODATA</span><span class="p">[</span><span class="s2">&quot;byte&quot;</span><span class="p">]</span>
-        <span class="n">qgdal</span><span class="o">.</span><span class="n">write_raster</span><span class="p">(</span>
+        <span class="n">write_raster</span><span class="p">(</span>
             <span class="n">grid_output</span><span class="o">=</span><span class="n">grid_output</span><span class="p">,</span>
             <span class="n">dc_metadata</span><span class="o">=</span><span class="n">dc_raster</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">],</span>
             <span class="n">file_output</span><span class="o">=</span><span class="n">file_output</span><span class="p">,</span>
@@ -2598,6 +2917,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
+<span class="c1"># todo [script example] -- standalone version using importlib</span>
 <div class="viewcode-block" id="get_lulc">
 <a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_lulc">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_lulc</span><span class="p">(</span>
@@ -2615,7 +2935,11 @@
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get lulc maps from source and convert to plans-format.</span>
-<span class="sd">    PLANS-based folder structure is expected.</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        PLANS-based folder structure is expected.</span>
+
 
 <span class="sd">    :param folder_src: folder path to source maps -- Files are expected to end with _YYYY-MM-DD.tif</span>
 <span class="sd">    :type folder_src: str</span>
@@ -2635,8 +2959,8 @@
 <span class="sd">    :type id_src: str</span>
 <span class="sd">    :param file_style: path to converted style QML file</span>
 <span class="sd">    :type file_style: str</span>
-<span class="sd">    :return: None</span>
-<span class="sd">    :rtype: None</span>
+
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;retrieve lulc maps from source&quot;</span><span class="p">)</span>
@@ -2808,9 +3132,9 @@
 <span class="c1"># code below is not deprecated but somehow outdated (seems too complicated)</span>
 
 
-<div class="viewcode-block" id="get_rain_old">
-<a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_rain_old">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_rain_old</span><span class="p">(</span>
+<div class="viewcode-block" id="old_get_rain">
+<a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.old_get_rain">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">old_get_rain</span><span class="p">(</span>
     <span class="n">output_folder</span><span class="p">,</span>
     <span class="n">src_folder</span><span class="p">,</span>
     <span class="n">input_db</span><span class="p">,</span>
@@ -2848,8 +3172,8 @@
 <span class="sd">            - ``Color``: str, optional</span>
 
 <span class="sd">    :type layer_rain_gauges: str</span>
-<span class="sd">    :return: None</span>
-<span class="sd">    :rtype: None</span>
+
+
 
 <span class="sd">    Script example (for QGIS Python Console):</span>
 
@@ -2974,10 +3298,10 @@
 
         <span class="c1"># first validade extents</span>
         <span class="n">dict_extent_aoi</span> <span class="o">=</span> <span class="n">get_extent_from_vector</span><span class="p">(</span>
-            <span class="n">db_input</span><span class="o">=</span><span class="n">input_db</span><span class="p">,</span> <span class="n">layer_name</span><span class="o">=</span><span class="n">layer_aoi</span>
+            <span class="n">input_db</span><span class="o">=</span><span class="n">input_db</span><span class="p">,</span> <span class="n">layer_name</span><span class="o">=</span><span class="n">layer_aoi</span>
         <span class="p">)</span>
         <span class="n">dict_extent_rain</span> <span class="o">=</span> <span class="n">get_extent_from_vector</span><span class="p">(</span>
-            <span class="n">db_input</span><span class="o">=</span><span class="n">input_db</span><span class="p">,</span> <span class="n">layer_name</span><span class="o">=</span><span class="n">layer_rain_gauges</span>
+            <span class="n">input_db</span><span class="o">=</span><span class="n">input_db</span><span class="p">,</span> <span class="n">layer_name</span><span class="o">=</span><span class="n">layer_rain_gauges</span>
         <span class="p">)</span>
 
         <span class="c1"># check is is bounded:</span>
@@ -3048,9 +3372,9 @@
 
 
 
-<div class="viewcode-block" id="get_lulc_old">
-<a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_lulc_old">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_lulc_old</span><span class="p">(</span>
+<div class="viewcode-block" id="old_lulc">
+<a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.old_lulc">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">old_lulc</span><span class="p">(</span>
     <span class="n">list_main_files</span><span class="p">,</span>
     <span class="n">list_dates</span><span class="p">,</span>
     <span class="n">lulc_table</span><span class="p">,</span>
@@ -3064,7 +3388,8 @@
     <span class="n">qml_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">translate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get LULC maps from a larger main LULC dataset.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get LULC maps from a larger main LULC dataset.</span>
 
 <span class="sd">    :param list_main_files: list of file paths to main lulc rasters</span>
 <span class="sd">    :type list_main_files: list</span>
@@ -3088,8 +3413,8 @@
 <span class="sd">    :type source_crs: str</span>
 <span class="sd">    :param qml_file: [optional] file path to QML style file</span>
 <span class="sd">    :type qml_file: str</span>
-<span class="sd">    :return: None</span>
-<span class="sd">    :rtype: None</span>
+
+
 
 <span class="sd">    Script example (for QGIS):</span>
 
@@ -3144,7 +3469,7 @@
         <span class="n">DC_PROVIDERS</span><span class="p">[</span><span class="n">crs_target</span><span class="p">],</span>
         <span class="n">crs_target</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">cellsize</span> <span class="o">=</span> <span class="n">qgdal</span><span class="o">.</span><span class="n">get_cellsize</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">target_file</span><span class="p">)</span>
+    <span class="n">cellsize</span> <span class="o">=</span> <span class="n">get_cellsize</span><span class="p">(</span><span class="n">file_input</span><span class="o">=</span><span class="n">target_file</span><span class="p">)</span>
     <span class="n">list_output_files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="n">list_filenames</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;clip-n-warp lulc ... &quot;</span><span class="p">)</span>
@@ -3286,16 +3611,17 @@
 
 
 
-<div class="viewcode-block" id="get_basins_old">
-<a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.get_basins_old">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_basins_old</span><span class="p">(</span>
+<div class="viewcode-block" id="old_get_basins">
+<a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.old_get_basins">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">old_get_basins</span><span class="p">(</span>
     <span class="n">output_folder</span><span class="p">,</span>
     <span class="n">input_db</span><span class="p">,</span>
     <span class="n">ldd_file</span><span class="p">,</span>
     <span class="n">target_crs</span><span class="p">,</span>
     <span class="n">layer_stream_gauges</span><span class="o">=</span><span class="s2">&quot;stream&quot;</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all ``basins`` datasets for running PLANS.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get all ``basins`` datasets for running PLANS.</span>
 
 <span class="sd">    :param output_folder: path to output folder</span>
 <span class="sd">    :type output_folder: str</span>
@@ -3321,8 +3647,8 @@
 <span class="sd">            - ``Flow_File``: str, required. Path to data time series ``csv`` source file.</span>
 
 <span class="sd">    :type layer_stream_gauges: str</span>
-<span class="sd">    :return: None</span>
-<span class="sd">    :rtype: None</span>
+
+
 
 <span class="sd">    Script example (for QGIS Python Console):</span>
 
@@ -3549,11 +3875,15 @@
 
 
 
-<div class="viewcode-block" id="testing">
-<a class="viewcode-back" href="../../generated/plans.qutils.html#plans.qutils.testing">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">testing</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;testing&quot;</span><span class="p">)</span></div>
+<span class="c1"># SCRIPT</span>
+<span class="c1"># ***********************************************************************</span>
+<span class="c1"># standalone behaviour as a script</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
 
+    <span class="c1"># Script section</span>
+    <span class="c1"># ===================================================================</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+    <span class="c1"># ... {develop}</span>
 </pre></div>
 
                 </article>
