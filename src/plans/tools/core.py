@@ -50,6 +50,7 @@ from plans.config import parse_files, parse_fields
 
 
 def parse_spatial_parameters(title, file_parameters):
+    # todo docstring
     df_files = parse_files()
     file_name = df_files.loc[df_files["title"] == title, "name"].values[0]
 
@@ -79,9 +80,10 @@ def parse_spatial_parameters(title, file_parameters):
 
 def export_parameters(folder_output, parameters, basin, views, prefix, label, logger):
     # todo docstring
+
     # export catalog
     # ---------------------------------------------------------------
-    # todo output index add this file
+    # todo docs -- add this file output index
     file_catalog = Path(folder_output) / f"{prefix}_parameters_catalog.csv"
     parameters.catalog.to_csv(file_catalog, sep=";", index=False)
 

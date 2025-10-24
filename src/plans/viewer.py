@@ -4,40 +4,38 @@
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
 """
-Functions designed to handle plots.
+Handle plots in ``matplotlib``
 
-Overview
---------
-
-# todo [major docstring improvement] -- overview
-Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl. Pellentesque habitant morbi tristique senectus
-et netus et malesuada fames ac turpis egestas.
-
-Example
--------
-
-# todo [major docstring improvement] -- examples
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,
-in porttitor lacus lobortis vitae. In a lacinia nisl.
-
-.. code-block:: python
-
-    import numpy as np
-    from plans import viewer
-
-    # view sample
-    uni.view()
-
-Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl.
+Call constants and functions from this module in order
+to built plots with ``matplotlib``.
 
 """
+# IMPORTS
+# ***********************************************************************
+# import modules from other libs
 
+# Native imports
+# =======================================================================
+# import {module}
+# ... {develop}
+
+# External imports
+# =======================================================================
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+
+# ... {develop}
+
+# Project-level imports
+# =======================================================================
+# import {module}
+# ... {develop}
+
+
+# CONSTANTS
+# ***********************************************************************
+# define constants in uppercase
 
 # Define a conversion factor from mm to points
 MM_TO_PT = 2.83465
@@ -145,6 +143,12 @@ FIG_STYLES = {
         "grid": True,
     },
 }
+
+# FUNCTIONS
+# ***********************************************************************
+
+# FUNCTIONS -- Project-level
+# =======================================================================
 
 
 def set_figsize(width_mm, height_mm):
@@ -377,3 +381,14 @@ def get_discrete_cmap(n_classes, base_cmap_name="viridis"):
     # get custom ok new
     custom_cmap = mcolors.ListedColormap(colors)
     return custom_cmap
+
+
+# SCRIPT
+# ***********************************************************************
+# standalone behaviour as a script
+if __name__ == "__main__":
+
+    # Script section
+    # ===================================================================
+    print("Hello world!")
+    # ... {develop}

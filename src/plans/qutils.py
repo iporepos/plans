@@ -35,29 +35,63 @@ Mauris gravida ex quam, in porttitor lacus lobortis vitae.
 In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.
 In a lacinia nisl.
 """
+# IMPORTS
+# ***********************************************************************
+# import modules from other libs
 
-# native imports
+# Native imports
+# =======================================================================
 import glob, os, shutil
 from pathlib import Path
 
-# basic imports
+# ... {develop}
+
+# External imports
+# =======================================================================
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import geopandas as gpd
 
-# qgis imports
+# qgis
 import processing
 from osgeo import gdal
 from qgis.core import QgsCoordinateReferenceSystem
 
-# plugin imports
-from plans import geo
-from plans.parsers import qgdal
-from plans.datasets import Raster
-from plans.datasets.core import DC_NODATA
+# ... {develop}
 
-# ----------------- MODULE CONSTANTS ----------------- #
+# Project-level imports
+# =======================================================================
+# WARNING: plans.geo must be located under plugins folder of QGIS
+# from plans import geo
+# ... {develop}
+
+
+# CONSTANTS
+# ***********************************************************************
+# define constants in uppercase
+
+# CONSTANTS -- Project-level
+# =======================================================================
+# ... {develop}
+
+DC_NODATA = {
+    "byte": 255,  # categorical/boolean maps
+    "uint8": 255,  # categorical/boolean maps
+    "uint16": 0,  # zone maps
+    "float16": -99999,  # fuzzy maps
+    "float32": -99999,  # scientific maps
+}
+
+# setup types
+DC_GDAL_TYPES = {
+    "byte": gdal.GDT_Byte,
+    "int": gdal.GDT_Int16,
+    "uint16": gdal.GDT_UInt16,
+    "int16": gdal.GDT_Int16,
+    "float16": gdal.GDT_Float32,
+    "float32": gdal.GDT_Float32,
+}
 
 # provider base
 DC_PROVIDERS = {
@@ -77,27 +111,134 @@ DC_OPERATIONS = {
     "102033": "+proj=pipeline +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=push +v_3 +step +proj=cart +ellps=WGS84 +step +proj=helmert +x=57 +y=-1 +z=41 +step +inv +proj=cart +ellps=aust_SA +step +proj=pop +v_3 +step +proj=aea +lat_0=-32 +lon_0=-60 +lat_1=-5 +lat_2=-42 +x_0=0 +y_0=0 +ellps=aust_SA",
 }
 
-# -------------------------------------------------------------------------------------
-# STANDALONE ROUTINES
+
+# FUNCTIONS
+# ***********************************************************************
+
+# FUNCTIONS -- Project-level
+# =======================================================================
 # This routines work without expecting any sort of folder struture
 
 
+# todo [test script]
+# todo [script example] -- standalone version using importlib
+def get_cellsize(file_input):
+    """
+    Get the cell size (resolution) of a raster file.
+
+    :param file_input: Path to the input raster file.
+    :param type: str
+    :return: The cell size of the raster.
+    :rtype: float
+    """
+    # Open the raster file using gdal
+    raster_input = gdal.Open(file_input)
+    raster_geotransform = raster_input.GetGeoTransform()
+    cellsize = raster_geotransform[1]
+    # -- Close the raster
+    raster_input = None
+    return cellsize
+
+
+# todo [test script]
+# todo [script example] -- standalone version using importlib
+def read_raster(file_input, n_band=1, metadata=True):
+    """
+    Read a raster (GeoTIFF) file
+
+    :param file_input: path to raster file
+    :type file_input: str
+    :param n_band: number of the band to read
+    :type n_band: int
+    :param metadata: option to return
+    :type metadata: bool
+    :return: dictionary with "data" and (optional) "metadata"
+    :rtype: dict
+    """
+    # -------------------------------------------------------------------------
+    # LOAD
+    # Open the raster file using gdal
+    raster_input = gdal.Open(file_input)
+    # Get the raster band
+    band_input = raster_input.GetRasterBand(1)
+    # Read the raster data as a numpy array
+    grid_input = band_input.ReadAsArray()
+    dc_output = {"data": grid_input}
+    # -- Collect useful metadata
+    if metadata:
+        dc_metadata = {}
+        dc_metadata["raster_x_size"] = raster_input.RasterXSize
+        dc_metadata["raster_y_size"] = raster_input.RasterYSize
+        dc_metadata["raster_projection"] = raster_input.GetProjection()
+        dc_metadata["raster_geotransform"] = raster_input.GetGeoTransform()
+        dc_metadata["cellsize"] = dc_metadata["raster_geotransform"][1]
+        # append to output
+        dc_output["metadata"] = dc_metadata
+    # -- Close the raster
+    raster_input = None
+
+    return dc_output
+
+
+# todo [test script]
+# todo [script example] -- standalone version using importlib
+def write_raster(grid_output, dc_metadata, file_output, dtype="float32", n_band=1):
+    """
+    Write a numpy array to raster
+
+    :param grid_output: 2D numpy array
+    :type grid_output: :class:`numpy.ndarray`
+    :param dc_metadata: dict with metadata
+    :type dc_metadata: dict
+    :param file_output: path to output raster file
+    :type file_output: str
+    :param dtype: output raster data type ("byte", "int" -- else defaults to float32)
+    :type dtype: str
+    :param n_band: number of the band to read
+    :type n_band: int
+    :return:
+    :rtype:
+    """
+    # Get the driver to create the new raster
+    driver = gdal.GetDriverByName("GTiff")
+
+    # get metadata
+    raster_x_size = grid_output.shape[1]  # dc_metadata["raster_x_size"]
+    raster_y_size = grid_output.shape[0]  # dc_metadata["raster_y_size"]
+    raster_projection = dc_metadata["raster_projection"]
+    raster_geotransform = dc_metadata["raster_geotransform"]
+
+    # create the raster
+    raster_output = driver.Create(
+        file_output, raster_x_size, raster_y_size, 1, DC_GDAL_TYPES[dtype]
+    )
+    # Set the projection and geotransform of the new raster to match the original
+    raster_output.SetProjection(raster_projection)
+    raster_output.SetGeoTransform(raster_geotransform)
+    # Write the new data to the new raster
+    raster_output.GetRasterBand(n_band).WriteArray(grid_output)
+    # Close
+    raster_output = None
+    return file_output
+
+
+# todo [test script]
+# todo [script example] -- standalone version using importlib
 def clip_layer(
     db_input, layer_input, db_overlay, layer_overlay, db_output, layer_output
 ):
-    processing.run(
-        "native:clip",
-        {
-            "INPUT": f"{db_input}|layername={layer_input}",
-            "OVERLAY": f"{db_overlay}|layername={layer_overlay}",
-            "OUTPUT": "ogr:dbname='{}' table=\"{}\" (geom)".format(
-                db_output, layer_output
-            ),
-        },
-    )
+    # todo docstring
+    dc_specs = {
+        "INPUT": f"{db_input}|layername={layer_input}",
+        "OVERLAY": f"{db_overlay}|layername={layer_overlay}",
+        "OUTPUT": "ogr:dbname='{}' table=\"{}\" (geom)".format(db_output, layer_output),
+    }
+    processing.run("native:clip", dc_specs)
     return layer_output
 
 
+# todo [test script]
+# todo [script example] -- standalone version using importlib
 def reproject_layer(
     db_input, layer_name, crs_target, db_output=None, layer_output=None
 ):
@@ -122,20 +263,20 @@ def reproject_layer(
     if db_output is None:
         db_output = db_input[:]
     output_file = "ogr:dbname='{}' table=\"{}\" (geom)".format(db_output, layer_output)
-    processing.run(
-        "native:reprojectlayer",
-        {
-            "INPUT": input_file,
-            "TARGET_CRS": QgsCoordinateReferenceSystem(
-                "{}:{}".format(DC_PROVIDERS[crs_target], crs_target)
-            ),
-            "OPERATION": DC_OPERATIONS[crs_target],
-            "OUTPUT": output_file,
-        },
-    )
+
+    dc_specs = {
+        "INPUT": input_file,
+        "TARGET_CRS": QgsCoordinateReferenceSystem(
+            "{}:{}".format(DC_PROVIDERS[crs_target], crs_target)
+        ),
+        "OPERATION": DC_OPERATIONS[crs_target],
+        "OUTPUT": output_file,
+    }
+    processing.run("native:reprojectlayer", dc_specs)
     return layer_output
 
 
+# todo [script example] -- standalone version using importlib
 def is_bounded_by(extent_a, extent_b):
     """
     Check if extent B is bounded by extent A
@@ -153,6 +294,7 @@ def is_bounded_by(extent_a, extent_b):
     )
 
 
+# test in bcmk/qutils_layers.py
 def get_extent_from_raster(file_input):
     """
     Get the extent from a raster layer
@@ -161,6 +303,33 @@ def get_extent_from_raster(file_input):
     :type file_input: str
     :return: dictionary of bouding box: xmin, xmax, ymin, ymax
     :rtype: dict
+
+    **Example**
+
+    .. code-block:: python
+
+        import importlib.util as iu
+
+        # define the paths to this module
+        # ----------------------------------------
+        the_module = "path/to/plans/qutils.py"
+
+        # setup module with importlib
+        # ----------------------------------------
+        spec = iu.spec_from_file_location("module", the_module)
+        module = iu.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        # define input and outputs
+        # ----------------------------------------
+        file_input = f"path/to/raster.tif"
+
+        # call the function
+        # ----------------------------------------
+        output = module.get_extent_from_raster(file_input)
+
+        print(output)
+
     """
     from qgis.core import QgsRasterLayer
 
@@ -176,22 +345,54 @@ def get_extent_from_raster(file_input):
     }
 
 
-def get_extent_from_vector(db_input, layer_name):
+# test in bcmk/qutils_layers.py
+def get_extent_from_vector(input_db, layer_name):
     """
     Get the extent from a vector layer
 
-    :param db_input: path to geopackage database
-    :type db_input: str
+    :param input_db: path to geopackage database
+    :type input_db: str
     :param layer_name: name of the layer in geopackage database
     :type layer_name: str
     :return: dictionary of bouding box: xmin, xmax, ymin, ymax
     :rtype: dict
+
+    **Example**
+
+    .. code-block:: python
+
+        import importlib.util as iu
+
+        # define the paths to this module
+        # ----------------------------------------
+        the_module = "path/to/plans/qutils.py"
+
+        # setup module with importlib
+        # ----------------------------------------
+        spec = iu.spec_from_file_location("module", the_module)
+        module = iu.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        # define input and outputs
+        # ----------------------------------------
+        input_db = "path/to/data.gpkg"
+        layer_name = "layer"
+
+        # call the function
+        # ----------------------------------------
+        output = module.get_extent_from_vector(
+            input_db=input_db,
+            layer_name=layer_name
+        )
+
+        print(output)
+
     """
     from qgis.core import QgsVectorLayer
 
     # Create the vector layer from the GeoPackage
     layer = QgsVectorLayer(
-        "{}|layername={}".format(db_input, layer_name), layer_name, "ogr"
+        "{}|layername={}".format(input_db, layer_name), layer_name, "ogr"
     )
     layer_extent = layer.extent()
     return {
@@ -202,6 +403,7 @@ def get_extent_from_vector(db_input, layer_name):
     }
 
 
+# test in bcmk/qutils_layers.py
 def count_vector_features(input_db, layer_name):
     """
     Get the number of features from a vector layer
@@ -212,6 +414,37 @@ def count_vector_features(input_db, layer_name):
     :type layer_name: str
     :return: number of features
     :rtype: int
+
+    **Example**
+
+    .. code-block:: python
+
+        import importlib.util as iu
+
+        # define the paths to this module
+        # ----------------------------------------
+        the_module = "path/to/plans/qutils.py"
+
+        # setup module with importlib
+        # ----------------------------------------
+        spec = iu.spec_from_file_location("module", the_module)
+        module = iu.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        # define input and outputs
+        # ----------------------------------------
+        input_db = "path/to/data.gpkg"
+        layer_name = "layer"
+
+        # call the function
+        # ----------------------------------------
+        output = module.count_vector_features(
+            input_db=input_db,
+            layer_name=layer_name
+        )
+
+        print(output)
+
     """
     from qgis.core import QgsVectorLayer
 
@@ -222,6 +455,7 @@ def count_vector_features(input_db, layer_name):
     return int(layer.featureCount())
 
 
+# todo [script example] -- standalone version using importlib
 def retrieve_raster_tiles(
     db_aoi,
     layer_aoi,
@@ -324,6 +558,7 @@ def retrieve_raster_tiles(
     return output_file
 
 
+# todo [script example] -- standalone version using importlib
 def retrieve_upstream_basins(
     db_basins,
     layer_basin,
@@ -339,7 +574,10 @@ def retrieve_upstream_basins(
     """
     Retrieves and saves upstream basins for a given set of gauges.
 
-    This function loads basin and gauge data from GeoPackage files, identifies the upstream basins for each gauge, and then saves the resulting GeoDataFrame to a new GeoPackage file. The upstream basins for each gauge are dissolved into a single feature before saving.
+    This function loads basin and gauge data from GeoPackage files,
+    identifies the upstream basins for each gauge, and then saves the
+    resulting GeoDataFrame to a new GeoPackage file. The upstream basins
+    for each gauge are dissolved into a single feature before saving.
 
     :param db_basins: The path to the GeoPackage database containing the basin features.
     :type db_basins: str
@@ -361,9 +599,9 @@ def retrieve_upstream_basins(
     :type field_basin_down: str
     :param field_geometry: The name of the geometry column. Default value = "geometry"
     :type field_geometry: str
-    :return: None
-    :rtype: None
     """
+    from plans import geo
+
     # load from geopackages
     basins = gpd.read_file(db_basins, layer=layer_basin)
     gauges = gpd.read_file(db_gauges, layer=layer_gauges)
@@ -383,11 +621,10 @@ def retrieve_upstream_basins(
     return None
 
 
+# todo [script example] -- standalone version using importlib
 def get_basins_areas(file_basins, ids_basins):
     """
     Calculates the area of specified basins from a raster file.
-
-    This function reads a raster file representing different basins, identifies the cells corresponding to each basin ID provided, calculates the total area for each basin in square kilometers, and returns the results in a dictionary.
 
     :param file_basins: The file path to the raster containing the basin IDs.
     :type file_basins: str
@@ -395,6 +632,14 @@ def get_basins_areas(file_basins, ids_basins):
     :type ids_basins: list
     :return: A dictionary containing the basin IDs and their corresponding upstream areas in square kilometers.
     :rtype: dict
+
+    **Notes**
+
+    This function reads a raster file representing different basins,
+    identifies the cells corresponding to each basin ID provided,
+    calculates the total area for each basin in square kilometers,
+    and returns the results in a dictionary.
+
     """
     # -------------------------------------------------------------------------
     # LOAD BASINS
@@ -430,6 +675,7 @@ def get_basins_areas(file_basins, ids_basins):
     return {"Id": ids_basins, "UpstreamArea": basin_areas}
 
 
+# todo [script example] -- standalone version using importlib
 def get_blank(file_input, file_output, blank_value=0, dtype="byte"):
     """
     Get a blank raster copy from other raster
@@ -445,12 +691,11 @@ def get_blank(file_input, file_output, blank_value=0, dtype="byte"):
     :return: file path of output (echo)
     :rtype: str
 
-    # todo [script example]
     """
 
     # -------------------------------------------------------------------------
     # LOAD
-    dc_raster = qgdal.read_raster(file_input=file_input)
+    dc_raster = read_raster(file_input=file_input)
     grid_input = dc_raster["data"]
 
     # -------------------------------------------------------------------------
@@ -465,7 +710,7 @@ def get_blank(file_input, file_output, blank_value=0, dtype="byte"):
     # overwrite no data
     if dtype in DC_NODATA:
         dc_raster["metadata"]["NODATA_value"] = DC_NODATA[dtype]
-    qgdal.write_raster(
+    write_raster(
         grid_output=grid_output,
         dc_metadata=dc_raster["metadata"],
         file_output=file_output,
@@ -475,12 +720,10 @@ def get_blank(file_input, file_output, blank_value=0, dtype="byte"):
     return file_output
 
 
+# todo [script example] -- standalone version using importlib
 def get_boolean(file_input, file_output, bool_value, condition="ET"):
     """
     Generates a boolean raster based on a condition applied to an input raster.
-    This function reads a raster, applies a user-defined condition (greater than, less than, or equal to)
-    with a specified value, and creates a new raster where cells meeting the
-    condition are set to 1 and all others are set to 0. The output is saved as a byte integer raster file.
 
     :param file_input: The file path to the input raster.
     :type file_input: str
@@ -492,10 +735,19 @@ def get_boolean(file_input, file_output, bool_value, condition="ET"):
     :type condition: str
     :return: The file path of the created output raster.
     :rtype: str
+
+    **Notes**
+
+    This function reads a raster, applies a user-defined condition
+    (greater than, less than, or equal to)
+    with a specified value, and creates a new raster where cells meeting the
+    condition are set to 1 and all others are set to 0.
+    The output is saved as a byte integer raster file.
+
     """
     # -------------------------------------------------------------------------
     # LOAD
-    dc_raster = qgdal.read_raster(file_input=file_input)
+    dc_raster = read_raster(file_input=file_input)
     grid_input = dc_raster["data"]
 
     # -------------------------------------------------------------------------
@@ -515,7 +767,7 @@ def get_boolean(file_input, file_output, bool_value, condition="ET"):
     # Get the driver to create the new raster
     # overwrite no data
     dc_raster["metadata"]["NODATA_value"] = DC_NODATA["byte"]
-    qgdal.write_raster(
+    write_raster(
         grid_output=grid_output,
         dc_metadata=dc_raster["metadata"],
         file_output=file_output,
@@ -524,9 +776,11 @@ def get_boolean(file_input, file_output, bool_value, condition="ET"):
     return file_output
 
 
+# todo [script example] -- standalone version using importlib
 def get_fuzzy(file_input, file_output, low_bound, high_bound):
     """
-    Get the Fuzzy map of a linear membership. Reverse bounds to reverse membership.
+    Get the Fuzzy map of a linear membership.
+    Reverse bounds to reverse membership.
 
     :param file_input: path to raster file input
     :type file_input: str
@@ -539,22 +793,19 @@ def get_fuzzy(file_input, file_output, low_bound, high_bound):
     :return: path of output (echo)
     :rtype: str
 
-    # todo [script example]
-
     """
-    processing.run(
-        "native:fuzzifyrasterlinearmembership",
-        {
-            "INPUT": file_input,
-            "BAND": 1,
-            "FUZZYLOWBOUND": low_bound,
-            "FUZZYHIGHBOUND": high_bound,
-            "OUTPUT": file_output,
-        },
-    )
+    dc_specs = {
+        "INPUT": file_input,
+        "BAND": 1,
+        "FUZZYLOWBOUND": low_bound,
+        "FUZZYHIGHBOUND": high_bound,
+        "OUTPUT": file_output,
+    }
+    processing.run("native:fuzzifyrasterlinearmembership", dc_specs)
     return file_output
 
 
+# todo [script example] -- standalone version using importlib
 def get_dem(
     file_src_dem,
     file_output,
@@ -621,6 +872,8 @@ def get_dem(
     return file_output
 
 
+# todo [script example] -- standalone version using importlib
+# todo [optimize] using read_raster and write_raster
 def get_downstream_ids(file_ldd, file_basins, file_outlets):
     """
     Get the basin Ids from downstream cells.
@@ -643,10 +896,9 @@ def get_downstream_ids(file_ldd, file_basins, file_outlets):
     :return: dictionaty with lists of "Id" and "Downstream_Id"
     :rtype: dict
 
-    # todo [script example]
-
     """
-    # todo [optimize] using qgdal
+    from plans import geo
+
     # -------------------------------------------------------------------------
     # LOAD LDD
 
@@ -726,6 +978,7 @@ def get_downstream_ids(file_ldd, file_basins, file_outlets):
     return {"Id": list_ids, "Downstream_Id": list_ds_ids}
 
 
+# todo [script example] -- standalone version using importlib
 def get_carved_dem(file_dem, file_rivers, file_output, wedge_width=3, wedge_depth=10):
     """
     Apply a carving method to DEM raster
@@ -746,14 +999,16 @@ def get_carved_dem(file_dem, file_rivers, file_output, wedge_width=3, wedge_dept
     # todo [script example]
 
     """
+    from plans import geo
+
     # -------------------------------------------------------------------------
     # LOAD DEM
-    dc_raster = qgdal.read_raster(file_input=file_dem)
+    dc_raster = read_raster(file_input=file_dem)
     grd_dem = dc_raster["data"]
 
     # -------------------------------------------------------------------------
     # LOAD RIVERs
-    dc_raster2 = qgdal.read_raster(file_input=file_rivers)
+    dc_raster2 = read_raster(file_input=file_rivers)
     grd_rivers = dc_raster2["data"]
     # truncate to byte integer
     grd_rivers = grd_rivers.astype(np.uint8)
@@ -772,7 +1027,7 @@ def get_carved_dem(file_dem, file_rivers, file_output, wedge_width=3, wedge_dept
     # Get the driver to create the new raster
     # overwrite no data
     dc_raster["metadata"]["NODATA_value"] = DC_NODATA["float32"]
-    qgdal.write_raster(
+    write_raster(
         grid_output=grid_output,
         dc_metadata=dc_raster["metadata"],
         file_output=file_output,
@@ -781,6 +1036,9 @@ def get_carved_dem(file_dem, file_rivers, file_output, wedge_width=3, wedge_dept
     return file_output
 
 
+# todo [script example] -- standalone version using importlib
+# todo [docstring]
+# todo [optimize]
 def get_shalstab(
     file_slope,
     file_flowacc,
@@ -793,8 +1051,8 @@ def get_shalstab(
     soil_c=1,
     water_p=997,
 ):
-    # todo [docstring]
-    # todo [optimize]
+    from plans import geo
+
     # -------------------------------------------------------------------------
     # LOAD SLOPE
 
@@ -883,6 +1141,7 @@ def get_shalstab(
     return file_output1, file_output2
 
 
+# todo [script example] -- standalone version using importlib
 def get_tps(
     file_tpi, file_upa, file_output, upa_min=0.01, upa_max=2, tpi_v=-2, tpi_r=10
 ):
@@ -904,14 +1163,16 @@ def get_tps(
     :return: file path of output (echo)
     :rtype: str
     """
+    from plans import geo
+
     # -------------------------------------------------------------------------
     # LOAD TPI
-    dc_raster = qgdal.read_raster(file_input=file_tpi, metadata=True)
+    dc_raster = read_raster(file_input=file_tpi, metadata=True)
     grid_tpi = dc_raster["data"]
 
     # -------------------------------------------------------------------------
     # LOAD UPA
-    dc_raster2 = qgdal.read_raster(file_input=file_upa, metadata=False)
+    dc_raster2 = read_raster(file_input=file_upa, metadata=False)
     grid_upa = dc_raster2["data"]
 
     # -------------------------------------------------------------------------
@@ -931,7 +1192,7 @@ def get_tps(
     # EXPORT RASTER FILE
     # Get the driver to create the new raster
     dc_raster["metadata"]["NODATA_value"] = DC_NODATA["byte"]
-    qgdal.write_raster(
+    write_raster(
         grid_output=grid_output,
         dc_metadata=dc_raster["metadata"],
         file_output=file_output,
@@ -940,6 +1201,7 @@ def get_tps(
     return file_output
 
 
+# todo [script example] -- standalone version using importlib
 def get_twi(file_slope, file_upa, file_output):
     """
     Get the TWI map from Slope and Upslope Area
@@ -954,14 +1216,16 @@ def get_twi(file_slope, file_upa, file_output):
     :rtype: str
 
     """
+    from plans import geo
+
     # -------------------------------------------------------------------------
     # LOAD SLOPE
-    dc_raster = qgdal.read_raster(file_input=file_slope)
+    dc_raster = read_raster(file_input=file_slope)
     grd_slope = dc_raster["data"]
 
     # -------------------------------------------------------------------------
     # LOAD UPA
-    dc_raster2 = qgdal.read_raster(file_input=file_upa, metadata=False)
+    dc_raster2 = read_raster(file_input=file_upa, metadata=False)
     grd_upa = dc_raster2["data"]
 
     # -------------------------------------------------------------------------
@@ -973,7 +1237,7 @@ def get_twi(file_slope, file_upa, file_output):
     # EXPORT RASTER FILE
     # Get the driver to create the new raster
     dc_raster["metadata"]["NODATA_value"] = DC_NODATA["float32"]
-    qgdal.write_raster(
+    write_raster(
         grid_output=grid_output,
         dc_metadata=dc_raster["metadata"],
         file_output=file_output,
@@ -982,11 +1246,15 @@ def get_twi(file_slope, file_upa, file_output):
     return file_output
 
 
+# todo [script example] -- standalone version using importlib
+# todo [docstring]
 def get_dto(file_ldd, file_output):
-    # todo [docstring]
+
+    from plans import geo
+
     # -------------------------------------------------------------------------
     # LOAD LDD
-    dc_raster = qgdal.read_raster(file_input=file_ldd)
+    dc_raster = read_raster(file_input=file_ldd)
     grd_ldd = dc_raster["data"]
 
     # -------------------------------------------------------------------------
@@ -1000,7 +1268,7 @@ def get_dto(file_ldd, file_output):
     # EXPORT RASTER FILE
     # Get the driver to create the new raster
     dc_raster["metadata"]["NODATA_value"] = DC_NODATA["float32"]
-    qgdal.write_raster(
+    write_raster(
         grid_output=grid_output,
         dc_metadata=dc_raster["metadata"],
         file_output=file_output,
@@ -1009,15 +1277,17 @@ def get_dto(file_ldd, file_output):
     return file_output
 
 
+# todo [script example] -- standalone version using importlib
+# todo [docstring]
 def get_path_areas(file_dto, dc_basins, file_output, n_bins=100):
-    # todo [docstring]
     # -------------------------------------------------------------------------
     # LOAD DTO
-    dc_raster = Raster.read_tif(
+    dc_raster = read_raster(
         file_input=file_dto,
     )
     grd_dto = dc_raster["data"]
     n_cell_size = dc_raster["metadata"]["cellsize"]
+
     # todo [DEV] -- develop feature for handling parameterized units
     n_cell_area = n_cell_size * n_cell_size / (100 * 100)  # ha units
     n_max = round(np.nanmax(grd_dto), 1) + 1.0
@@ -1029,8 +1299,9 @@ def get_path_areas(file_dto, dc_basins, file_output, n_bins=100):
         # -------------------------------------------------------------------------
         # LOAD BASIN
         file_basin = dc_basins[basin_code]
-        dc_raster2 = Raster.read_tif(file_input=file_basin, dtype="byte")
+        dc_raster2 = read_raster(file_input=file_basin, dtype="byte")
         grd_basin = dc_raster2["data"]
+
         # -------------------------------------------------------------------------
         # PROCESS
         grd_output = grd_dto * grd_basin
@@ -1051,6 +1322,7 @@ def get_path_areas(file_dto, dc_basins, file_output, n_bins=100):
     return file_output
 
 
+# todo [script example] -- standalone version using importlib
 def get_htwi(file_ftwi, file_fhand, file_output, hand_w):
     """
     Get the HAND-enhanced TWI map from HAND, TWI and HAND weight
@@ -1067,16 +1339,15 @@ def get_htwi(file_ftwi, file_fhand, file_output, hand_w):
     :rtype: str
 
     # todo [script example]
-
     """
     # -------------------------------------------------------------------------
     # LOAD F-TWI
-    dc_raster = qgdal.read_raster(file_input=file_ftwi, metadata=True)
+    dc_raster = read_raster(file_input=file_ftwi, metadata=True)
     grd_ftwi = dc_raster["data"]
 
     # -------------------------------------------------------------------------
     # LOAD F-HAND
-    dc_raster2 = qgdal.read_raster(file_input=file_fhand, metadata=False)
+    dc_raster2 = read_raster(file_input=file_fhand, metadata=False)
     grd_fhand = dc_raster2["data"]
 
     # -------------------------------------------------------------------------
@@ -1090,7 +1361,7 @@ def get_htwi(file_ftwi, file_fhand, file_output, hand_w):
     # EXPORT RASTER FILE
     # Get the driver to create the new raster
     dc_raster["metadata"]["NODATA_value"] = DC_NODATA["float32"]
-    qgdal.write_raster(
+    write_raster(
         grid_output=grid_output,
         dc_metadata=dc_raster["metadata"],
         file_output=file_output,
@@ -1099,6 +1370,7 @@ def get_htwi(file_ftwi, file_fhand, file_output, hand_w):
     return file_output
 
 
+# todo [script example] -- standalone version using importlib
 def get_htwi_list(file_ftwi, file_fhand, folder_output, ls_weights=[0, 50, 100]):
     """
     Get a list of HTWI based on many weights
@@ -1111,10 +1383,9 @@ def get_htwi_list(file_ftwi, file_fhand, folder_output, ls_weights=[0, 50, 100])
     :type folder_output:
     :param ls_weights: list of weights to use for each raster
     :type ls_weights: list
-    :return: None
-    :rtype: None
 
-    # todo [script example]
+
+
 
     """
     for w in ls_weights:
@@ -1134,6 +1405,7 @@ def get_htwi_list(file_ftwi, file_fhand, folder_output, ls_weights=[0, 50, 100])
 # This routines expect a pre-set folder structure
 
 
+# todo [script example] -- standalone version using importlib
 def get_hand(
     folder_project,
     file_dem_filled,
@@ -1143,8 +1415,14 @@ def get_hand(
 ):
     """
     Get the HAND raster map from a DEM.
-    The DEM must be hydrologically consistent (no sinks).
-    PLANS-based folder structure is expected
+
+    .. warning::
+
+        The DEM must be hydrologically consistent (no sinks).
+
+    .. warning::
+
+        PLANS-based folder structure is expected
 
     :param folder_project: path to output folder
     :type folder_project: str
@@ -1162,7 +1440,7 @@ def get_hand(
 
     :rtype: dict
 
-    # todo [script example]
+
 
     """
     # expected folders
@@ -1188,7 +1466,7 @@ def get_hand(
 
     if file_drainage is None:
         # -- PCRaster - create material layer with cell x cell (area)
-        cellsize = qgdal.get_cellsize(file_input=file_dem_filled)
+        cellsize = get_cellsize(file_input=file_dem_filled)
         print("[pc-raster] get material (constant)...")
         file_material = "{}/material.map".format(folder_aux)
         processing.run(
@@ -1314,6 +1592,7 @@ def get_hand(
     return d_files
 
 
+# todo [script example] -- standalone version using importlib
 def setup_topo(
     folder_project,
     file_src_dem,
@@ -1329,7 +1608,10 @@ def setup_topo(
 ):
     """
     Setup protocols for getting ``topo`` datasets.
-    PLANS-based folder structure is expected
+
+    .. warning::
+
+        PLANS-based folder structure is expected
 
     :param folder_project: path to main plans project folder
     :type folder_project: str
@@ -1438,7 +1720,7 @@ def setup_topo(
 
     # get aoi extent
     print("get aoi extent...")
-    dict_bbox = get_extent_from_vector(db_input=db_project, layer_name=new_layer_aoi)
+    dict_bbox = get_extent_from_vector(input_db=db_project, layer_name=new_layer_aoi)
 
     # clip and warp dem
     print(r"[gdal] clip-n-warp dem...")
@@ -1476,6 +1758,7 @@ def setup_topo(
     }
 
 
+# todo [script example] -- standalone version using importlib
 def get_topo(
     folder_project,
     file_dem,
@@ -1491,7 +1774,10 @@ def get_topo(
 ):
     """
     Get all ``topo`` datasets for running PLANS.
-    PLANS-based folder structure is expected.
+
+    .. warning::
+
+        PLANS-based folder structure is expected.
 
     .. warning::
 
@@ -1515,10 +1801,15 @@ def get_topo(
     :type translate_to_ascii: bool
     :param style_folder: path to folder containing style files
     :type style_folder: str
-    :return: None
-    :rtype: None
 
-    Script example (for QGIS Python Console):
+
+
+
+    **Example**
+
+    .. warning::
+
+        Run this under QGIS python environment
 
     .. code-block:: python
 
@@ -1570,7 +1861,7 @@ def get_topo(
     }
 
     # get cellsize
-    cellsize = qgdal.get_cellsize(file_input=dict_files["dem"])
+    cellsize = get_cellsize(file_input=dict_files["dem"])
 
     # 4) get rivers blank
     print("get main rivers...")
@@ -1895,12 +2186,16 @@ def get_topo(
     return None
 
 
+# todo [script example] -- standalone version using importlib
 def retrieve_lulc(
     folder_src, folder_project, crs_target, crs_src, file_target, file_style_src=None
 ):
     """
     Retrieve lulc series maps from a source folder.
-    PLANS-based folder structure is expected.
+
+    .. warning::
+
+        PLANS-based folder structure is expected.
 
     :param folder_src: folder path to source maps -- Files are expected to end with _YYYY-MM-DD.tif
     :type folder_src: str
@@ -1914,10 +2209,15 @@ def retrieve_lulc(
     :type file_target: str
     :param file_style_src: path to QML style (optional)
     :type file_style_src: str
-    :return: None
-    :rtype: None
 
-    Script example (for QGIS Python Console):
+
+
+    **Example**
+
+    .. warning::
+
+        Run this under QGIS python environment
+
 
     .. code-block:: python
 
@@ -1933,7 +2233,6 @@ def retrieve_lulc(
             file_target="/path/to/dem.tif",
             file_style_src="/path/to/lulc_mapbiomas.qml"
         )
-
 
     """
     # handle folders
@@ -1958,7 +2257,7 @@ def retrieve_lulc(
     )
 
     # find cellsize from target file
-    cellsize = qgdal.get_cellsize(file_input=file_target)
+    cellsize = get_cellsize(file_input=file_target)
 
     # loop over years
     list_main_files = glob.glob(f"{folder_src}/*_*.tif")
@@ -2027,6 +2326,7 @@ def retrieve_lulc(
     return folder_aux
 
 
+# todo [script example] -- standalone version using importlib
 def convert_lulc(
     folder_src,
     folder_project,
@@ -2037,7 +2337,10 @@ def convert_lulc(
 ):
     """
     Convert lulc values from source map.
-    PLANS-based folder structure is expected.
+
+    .. warning::
+
+        PLANS-based folder structure is expected.
 
     :param folder_src: path to sourced maps
     :type folder_src: str
@@ -2051,10 +2354,14 @@ def convert_lulc(
     :type id_src: str
     :param file_style: path to converted style QML file
     :type file_style: str
-    :return: None
-    :rtype: None
 
-    Script example (for QGIS Python Console):
+
+    **Example**
+
+    .. warning::
+
+        Run this under QGIS python environment
+
 
     .. code-block:: python
 
@@ -2071,7 +2378,10 @@ def convert_lulc(
             file_style="/path/to/folder/lulc.qml"
         )
 
+
     """
+    from plans import geo
+
     # handle folders
     folder_lulc = "{}/inputs/lulc/obs".format(folder_project)
     print("[pandas] read table")
@@ -2096,7 +2406,7 @@ def convert_lulc(
         # -------------------------------------------------------------------------
         # LOAD
         # Open the raster file using gdal
-        dc_raster = qgdal.read_raster(file_input=file_input)
+        dc_raster = read_raster(file_input=file_input)
         grid_input = dc_raster["data"]
 
         print(f"[geo] {s_date} -- apply conversion")
@@ -2113,7 +2423,7 @@ def convert_lulc(
         file_output_name = f"lulc_{s_date}"
         file_output = f"{folder_lulc}/{file_output_name}.tif"
         dc_raster["metadata"]["NODATA_value"] = DC_NODATA["byte"]
-        qgdal.write_raster(
+        write_raster(
             grid_output=grid_output,
             dc_metadata=dc_raster["metadata"],
             file_output=file_output,
@@ -2135,6 +2445,7 @@ def rasterize_roads():
 """
 
 
+# todo [script example] -- standalone version using importlib
 def get_lulc(
     folder_src,
     folder_project,
@@ -2150,7 +2461,11 @@ def get_lulc(
 ):
     """
     Get lulc maps from source and convert to plans-format.
-    PLANS-based folder structure is expected.
+
+    .. warning::
+
+        PLANS-based folder structure is expected.
+
 
     :param folder_src: folder path to source maps -- Files are expected to end with _YYYY-MM-DD.tif
     :type folder_src: str
@@ -2170,8 +2485,8 @@ def get_lulc(
     :type id_src: str
     :param file_style: path to converted style QML file
     :type file_style: str
-    :return: None
-    :rtype: None
+
+
     """
 
     print("retrieve lulc maps from source")
@@ -2339,7 +2654,7 @@ def get_basins(folder_project, db_outlets, layer_outlets, code_outlets, crs_targ
 # code below is not deprecated but somehow outdated (seems too complicated)
 
 
-def get_rain_old(
+def old_get_rain(
     output_folder,
     src_folder,
     input_db,
@@ -2377,8 +2692,8 @@ def get_rain_old(
             - ``Color``: str, optional
 
     :type layer_rain_gauges: str
-    :return: None
-    :rtype: None
+
+
 
     Script example (for QGIS Python Console):
 
@@ -2503,10 +2818,10 @@ def get_rain_old(
 
         # first validade extents
         dict_extent_aoi = get_extent_from_vector(
-            db_input=input_db, layer_name=layer_aoi
+            input_db=input_db, layer_name=layer_aoi
         )
         dict_extent_rain = get_extent_from_vector(
-            db_input=input_db, layer_name=layer_rain_gauges
+            input_db=input_db, layer_name=layer_rain_gauges
         )
 
         # check is is bounded:
@@ -2576,7 +2891,7 @@ def get_rain_old(
     return None
 
 
-def get_lulc_old(
+def old_lulc(
     list_main_files,
     list_dates,
     lulc_table,
@@ -2590,7 +2905,8 @@ def get_lulc_old(
     qml_file=None,
     translate=True,
 ):
-    """Get LULC maps from a larger main LULC dataset.
+    """
+    Get LULC maps from a larger main LULC dataset.
 
     :param list_main_files: list of file paths to main lulc rasters
     :type list_main_files: list
@@ -2614,8 +2930,8 @@ def get_lulc_old(
     :type source_crs: str
     :param qml_file: [optional] file path to QML style file
     :type qml_file: str
-    :return: None
-    :rtype: None
+
+
 
     Script example (for QGIS):
 
@@ -2670,7 +2986,7 @@ def get_lulc_old(
         DC_PROVIDERS[crs_target],
         crs_target,
     )
-    cellsize = qgdal.get_cellsize(file_input=target_file)
+    cellsize = get_cellsize(file_input=target_file)
     list_output_files = list()
     list_filenames = list()
     print("clip-n-warp lulc ... ")
@@ -2811,14 +3127,15 @@ def get_lulc_old(
     return None
 
 
-def get_basins_old(
+def old_get_basins(
     output_folder,
     input_db,
     ldd_file,
     target_crs,
     layer_stream_gauges="stream",
 ):
-    """Get all ``basins`` datasets for running PLANS.
+    """
+    Get all ``basins`` datasets for running PLANS.
 
     :param output_folder: path to output folder
     :type output_folder: str
@@ -2844,8 +3161,8 @@ def get_basins_old(
             - ``Flow_File``: str, required. Path to data time series ``csv`` source file.
 
     :type layer_stream_gauges: str
-    :return: None
-    :rtype: None
+
+
 
     Script example (for QGIS Python Console):
 
@@ -3071,5 +3388,12 @@ def get_basins_old(
     return None
 
 
-def testing():
-    print("testing")
+# SCRIPT
+# ***********************************************************************
+# standalone behaviour as a script
+if __name__ == "__main__":
+
+    # Script section
+    # ===================================================================
+    print("Hello world!")
+    # ... {develop}

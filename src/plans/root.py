@@ -5,32 +5,7 @@
 # See LICENSE for license details.
 
 """
-This module provides a set of the primitive classes used.
-
-Overview
---------
-
-# todo [major docstring improvement] -- overview
-Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl. Pellentesque habitant morbi tristique senectus
-et netus et malesuada fames ac turpis egestas.
-
-Example
--------
-
-# todo [major docstring improvement] -- examples
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,
-in porttitor lacus lobortis vitae. In a lacinia nisl.
-
-.. code-block:: python
-
-    import numpy as np
-    print("Hello World!")
-
-Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl.
+A set of primitive classes used in other modules.
 
 """
 # IMPORTS
@@ -52,34 +27,14 @@ import matplotlib.pyplot as plt
 
 # ... {develop}
 
-# Project-level imports
-# =======================================================================
-# import {module}
-# ... {develop}
 
 # CONSTANTS
 # ***********************************************************************
 # define constants in uppercase
 
-# CONSTANTS -- Project-level
-# =======================================================================
-# ... {develop}
-
-# CONSTANTS -- Module-level
-# =======================================================================
-# ... {develop}
-
 
 # FUNCTIONS
 # ***********************************************************************
-
-# FUNCTIONS -- Project-level
-# =======================================================================
-# ... {develop}
-
-# FUNCTIONS -- Module-level
-# =======================================================================
-# ... {develop}
 
 
 # CLASSES
@@ -95,8 +50,8 @@ class MbaE:
 
     .. important::
 
-        **Mba'e is the origin**. The very-basic almost-zero level object.
-        Deeper than here is only the Python builtin ``object`` class.
+        **Mba'e is the origin**. The very-basic almost-zero level class.
+        Deeper than here is only the Python built-in ``object`` class.
 
 
     **Examples:**
@@ -152,16 +107,6 @@ class MbaE:
     """
 
     def __init__(self, name="MyMbaE", alias=None):
-        """
-        Initialize the ``MbaE`` object.
-
-        :param name: unique object name
-        :type name: str
-        :param alias: unique object alias.
-            If None, it takes the first and last characters from ``name``
-        :type alias: str
-
-        """
         # ------------ pseudo-static ----------- #
         self.object_name = self.__class__.__name__
         self.object_alias = "mbae"
@@ -187,9 +132,6 @@ class MbaE:
         # ... continues in downstream objects ... #
 
     def __str__(self):
-        """
-        The ``MbaE`` string
-        """
         str_type = str(type(self))
         str_df_metadata = self.get_metadata_df().to_string(index=False)
         str_out = "[{} ({})]\n{} ({}):\t{}\n{}".format(
@@ -212,10 +154,6 @@ class MbaE:
             self.alias = self.name[:]
 
     def _set_fields(self):
-        """
-        Set fields names
-        """
-
         # Attribute fields
         self.field_name = "name"
         self.field_alias = "alias"
@@ -364,7 +302,8 @@ class MbaE:
 
 class Collection(MbaE):
     """
-    A collection of primitive ``MbaE`` objects with associated metadata.
+    A collection of primitive ``MbaE`` instances.
+
     Useful for large scale manipulations in ``MbaE``-based objects.
     Expected to have custom methods and attributes downstream.
 
@@ -467,7 +406,6 @@ class Collection(MbaE):
         :param name: unique object name
         :type name: str
         :param alias: unique object alias.
-            If None, it takes the first and last characters from name
         :type alias: str
         """
         # ------------ call super ----------- #
@@ -512,17 +450,7 @@ class Collection(MbaE):
         # ... continues in downstream objects ... #
 
     def get_metadata(self):
-        """
-        Get a dictionary with object metadata.
 
-
-        .. note::
-
-            Metadata does **not** necessarily inclue all object attributes.
-
-        :return: dictionary with all metadata
-        :rtype: dict
-        """
         # ------------ call super ----------- #
         dict_meta = super().get_metadata()
 
@@ -663,8 +591,8 @@ class DataSet(MbaE):
     **Notes**
 
     Expected to hold one :class:`pandas.DataFrame`.
-    This is a Base and Dummy object. Expected to be implemented downstream for
-    custom applications.
+    This is a Dummy class.
+    Expected to be implemented downstream for custom applications.
 
     **Examples**
 
@@ -743,15 +671,6 @@ class DataSet(MbaE):
     """
 
     def __init__(self, name="MyDataSet", alias="DS0"):
-        """
-        Initialize the ``DataSet`` object.
-
-        :param name: unique object name
-        :type name: str
-        :param alias: unique object alias. If None, it takes the first and last characters from name
-        :type alias: str
-
-        """
         # ------------ call super ----------- #
         super().__init__(name=name, alias=alias)
         # overwriters
@@ -802,7 +721,7 @@ class DataSet(MbaE):
 
     def _set_view_specs(self):
         """
-        Set view specifications.
+        Set view specifications in a dict.
 
         """
         self.view_specs = {
@@ -1039,6 +958,280 @@ class DataSet(MbaE):
         return pd.DataFrame(dc_main)
 
 
+class FileSys(DataSet):
+    """
+    Handles files and folder organization
+
+    **Notes**
+
+    This class is useful for complex folder structure
+    setups and controlling the status of expected file.
+
+    .. warning::
+
+        This is a Dummy class. Expected to be implemented downstream for
+        custom applications.
+
+
+    """
+
+    def __init__(self, name="MyFS", alias="FS0"):
+        # prior attributes
+        self.folder_base = None
+        self.folder_root = None
+
+        # ------------ call super ----------- #
+        super().__init__(name=name, alias=alias)
+
+        # overwriters
+        self.object_alias = "FS"
+
+        # ------------ set mutables ----------- #
+
+        self._set_view_specs()
+
+        # ... continues in downstream objects ... #
+
+    def _set_fields(self):
+        # ------------ call super ----------- #
+        super()._set_fields()
+
+        # Attribute fields
+        self.field_folder_base = "folder_base"
+
+        # ... continues in downstream objects ... #
+
+    def get_metadata(self):
+        # ------------ call super ----------- #
+        dict_meta = super().get_metadata()
+
+        # customize local metadata:
+        dict_meta_local = {self.field_folder_base: self.folder_base}
+
+        # update
+        dict_meta.update(dict_meta_local)
+
+        # removals
+
+        # remove color
+        dict_meta.pop(self.field_color)
+
+        return dict_meta
+
+    def update(self):
+        super().update()
+        # reset main folder
+        if self.folder_base is not None:
+            self.folder_root = os.path.join(self.folder_base, self.name)
+        # ... continues in downstream objects ... #
+
+    def setter(self, dict_setter, load_data=True):
+        # ignore color
+        dict_setter[self.field_color] = None
+
+        # -------------- super -------------- #
+        super().setter(dict_setter=dict_setter, load_data=False)
+
+        # ---------- set basic attributes --------- #
+        # set base folder
+        self.folder_base = dict_setter[self.field_folder_base]
+        self.file_data = dict_setter[self.field_file_data]
+
+        # -------------- set data logic here -------------- #
+        if load_data:
+            self.load_data(file_data=self.file_data)
+
+        # -------------- update other mutables -------------- #
+        self.update()
+
+        # ... continues in downstream objects ... #
+
+    def load_data(self, file_data):
+        # -------------- overwrite relative path inputs -------------- #
+        file_data = os.path.abspath(file_data)
+        self.file_data = file_data[:]
+
+        # -------------- implement loading logic -------------- #
+        default_columns = {
+            "folder": str,
+            "file": str,
+            "file_template": str,
+        }
+        # -------------- call loading function -------------- #
+        self.data = pd.read_csv(
+            self.file_data,
+            sep=self.file_csv_sep,
+            dtype=default_columns,
+            usecols=list(default_columns.keys()),
+        )
+
+        # -------------- post-loading logic -------------- #
+        return None
+
+    def setup(self):
+        """
+        This method sets up the FileSys structure (default folders and files)
+
+        .. danger::
+
+            This method overwrites all existing default files.
+
+        """
+        self.setup_root_folder()
+        self.setup_subfolders()
+        self.setup_templates()
+        return None
+
+    def setup_root_folder(self):
+        """
+        Make the root folder for file system. Skip if exists.
+        """
+        # make main dir
+        os.makedirs(self.folder_root, exist_ok=True)
+        return None
+
+    def setup_subfolders(self):
+        """
+        Make all subfolders expected in the file system. Skip if exists.
+        """
+        # fill folders
+        for i in range(len(self.data)):
+            folder_sub = Path(self.folder_root) / self.data["folder"].values[i]
+            os.makedirs(folder_sub, exist_ok=True)
+        return None
+
+    def setup_templates(self):
+        """
+        Copy all template files to default files in the file system.
+
+        .. danger::
+
+            This method overwrites all existing default files.
+
+        """
+        df = self.data.copy()
+        df.dropna(subset="file_template", inplace=True)
+        for i in range(len(df)):
+            src_file = df["file_template"].values[i]
+            src_file = os.path.abspath(src_file)
+            dst_file = (
+                self.folder_root
+                + "/"
+                + df["folder"].values[i]
+                + "/"
+                + df["file"].values[i]
+            )
+            shutil.copy(src=src_file, dst=dst_file)
+        return None
+
+    def backup(self, dst_folder, version_id=None):
+        """
+        Backup project in a zip code
+
+        :param dst_folder: path to destination folder
+        :type dst_folder: str or Path
+        :param version_id: suffix label for versioning. if None, a timestamp is created.
+        :type version_id: str
+        """
+
+        # compute timestamp
+        if version_id is None:
+            version_id = str(datetime.datetime.now().strftime("%Y-%m0-%d %H:%M:%S"))
+            version_id = version_id.replace("-", "")
+            version_id = version_id.replace(":", "")
+            version_id = version_id.replace(" ", "")
+
+        dst_dir = os.path.join(dst_folder, self.name + "_" + version_id)
+        FileSys.archive_folder(src_dir=self.folder_root, dst_dir=dst_dir)
+        return None
+
+    # ----------------- STATIC METHODS ----------------- #
+    @staticmethod
+    def archive_folder(src_dir, dst_dir):
+        """
+        Archive to a zip folder
+
+        :param src_dir: source directory
+        :type src_dir: str
+        :param dst_dir: destination directory
+        :type dst_dir: str
+        """
+        # Create a zip archive from the directory
+        shutil.make_archive(dst_dir, "zip", src_dir)
+        return None
+
+    @staticmethod
+    def check_file_status(files):
+        """
+        Static method for file existing checkup
+
+        :param files: iterable with file paths
+        :type files: list
+        :return: list status ('ok' or 'missing')
+        :rtype: list
+        """
+        list_status = []
+        for f in files:
+            str_status = "missing"
+            if os.path.isfile(f):
+                str_status = "ok"
+            list_status.append(str_status)
+        return list_status
+
+    @staticmethod
+    def copy_batch(dst_pattern, src_pattern):
+        """
+        Util static method for batch-copying pattern-based files.
+
+        .. note::
+
+            Pattern is expected to be a prefix prior to ``*`` suffix.
+
+        :param dst_pattern: destination path with file pattern. Example: path/to/dst_file_*.csv
+        :type dst_pattern: str
+        :param src_pattern: source path with file pattern. Example: path/to/src_file_*.csv
+        :type src_pattern: str
+
+
+        """
+        # handle destination variables
+        dst_basename = os.path.basename(dst_pattern).split(".")[0].replace("*", "")  # k
+        dst_folder = os.path.dirname(dst_pattern)  # folder
+
+        # handle sourced variables
+        src_extension = os.path.basename(src_pattern).split(".")[1]
+        src_prefix = os.path.basename(src_pattern).split(".")[0].replace("*", "")
+
+        # get the list of sourced files
+        list_files = glob.glob(src_pattern)
+        # copy loop
+        if len(list_files) != 0:
+            for _f in list_files:
+                _full = os.path.basename(_f).split(".")[0]
+                _suffix = _full[len(src_prefix) :]
+                _dst = os.path.join(
+                    dst_folder, dst_basename + _suffix + "." + src_extension
+                )
+                shutil.copy(_f, _dst)
+        return None
+
+    @staticmethod
+    def get_file_size_mb(file_path):
+        """
+        Util for getting the file size in MB
+
+        :param file_path: path to file
+        :type file_path: str
+        :return: file size in MB
+        :rtype: float
+        """
+        # Get the file size in bytes
+        file_size_bytes = os.path.getsize(file_path)
+        # Convert bytes to megabytes
+        file_size_mb = file_size_bytes / (1024 * 1024)
+        return file_size_mb
+
+
 # todo [refactor] -- consider remove from plans lib
 class Note(MbaE):
     # todo [docstring]
@@ -1052,7 +1245,6 @@ class Note(MbaE):
         # ... continues in downstream objects ... #
 
     def _set_fields(self):
-        """Set fields names"""
         super()._set_fields()
         # Attribute fields
         self.field_file_note = "file_note"
@@ -1062,16 +1254,6 @@ class Note(MbaE):
         # ... continues in downstream objects ... #
 
     def get_metadata(self):
-        """Get a dictionary with object metadata.
-
-
-        .. note::
-
-            Metadata does **not** necessarily inclue all object attributes.
-
-        :return: dictionary with all metadata
-        :rtype: dict
-        """
         # ------------ call super ----------- #
         dict_meta = super().get_metadata()
 
@@ -1097,7 +1279,8 @@ class Note(MbaE):
         self.to_file(file_path=self.file_note)
 
     def to_file(self, file_path, cleanup=True):
-        """Export Note to markdown
+        """
+        Export Note to markdown
 
         :param file_path: path to file
         :type file_path: str
@@ -1123,6 +1306,7 @@ class Note(MbaE):
 
     @staticmethod
     def remove_excessive_blank_lines(file_path):
+        # todo docstring
         with open(file_path, "r", encoding="utf-8") as file:
             lines = file.readlines()
 
@@ -1143,7 +1327,8 @@ class Note(MbaE):
 
     @staticmethod
     def parse_metadata(note_file):
-        """Extracts YAML metadata from the header of a Markdown file.
+        """
+        Extracts YAML metadata from the header of a Markdown file.
 
         :param note_file: str, path to the Markdown file
         :return: dict, extracted YAML metadata
@@ -1165,7 +1350,8 @@ class Note(MbaE):
 
     @staticmethod
     def parse_yaml(yaml_content):
-        """Parses YAML content into a dictionary.
+        """
+        Parses YAML content into a dictionary.
 
         :param yaml_content: str, YAML content as string
         :return: dict, parsed YAML content
@@ -1213,6 +1399,7 @@ class Note(MbaE):
 
     @staticmethod
     def metadata_to_list(metadata_dict):
+        # todo docstring
         ls_metadata = []
         ls_metadata.append("---")
         for e in metadata_dict:
@@ -1232,6 +1419,7 @@ class Note(MbaE):
 
     @staticmethod
     def data_to_list(data_dict):
+        # todo docstring
         ls_out = []
         for level in data_dict:
             ls_out = ls_out + data_dict[level][:]
@@ -1242,6 +1430,7 @@ class Note(MbaE):
 
     @staticmethod
     def parse_note(file_path):
+        # todo docstring
         with open(file_path, "r", encoding="utf-8") as file:
             lines = file.readlines()
 
@@ -1283,7 +1472,8 @@ class Note(MbaE):
 
     @staticmethod
     def list_by_pattern(md_dict, patt_type="tag"):
-        """Retrieve a list of patterns from the note dictionary.
+        """
+        Retrieve a list of patterns from the note dictionary.
 
         :param md_dict: Dictionary containing note sections.
         :type md_dict: dict
@@ -1313,6 +1503,7 @@ class Note(MbaE):
         return patts
 
 
+# todo [refactor] -- consider remove from plans lib
 class RecordTable(DataSet):
     """
     The base class for ``RecordTable``.
@@ -2033,292 +2224,12 @@ class RecordTable(DataSet):
         return running_time
 
 
-class FileSys(DataSet):
-    """
-    The core ``FileSys`` base class. Handles files and folder organization,
-
-    **Notes**
-
-    This class is useful for complex folder structure setups and controlling the status
-    of expected file.
-
-    .. warning::
-
-        This is a Base and Dummy object. Expected to be implemented downstream for
-        custom applications.
-
-
-    """
-
-    def __init__(self, name="MyFS", alias="FS0"):
-        """
-        Initialize the ``FileSys`` object.
-
-        :param folder_base: path to File System folder location
-        :type folder_base: str
-        :param name: unique class name
-        :type name: str
-        :param alias: unique object alias. If None, it takes the first and last characters from name
-        :type alias: str
-
-        """
-        # prior attributes
-        self.folder_base = None
-        self.folder_root = None
-
-        # ------------ call super ----------- #
-        super().__init__(name=name, alias=alias)
-
-        # overwriters
-        self.object_alias = "FS"
-
-        # ------------ set mutables ----------- #
-
-        self._set_view_specs()
-
-        # ... continues in downstream objects ... #
-
-    def _set_fields(self):
-        # ------------ call super ----------- #
-        super()._set_fields()
-
-        # Attribute fields
-        self.field_folder_base = "folder_base"
-
-        # ... continues in downstream objects ... #
-
-    def get_metadata(self):
-        # ------------ call super ----------- #
-        dict_meta = super().get_metadata()
-
-        # customize local metadata:
-        dict_meta_local = {self.field_folder_base: self.folder_base}
-
-        # update
-        dict_meta.update(dict_meta_local)
-
-        # removals
-
-        # remove color
-        dict_meta.pop(self.field_color)
-
-        return dict_meta
-
-    def update(self):
-        super().update()
-        # reset main folder
-        if self.folder_base is not None:
-            self.folder_root = os.path.join(self.folder_base, self.name)
-        # ... continues in downstream objects ... #
-
-    def setter(self, dict_setter, load_data=True):
-        # ignore color
-        dict_setter[self.field_color] = None
-
-        # -------------- super -------------- #
-        super().setter(dict_setter=dict_setter, load_data=False)
-
-        # ---------- set basic attributes --------- #
-        # set base folder
-        self.folder_base = dict_setter[self.field_folder_base]
-        self.file_data = dict_setter[self.field_file_data]
-
-        # -------------- set data logic here -------------- #
-        if load_data:
-            self.load_data(file_data=self.file_data)
-
-        # -------------- update other mutables -------------- #
-        self.update()
-
-        # ... continues in downstream objects ... #
-
-    def load_data(self, file_data):
-        # -------------- overwrite relative path inputs -------------- #
-        file_data = os.path.abspath(file_data)
-        self.file_data = file_data[:]
-
-        # -------------- implement loading logic -------------- #
-        default_columns = {
-            "folder": str,
-            "file": str,
-            "file_template": str,
-        }
-        # -------------- call loading function -------------- #
-        self.data = pd.read_csv(
-            self.file_data,
-            sep=self.file_csv_sep,
-            dtype=default_columns,
-            usecols=list(default_columns.keys()),
-        )
-
-        # -------------- post-loading logic -------------- #
-        return None
-
-    def setup(self):
-        """
-        This method sets up all the FileSys structure (default folders and files)
-
-        .. danger::
-
-            This method overwrites all existing default files.
-
-        """
-        self.setup_root_folder()
-        self.setup_subfolders()
-        self.setup_templates()
-        return None
-
-    def setup_root_folder(self):
-        """
-        Make the root folder for file system. Skip if exists.
-        """
-        # make main dir
-        os.makedirs(self.folder_root, exist_ok=True)
-        return None
-
-    def setup_subfolders(self):
-        """
-        Make all subfolders expected in the file system. Skip if exists.
-        """
-        # fill folders
-        for i in range(len(self.data)):
-            folder_sub = Path(self.folder_root) / self.data["folder"].values[i]
-            os.makedirs(folder_sub, exist_ok=True)
-        return None
-
-    def setup_templates(self):
-        """
-        Copy all template files to default files in the file system.
-
-        .. danger::
-
-            This method overwrites all existing default files.
-
-        """
-        df = self.data.copy()
-        df.dropna(subset="file_template", inplace=True)
-        for i in range(len(df)):
-            src_file = df["file_template"].values[i]
-            src_file = os.path.abspath(src_file)
-            dst_file = (
-                self.folder_root
-                + "/"
-                + df["folder"].values[i]
-                + "/"
-                + df["file"].values[i]
-            )
-            shutil.copy(src=src_file, dst=dst_file)
-        return None
-
-    def backup(self, dst_folder, version_id=None):
-        """
-        Backup project in a zip code
-
-        :param dst_folder: path to destination folder
-        :type dst_folder: str or Path
-        :param version_id: suffix label for versioning. if None, a timestamp is created.
-        :type version_id: str
-        """
-
-        # compute timestamp
-        if version_id is None:
-            version_id = str(datetime.datetime.now().strftime("%Y-%m0-%d %H:%M:%S"))
-            version_id = version_id.replace("-", "")
-            version_id = version_id.replace(":", "")
-            version_id = version_id.replace(" ", "")
-
-        dst_dir = os.path.join(dst_folder, self.name + "_" + version_id)
-        FileSys.archive_folder(src_dir=self.folder_root, dst_dir=dst_dir)
-        return None
-
-    # ----------------- STATIC METHODS ----------------- #
-    @staticmethod
-    def archive_folder(src_dir, dst_dir):
-        """
-        Archive to a zip folder
-
-        :param src_dir: source directory
-        :type src_dir: str
-        :param dst_dir: destination directory
-        :type dst_dir: str
-        """
-        # Create a zip archive from the directory
-        shutil.make_archive(dst_dir, "zip", src_dir)
-        return None
-
-    @staticmethod
-    def check_file_status(files):
-        """
-        Static method for file existing checkup
-
-        :param files: iterable with file paths
-        :type files: list
-        :return: list status ('ok' or 'missing')
-        :rtype: list
-        """
-        list_status = []
-        for f in files:
-            str_status = "missing"
-            if os.path.isfile(f):
-                str_status = "ok"
-            list_status.append(str_status)
-        return list_status
-
-    @staticmethod
-    def copy_batch(dst_pattern, src_pattern):
-        """
-        Util static method for batch-copying pattern-based files.
-
-        .. note::
-
-            Pattern is expected to be a prefix prior to ``*`` suffix.
-
-        :param dst_pattern: destination path with file pattern. Example: path/to/dst_file_*.csv
-        :type dst_pattern: str
-        :param src_pattern: source path with file pattern. Example: path/to/src_file_*.csv
-        :type src_pattern: str
-
-
-        """
-        # handle destination variables
-        dst_basename = os.path.basename(dst_pattern).split(".")[0].replace("*", "")  # k
-        dst_folder = os.path.dirname(dst_pattern)  # folder
-
-        # handle sourced variables
-        src_extension = os.path.basename(src_pattern).split(".")[1]
-        src_prefix = os.path.basename(src_pattern).split(".")[0].replace("*", "")
-
-        # get the list of sourced files
-        list_files = glob.glob(src_pattern)
-        # copy loop
-        if len(list_files) != 0:
-            for _f in list_files:
-                _full = os.path.basename(_f).split(".")[0]
-                _suffix = _full[len(src_prefix) :]
-                _dst = os.path.join(
-                    dst_folder, dst_basename + _suffix + "." + src_extension
-                )
-                shutil.copy(_f, _dst)
-        return None
-
-    @staticmethod
-    def get_file_size_mb(file_path):
-        """
-        Util for getting the file size in MB
-
-        :param file_path: path to file
-        :type file_path: str
-        :return: file size in MB
-        :rtype: float
-        """
-        # Get the file size in bytes
-        file_size_bytes = os.path.getsize(file_path)
-        # Convert bytes to megabytes
-        file_size_mb = file_size_bytes / (1024 * 1024)
-        return file_size_mb
-
-
-# --------- DEPRECATED ---------
-
+# SCRIPT
+# ***********************************************************************
+# standalone behaviour as a script
 if __name__ == "__main__":
-    print("hello world!")
+
+    # Script section
+    # ===================================================================
+    print("Hello world!")
+    # ... {develop}

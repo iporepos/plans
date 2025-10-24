@@ -43,15 +43,11 @@ Print a message
 # Native imports
 # =======================================================================
 import argparse
-import os.path
 
 # ... {develop}
 
 # External imports
 # =======================================================================
-import numpy as np
-import pandas as pd
-
 # ... {develop}
 
 # Project-level imports

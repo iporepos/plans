@@ -43,7 +43,6 @@ import pandas as pd
 # =======================================================================
 from plans.config import parse_files, parse_fields
 from plans.root import FileSys
-from plans.root import RecordTable
 
 # ... {develop}
 
