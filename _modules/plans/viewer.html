@@ -422,6 +422,10 @@
 <span class="c1"># Define a conversion factor from mm to points</span>
 <span class="n">MM_TO_PT</span> <span class="o">=</span> <span class="mf">2.83465</span>
 
+<span class="n">LABEL_SIZE_TICK</span> <span class="o">=</span> <span class="mf">2.2</span>  <span class="c1"># mm</span>
+<span class="n">LABEL_SIZE_AXIS</span> <span class="o">=</span> <span class="mf">2.52</span>  <span class="c1"># mm</span>
+<span class="n">LABEL_SIZE_TITLE</span> <span class="o">=</span> <span class="mf">2.78</span>  <span class="c1"># mm</span>
+
 
 <span class="n">FIG_SIZES</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;S&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -477,6 +481,17 @@
         <span class="s2">&quot;labels_axes&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span>
         <span class="s2">&quot;labels_titles&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span>
         <span class="s2">&quot;background_axes&quot;</span><span class="p">:</span> <span class="s2">&quot;f6f7f9ff&quot;</span><span class="p">,</span>  <span class="c1"># f4f4faff; e5e5ecff, eeedf3ff</span>
+        <span class="s2">&quot;background_fig&quot;</span><span class="p">:</span> <span class="s2">&quot;white&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;wien3d&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;lines_w&quot;</span><span class="p">:</span> <span class="mf">0.22</span> <span class="o">*</span> <span class="n">MM_TO_PT</span><span class="p">,</span>
+        <span class="s2">&quot;lines_frame&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;lines_grids&quot;</span><span class="p">:</span> <span class="s2">&quot;white&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;labels_ticks&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;labels_axes&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;labels_titles&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;background_axes&quot;</span><span class="p">:</span> <span class="s2">&quot;white&quot;</span><span class="p">,</span>  <span class="c1"># f4f4faff; e5e5ecff, eeedf3ff</span>
         <span class="s2">&quot;background_fig&quot;</span><span class="p">:</span> <span class="s2">&quot;white&quot;</span><span class="p">,</span>
         <span class="s2">&quot;grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">},</span>
@@ -582,14 +597,11 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;font.sans-serif&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Arial&quot;</span><span class="p">]</span>
     <span class="c1"># Font sizes</span>
 
-    <span class="c1"># Desired font sizes in millimeters</span>
-    <span class="n">tick_label_size_mm</span> <span class="o">=</span> <span class="mf">2.2</span>
-    <span class="n">axis_label_size_mm</span> <span class="o">=</span> <span class="mf">2.52</span>  <span class="c1"># Example: 5 mm for axis labels</span>
-    <span class="n">title_size_mm</span> <span class="o">=</span> <span class="mf">2.78</span>  <span class="c1"># Example: 6.5 mm for title</span>
     <span class="c1"># Convert mm to points</span>
-    <span class="n">tick_label_size_pt</span> <span class="o">=</span> <span class="n">tick_label_size_mm</span> <span class="o">*</span> <span class="n">MM_TO_PT</span>
-    <span class="n">axis_label_size_pt</span> <span class="o">=</span> <span class="n">axis_label_size_mm</span> <span class="o">*</span> <span class="n">MM_TO_PT</span>
-    <span class="n">title_size_pt</span> <span class="o">=</span> <span class="n">title_size_mm</span> <span class="o">*</span> <span class="n">MM_TO_PT</span>
+    <span class="n">tick_label_size_pt</span> <span class="o">=</span> <span class="n">LABEL_SIZE_TICK</span> <span class="o">*</span> <span class="n">MM_TO_PT</span>
+    <span class="n">axis_label_size_pt</span> <span class="o">=</span> <span class="n">LABEL_SIZE_AXIS</span> <span class="o">*</span> <span class="n">MM_TO_PT</span>
+    <span class="n">title_size_pt</span> <span class="o">=</span> <span class="n">LABEL_SIZE_TITLE</span> <span class="o">*</span> <span class="n">MM_TO_PT</span>
+
     <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;font.size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tick_label_size_pt</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;xtick.labelsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tick_label_size_pt</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;ytick.labelsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tick_label_size_pt</span>
