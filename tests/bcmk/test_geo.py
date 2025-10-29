@@ -48,13 +48,13 @@ import os.path
 import unittest
 from pathlib import Path
 
-import numpy as np
-import pandas as pd
-
 # ... {develop}
 
 # External imports
 # =======================================================================
+import numpy as np
+import pandas as pd
+
 # ... {develop}
 
 # Project-level imports

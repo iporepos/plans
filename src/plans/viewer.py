@@ -40,6 +40,10 @@ import matplotlib.colors as mcolors
 # Define a conversion factor from mm to points
 MM_TO_PT = 2.83465
 
+LABEL_SIZE_TICK = 2.2  # mm
+LABEL_SIZE_AXIS = 2.52  # mm
+LABEL_SIZE_TITLE = 2.78  # mm
+
 
 FIG_SIZES = {
     "S": {
@@ -95,6 +99,17 @@ FIG_STYLES = {
         "labels_axes": "black",
         "labels_titles": "black",
         "background_axes": "f6f7f9ff",  # f4f4faff; e5e5ecff, eeedf3ff
+        "background_fig": "white",
+        "grid": True,
+    },
+    "wien3d": {
+        "lines_w": 0.22 * MM_TO_PT,
+        "lines_frame": "black",
+        "lines_grids": "white",
+        "labels_ticks": "black",
+        "labels_axes": "black",
+        "labels_titles": "black",
+        "background_axes": "white",  # f4f4faff; e5e5ecff, eeedf3ff
         "background_fig": "white",
         "grid": True,
     },
@@ -192,14 +207,11 @@ def set_fonts(style=None):
     plt.rcParams["font.sans-serif"] = ["Arial"]
     # Font sizes
 
-    # Desired font sizes in millimeters
-    tick_label_size_mm = 2.2
-    axis_label_size_mm = 2.52  # Example: 5 mm for axis labels
-    title_size_mm = 2.78  # Example: 6.5 mm for title
     # Convert mm to points
-    tick_label_size_pt = tick_label_size_mm * MM_TO_PT
-    axis_label_size_pt = axis_label_size_mm * MM_TO_PT
-    title_size_pt = title_size_mm * MM_TO_PT
+    tick_label_size_pt = LABEL_SIZE_TICK * MM_TO_PT
+    axis_label_size_pt = LABEL_SIZE_AXIS * MM_TO_PT
+    title_size_pt = LABEL_SIZE_TITLE * MM_TO_PT
+
     plt.rcParams["font.size"] = tick_label_size_pt
     plt.rcParams["xtick.labelsize"] = tick_label_size_pt
     plt.rcParams["ytick.labelsize"] = tick_label_size_pt
