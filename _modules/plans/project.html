@@ -754,16 +754,16 @@
         <span class="k">return</span> <span class="n">dict_meta</span></div>
 
 
-<div class="viewcode-block" id="Project.get_list_basins">
-<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.get_list_basins">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_list_basins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Project.get_basins">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.get_basins">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_basins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># todo docstring</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_basins</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Project.get_list_scenarios_climate">
-<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.get_list_scenarios_climate">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_list_scenarios_climate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Project.get_scenarios_climate">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.get_scenarios_climate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_scenarios_climate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># todo docstring</span>
         <span class="n">ls_folder_names</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_climate</span><span class="p">)</span>
         <span class="n">ls_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_climate</span><span class="p">)</span> <span class="o">/</span> <span class="n">folder</span> <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="n">ls_folder_names</span><span class="p">]</span>
@@ -776,9 +776,9 @@
         <span class="k">return</span> <span class="n">ls_scenarios</span></div>
 
 
-<div class="viewcode-block" id="Project.get_list_scenarios_lulc">
-<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.get_list_scenarios_lulc">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_list_scenarios_lulc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Project.get_scenarios_lulc">
+<a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.get_scenarios_lulc">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_scenarios_lulc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># todo docstring</span>
         <span class="n">ls_folder_names</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_lulc</span><span class="p">)</span>
         <span class="n">ls_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_lulc</span><span class="p">)</span> <span class="o">/</span> <span class="n">folder</span> <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="n">ls_folder_names</span><span class="p">]</span>
@@ -1193,7 +1193,7 @@
         <span class="c1"># todo docstring</span>
         <span class="c1"># setup</span>
         <span class="c1"># ---------------------------------------------------------------</span>
-        <span class="n">ls_scenarios</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_list_scenarios_lulc</span><span class="p">()</span>
+        <span class="n">ls_scenarios</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scenarios_lulc</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">lulc_scenario</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ls_scenarios</span> <span class="o">=</span> <span class="p">[</span><span class="n">lulc_scenario</span><span class="p">]</span>
         <span class="n">ls_processes</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1242,10 +1242,10 @@
         <span class="c1"># todo docstring</span>
         <span class="c1"># setup</span>
         <span class="c1"># ---------------------------------------------------------------</span>
-        <span class="n">ls_lulc_scenarios</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_list_scenarios_lulc</span><span class="p">()</span>
+        <span class="n">ls_lulc_scenarios</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scenarios_lulc</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">lulc_scenario</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ls_lulc_scenarios</span> <span class="o">=</span> <span class="p">[</span><span class="n">lulc_scenario</span><span class="p">]</span>
-        <span class="n">ls_climate_scenarios</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_list_scenarios_climate</span><span class="p">()</span>
+        <span class="n">ls_climate_scenarios</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scenarios_climate</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">climate_scenario</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ls_climate_scenarios</span> <span class="o">=</span> <span class="p">[</span><span class="n">climate_scenario</span><span class="p">]</span>
 
@@ -1316,7 +1316,7 @@
 <a class="viewcode-back" href="../../generated/plans.project.html#plans.project.Project.generate_lulc_parameters">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_lulc_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lulc_scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_lulc_scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
-        <span class="n">ls_scenarios</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_list_scenarios_lulc</span><span class="p">()</span>
+        <span class="n">ls_scenarios</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scenarios_lulc</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">lulc_scenario</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ls_scenarios</span> <span class="o">=</span> <span class="p">[</span><span class="n">lulc_scenario</span><span class="p">]</span>

@@ -603,21 +603,22 @@
 
         <span class="c1"># update stats</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stats_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assess_basic_stats</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">freq_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assess_frequency</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">weibull_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assess_weibull_cdf</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stats_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_basic_stats</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">freq_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_frequency</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weibull_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cdf_weibull</span><span class="p">()</span>
 
         <span class="c1"># ... continues in downstream objects ... #</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-    <span class="c1"># Assessing methods</span>
+    <span class="c1"># GET METHODS</span>
+    <span class="c1"># ===================================================================</span>
 
-<div class="viewcode-block" id="Univar.assess_normality">
-<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.assess_normality">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">assess_normality</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clevel</span><span class="o">=</span><span class="mf">0.95</span><span class="p">):</span>
+<div class="viewcode-block" id="Univar.get_normality">
+<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.get_normality">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_normality</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clevel</span><span class="o">=</span><span class="mf">0.95</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Assessment on normality using standard tests</span>
+<span class="sd">        Get normality analysis using standard tests</span>
 
 <span class="sd">        :return: dataframe of assessment results</span>
 <span class="sd">        :rtype: :class:`pandas.DataFrame`</span>
@@ -654,11 +655,11 @@
         <span class="k">return</span> <span class="n">df_result</span></div>
 
 
-<div class="viewcode-block" id="Univar.assess_frequency">
-<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.assess_frequency">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">assess_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Univar.get_frequency">
+<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.get_frequency">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Assessment on data frequencies</span>
+<span class="sd">        Get data frequencies</span>
 
 <span class="sd">        :return: result dataframe</span>
 <span class="sd">        :rtype: :class:`pandas.DataFrame`</span>
@@ -694,11 +695,11 @@
         <span class="k">return</span> <span class="n">df_result</span></div>
 
 
-<div class="viewcode-block" id="Univar.assess_basic_stats">
-<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.assess_basic_stats">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">assess_basic_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Univar.get_basic_stats">
+<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.get_basic_stats">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_basic_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Assesses basic statistics of the variable field.</span>
+<span class="sd">        Get basic statistics data of the variable field.</span>
 
 <span class="sd">        :return: DataFrame with statistics and their values.</span>
 <span class="sd">        :rtype: :class:`pandas.DataFrame`</span>
@@ -747,11 +748,11 @@
         <span class="k">return</span> <span class="n">df_result</span></div>
 
 
-<div class="viewcode-block" id="Univar.assess_weibull_cdf">
-<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.assess_weibull_cdf">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">assess_weibull_cdf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Univar.get_cdf_weibull">
+<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.get_cdf_weibull">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_cdf_weibull</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the Weibull model</span>
+<span class="sd">        Get the Weibull model for the data</span>
 
 <span class="sd">        :param x: function inputs</span>
 <span class="sd">        :type x: :class:`numpy.ndarray`</span>
@@ -764,19 +765,17 @@
         <span class="n">vr</span> <span class="o">=</span> <span class="n">v</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">px</span> <span class="o">=</span> <span class="n">Univar</span><span class="o">.</span><span class="n">weibull_px</span><span class="p">(</span><span class="n">ranks</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
+
         <span class="n">result_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">vr</span><span class="p">,</span> <span class="s2">&quot;P(X)&quot;</span><span class="p">:</span> <span class="n">px</span><span class="p">,</span> <span class="s2">&quot;F(X)&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">px</span><span class="p">})</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        print(result_df.head())</span>
-<span class="sd">        print(result_df.tail())</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="n">result_df</span></div>
 
 
-<div class="viewcode-block" id="Univar.assess_gumbel_cdf">
-<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.assess_gumbel_cdf">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">assess_gumbel_cdf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Univar.get_cdf_gumbel">
+<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.get_cdf_gumbel">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_cdf_gumbel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Assess the Gumbel CDF for the data (it assumes that is a maxima dataset)</span>
+<span class="sd">        Get the Gumbel CDF for the data (it assumes that is a maxima dataset)</span>
 
 <span class="sd">        :return: multiple results from the assessment</span>
 <span class="sd">        :rtype: dict</span>
@@ -903,6 +902,8 @@
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">,</span> <span class="s2">&quot;Data_T(X)&quot;</span><span class="p">:</span> <span class="n">df_tx</span><span class="p">,</span> <span class="s2">&quot;Data_QQ&quot;</span><span class="p">:</span> <span class="n">df_qq</span><span class="p">,</span> <span class="s2">&quot;Metadata&quot;</span><span class="p">:</span> <span class="n">df_meta</span><span class="p">}</span></div>
 
 
+    <span class="c1"># PLOT METHODS</span>
+    <span class="c1"># ===================================================================</span>
     <span class="c1"># Plotting methods</span>
     <span class="c1"># todo [DRY] evaluate to discard or refactor for viewer styles</span>
 <div class="viewcode-block" id="Univar.plot_hist">
@@ -946,7 +947,7 @@
         <span class="k">if</span> <span class="n">rule</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">bins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbins_by_rule</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="n">rule</span><span class="p">)</span>
+            <span class="n">bins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nbins_by_rule</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="n">rule</span><span class="p">)</span>
 
         <span class="c1"># get specs</span>
         <span class="n">default_specs</span> <span class="o">=</span> <span class="p">{</span>
@@ -1166,17 +1167,20 @@
         <span class="n">formatter</span> <span class="o">=</span> <span class="n">mticker</span><span class="o">.</span><span class="n">ScalarFormatter</span><span class="p">(</span><span class="n">useOffset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">useMathText</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">formatter</span><span class="o">.</span><span class="n">set_scientific</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Ensure scientific notation is off</span>
 
-        <span class="c1"># ------------- get aux data -------------</span>
+        <span class="c1"># AUX DATA</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stats_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assess_basic_stats</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stats_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_basic_stats</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weibull_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">weibull_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assess_weibull_cdf</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weibull_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cdf_weibull</span><span class="p">()</span>
         <span class="c1"># get mean</span>
         <span class="n">plot_mean</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;plot_mean&quot;</span><span class="p">]</span>
         <span class="n">y_mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">])</span>
 
-        <span class="c1"># ------- handle specs issues --------</span>
+        <span class="c1"># RANGE</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
         <span class="n">range_data</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">]</span>
+        <span class="c1"># handle if none</span>
         <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">p_low</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">stats_df</span><span class="p">[</span><span class="s2">&quot;statistic&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;p01&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span>
@@ -1187,79 +1191,68 @@
             <span class="n">rng</span> <span class="o">=</span> <span class="n">p_hi</span> <span class="o">-</span> <span class="n">p_low</span>
             <span class="n">rng_margin</span> <span class="o">=</span> <span class="n">rng</span> <span class="o">*</span> <span class="mf">0.1</span>
             <span class="n">range_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_low</span> <span class="o">-</span> <span class="n">rng_margin</span><span class="p">,</span> <span class="n">p_hi</span> <span class="o">+</span> <span class="n">rng_margin</span><span class="p">)</span>
+            <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">range_data</span>
 
-        <span class="c1"># ------------ title ------------</span>
+        <span class="c1"># TITLE</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
         <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
 
-        <span class="c1"># ------------ setup axes ------------</span>
+        <span class="c1"># AXES</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
         <span class="n">fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_axes</span><span class="p">(</span><span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">gs</span><span class="o">=</span><span class="n">gs</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
         <span class="n">all_axes</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">get_axes</span><span class="p">()</span>
-        <span class="n">ax_data</span> <span class="o">=</span> <span class="n">all_axes</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ax_data&quot;</span><span class="p">]]</span>
 
+        <span class="c1"># DATA</span>
+        <span class="n">ax_data</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ax_data&quot;</span><span class="p">]:</span>
+            <span class="n">ax_data</span> <span class="o">=</span> <span class="n">all_axes</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ax_data&quot;</span><span class="p">]]</span>
+
+        <span class="c1"># HIST</span>
         <span class="n">ax_histh</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ax_histh&quot;</span><span class="p">]:</span>
             <span class="n">ax_histh</span> <span class="o">=</span> <span class="n">all_axes</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ax_histh&quot;</span><span class="p">]]</span>
 
+        <span class="c1"># CDF</span>
         <span class="n">ax_cdf</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ax_cdf&quot;</span><span class="p">]:</span>
             <span class="n">ax_cdf</span> <span class="o">=</span> <span class="n">all_axes</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ax_cdf&quot;</span><span class="p">]]</span>
 
-        <span class="c1"># ensure clean data</span>
+        <span class="c1"># CLEANUP</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
         <span class="n">df_clean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">df_clean</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 
-        <span class="c1"># ------------ scatter plot ------------</span>
-        <span class="n">x_rng</span> <span class="o">=</span> <span class="n">Univar</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span>
+        <span class="c1"># PLOT DATA</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
+        <span class="n">Univar</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span>
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
             <span class="n">ax</span><span class="o">=</span><span class="n">ax_data</span><span class="p">,</span>
-            <span class="n">range_data</span><span class="o">=</span><span class="n">range_data</span><span class="p">,</span>
             <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">,</span>
             <span class="n">formatter</span><span class="o">=</span><span class="n">formatter</span><span class="p">,</span>
             <span class="n">x_factor</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="c1"># ------------ hist plot ------------</span>
+        <span class="c1"># PLOT HIST</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
         <span class="n">Univar</span><span class="o">.</span><span class="n">plot_histh</span><span class="p">(</span>
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
             <span class="n">ax</span><span class="o">=</span><span class="n">ax_histh</span><span class="p">,</span>
-            <span class="n">range_data</span><span class="o">=</span><span class="n">range_data</span><span class="p">,</span>
             <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">,</span>
             <span class="n">formatter</span><span class="o">=</span><span class="n">formatter</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="c1"># ------------ CDF plot ------------</span>
+        <span class="c1"># PLOT CDF</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
         <span class="n">Univar</span><span class="o">.</span><span class="n">plot_cdf</span><span class="p">(</span>
             <span class="n">cdf_df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">weibull_df</span><span class="p">,</span>
             <span class="n">ax</span><span class="o">=</span><span class="n">ax_cdf</span><span class="p">,</span>
-            <span class="n">range_data</span><span class="o">=</span><span class="n">range_data</span><span class="p">,</span>
             <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">,</span>
             <span class="n">formatter</span><span class="o">=</span><span class="n">formatter</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="c1"># ------------ Plot mean ------------</span>
-        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;plot_mean&quot;</span><span class="p">]:</span>
-            <span class="n">y_mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-            <span class="n">Univar</span><span class="o">.</span><span class="n">plot_mean</span><span class="p">(</span>
-                <span class="n">ax_data</span><span class="p">,</span>
-                <span class="n">y_mu</span><span class="o">=</span><span class="n">y_mu</span><span class="p">,</span>
-                <span class="n">xmin</span><span class="o">=</span><span class="n">x_rng</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                <span class="n">xmax</span><span class="o">=</span><span class="n">x_rng</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-            <span class="p">)</span>
-            <span class="n">Univar</span><span class="o">.</span><span class="n">plot_mean</span><span class="p">(</span>
-                <span class="n">ax_histh</span><span class="p">,</span>
-                <span class="n">y_mu</span><span class="o">=</span><span class="n">y_mu</span><span class="p">,</span>
-                <span class="n">xmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                <span class="n">xmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">Univar</span><span class="o">.</span><span class="n">plot_mean</span><span class="p">(</span>
-                <span class="n">ax_cdf</span><span class="p">,</span>
-                <span class="n">y_mu</span><span class="o">=</span><span class="n">y_mu</span><span class="p">,</span>
-                <span class="n">xmin</span><span class="o">=-</span><span class="mf">0.05</span><span class="p">,</span>
-                <span class="n">xmax</span><span class="o">=</span><span class="mf">1.05</span><span class="p">,</span>
-            <span class="p">)</span>
-
-        <span class="c1"># ------------ Plot stats ------------</span>
+        <span class="c1"># PLOT STATS</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
         <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;full&quot;</span><span class="p">:</span>
             <span class="n">x_stats</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;x_stats&quot;</span><span class="p">]</span>
             <span class="n">x_stats_sep</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;x_stats_sep&quot;</span><span class="p">]</span>
@@ -1268,7 +1261,8 @@
                 <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">stats_df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stats_df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_stats</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_stats</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">x_stats_sep</span>
             <span class="p">)</span>
 
-        <span class="c1"># send back</span>
+        <span class="c1"># RETURN FIG</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
         <span class="k">return</span> <span class="n">fig</span></div>
 
 
@@ -1336,37 +1330,62 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;View of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                <span class="c1"># layout</span>
+                <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;wien&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;full&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="n">viewer</span><span class="o">.</span><span class="n">FIG_SIZES</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">][</span><span class="s2">&quot;w&quot;</span><span class="p">],</span>
                 <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="n">viewer</span><span class="o">.</span><span class="n">FIG_SIZES</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">][</span><span class="s2">&quot;h&quot;</span><span class="p">],</span>
+                <span class="c1"># titles</span>
+                <span class="s2">&quot;subtitle_data&quot;</span><span class="p">:</span> <span class="s2">&quot;Distribution&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;subtitle_hist&quot;</span><span class="p">:</span> <span class="s2">&quot;Histogram&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;subtitle_cdf&quot;</span><span class="p">:</span> <span class="s2">&quot;CDF&quot;</span><span class="p">,</span>
+                <span class="c1"># fields</span>
                 <span class="s2">&quot;yvar_field&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">,</span>
                 <span class="s2">&quot;xvar&quot;</span><span class="p">:</span> <span class="s2">&quot;i&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;yvar&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">,</span>
+                <span class="c1"># axis labels</span>
                 <span class="s2">&quot;xlabel&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">,</span>
                 <span class="s2">&quot;xlabel_cdf&quot;</span><span class="p">:</span> <span class="s2">&quot;P(X)&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;ylabel&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">,</span>
-                <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">,</span>
+                <span class="c1"># data labels</span>
+                <span class="s2">&quot;data_label&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;data_legend&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="c1"># colors</span>
                 <span class="s2">&quot;color_hist&quot;</span><span class="p">:</span> <span class="s2">&quot;tab:grey&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;color_cdf&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
-                <span class="s2">&quot;range&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;range_x&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;subtitle_scatter&quot;</span><span class="p">:</span> <span class="s2">&quot;Distribution&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;subtitle_hist&quot;</span><span class="p">:</span> <span class="s2">&quot;Histogram&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;subtitle_cdf&quot;</span><span class="p">:</span> <span class="s2">&quot;CDF&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;plot_mean&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s2">&quot;hist_density&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s2">&quot;bins&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
-                <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;full&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;ax_data&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-                <span class="s2">&quot;ax_histh&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="s2">&quot;ax_cdf&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-                <span class="s2">&quot;x_stats&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
-                <span class="s2">&quot;x_stats_sep&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-                <span class="s2">&quot;y_stats&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+                <span class="s2">&quot;color_cdf&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;color_mean&quot;</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;color_mean_text&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="c1"># cmaps</span>
                 <span class="s2">&quot;scheme_cmap&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">&quot;cmap&quot;</span><span class="p">:</span> <span class="s2">&quot;viridis&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;colorize_scatter&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="c1"># alphas</span>
+                <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
+                <span class="s2">&quot;alpha_hist&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;alpha_cdf&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="c1"># ranges</span>
+                <span class="s2">&quot;range&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;range_x&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="c1"># mean</span>
+                <span class="s2">&quot;plot_mean&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;linestyle_mean&quot;</span><span class="p">:</span> <span class="s2">&quot;solid&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;pad_mean&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="c1"># histogram</span>
+                <span class="s2">&quot;hist_density&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>  <span class="c1"># todo check this may be deprecated</span>
+                <span class="s2">&quot;bins&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+                <span class="s2">&quot;bins_density&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="c1"># axes</span>
+                <span class="s2">&quot;ax_data&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;ax_histh&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;ax_cdf&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="c1"># stats locators</span>
+                <span class="s2">&quot;x_stats&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
+                <span class="s2">&quot;x_stats_sep&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+                <span class="s2">&quot;y_stats&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+                <span class="c1"># zorder</span>
+                <span class="s2">&quot;zorder_data&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;zorder_histh&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;zorder_cdf&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
@@ -1377,16 +1396,21 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># todo [docstring]</span>
 
-        <span class="c1"># -------------- SPECS --------------</span>
+        <span class="c1"># SPECS</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
         <span class="n">specs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_fig_specs</span><span class="p">()</span>
 
-        <span class="c1"># -------------- BUILD --------------</span>
+        <span class="c1"># BUILD</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
+        <span class="c1"># build from specs</span>
         <span class="n">fig</span><span class="p">,</span> <span class="n">gs</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">build_fig</span><span class="p">(</span><span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
 
-        <span class="c1"># -------------- PLOT --------------</span>
+        <span class="c1"># PLOT</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
         <span class="n">fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot</span><span class="p">(</span><span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">gs</span><span class="o">=</span><span class="n">gs</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
 
-        <span class="c1"># -------------- SHIP --------------</span>
+        <span class="c1"># SHIP</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
         <span class="c1"># create path</span>
         <span class="n">file_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">],</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">],</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;fig_format&quot;</span><span class="p">]</span>
@@ -1397,100 +1421,128 @@
             <span class="n">viewer</span><span class="o">.</span><span class="n">ship_fig</span><span class="p">(</span><span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span> <span class="n">file_output</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;dpi&quot;</span><span class="p">])</span></div>
 
 
+    <span class="c1"># STATIC METHODS</span>
+    <span class="c1"># ===================================================================</span>
+
 <div class="viewcode-block" id="Univar.plot_mean">
 <a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.plot_mean">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot_mean</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">y_mu</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_mean</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">y_mu</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">specs</span><span class="p">):</span>
         <span class="c1"># todo [docstring]</span>
-        <span class="k">if</span> <span class="n">ax</span><span class="p">:</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span>
-                <span class="n">y</span><span class="o">=</span><span class="n">y_mu</span><span class="p">,</span>
-                <span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span>
-                <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span>
-                <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
-                <span class="sa">r</span><span class="s2">&quot; $\mu$ = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">y_mu</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span>
-                <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">y_mu</span><span class="p">),</span>
-                <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
-                <span class="n">textcoords</span><span class="o">=</span><span class="s2">&quot;offset points&quot;</span><span class="p">,</span>
-                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
-            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ax</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">y_mu</span><span class="p">,</span>
+            <span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span>
+            <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span>
+            <span class="n">colors</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color_mean&quot;</span><span class="p">],</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;linestyle_mean&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color_mean_text&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color_mean_text&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;black&quot;</span>
+
+        <span class="n">pad</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;pad_mean&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">$\mu$ = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pad</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">y_mu</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+            <span class="n">s</span><span class="p">,</span>
+            <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">y_mu</span><span class="p">),</span>
+            <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+            <span class="n">textcoords</span><span class="o">=</span><span class="s2">&quot;offset points&quot;</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color_mean_text&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="Univar.plot_scatter">
 <a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.plot_scatter">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot_scatter</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">range_data</span><span class="p">,</span> <span class="n">specs</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_scatter</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">specs</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
         <span class="c1"># todo [docstring]</span>
-        <span class="k">if</span> <span class="n">ax</span><span class="p">:</span>
-            <span class="n">x_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
-            <span class="c1"># handle scheme</span>
-            <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;colorize_scatter&quot;</span><span class="p">]:</span>
-                <span class="n">color_data</span> <span class="o">=</span> <span class="n">Univar</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span>
-                    <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">scheme</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;scheme_cmap&quot;</span><span class="p">]</span>
-                <span class="p">)</span>
-                <span class="n">color_cmap</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">get_discrete_cmap</span><span class="p">(</span>
-                    <span class="n">n_classes</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">base_cmap_name</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;cmap&quot;</span><span class="p">]</span>
-                <span class="p">)</span>
-                <span class="c1"># plot</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
-                    <span class="n">x_values</span><span class="p">,</span>
-                    <span class="n">data</span><span class="p">,</span>
-                    <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
-                    <span class="n">c</span><span class="o">=</span><span class="n">color_data</span><span class="p">,</span>
-                    <span class="n">cmap</span><span class="o">=</span><span class="n">color_cmap</span><span class="p">,</span>
-                    <span class="n">alpha</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">],</span>
-                    <span class="n">s</span><span class="o">=</span><span class="mf">0.8</span> <span class="o">*</span> <span class="n">viewer</span><span class="o">.</span><span class="n">MM_TO_PT</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
-                    <span class="n">x_values</span><span class="p">,</span>
-                    <span class="n">data</span><span class="p">,</span>
-                    <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
-                    <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">],</span>
-                    <span class="n">alpha</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">],</span>
-                    <span class="n">s</span><span class="o">=</span><span class="mf">0.8</span> <span class="o">*</span> <span class="n">viewer</span><span class="o">.</span><span class="n">MM_TO_PT</span><span class="p">,</span>
-                <span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_scatter&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_scatter&quot;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">range_data</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;xlabel&quot;</span><span class="p">])</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ylabel&quot;</span><span class="p">])</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">formatter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
-
-            <span class="c1"># handle x axis</span>
-            <span class="n">n_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-            <span class="n">x_low</span> <span class="o">=</span> <span class="o">-</span><span class="n">x_factor</span> <span class="o">*</span> <span class="n">n_size</span>
-            <span class="n">x_hi</span> <span class="o">=</span> <span class="n">n_size</span> <span class="o">+</span> <span class="p">(</span><span class="n">x_factor</span> <span class="o">*</span> <span class="n">n_size</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">x_low</span><span class="p">,</span> <span class="n">x_hi</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
-
-            <span class="c1"># handle cbars</span>
-            <span class="c1"># ------------ cbar plot ------------</span>
-            <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;colorize_scatter&quot;</span><span class="p">]:</span>
-                <span class="n">Univar</span><span class="o">.</span><span class="n">plot_cbar</span><span class="p">(</span>
-                    <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
-                    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
-                    <span class="n">scheme</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;scheme_cmap&quot;</span><span class="p">],</span>
-                    <span class="n">cmap</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;cmap&quot;</span><span class="p">],</span>
-                    <span class="n">side</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">x_low</span><span class="p">,</span> <span class="n">x_hi</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ax</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">x_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+        <span class="c1"># handle scheme</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;colorize_scatter&quot;</span><span class="p">]:</span>
+            <span class="n">color_data</span> <span class="o">=</span> <span class="n">Univar</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">scheme</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;scheme_cmap&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">color_cmap</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">get_discrete_cmap</span><span class="p">(</span>
+                <span class="n">n_classes</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">base_cmap_name</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;cmap&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="c1"># plot</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+                <span class="n">x_values</span><span class="p">,</span>
+                <span class="n">data</span><span class="p">,</span>
+                <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
+                <span class="n">c</span><span class="o">=</span><span class="n">color_data</span><span class="p">,</span>
+                <span class="n">cmap</span><span class="o">=</span><span class="n">color_cmap</span><span class="p">,</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">],</span>
+                <span class="n">s</span><span class="o">=</span><span class="mf">0.8</span> <span class="o">*</span> <span class="n">viewer</span><span class="o">.</span><span class="n">MM_TO_PT</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;zorder_data&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+                <span class="n">x_values</span><span class="p">,</span>
+                <span class="n">data</span><span class="p">,</span>
+                <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">],</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">],</span>
+                <span class="n">s</span><span class="o">=</span><span class="mf">0.8</span> <span class="o">*</span> <span class="n">viewer</span><span class="o">.</span><span class="n">MM_TO_PT</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;zorder_data&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_data&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_data&quot;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;xlabel&quot;</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ylabel&quot;</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">formatter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+
+        <span class="c1"># handle x axis</span>
+        <span class="n">n_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">x_low</span> <span class="o">=</span> <span class="o">-</span><span class="n">x_factor</span> <span class="o">*</span> <span class="n">n_size</span>
+        <span class="n">x_hi</span> <span class="o">=</span> <span class="n">n_size</span> <span class="o">+</span> <span class="p">(</span><span class="n">x_factor</span> <span class="o">*</span> <span class="n">n_size</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">x_low</span><span class="p">,</span> <span class="n">x_hi</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+
+        <span class="c1"># handle cbars</span>
+        <span class="c1"># ------------ cbar plot ------------</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;colorize_scatter&quot;</span><span class="p">]:</span>
+            <span class="n">Univar</span><span class="o">.</span><span class="n">plot_cbar</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+                <span class="n">scheme</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;scheme_cmap&quot;</span><span class="p">],</span>
+                <span class="n">cmap</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;cmap&quot;</span><span class="p">],</span>
+                <span class="n">side</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># PLOT MEAN LINE</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;plot_mean&quot;</span><span class="p">]:</span>
+            <span class="c1"># data</span>
+            <span class="n">Univar</span><span class="o">.</span><span class="n">plot_mean</span><span class="p">(</span>
+                <span class="n">ax</span><span class="p">,</span>
+                <span class="n">y_mu</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+                <span class="n">xmin</span><span class="o">=</span><span class="n">x_low</span><span class="p">,</span>
+                <span class="n">xmax</span><span class="o">=</span><span class="n">x_hi</span><span class="p">,</span>
+                <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">x_low</span><span class="p">,</span> <span class="n">x_hi</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Univar.plot_histh">
 <a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.plot_histh">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot_histh</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">range_data</span><span class="p">,</span> <span class="n">specs</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_histh</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">specs</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># todo [docstring]</span>
-
+        <span class="c1"># todo dry --- evaluate to remove the range_data parameter</span>
         <span class="c1"># ------- local functions --------</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">_get_max</span><span class="p">(</span><span class="n">std_values</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
             <span class="n">data_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -1501,52 +1553,107 @@
             <span class="k">return</span> <span class="n">std_values</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span>
 
         <span class="n">h</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">ax</span><span class="p">:</span>
-            <span class="c1"># Standard x-axis maximum values for hist</span>
-            <span class="n">sdmax1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
-            <span class="n">sdmax2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
-            <span class="n">standard_max_values</span> <span class="o">=</span> <span class="n">sdmax1</span> <span class="o">+</span> <span class="n">sdmax2</span>
 
-            <span class="c1"># plot horizontal hist</span>
-            <span class="n">h</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span>
-                <span class="n">data</span><span class="p">,</span>
-                <span class="n">bins</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;bins&quot;</span><span class="p">],</span>
-                <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color_hist&quot;</span><span class="p">],</span>
-                <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">,</span>
-                <span class="n">weights</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ax</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Standard x-axis maximum values for hist</span>
+        <span class="n">sdmax1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">sdmax2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">standard_max_values</span> <span class="o">=</span> <span class="n">sdmax1</span> <span class="o">+</span> <span class="n">sdmax2</span>
+
+        <span class="c1"># handle data range</span>
+        <span class="n">data_range</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">data_range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data_range</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">data</span><span class="p">)]</span>
+
+        <span class="c1"># handle bins</span>
+        <span class="n">n_bins</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;bins&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;bins_density&quot;</span><span class="p">]:</span>
+            <span class="n">n_units</span> <span class="o">=</span> <span class="n">n_bins</span>
+            <span class="n">d_range</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">data</span><span class="p">)]</span>
+            <span class="n">n_bins</span> <span class="o">=</span> <span class="n">Univar</span><span class="o">.</span><span class="n">get_nbins_density</span><span class="p">(</span><span class="n">n_units</span><span class="o">=</span><span class="n">n_units</span><span class="p">,</span> <span class="n">data_range</span><span class="o">=</span><span class="n">d_range</span><span class="p">)</span>
+
+        <span class="c1"># plot horizontal hist</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span>
+            <span class="n">bins</span><span class="o">=</span><span class="n">n_bins</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color_hist&quot;</span><span class="p">],</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;alpha_hist&quot;</span><span class="p">],</span>
+            <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">,</span>
+            <span class="n">weights</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+            <span class="n">zorder</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;zorder_histh&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mticker</span><span class="o">.</span><span class="n">PercentFormatter</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_hist&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_hist&quot;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get the maximum value from the data</span>
+        <span class="n">xmax</span> <span class="o">=</span> <span class="n">_get_max</span><span class="p">(</span><span class="n">standard_max_values</span><span class="p">,</span> <span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1.1</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">data_range</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;%&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ylabel&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">formatter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+
+        <span class="c1"># PLOT MEAN</span>
+        <span class="c1"># --------------------------------------------------</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;plot_mean&quot;</span><span class="p">]:</span>
+            <span class="c1"># hist</span>
+            <span class="n">Univar</span><span class="o">.</span><span class="n">plot_mean</span><span class="p">(</span>
+                <span class="n">ax</span><span class="p">,</span>
+                <span class="n">y_mu</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+                <span class="n">xmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">xmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mticker</span><span class="o">.</span><span class="n">PercentFormatter</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_hist&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_hist&quot;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
 
-            <span class="c1"># Get the maximum value from the data</span>
-            <span class="n">xmax</span> <span class="o">=</span> <span class="n">_get_max</span><span class="p">(</span><span class="n">standard_max_values</span><span class="p">,</span> <span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1.1</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">range_data</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;%&quot;</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ylabel&quot;</span><span class="p">])</span>
-            <span class="k">if</span> <span class="n">formatter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">h</span></div>
 
 
 <div class="viewcode-block" id="Univar.plot_cdf">
 <a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.plot_cdf">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot_cdf</span><span class="p">(</span><span class="n">cdf_df</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">range_data</span><span class="p">,</span> <span class="n">specs</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_cdf</span><span class="p">(</span><span class="n">cdf_df</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">specs</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">px_field</span><span class="o">=</span><span class="s2">&quot;P(X)&quot;</span><span class="p">,</span> <span class="n">var_field</span><span class="o">=</span><span class="s2">&quot;Data&quot;</span><span class="p">):</span>
         <span class="c1"># todo [docstring]</span>
-        <span class="k">if</span> <span class="n">ax</span><span class="p">:</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cdf_df</span><span class="p">[</span><span class="s2">&quot;P(X)&quot;</span><span class="p">],</span> <span class="n">cdf_df</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color_cdf&quot;</span><span class="p">])</span>
-            <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_cdf&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_cdf&quot;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;xlabel_cdf&quot;</span><span class="p">])</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">range_data</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">formatter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([])</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mticker</span><span class="o">.</span><span class="n">PercentFormatter</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ax</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># PLOT CDF</span>
+        <span class="c1"># --------------------------------------------------</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">cdf_df</span><span class="p">[</span><span class="n">px_field</span><span class="p">],</span>
+            <span class="n">cdf_df</span><span class="p">[</span><span class="n">var_field</span><span class="p">],</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color_cdf&quot;</span><span class="p">],</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;alpha_cdf&quot;</span><span class="p">],</span>
+            <span class="n">zorder</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;zorder_cdf&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_cdf&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_cdf&quot;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;xlabel_cdf&quot;</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">formatter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mticker</span><span class="o">.</span><span class="n">PercentFormatter</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># PLOT MEAN</span>
+        <span class="c1"># --------------------------------------------------</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;plot_mean&quot;</span><span class="p">]:</span>
+            <span class="n">Univar</span><span class="o">.</span><span class="n">plot_mean</span><span class="p">(</span>
+                <span class="n">ax</span><span class="p">,</span>
+                <span class="n">y_mu</span><span class="o">=</span><span class="n">cdf_df</span><span class="p">[</span><span class="n">var_field</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+                <span class="n">xmin</span><span class="o">=-</span><span class="mf">0.05</span><span class="p">,</span>
+                <span class="n">xmax</span><span class="o">=</span><span class="mf">1.05</span><span class="p">,</span>
+                <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">,</span>
+            <span class="p">)</span>
+
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
@@ -1974,10 +2081,10 @@
         <span class="k">return</span> <span class="n">sample_norm</span></div>
 
 
-<div class="viewcode-block" id="Univar.nbins_fd">
-<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.nbins_fd">[docs]</a>
+<div class="viewcode-block" id="Univar.get_nbins_fd">
+<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.get_nbins_fd">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">nbins_fd</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_nbins_fd</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function computes the number of bins for histograms using the Freedman-Diaconis rule, which takes into</span>
 <span class="sd">        account the interquartile range (IQR) of the sample, in addition to its range.</span>
@@ -1995,12 +2102,14 @@
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">((</span><span class="nb">max</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">data</span><span class="p">))</span> <span class="o">/</span> <span class="n">binsize</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="Univar.nbins_sturges">
-<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.nbins_sturges">[docs]</a>
+<div class="viewcode-block" id="Univar.get_nbins_sturges">
+<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.get_nbins_sturges">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">nbins_sturges</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_nbins_sturges</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This function computes the number of bins using the Sturges rule, which assumes that the data follows a normal distribution and computes the number of bins based on its data runsize.</span>
+<span class="sd">        This function computes the number of bins using the Sturges rule,</span>
+<span class="sd">        which assumes that the data follows a normal distribution and computes</span>
+<span class="sd">        the number of bins based on its data runsize.</span>
 
 <span class="sd">        :param data: vector of data without nan values</span>
 <span class="sd">        :type data: :class:`numpy.ndarray`</span>
@@ -2010,10 +2119,10 @@
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="Univar.nbins_scott">
-<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.nbins_scott">[docs]</a>
+<div class="viewcode-block" id="Univar.get_nbins_scott">
+<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.get_nbins_scott">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">nbins_scott</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_nbins_scott</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function computes the number of bins using the Scott rule,</span>
 <span class="sd">        which is similar to the Freedman-Diaconis rule, but uses the standard deviation</span>
@@ -2024,14 +2133,27 @@
 <span class="sd">        :return: number of bins using the Scott rule</span>
 <span class="sd">        :rtype: int</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">binsize</span> <span class="o">=</span> <span class="mf">3.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">binsize</span> <span class="o">=</span> <span class="mf">3.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">((</span><span class="nb">max</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">data</span><span class="p">))</span> <span class="o">/</span> <span class="n">binsize</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="Univar.nbins_by_rule">
-<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.nbins_by_rule">[docs]</a>
+<div class="viewcode-block" id="Univar.get_nbins_density">
+<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.get_nbins_density">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">nbins_by_rule</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_nbins_density</span><span class="p">(</span><span class="n">n_units</span><span class="p">,</span> <span class="n">data_range</span><span class="p">):</span>
+        <span class="c1"># todo docstring</span>
+        <span class="n">n_range</span> <span class="o">=</span> <span class="n">data_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">data_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_range</span> <span class="o">/</span> <span class="n">n_units</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bins</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">bins</span></div>
+
+
+<div class="viewcode-block" id="Univar.get_nbins_by_rule">
+<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.get_nbins_by_rule">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_nbins_by_rule</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Util function for rule-based nbins computation</span>
 
@@ -2047,11 +2169,11 @@
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">rule</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;sturges&quot;</span><span class="p">:</span>
-                <span class="n">bins</span> <span class="o">=</span> <span class="n">Univar</span><span class="o">.</span><span class="n">nbins_sturges</span><span class="p">()</span>
+                <span class="n">bins</span> <span class="o">=</span> <span class="n">Univar</span><span class="o">.</span><span class="n">get_nbins_sturges</span><span class="p">()</span>
             <span class="k">elif</span> <span class="n">rule</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;fd&quot;</span><span class="p">:</span>
-                <span class="n">bins</span> <span class="o">=</span> <span class="n">Univar</span><span class="o">.</span><span class="n">nbins_fd</span><span class="p">()</span>
+                <span class="n">bins</span> <span class="o">=</span> <span class="n">Univar</span><span class="o">.</span><span class="n">get_nbins_fd</span><span class="p">()</span>
             <span class="k">elif</span> <span class="n">rule</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;scott&quot;</span><span class="p">:</span>
-                <span class="n">bins</span> <span class="o">=</span> <span class="n">Univar</span><span class="o">.</span><span class="n">nbins_scott</span><span class="p">()</span>
+                <span class="n">bins</span> <span class="o">=</span> <span class="n">Univar</span><span class="o">.</span><span class="n">get_nbins_scott</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">pass</span>
         <span class="k">return</span> <span class="n">bins</span></div>
@@ -2059,15 +2181,8 @@
 
 <div class="viewcode-block" id="Univar.get_histogram">
 <a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.get_histogram">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-
-        <span class="n">df</span> <span class="o">=</span> <span class="n">Univar</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="n">rule</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Univar.histogram">
-<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.histogram">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">histogram</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_histogram</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the histogram of the sample</span>
 
@@ -2085,7 +2200,7 @@
             <span class="k">if</span> <span class="n">rule</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">bins</span> <span class="o">=</span> <span class="n">Univar</span><span class="o">.</span><span class="n">nbins_by_rule</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="n">rule</span><span class="p">)</span>
+                <span class="n">bins</span> <span class="o">=</span> <span class="n">Univar</span><span class="o">.</span><span class="n">get_nbins_by_rule</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="n">rule</span><span class="p">)</span>
         <span class="c1"># compute histogram</span>
         <span class="n">vct_hist</span><span class="p">,</span> <span class="n">vct_bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
         <span class="c1"># get dataframe</span>
@@ -2772,7 +2887,7 @@
         <span class="n">xuni</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">xname</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">xname</span><span class="p">],</span>
-            <span class="n">bins</span><span class="o">=</span><span class="n">xuni</span><span class="o">.</span><span class="n">nbins_fd</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">xuni</span><span class="o">.</span><span class="n">data</span><span class="p">),</span>
+            <span class="n">bins</span><span class="o">=</span><span class="n">xuni</span><span class="o">.</span><span class="n">get_nbins_fd</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">xuni</span><span class="o">.</span><span class="n">data</span><span class="p">),</span>
             <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">],</span>
             <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">weights</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">),</span>
@@ -2786,7 +2901,7 @@
         <span class="n">yuni</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">yname</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span>
             <span class="n">yuni</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
-            <span class="n">bins</span><span class="o">=</span><span class="n">yuni</span><span class="o">.</span><span class="n">nbins_fd</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">yuni</span><span class="o">.</span><span class="n">data</span><span class="p">),</span>
+            <span class="n">bins</span><span class="o">=</span><span class="n">yuni</span><span class="o">.</span><span class="n">get_nbins_fd</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">yuni</span><span class="o">.</span><span class="n">data</span><span class="p">),</span>
             <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">],</span>
             <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">,</span>
@@ -2936,7 +3051,7 @@
         <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span>
             <span class="n">e_uni</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
-            <span class="n">bins</span><span class="o">=</span><span class="n">e_uni</span><span class="o">.</span><span class="n">nbins_fd</span><span class="p">(),</span>
+            <span class="n">bins</span><span class="o">=</span><span class="n">e_uni</span><span class="o">.</span><span class="n">get_nbins_fd</span><span class="p">(),</span>
             <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">],</span>
             <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">,</span>
@@ -3160,7 +3275,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">updata_model_data</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="n">model_type</span><span class="p">)</span>
         <span class="n">vct_e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;Data&quot;</span><span class="p">][</span><span class="s2">&quot;e_Mean&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
         <span class="n">uni</span> <span class="o">=</span> <span class="n">Univar</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">vct_e</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">uni</span><span class="o">.</span><span class="n">assess_normality</span><span class="p">(</span><span class="n">clevel</span><span class="o">=</span><span class="n">clevel</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">uni</span><span class="o">.</span><span class="n">get_normality</span><span class="p">(</span><span class="n">clevel</span><span class="o">=</span><span class="n">clevel</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">df</span></div>
 
 

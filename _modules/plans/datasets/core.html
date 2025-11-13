@@ -553,9 +553,9 @@
 <div class="viewcode-block" id="TimeSeries.__init__">
 <a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyTimeSeries&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;TS0&quot;</span><span class="p">):</span>
-        <span class="c1"># ------------ set defaults ----------- #</span>
 
         <span class="c1"># upstream setups</span>
+        <span class="c1"># ----------------------------------------------------------------</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span> <span class="o">=</span> <span class="s2">&quot;datetime&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">agg</span> <span class="o">=</span> <span class="s2">&quot;mean&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;Dark2&quot;</span>
@@ -563,7 +563,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">&quot;gray&quot;</span>  <span class="c1"># alternativa color</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">folder_src</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="c1"># ------------ call super ----------- #</span>
+        <span class="c1"># call super</span>
+        <span class="c1"># ----------------------------------------------------------------</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
 
         <span class="c1"># overwriters</span>
@@ -596,9 +597,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">file_data_dtfield</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_data_varfield</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span>
 
+        <span class="c1"># call internals</span>
+        <span class="c1"># ----------------------------------------------------------------</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span></div>
 
+
         <span class="c1"># ... continues in downstream objects ... #</span>
+        <span class="c1"># ----------------------------------------------------------------</span>
 
     <span class="c1"># Core internal methods</span>
     <span class="c1"># -------------------------------------------------------------------</span>
@@ -608,7 +613,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set catalog fields names. Expected to increment superior methods.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># ------------ call super ----------- #</span>
+        <span class="c1"># call super</span>
+        <span class="c1"># ----------------------------------------------------------------</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_fields</span><span class="p">()</span>
 
         <span class="c1"># TimeSeries fields</span>
@@ -717,7 +723,7 @@
 <span class="sd">        :return: dictionary with all metadata</span>
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># ------------ call super ----------- #</span>
+        <span class="c1"># call super</span>
         <span class="n">dict_meta</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()</span>
 
         <span class="c1"># customize local metadata:</span>
@@ -757,6 +763,14 @@
         <span class="n">dict_meta</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_file_data</span><span class="p">)</span>
         <span class="n">dict_meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_file_data</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_data</span>
         <span class="k">return</span> <span class="n">dict_meta</span></div>
+
+
+<div class="viewcode-block" id="TimeSeries.get_range_datetime">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.get_range_datetime">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_range_datetime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># todo docstring</span>
+        <span class="n">ls</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span>
+        <span class="k">return</span> <span class="n">ls</span><span class="p">[:]</span></div>
 
 
     <span class="c1"># Core methods</span>
@@ -882,7 +896,7 @@
             <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
 
         <span class="c1"># Convert datetime column to standard format</span>
-        <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;%Y-%m0-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">filter_dates</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
@@ -1429,10 +1443,11 @@
         <span class="c1"># get data</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Bad&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
         <span class="c1"># Set the &#39;datetime&#39; column as the index</span>
         <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="c1"># Redata the time series to a frequency using aggregation functions</span>
+        <span class="c1"># Resample the time series to a frequency using aggregation functions</span>
         <span class="n">agg_df1</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">freq</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">agg_funcs_list</span><span class="p">)</span>
         <span class="n">agg_df2</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">freq</span><span class="p">)[</span><span class="s2">&quot;Bad&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">agg</span><span class="p">([(</span><span class="s2">&quot;Bad_count&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">)])</span>
 
@@ -1453,8 +1468,10 @@
                 <span class="p">)</span>
             <span class="p">}</span>
         <span class="p">)</span>
+
         <span class="c1"># remove bad records</span>
         <span class="n">agg_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">agg_df</span><span class="p">[</span><span class="n">agg_df</span><span class="p">[</span><span class="s2">&quot;Bad_count&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">bad_max</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
         <span class="c1"># remove bad column</span>
         <span class="n">agg_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Bad_count&quot;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -1466,9 +1483,9 @@
         <span class="k">return</span> <span class="n">agg_df_new</span></div>
 
 
-<div class="viewcode-block" id="TimeSeries.upscale">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.upscale">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">upscale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">bad_max</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeSeries.scale_up">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.scale_up">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scale_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">bad_max</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Upscale time series for larger time steps. This method uses the `agg` attribute.</span>
 <span class="sd">        See the `aggregate` method.</span>
@@ -1504,6 +1521,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">df_upscale</span>
             <span class="c1">#</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_frequency</span><span class="p">()</span>
+            <span class="c1"># update derived data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stats_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_basic_stats</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">freq_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_frequency</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weibull_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cdf_weibull</span><span class="p">()</span>
 
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1511,9 +1532,9 @@
 
 
     <span class="c1"># todo develop -- improve methods of downscaling</span>
-<div class="viewcode-block" id="TimeSeries.downscale">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.downscale">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">downscale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeSeries.scale_down">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.scale_down">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scale_down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Donwscale time series for smaller time steps using linear inteporlation.</span>
 
@@ -1580,7 +1601,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">agg</span> <span class="o">=</span> <span class="n">eva_agg</span>
 
         <span class="c1"># upscale time series</span>
-        <span class="n">df_eva</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upscale</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="n">eva_freq</span><span class="p">,</span> <span class="n">bad_max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gapsize</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">df_eva</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_up</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="n">eva_freq</span><span class="p">,</span> <span class="n">bad_max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gapsize</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">df_eva</span> <span class="o">=</span> <span class="n">df_eva</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
 
         <span class="c1"># reset agg</span>
@@ -1688,6 +1709,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">fig</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_plot</span><span class="p">(</span><span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">gs</span><span class="o">=</span><span class="n">gs</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
 
+        <span class="c1"># todo continue plots</span>
+
         <span class="k">return</span> <span class="n">fig</span></div>
 
 
@@ -1703,36 +1726,51 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span>
 
         <span class="c1"># Update or add new specifications specific to the child class</span>
+
+        <span class="n">s_title</span> <span class="o">=</span> <span class="s2">&quot;Time Series | </span><span class="si">{}</span><span class="s2"> | </span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span>
+        <span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
+                <span class="c1"># export</span>
                 <span class="s2">&quot;folder&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">folder_src</span><span class="p">,</span>
-                <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Time Series | </span><span class="si">{}</span><span class="s2"> | </span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span>
-                <span class="p">),</span>
+                <span class="c1"># titles</span>
+                <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">s_title</span><span class="p">,</span>
+                <span class="s2">&quot;subtitle_data&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="c1"># fields</span>
                 <span class="s2">&quot;xvar&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">,</span>
                 <span class="s2">&quot;yvar&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">,</span>
                 <span class="s2">&quot;xlabel&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">,</span>
+                <span class="c1"># colors</span>
                 <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span><span class="p">,</span>
                 <span class="s2">&quot;color_aux&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span><span class="p">,</span>
-                <span class="s2">&quot;color_fill&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span><span class="p">,</span>
+                <span class="s2">&quot;color_fill&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">&quot;color_eva&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+                <span class="c1"># legend</span>
                 <span class="s2">&quot;legend_eva&quot;</span><span class="p">:</span> <span class="s2">&quot;Annual Maxima&quot;</span><span class="p">,</span>
+                <span class="c1"># alphas</span>
                 <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                 <span class="s2">&quot;alpha_aux&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                 <span class="s2">&quot;alpha_fill&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="c1"># options</span>
                 <span class="s2">&quot;fill&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;fill_only&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="c1"># ranges todo review</span>
                 <span class="s2">&quot;xmin&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">&quot;xmax&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">&quot;xmax_aux&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
                 <span class="s2">&quot;ymin&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
                 <span class="s2">&quot;ymax&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="c1"># styles</span>
                 <span class="s2">&quot;linestyle&quot;</span><span class="p">:</span> <span class="s2">&quot;solid&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;marker&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">&quot;marker_eva&quot;</span><span class="p">:</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;drawstyle&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">&quot;n_bins&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
-                <span class="s2">&quot;subtitle_a&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;n_dates&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                <span class="s2">&quot;n_dates&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">&quot;include_eva&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="c1"># stats locators</span>
                 <span class="s2">&quot;x_stats&quot;</span><span class="p">:</span> <span class="mf">0.73</span><span class="p">,</span>
                 <span class="s2">&quot;x_stats_sep&quot;</span><span class="p">:</span> <span class="mf">0.12</span><span class="p">,</span>
                 <span class="s2">&quot;y_stats&quot;</span><span class="p">:</span> <span class="mf">0.28</span><span class="p">,</span>
@@ -1761,6 +1799,8 @@
 <span class="sd">        :type return_fig: bool</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># HANDLE SPECS</span>
+        <span class="c1"># ------------------------------------------------------------</span>
         <span class="n">specs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="c1"># handle eva specs</span>
@@ -1776,82 +1816,30 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;ax_histh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;ax_cdf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
 
-        <span class="c1"># call base method and return the fig</span>
+        <span class="c1"># BUILD FIG</span>
+        <span class="c1"># ------------------------------------------------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;ax_data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">fig</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_fig</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;ax_data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="c1"># -------------- PLOT EXTRA --------------</span>
-
-        <span class="c1"># plotting series</span>
+        <span class="c1"># PLOT EXTRA</span>
         <span class="c1"># ------------------------------------------------------------</span>
         <span class="c1"># todo develop DRY -- develop plotting static methods</span>
         <span class="c1"># --- call _plot()</span>
 
+        <span class="c1"># SERIES</span>
+        <span class="c1"># ------------------------------------------------------------</span>
+
         <span class="c1"># series plot</span>
         <span class="n">axes</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">get_axes</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ax_data&quot;</span><span class="p">])</span>
 
         <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ax_data&quot;</span><span class="p">]]</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
-        <span class="c1"># plot series</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;xvar&quot;</span><span class="p">]],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;yvar&quot;</span><span class="p">]],</span>
-            <span class="n">linestyle</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;linestyle&quot;</span><span class="p">],</span>
-            <span class="n">marker</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;marker&quot;</span><span class="p">],</span>
-            <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">],</span>
-            <span class="n">alpha</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">],</span>
-        <span class="p">)</span>
-        <span class="c1"># fill option</span>
-        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;fill&quot;</span><span class="p">]:</span>
-            <span class="n">lower</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;yvar&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span> <span class="o">*</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ymin&quot;</span><span class="p">]</span>
-            <span class="c1"># Fill below the time series</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
-                <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;xvar&quot;</span><span class="p">]],</span>
-                <span class="n">y1</span><span class="o">=</span><span class="n">lower</span><span class="p">,</span>
-                <span class="n">y2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;yvar&quot;</span><span class="p">]],</span>
-                <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color_fill&quot;</span><span class="p">],</span>
-                <span class="n">alpha</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;alpha_fill&quot;</span><span class="p">],</span>
-            <span class="p">)</span>
-        <span class="c1"># handle dates</span>
-        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;n_dates&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">n_dates</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;n_dates&quot;</span><span class="p">]</span>
-            <span class="n">dt_col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span>
-            <span class="n">dates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">dt_col</span><span class="p">]</span>
 
-            <span class="c1"># Handle n_dates dynamically</span>
-            <span class="k">if</span> <span class="n">n_dates</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="c1"># Just the first one</span>
-                <span class="n">tick_indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="n">n_dates</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="c1"># First and last</span>
-                <span class="n">tick_indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Evenly spaced positions across the dataset</span>
-                <span class="n">tick_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_dates</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-
-            <span class="c1"># Get the corresponding dates</span>
-            <span class="n">ticks</span> <span class="o">=</span> <span class="n">dates</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tick_indices</span><span class="p">]</span>
-
-            <span class="c1"># Apply to plot</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">ticks</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="n">d</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ticks</span><span class="p">])</span>
-        <span class="c1"># handle subtitle</span>
-        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_a&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_a&quot;</span><span class="p">])</span>
-        <span class="c1"># handle range</span>
-        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">])</span>
-
-        <span class="c1"># handle range x</span>
-        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;range_x&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;range_x&quot;</span><span class="p">])</span>
-
-        <span class="c1"># basic decorations</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;xlabel&quot;</span><span class="p">])</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ylabel&quot;</span><span class="p">])</span>
+        <span class="n">TimeSeries</span><span class="o">.</span><span class="n">plot_series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
 
         <span class="c1"># handle eva</span>
+        <span class="c1"># ----------------------------------------------</span>
         <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;include_eva&quot;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eva</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># ---- plot EVA series</span>
@@ -1870,7 +1858,7 @@
                 <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eva</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
                 <span class="n">ax2</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span>
                     <span class="n">data</span><span class="p">,</span>
-                    <span class="n">bins</span><span class="o">=</span><span class="n">Univar</span><span class="o">.</span><span class="n">nbins_fd</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">),</span>
+                    <span class="n">bins</span><span class="o">=</span><span class="n">Univar</span><span class="o">.</span><span class="n">get_nbins_fd</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">),</span>
                     <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color_eva&quot;</span><span class="p">],</span>
                     <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
                     <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">,</span>
@@ -1914,7 +1902,8 @@
                 <span class="n">ax3</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
                 <span class="n">ax3</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;T(X)&quot;</span><span class="p">)</span>
 
-        <span class="c1"># -------------- SHIP --------------</span>
+        <span class="c1"># SHIP</span>
+        <span class="c1"># ----------------------------------------------------------------</span>
         <span class="c1"># create path</span>
         <span class="n">file_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">],</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">],</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;fig_format&quot;</span><span class="p">]</span>
@@ -2021,6 +2010,89 @@
             <span class="k">return</span> <span class="n">file_path</span></div>
 
 
+<div class="viewcode-block" id="TimeSeries.plot_series">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.plot_series">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_series</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">specs</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;fill&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color_fill&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color_fill&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
+            <span class="n">lower</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;yvar&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span> <span class="o">*</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ymin&quot;</span><span class="p">]</span>
+            <span class="c1"># Fill below the time series</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;xvar&quot;</span><span class="p">]],</span>
+                <span class="n">y1</span><span class="o">=</span><span class="n">lower</span><span class="p">,</span>
+                <span class="n">y2</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;yvar&quot;</span><span class="p">]],</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color_fill&quot;</span><span class="p">],</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;alpha_fill&quot;</span><span class="p">],</span>
+                <span class="n">step</span><span class="o">=</span><span class="s2">&quot;post&quot;</span> <span class="k">if</span> <span class="n">specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;drawstyle&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;zorder_data&quot;</span><span class="p">],</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;data_label&quot;</span><span class="p">],</span>
+                <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;fill_only&quot;</span><span class="p">]:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;xvar&quot;</span><span class="p">]],</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;yvar&quot;</span><span class="p">]],</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;linestyle&quot;</span><span class="p">],</span>
+                <span class="n">marker</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;marker&quot;</span><span class="p">],</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">],</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">],</span>
+                <span class="n">drawstyle</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;drawstyle&quot;</span><span class="p">],</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;data_label&quot;</span><span class="p">],</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;zorder_data&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+
+        <span class="c1"># handle dates</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;n_dates&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">n_dates</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;n_dates&quot;</span><span class="p">]</span>
+            <span class="n">dates</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;xvar&quot;</span><span class="p">]]</span>
+
+            <span class="c1"># Handle n_dates dynamically</span>
+            <span class="k">if</span> <span class="n">n_dates</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Just the first one</span>
+                <span class="n">tick_indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">n_dates</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="c1"># First and last</span>
+                <span class="n">tick_indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Evenly spaced positions across the dataset</span>
+                <span class="n">tick_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_dates</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+            <span class="c1"># Get the corresponding dates</span>
+            <span class="n">ticks</span> <span class="o">=</span> <span class="n">dates</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tick_indices</span><span class="p">]</span>
+
+            <span class="c1"># Apply to plot</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">ticks</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="n">d</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ticks</span><span class="p">])</span>
+
+        <span class="c1"># handle subtitle</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_data&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_data&quot;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+
+        <span class="c1"># handle range</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">])</span>
+
+        <span class="c1"># handle range x</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;range_x&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;range_x&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;data_legend&quot;</span><span class="p">]:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
+                <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span>
+                <span class="c1"># todo dev more options</span>
+            <span class="p">)</span>
+
+        <span class="c1"># basic decorations</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;xlabel&quot;</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;ylabel&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
 <div class="viewcode-block" id="TimeSeries.add_hour">
 <a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.add_hour">[docs]</a>
     <span class="nd">@staticmethod</span>
@@ -2028,6 +2100,90 @@
         <span class="c1"># todo docstring</span>
         <span class="n">df</span><span class="p">[</span><span class="n">dt_field</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">dt_field</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span> <span class="o">+</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_timedelta</span><span class="p">(</span><span class="n">hour</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;h&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="TimeSeries.view_compare_times_series">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.view_compare_times_series">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">view_compare_times_series</span><span class="p">(</span>
+        <span class="n">ts_first</span><span class="p">,</span> <span class="n">ts_second</span><span class="p">,</span> <span class="n">specs</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_fig</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
+
+        <span class="n">ts1</span> <span class="o">=</span> <span class="n">ts_first</span>
+        <span class="n">ts2</span> <span class="o">=</span> <span class="n">ts_second</span>
+
+        <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mini&quot;</span>
+        <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;data_legend&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;linestyle_mean&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;dashed&quot;</span>
+        <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;alpha_hist&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.75</span>
+        <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;alpha_cdf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;dpi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts_first</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;dpi&quot;</span><span class="p">]</span>
+        <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;fig_format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts_first</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;fig_format&quot;</span><span class="p">]</span>
+
+        <span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">specs</span><span class="p">)</span>
+        <span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">specs</span><span class="p">)</span>
+
+        <span class="c1"># setup first series</span>
+        <span class="c1"># ----------------------------------------------------------------</span>
+        <span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span>
+        <span class="c1"># ts1.view_specs[&#39;range&#39;] = specs[&#39;range&#39;]</span>
+
+        <span class="c1"># colors are the same from data</span>
+        <span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color_hist&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
+        <span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color_cdf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
+        <span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color_mean&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
+
+        <span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
+        <span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color_hist&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
+        <span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color_cdf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
+        <span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color_mean&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
+
+        <span class="c1"># label is the name</span>
+        <span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;data_label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;data_label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="c1"># hard coded specs</span>
+        <span class="c1">## ts1.view_specs[&#39;pad_mean&#39;] = 2</span>
+        <span class="c1">## ts2.view_specs[&#39;pad_mean&#39;] = 20</span>
+
+        <span class="c1"># plot</span>
+        <span class="c1"># ----------------------------------------------------------------</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">return_fig</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">axes</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">get_axes</span><span class="p">()</span>
+
+        <span class="c1"># plot series</span>
+        <span class="n">TimeSeries</span><span class="o">.</span><span class="n">plot_series</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">ts2</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;ax_data&quot;</span><span class="p">]],</span> <span class="n">specs</span><span class="o">=</span><span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span>
+        <span class="p">)</span>
+
+        <span class="c1"># plot hist</span>
+        <span class="n">df_clean</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">df_clean</span><span class="p">[</span><span class="n">ts2</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="n">Univar</span><span class="o">.</span><span class="n">plot_histh</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;ax_histh&quot;</span><span class="p">]],</span> <span class="n">specs</span><span class="o">=</span><span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span>
+        <span class="p">)</span>
+
+        <span class="c1"># plot cdf</span>
+        <span class="n">Univar</span><span class="o">.</span><span class="n">plot_cdf</span><span class="p">(</span>
+            <span class="n">cdf_df</span><span class="o">=</span><span class="n">ts2</span><span class="o">.</span><span class="n">get_cdf_weibull</span><span class="p">(),</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;ax_cdf&quot;</span><span class="p">]],</span>
+            <span class="n">specs</span><span class="o">=</span><span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># SHIP</span>
+        <span class="c1"># ----------------------------------------------------------------</span>
+
+        <span class="k">if</span> <span class="n">return_fig</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fig</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># create path</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;folder&quot;</span><span class="p">],</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">],</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;fig_format&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">viewer</span><span class="o">.</span><span class="n">ship_fig</span><span class="p">(</span><span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span> <span class="n">file_output</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;dpi&quot;</span><span class="p">])</span></div>
 </div>
 
 
@@ -3071,7 +3227,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># &quot;2020-01-01&quot;</span>
 
-        <span class="c1"># ------------ call super ----------- #</span>
+        <span class="c1"># call super</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
         <span class="c1"># -------------------------------------</span>
         <span class="c1"># set basic attributes</span>
@@ -3107,7 +3263,7 @@
 <span class="sd">        Expected to increment superior methods.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># ------------ call super ----------- #</span>
+        <span class="c1"># call super</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_fields</span><span class="p">()</span>
         <span class="c1"># Attribute fields</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">field_varname</span> <span class="o">=</span> <span class="s2">&quot;var_name&quot;</span>
@@ -3143,7 +3299,7 @@
 <span class="sd">        :return: dictionary with all metadata</span>
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># ------------ call super ----------- #</span>
+        <span class="c1"># call super</span>
         <span class="n">dict_meta</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()</span>
 
         <span class="c1"># customize local metadata:</span>
@@ -3343,7 +3499,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">uni</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_univar</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">uni</span><span class="o">.</span><span class="n">assess_basic_stats</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">uni</span><span class="o">.</span><span class="n">get_basic_stats</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Raster.get_aoi">
@@ -4676,7 +4832,7 @@
 <div class="viewcode-block" id="QualiRaster._set_fields">
 <a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.QualiRaster._set_fields">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># ------------ call super ----------- #</span>
+        <span class="c1"># call super</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_fields</span><span class="p">()</span>
         <span class="c1"># Attribute fields</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">field_id</span> <span class="o">=</span> <span class="s2">&quot;id&quot;</span>
@@ -4816,7 +4972,7 @@
             <span class="n">raster_sample</span><span class="o">.</span><span class="n">apply_aoi_mask</span><span class="p">(</span><span class="n">grid_aoi</span><span class="o">=</span><span class="n">grid_aoi</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="c1"># get basic stats</span>
             <span class="n">raster_uni</span> <span class="o">=</span> <span class="n">Univar</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">raster_sample</span><span class="o">.</span><span class="n">get_grid_data</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="n">varname</span><span class="p">)</span>
-            <span class="n">df_stats</span> <span class="o">=</span> <span class="n">raster_uni</span><span class="o">.</span><span class="n">assess_basic_stats</span><span class="p">()</span>
+            <span class="n">df_stats</span> <span class="o">=</span> <span class="n">raster_uni</span><span class="o">.</span><span class="n">get_basic_stats</span><span class="p">()</span>
             <span class="n">lst_stats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_stats</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
             <span class="c1"># restore</span>
             <span class="n">raster_sample</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">grid_raster</span>
@@ -5714,7 +5870,7 @@
 <span class="sd">        Set fields names.</span>
 <span class="sd">        Expected to increment superior methods.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># ------------ call super ----------- #</span>
+        <span class="c1"># call super</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_fields</span><span class="p">()</span>
 
         <span class="c1"># Attribute fields</span>

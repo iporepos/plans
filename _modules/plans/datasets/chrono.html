@@ -414,19 +414,106 @@
 <span class="sd">In a lacinia nisl.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoneType</span>
 
+<span class="c1"># IMPORTS</span>
+<span class="c1"># ***********************************************************************</span>
+<span class="c1"># import modules from other libs</span>
+
+<span class="c1"># Native imports</span>
+<span class="c1"># =======================================================================</span>
+<span class="c1"># import {module}</span>
+<span class="c1"># ... {develop}</span>
+
+<span class="c1"># External imports</span>
+<span class="c1"># =======================================================================</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="c1"># ... {develop}</span>
+
+<span class="c1"># Project-level imports</span>
+<span class="c1"># =======================================================================</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.core</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 
+<span class="c1"># ... {develop}</span>
 
-<span class="c1"># ------------- TIME SERIES OBJECTS -------------  #</span>
+
+<span class="c1"># CONSTANTS</span>
+<span class="c1"># ***********************************************************************</span>
+
+
+<span class="c1"># FUNCTIONS</span>
+<span class="c1"># ***********************************************************************</span>
+
+
+<span class="c1"># Classes</span>
+<span class="c1"># ***********************************************************************</span>
+
+
+<span class="c1"># TIME SERIES</span>
+<span class="c1"># ======================================================================</span>
+
+<span class="c1"># Water Balance Series</span>
+<span class="c1"># ----------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="WaterBalanceSeries">
+<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.WaterBalanceSeries">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">WaterBalanceSeries</span><span class="p">(</span><span class="n">TimeSeries</span><span class="p">):</span>
+
+<div class="viewcode-block" id="WaterBalanceSeries.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.WaterBalanceSeries.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyWaterBalanceSeries&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Use the superior initialization from the parent class (TimeSeries)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;Flow&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;Wb&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span> <span class="o">=</span> <span class="s2">&quot;wb&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;mm&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">&quot;Water Balance Time Series&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agg</span> <span class="o">=</span> <span class="s2">&quot;sum&quot;</span>  <span class="c1"># Aggregation method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outlier_min</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datarange_max</span> <span class="o">=</span> <span class="mi">10000</span>  <span class="c1"># absurd yearly precipitation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datarange_min</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="WaterBalanceSeries.view_pq_plot">
+<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.WaterBalanceSeries.view_pq_plot">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">view_pq_plot</span><span class="p">(</span><span class="n">ts_rain</span><span class="p">,</span> <span class="n">ts_flow</span><span class="p">,</span> <span class="n">specs</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="c1"># setup hard coded of Streamflow specs</span>
+        <span class="n">ts_flow</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;zorder_data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">ts_flow</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;zorder_histh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">ts_flow</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;zorder_cdf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+
+        <span class="c1"># setup hard coded Rain specs</span>
+        <span class="n">ts_rain</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;zorder_data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">ts_rain</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;zorder_histh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">ts_rain</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;zorder_cdf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">ts_rain</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;fill&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">ts_rain</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color_fill&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">ts_rain</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;fill_only&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">view_compare_times_series</span><span class="p">(</span>
+            <span class="n">ts_first</span><span class="o">=</span><span class="n">ts_flow</span><span class="p">,</span>
+            <span class="n">ts_second</span><span class="o">=</span><span class="n">ts_rain</span><span class="p">,</span>
+            <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">,</span>
+            <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span>
+            <span class="n">return_fig</span><span class="o">=</span><span class="n">return_fig</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output</span></div>
+</div>
+
 
 
 <div class="viewcode-block" id="RainSeries">
 <a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.RainSeries">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">RainSeries</span><span class="p">(</span><span class="n">TimeSeries</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RainSeries</span><span class="p">(</span><span class="n">WaterBalanceSeries</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class for representing and working with rainfall time series data.</span>
 
@@ -443,21 +530,18 @@
 
 <div class="viewcode-block" id="RainSeries.__init__">
 <a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.RainSeries.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyRainfallSeries&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyRainSeries&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Use the superior initialization from the parent class (TimeSeries)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;Rain&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;ppt&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;P&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span> <span class="o">=</span> <span class="s2">&quot;ppt&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;mm&quot;</span>
         <span class="c1"># Overwrite attributes specific to RainSeries</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">&quot;Rain Time Series&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">agg</span> <span class="o">=</span> <span class="s2">&quot;sum&quot;</span>  <span class="c1"># Aggregation method, set to &quot;sum&quot; by default</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gapsize</span> <span class="o">=</span> <span class="p">(</span>
             <span class="mi">7</span> <span class="o">*</span> <span class="mi">72</span>
         <span class="p">)</span>  <span class="c1"># Maximum gap size of 1 week assuming measure device turns off when is not raining</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">outlier_min</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">&quot;darkgray&quot;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">&quot;slateblue&quot;</span></div>
 
 
 <div class="viewcode-block" id="RainSeries.interpolate_gaps">
@@ -485,6 +569,152 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 </div>
 
+
+
+<div class="viewcode-block" id="StreamflowSeries">
+<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.StreamflowSeries">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StreamflowSeries</span><span class="p">(</span><span class="n">WaterBalanceSeries</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for representing and working with streamflow data (specific flow).</span>
+
+<span class="sd">    **Notes**</span>
+
+<span class="sd">    todo notes</span>
+
+<span class="sd">    **Examples**</span>
+
+<span class="sd">    todo examples</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="StreamflowSeries.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.StreamflowSeries.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyStreaFlowSeries&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Use the superior initialization from the parent class (TimeSeries)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;Streamflow&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;Q&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span> <span class="o">=</span> <span class="s2">&quot;q&quot;</span>
+        <span class="c1"># Overwrite attributes specific</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">&quot;Streamflow Time Series&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span></div>
+
+
+<div class="viewcode-block" id="StreamflowSeries.get_baseflow">
+<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.StreamflowSeries.get_baseflow">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_baseflow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">StreamflowSeries</span><span class="o">.</span><span class="n">separate_baseflow</span><span class="p">(</span>
+            <span class="n">df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dt_field</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">,</span> <span class="n">var_field</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="StreamflowSeries.separate_baseflow">
+<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.StreamflowSeries.separate_baseflow">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">separate_baseflow</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">dt_field</span><span class="o">=</span><span class="s2">&quot;datetime&quot;</span><span class="p">,</span> <span class="n">var_field</span><span class="o">=</span><span class="s2">&quot;q&quot;</span><span class="p">):</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># central derivative</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">var_field</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">df</span><span class="p">[</span><span class="n">var_field</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dt</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;delta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">var_field</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="p">[</span><span class="n">var_field</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">dt</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;delta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">var_field</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="p">[</span><span class="n">var_field</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">/</span> <span class="n">dt</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">15</span><span class="p">))</span>
+
+        <span class="n">v_rises</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_rises</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">lcl_v</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">var_field</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">lcl_v_last</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">var_field</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">lcl_v_next</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">var_field</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">lcl_v_last</span> <span class="o">&gt;</span> <span class="n">lcl_v</span> <span class="ow">and</span> <span class="n">lcl_v_next</span> <span class="o">&gt;</span> <span class="n">lcl_v</span><span class="p">:</span>
+                <span class="n">v_rises</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">lcl_v</span>
+
+        <span class="n">df_qb</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">df_qb</span><span class="p">[</span><span class="s2">&quot;Qb&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_rises</span>
+        <span class="n">df_qb</span><span class="p">[</span><span class="s2">&quot;Qb&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_qb</span><span class="p">[</span><span class="s2">&quot;Qb&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="n">df_qb</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">df_qb</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">15</span><span class="p">))</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_qb</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">],</span> <span class="n">df_qb</span><span class="p">[</span><span class="s2">&quot;Qb&quot;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">df_qb</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ETSeries">
+<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.ETSeries">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ETSeries</span><span class="p">(</span><span class="n">WaterBalanceSeries</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for representing and working with ET data.</span>
+
+<span class="sd">    **Notes**</span>
+
+<span class="sd">    todo notes</span>
+
+<span class="sd">    **Examples**</span>
+
+<span class="sd">    todo examples</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ETSeries.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.ETSeries.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyETSeries&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Use the superior initialization from the parent class</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;ET&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span> <span class="o">=</span> <span class="s2">&quot;et&quot;</span>
+        <span class="c1"># Overwrite attributes specific</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">&quot;ET Time Series&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">&quot;red&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="PETSeries">
+<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.PETSeries">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PETSeries</span><span class="p">(</span><span class="n">WaterBalanceSeries</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for representing and working with PET data.</span>
+
+<span class="sd">    **Notes**</span>
+
+<span class="sd">    todo notes</span>
+
+<span class="sd">    **Examples**</span>
+
+<span class="sd">    todo examples</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PETSeries.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.PETSeries.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyPETSeries&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Use the superior initialization from the parent class (TimeSeries)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;PET&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;PET&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span> <span class="o">=</span> <span class="s2">&quot;pet&quot;</span>
+        <span class="c1"># Overwrite attributes specific</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">&quot;PET Time Series&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">&quot;darkred&quot;</span></div>
+</div>
+
+
+
+<span class="c1"># Other</span>
+<span class="c1"># ----------------------------------------------------------------------</span>
 
 
 <div class="viewcode-block" id="TemperatureSeries">
@@ -519,71 +749,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">datarange_max</span> <span class="o">=</span> <span class="mi">50</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datarange_min</span> <span class="o">=</span> <span class="o">-</span><span class="mi">20</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">&quot;orange&quot;</span></div>
-</div>
-
-
-
-<span class="k">class</span><span class="w"> </span><span class="nc">ETSeries</span><span class="p">(</span><span class="n">TimeSeries</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A class for representing and working with ET data.</span>
-
-<span class="sd">    **Notes**</span>
-
-<span class="sd">    todo notes</span>
-
-<span class="sd">    **Examples**</span>
-
-<span class="sd">    todo examples</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyETSeries&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># Use the superior initialization from the parent class (TimeSeries)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;ET&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span> <span class="o">=</span> <span class="s2">&quot;et&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;mm&quot;</span>
-        <span class="c1"># Overwrite attributes specific</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">&quot;ET Time Series&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">agg</span> <span class="o">=</span> <span class="s2">&quot;sum&quot;</span>  <span class="c1"># Aggregation method</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gapsize</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># Maximum gap size in dt units</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">datarange_max</span> <span class="o">=</span> <span class="mi">10000</span>  <span class="c1"># absurd yearly precipitation</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">datarange_min</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">&quot;red&quot;</span>
-
-
-<div class="viewcode-block" id="ETSeries">
-<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.ETSeries">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">ETSeries</span><span class="p">(</span><span class="n">TimeSeries</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A class for representing and working with PET data.</span>
-
-<span class="sd">    **Notes**</span>
-
-<span class="sd">    todo notes</span>
-
-<span class="sd">    **Examples**</span>
-
-<span class="sd">    todo examples</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-<div class="viewcode-block" id="ETSeries.__init__">
-<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.ETSeries.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyETSeries&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># Use the superior initialization from the parent class (TimeSeries)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;PET&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="s2">&quot;PET&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span> <span class="o">=</span> <span class="s2">&quot;pet&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;mm&quot;</span>
-        <span class="c1"># Overwrite attributes specific</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">&quot;PET Time Series&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">agg</span> <span class="o">=</span> <span class="s2">&quot;sum&quot;</span>  <span class="c1"># Aggregation method</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gapsize</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># Maximum gap size in dt units</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">datarange_max</span> <span class="o">=</span> <span class="mi">10000</span>  <span class="c1"># absurd yearly precipitation</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">datarange_min</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">&quot;darkred&quot;</span></div>
 </div>
 
 
@@ -642,11 +807,11 @@
 
 
 
-<div class="viewcode-block" id="StreamflowTimeSeries">
-<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.StreamflowTimeSeries">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">StreamflowTimeSeries</span><span class="p">(</span><span class="n">TimeSeries</span><span class="p">):</span>
+<div class="viewcode-block" id="DischargeSeries">
+<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.DischargeSeries">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DischargeSeries</span><span class="p">(</span><span class="n">TimeSeries</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A class for representing and working with streamflow time series data.</span>
+<span class="sd">    A class for representing and working with discharge time series data (volumentric flow).</span>
 
 <span class="sd">    **Notes**</span>
 
@@ -658,27 +823,17 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="StreamflowTimeSeries.__init__">
-<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.StreamflowTimeSeries.__init__">[docs]</a>
+<div class="viewcode-block" id="DischargeSeries.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.DischargeSeries.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyFlowSeries&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize a FlowSeries object.</span>
-
-<span class="sd">        :param name: str, optional</span>
-<span class="sd">            Name of the streamflow series. Default is &quot;MyFlowSeries&quot;.</span>
-<span class="sd">        :type name: str</span>
-
-<span class="sd">        :param alias: str, optional</span>
-<span class="sd">            Alias for the flow</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Use the superior initialization from the parent class (TimeSeries)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;Flow&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">&quot;Discharge&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span> <span class="o">=</span> <span class="s2">&quot;Q&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;m3/s&quot;</span>
         <span class="c1"># Overwrite attributes specific</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">&quot;Flow Time Series&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">&quot;Discharge Time Series&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">agg</span> <span class="o">=</span> <span class="s2">&quot;mean&quot;</span>  <span class="c1"># Aggregation method, set to &quot;mean&quot; by default</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gapsize</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># Maximum gap size of 6 hours assuming hourly Flow</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datarange_max</span> <span class="o">=</span> <span class="mi">300000</span>  <span class="c1"># Amazon discharge</span>
@@ -688,8 +843,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">upstream_area</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># in sq km</span></div>
 
 
-<div class="viewcode-block" id="StreamflowTimeSeries.view_cfcs">
-<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.StreamflowTimeSeries.view_cfcs">[docs]</a>
+<div class="viewcode-block" id="DischargeSeries.view_cfcs">
+<a class="viewcode-back" href="../../../generated/plans.datasets.chrono.html#plans.datasets.chrono.DischargeSeries.view_cfcs">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">view_cfcs</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
