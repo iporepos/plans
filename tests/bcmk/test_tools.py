@@ -131,23 +131,23 @@ class TestTools(unittest.TestCase):
         os.makedirs(folder_parameters, exist_ok=True)
 
     def cleanup_lulc_parameters(self):
-        ls_lulc_scenarios = self.project.get_list_scenarios_lulc()
+        ls_lulc_scenarios = self.project.get_scenarios_lulc()
         for scenario in ls_lulc_scenarios:
             folder_scenario = Path(self.project.folder_lulc) / scenario
             self.cleanup_parameters(folder_scenario)
 
     def cleanup_lulc_scenarios(self):
-        ls_scenarios = self.project.get_list_scenarios_lulc()
+        ls_scenarios = self.project.get_scenarios_lulc()
         for scenario in ls_scenarios:
             folder_scenario = f"{self.project.folder_lulc}/{scenario}"
             cleanup_figs(folder_scenario)
             Path(f"{folder_scenario}/lulc_series.csv").unlink(missing_ok=True)
 
     def cleanup_climate_scenarios(self):
-        ls_scenarios = self.project.get_list_scenarios_climate()
+        ls_scenarios = self.project.get_scenarios_climate()
         for scenario in ls_scenarios:
             folder_scenario = f"{self.project.folder_climate}/{scenario}"
-            ls_lulc_scenarios = self.project.get_list_scenarios_lulc()
+            ls_lulc_scenarios = self.project.get_scenarios_lulc()
             # cleanup_figs(folder_scenario)
             for scenario_lulc in ls_lulc_scenarios:
                 Path(
@@ -407,7 +407,7 @@ class TestTools(unittest.TestCase):
 
         # Assertions
         # ---------------------------------------------------------------
-        ls_scenarios = self.project.get_list_scenarios_lulc()
+        ls_scenarios = self.project.get_scenarios_lulc()
         for scenario in ls_scenarios:
             if scenario == skip_scenario:
                 pass
@@ -432,14 +432,14 @@ class TestTools(unittest.TestCase):
 
         # Assertions
         # ---------------------------------------------------------------
-        ls_scenarios = self.project.get_list_scenarios_climate()
+        ls_scenarios = self.project.get_scenarios_climate()
         for scenario in ls_scenarios:
             if scenario == skip_scenario:
                 pass
             else:
                 # testprint(scenario)
                 folder_scenario = Path(self.project.folder_climate) / scenario
-                ls_lulc_scenarios = self.project.get_list_scenarios_lulc()
+                ls_lulc_scenarios = self.project.get_scenarios_lulc()
                 for scenario_lulc in ls_lulc_scenarios:
                     file_csv = (
                         Path(folder_scenario)
@@ -479,7 +479,7 @@ class TestTools(unittest.TestCase):
         # ---------------------------------------------------------------
         folder_lulc = self.project.folder_lulc
         if selected_lulc_scenario is None:
-            ls_scenarios = self.project.get_list_scenarios_lulc()
+            ls_scenarios = self.project.get_scenarios_lulc()
         else:
             ls_scenarios = [selected_lulc_scenario]
         for s in ls_scenarios:

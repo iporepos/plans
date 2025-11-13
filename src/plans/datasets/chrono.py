@@ -32,17 +32,95 @@ In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.
 In a lacinia nisl.
 
 """
+from types import NoneType
 
+# IMPORTS
+# ***********************************************************************
+# import modules from other libs
+
+# Native imports
+# =======================================================================
+# import {module}
+# ... {develop}
+
+# External imports
+# =======================================================================
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
+# ... {develop}
+
+# Project-level imports
+# =======================================================================
 from plans.datasets.core import *
 
+# ... {develop}
 
-# ------------- TIME SERIES OBJECTS -------------  #
+
+# CONSTANTS
+# ***********************************************************************
 
 
-class RainSeries(TimeSeries):
+# FUNCTIONS
+# ***********************************************************************
+
+
+# Classes
+# ***********************************************************************
+
+
+# TIME SERIES
+# ======================================================================
+
+# Water Balance Series
+# ----------------------------------------------------------------------
+
+
+class WaterBalanceSeries(TimeSeries):
+
+    def __init__(self, name="MyWaterBalanceSeries", alias=None):
+        # Use the superior initialization from the parent class (TimeSeries)
+        super().__init__(name, alias=alias)
+        self.varname = "Flow"
+        self.varalias = "Wb"
+        self.varfield = "wb"
+        self.units = "mm"
+        self.name_object = "Water Balance Time Series"
+        self.agg = "sum"  # Aggregation method
+        self.outlier_min = 0
+        self.rawcolor = "blue"
+        self.datarange_max = 10000  # absurd yearly precipitation
+        self.datarange_min = 0
+
+    @staticmethod
+    def view_pq_plot(ts_rain, ts_flow, specs, show=True, return_fig=False):
+
+        # setup hard coded of Streamflow specs
+        ts_flow.view_specs["zorder_data"] = 2
+        ts_flow.view_specs["zorder_histh"] = 2
+        ts_flow.view_specs["zorder_cdf"] = 2
+
+        # setup hard coded Rain specs
+        ts_rain.view_specs["zorder_data"] = 1
+        ts_rain.view_specs["zorder_histh"] = 1
+        ts_rain.view_specs["zorder_cdf"] = 1
+        ts_rain.view_specs["fill"] = True
+        ts_rain.view_specs["color_fill"] = None
+        ts_rain.view_specs["fill_only"] = True
+
+        output = TimeSeries.view_compare_times_series(
+            ts_first=ts_flow,
+            ts_second=ts_rain,
+            specs=specs,
+            show=show,
+            return_fig=return_fig,
+        )
+
+        return output
+
+
+class RainSeries(WaterBalanceSeries):
     """
     A class for representing and working with rainfall time series data.
 
@@ -57,21 +135,18 @@ class RainSeries(TimeSeries):
 
     """
 
-    def __init__(self, name="MyRainfallSeries", alias=None):
+    def __init__(self, name="MyRainSeries", alias=None):
         # Use the superior initialization from the parent class (TimeSeries)
         super().__init__(name, alias=alias)
         self.varname = "Rain"
-        self.varalias = "ppt"
+        self.varalias = "P"
         self.varfield = "ppt"
-        self.units = "mm"
         # Overwrite attributes specific to RainSeries
         self.name_object = "Rain Time Series"
-        self.agg = "sum"  # Aggregation method, set to "sum" by default
         self.gapsize = (
             7 * 72
         )  # Maximum gap size of 1 week assuming measure device turns off when is not raining
-        self.outlier_min = 0
-        self.rawcolor = "darkgray"
+        self.rawcolor = "slateblue"
 
     def interpolate_gaps(self, inplace=False, method=None):
         # overwrite interpolation method with constant=0
@@ -91,6 +166,128 @@ class RainSeries(TimeSeries):
         }
         self.gapsize = dict_gaps[self.dtres]
         return None
+
+
+class StreamflowSeries(WaterBalanceSeries):
+    """
+    A class for representing and working with streamflow data (specific flow).
+
+    **Notes**
+
+    todo notes
+
+    **Examples**
+
+    todo examples
+
+    """
+
+    def __init__(self, name="MyStreaFlowSeries", alias=None):
+        # Use the superior initialization from the parent class (TimeSeries)
+        super().__init__(name, alias=alias)
+        self.varname = "Streamflow"
+        self.varalias = "Q"
+        self.varfield = "q"
+        # Overwrite attributes specific
+        self.name_object = "Streamflow Time Series"
+        self.rawcolor = "blue"
+
+    def get_baseflow(self):
+
+        df = StreamflowSeries.separate_baseflow(
+            df=self.data, dt_field=self.dtfield, var_field=self.varfield
+        )
+
+        return df
+
+    @staticmethod
+    def separate_baseflow(df, dt_field="datetime", var_field="q"):
+        dt = 1
+
+        # central derivative
+        df["delta"] = (df[var_field].shift(-1) - df[var_field].shift(1)) / (2 * dt)
+        df.loc[0, "delta"] = (df[var_field].iloc[1] - df[var_field].iloc[0]) / dt
+        df.loc[len(df) - 1, "delta"] = (
+            df[var_field].iloc[len(df) - 1] - df[var_field].iloc[len(df) - 2]
+        ) / dt
+
+        print(df.head(15))
+
+        v_rises = np.zeros(len(df))
+
+        for i in range(1, len(v_rises) - 1):
+            lcl_v = df[var_field].values[i]
+            lcl_v_last = df[var_field].values[i - 1]
+            lcl_v_next = df[var_field].values[i + 1]
+
+            if lcl_v_last > lcl_v and lcl_v_next > lcl_v:
+                v_rises[i] = lcl_v
+
+        df_qb = df.copy()
+        df_qb["Qb"] = v_rises
+        df_qb["Qb"] = df_qb["Qb"].replace(0, np.nan)
+        df_qb.dropna(inplace=True)
+
+        print(df_qb.head(15))
+
+        plt.plot(df["datetime"], df["q"])
+        plt.plot(df_qb["datetime"], df_qb["Qb"], marker="o")
+        plt.show()
+
+        return df_qb
+
+
+class ETSeries(WaterBalanceSeries):
+    """
+    A class for representing and working with ET data.
+
+    **Notes**
+
+    todo notes
+
+    **Examples**
+
+    todo examples
+
+    """
+
+    def __init__(self, name="MyETSeries", alias=None):
+        # Use the superior initialization from the parent class
+        super().__init__(name, alias=alias)
+        self.varname = "ET"
+        self.varfield = "et"
+        # Overwrite attributes specific
+        self.name_object = "ET Time Series"
+        self.rawcolor = "red"
+
+
+class PETSeries(WaterBalanceSeries):
+    """
+    A class for representing and working with PET data.
+
+    **Notes**
+
+    todo notes
+
+    **Examples**
+
+    todo examples
+
+    """
+
+    def __init__(self, name="MyPETSeries", alias=None):
+        # Use the superior initialization from the parent class (TimeSeries)
+        super().__init__(name, alias=alias)
+        self.varname = "PET"
+        self.varalias = "PET"
+        self.varfield = "pet"
+        # Overwrite attributes specific
+        self.name_object = "PET Time Series"
+        self.rawcolor = "darkred"
+
+
+# Other
+# ----------------------------------------------------------------------
 
 
 class TemperatureSeries(TimeSeries):
@@ -121,65 +318,6 @@ class TemperatureSeries(TimeSeries):
         self.datarange_max = 50
         self.datarange_min = -20
         self.rawcolor = "orange"
-
-
-class ETSeries(TimeSeries):
-    """
-    A class for representing and working with ET data.
-
-    **Notes**
-
-    todo notes
-
-    **Examples**
-
-    todo examples
-
-    """
-
-    def __init__(self, name="MyETSeries", alias=None):
-        # Use the superior initialization from the parent class (TimeSeries)
-        super().__init__(name, alias=alias)
-        self.varname = "ET"
-        self.varfield = "et"
-        self.units = "mm"
-        # Overwrite attributes specific
-        self.name_object = "ET Time Series"
-        self.agg = "sum"  # Aggregation method
-        self.gapsize = 6  # Maximum gap size in dt units
-        self.datarange_max = 10000  # absurd yearly precipitation
-        self.datarange_min = 0
-        self.rawcolor = "red"
-
-
-class ETSeries(TimeSeries):
-    """
-    A class for representing and working with PET data.
-
-    **Notes**
-
-    todo notes
-
-    **Examples**
-
-    todo examples
-
-    """
-
-    def __init__(self, name="MyETSeries", alias=None):
-        # Use the superior initialization from the parent class (TimeSeries)
-        super().__init__(name, alias=alias)
-        self.varname = "PET"
-        self.varalias = "PET"
-        self.varfield = "pet"
-        self.units = "mm"
-        # Overwrite attributes specific
-        self.name_object = "PET Time Series"
-        self.agg = "sum"  # Aggregation method
-        self.gapsize = 6  # Maximum gap size in dt units
-        self.datarange_max = 10000  # absurd yearly precipitation
-        self.datarange_min = 0
-        self.rawcolor = "darkred"
 
 
 class StageSeries(TimeSeries):
@@ -227,9 +365,9 @@ class StageSeries(TimeSeries):
         return base_metadata
 
 
-class StreamflowTimeSeries(TimeSeries):
+class DischargeSeries(TimeSeries):
     """
-    A class for representing and working with streamflow time series data.
+    A class for representing and working with discharge time series data (volumentric flow).
 
     **Notes**
 
@@ -242,24 +380,14 @@ class StreamflowTimeSeries(TimeSeries):
     """
 
     def __init__(self, name="MyFlowSeries", alias=None):
-        """
-        Initialize a FlowSeries object.
-
-        :param name: str, optional
-            Name of the streamflow series. Default is "MyFlowSeries".
-        :type name: str
-
-        :param alias: str, optional
-            Alias for the flow
-
-        """
         # Use the superior initialization from the parent class (TimeSeries)
         super().__init__(name, alias=alias)
-        self.varname = "Flow"
+        self.varname = "Discharge"
         self.varfield = "Q"
+        self.varalias = self.varfield
         self.units = "m3/s"
         # Overwrite attributes specific
-        self.name_object = "Flow Time Series"
+        self.name_object = "Discharge Time Series"
         self.agg = "mean"  # Aggregation method, set to "mean" by default
         self.gapsize = 6  # Maximum gap size of 6 hours assuming hourly Flow
         self.datarange_max = 300000  # Amazon discharge

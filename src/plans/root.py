@@ -671,12 +671,14 @@ class DataSet(MbaE):
     """
 
     def __init__(self, name="MyDataSet", alias="DS0"):
-        # ------------ call super ----------- #
+        # call super
+        # ----------------------------------------------------------------
         super().__init__(name=name, alias=alias)
         # overwriters
         self.object_alias = "DS"
 
-        # ------------ set mutables ----------- #
+        # set mutables
+        # ----------------------------------------------------------------
         self.file_data = None
         self.folder_data = None
         self.data = None
@@ -686,13 +688,15 @@ class DataSet(MbaE):
         self.source = None
         self.description = None
 
-        # ------------ set defaults ----------- #
+        # set defaults
+        # ----------------------------------------------------------------
         self.color = "blue"
 
         # UPDATE
         self.update()
 
-        # ... continues in downstream objects ... #
+        # ... continues in downstream objects ...
+        # ----------------------------------------------------------------
 
     def __str__(self):
         str_super = super().__str__()
@@ -709,15 +713,19 @@ class DataSet(MbaE):
         return str_out
 
     def _set_fields(self):
-        # ------------ call super ----------- #
+        # call super
+        # ----------------------------------------------------------------
         super()._set_fields()
+
         # Attribute fields
         self.field_file_data = "file_data"
         self.field_size = "size"
         self.field_color = "color"
         self.field_source = "source"
         self.field_description = "description"
-        # ... continues in downstream objects ... #
+
+        # ... continues in downstream objects ...
+        # ----------------------------------------------------------------
 
     def _set_view_specs(self):
         """
@@ -725,37 +733,47 @@ class DataSet(MbaE):
 
         """
         self.view_specs = {
-            "folder": self.folder_data,
-            "filename": self.name,
+            # layout
             "style": "wien",
-            "fig_format": "jpg",
-            "dpi": 300,
-            "title": self.name,
             "width": 5 * 1.618,
             "height": 5 * 1.618,
-            "xvar": "RM",
-            "yvar": "TempDB",
-            "xlabel": "RM",
-            "ylabel": "TempDB",
-            "color": self.color,
-            "xmin": None,
-            "xmax": None,
-            "ymin": None,
-            "ymax": None,
+            # grid spec
             "gs_wspace": 0.2,
             "gs_hspace": 0.1,
             "gs_left": 0.05,
             "gs_right": 0.98,
             "gs_bottom": 0.15,
             "gs_top": 0.9,
+            # export
+            "folder": self.folder_data,
+            "filename": self.name,
+            "fig_format": "jpg",
+            "dpi": 300,
+            # titles
+            "title": self.name,
+            # fields
+            "xvar": "RM",
+            "yvar": "TempDB",
+            "xlabel": "RM",
+            "ylabel": "TempDB",
+            # color
+            "color": self.color,
+            # ranges
+            # todo review -- may be deprecated
+            "xmin": None,
+            "xmax": None,
+            "ymin": None,
+            "ymax": None,
         }
         return None
 
     def get_metadata(self):
-        # ------------ call super ----------- #
+        # call super
+        # ----------------------------------------------------------------
         dict_meta = super().get_metadata()
 
-        # customize local metadata:
+        # customize local metadata
+        # ----------------------------------------------------------------
         dict_meta_local = {
             self.field_size: self.size,
             self.field_color: self.color,
@@ -763,8 +781,11 @@ class DataSet(MbaE):
             self.field_description: self.description,
             self.field_file_data: self.file_data,
         }
+
         # update
+        # ----------------------------------------------------------------
         dict_meta.update(dict_meta_local)
+
         return dict_meta
 
     def update(self):

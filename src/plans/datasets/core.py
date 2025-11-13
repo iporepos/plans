@@ -161,9 +161,9 @@ class TimeSeries(Univar):
     # Dunder methods
     # -------------------------------------------------------------------
     def __init__(self, name="MyTimeSeries", alias="TS0"):
-        # ------------ set defaults ----------- #
 
         # upstream setups
+        # ----------------------------------------------------------------
         self.dtfield = "datetime"
         self.agg = "mean"
         self.cmap = "Dark2"
@@ -171,7 +171,8 @@ class TimeSeries(Univar):
         self.rawcolor = "gray"  # alternativa color
         self.folder_src = None
 
-        # ------------ call super ----------- #
+        # call super
+        # ----------------------------------------------------------------
         super().__init__(name=name, alias=alias)
 
         # overwriters
@@ -204,8 +205,12 @@ class TimeSeries(Univar):
         self.file_data_dtfield = self.dtfield
         self.file_data_varfield = self.varfield
 
+        # call internals
+        # ----------------------------------------------------------------
         self._set_view_specs()
+
         # ... continues in downstream objects ... #
+        # ----------------------------------------------------------------
 
     # Core internal methods
     # -------------------------------------------------------------------
@@ -213,7 +218,8 @@ class TimeSeries(Univar):
         """
         Set catalog fields names. Expected to increment superior methods.
         """
-        # ------------ call super ----------- #
+        # call super
+        # ----------------------------------------------------------------
         super()._set_fields()
 
         # TimeSeries fields
@@ -316,7 +322,7 @@ class TimeSeries(Univar):
         :return: dictionary with all metadata
         :rtype: dict
         """
-        # ------------ call super ----------- #
+        # call super
         dict_meta = super().get_metadata()
 
         # customize local metadata:
@@ -356,6 +362,11 @@ class TimeSeries(Univar):
         dict_meta.pop(self.field_file_data)
         dict_meta[self.field_file_data] = self.file_data
         return dict_meta
+
+    def get_range_datetime(self):
+        # todo docstring
+        ls = [self.data[self.dtfield].min(), self.data[self.dtfield].max()]
+        return ls[:]
 
     # Core methods
     # -------------------------------------------------------------------
@@ -472,7 +483,7 @@ class TimeSeries(Univar):
             df = df.dropna()
 
         # Convert datetime column to standard format
-        df[self.dtfield] = pd.to_datetime(df[self.dtfield], format="%Y-%m0-%d %H:%M:%S")
+        df[self.dtfield] = pd.to_datetime(df[self.dtfield], format="%Y-%m-%d %H:%M:%S")
 
         if filter_dates is None:
             pass
@@ -995,10 +1006,11 @@ class TimeSeries(Univar):
         # get data
         df = self.data.copy()
         df["Bad"] = df[self.varfield].isna().astype(int)
+
         # Set the 'datetime' column as the index
         df.set_index(self.dtfield, inplace=True)
 
-        # Redata the time series to a frequency using aggregation functions
+        # Resample the time series to a frequency using aggregation functions
         agg_df1 = df.resample(freq)[self.varfield].agg(agg_funcs_list)
         agg_df2 = df.resample(freq)["Bad"].agg([("Bad_count", "sum")])
 
@@ -1019,8 +1031,10 @@ class TimeSeries(Univar):
                 )
             }
         )
+
         # remove bad records
         agg_df.drop(agg_df[agg_df["Bad_count"] > bad_max].index, inplace=True)
+
         # remove bad column
         agg_df.drop(columns=["Bad_count"], inplace=True)
 
@@ -1031,7 +1045,7 @@ class TimeSeries(Univar):
 
         return agg_df_new
 
-    def upscale(self, freq, bad_max, inplace=True):
+    def scale_up(self, freq, bad_max, inplace=True):
         """
         Upscale time series for larger time steps. This method uses the `agg` attribute.
         See the `aggregate` method.
@@ -1067,13 +1081,17 @@ class TimeSeries(Univar):
             self.data = df_upscale
             #
             self._set_frequency()
+            # update derived data
+            self.stats_df = self.get_basic_stats()
+            self.freq_df = self.get_frequency()
+            self.weibull_df = self.get_cdf_weibull()
 
             return None
         else:
             return df_upscale
 
     # todo develop -- improve methods of downscaling
-    def downscale(self, freq):
+    def scale_down(self, freq):
         """
         Donwscale time series for smaller time steps using linear inteporlation.
 
@@ -1137,7 +1155,7 @@ class TimeSeries(Univar):
         self.agg = eva_agg
 
         # upscale time series
-        df_eva = self.upscale(freq=eva_freq, bad_max=self.gapsize, inplace=False)
+        df_eva = self.scale_up(freq=eva_freq, bad_max=self.gapsize, inplace=False)
         df_eva = df_eva.dropna()
 
         # reset agg
@@ -1236,6 +1254,8 @@ class TimeSeries(Univar):
         else:
             fig = super()._plot(fig=fig, gs=gs, specs=specs)
 
+        # todo continue plots
+
         return fig
 
     def _set_view_specs(self):
@@ -1248,36 +1268,51 @@ class TimeSeries(Univar):
         super()._set_view_specs()
 
         # Update or add new specifications specific to the child class
+
+        s_title = "Time Series | {} | {} ({})".format(
+            self.name, self.varname, self.varalias
+        )
+
         self.view_specs.update(
             {
+                # export
                 "folder": self.folder_src,
-                "title": "Time Series | {} | {} ({})".format(
-                    self.name, self.varname, self.varalias
-                ),
+                # titles
+                "title": s_title,
+                "subtitle_data": None,
+                # fields
                 "xvar": self.dtfield,
                 "yvar": self.varfield,
                 "xlabel": self.dtfield,
+                # colors
                 "color": self.rawcolor,
                 "color_aux": self.rawcolor,
-                "color_fill": self.rawcolor,
+                "color_fill": None,
                 "color_eva": "blue",
+                # legend
                 "legend_eva": "Annual Maxima",
+                # alphas
                 "alpha": 1,
                 "alpha_aux": 1,
                 "alpha_fill": 1,
+                # options
                 "fill": False,
+                "fill_only": False,
+                # ranges todo review
                 "xmin": None,
                 "xmax": None,
                 "xmax_aux": 20,
                 "ymin": 0,
                 "ymax": None,
+                # styles
                 "linestyle": "solid",
                 "marker": None,
                 "marker_eva": ".",
+                "drawstyle": None,
                 "n_bins": 100,
-                "subtitle_a": None,
-                "n_dates": 5,
+                "n_dates": None,
                 "include_eva": False,
+                # stats locators
                 "x_stats": 0.73,
                 "x_stats_sep": 0.12,
                 "y_stats": 0.28,
@@ -1303,6 +1338,8 @@ class TimeSeries(Univar):
         :type return_fig: bool
 
         """
+        # HANDLE SPECS
+        # ------------------------------------------------------------
         specs = self.view_specs.copy()
 
         # handle eva specs
@@ -1318,82 +1355,30 @@ class TimeSeries(Univar):
             self.view_specs["ax_histh"] = 1
             self.view_specs["ax_cdf"] = 2
 
-        # call base method and return the fig
+        # BUILD FIG
+        # ------------------------------------------------------------
+        self.view_specs["ax_data"] = False
         fig = super().view(show=False, return_fig=True)
+        self.view_specs["ax_data"] = 0
 
-        # -------------- PLOT EXTRA --------------
-
-        # plotting series
+        # PLOT EXTRA
         # ------------------------------------------------------------
         # todo develop DRY -- develop plotting static methods
         # --- call _plot()
 
+        # SERIES
+        # ------------------------------------------------------------
+
         # series plot
         axes = fig.get_axes()
-        print(axes)
-        print(specs["ax_data"])
 
         ax = axes[specs["ax_data"]]
         ax.cla()
-        # plot series
-        ax.plot(
-            self.data[specs["xvar"]],
-            self.data[specs["yvar"]],
-            linestyle=specs["linestyle"],
-            marker=specs["marker"],
-            color=specs["color"],
-            alpha=specs["alpha"],
-        )
-        # fill option
-        if specs["fill"]:
-            lower = (self.data[specs["yvar"]].values * 0) + specs["ymin"]
-            # Fill below the time series
-            ax.fill_between(
-                x=self.data[specs["xvar"]],
-                y1=lower,
-                y2=self.data[specs["yvar"]],
-                color=specs["color_fill"],
-                alpha=specs["alpha_fill"],
-            )
-        # handle dates
-        if specs["n_dates"] is not None:
-            n_dates = specs["n_dates"]
-            dt_col = self.dtfield
-            dates = self.data[dt_col]
 
-            # Handle n_dates dynamically
-            if n_dates <= 1:
-                # Just the first one
-                tick_indices = [0]
-            elif n_dates == 2:
-                # First and last
-                tick_indices = [0, len(dates) - 1]
-            else:
-                # Evenly spaced positions across the dataset
-                tick_indices = np.linspace(0, len(dates) - 1, n_dates, dtype=int)
-
-            # Get the corresponding dates
-            ticks = dates.iloc[tick_indices]
-
-            # Apply to plot
-            ax.set_xticks(ticks)
-            ax.set_xticklabels([d.strftime("%Y-%m-%d") for d in ticks])
-        # handle subtitle
-        if specs["subtitle_a"] is not None:
-            ax.set_title(specs["subtitle_a"])
-        # handle range
-        if specs["range"] is not None:
-            ax.set_ylim(specs["range"])
-
-        # handle range x
-        if specs["range_x"] is not None:
-            ax.set_ylim(specs["range_x"])
-
-        # basic decorations
-        ax.set_xlabel(specs["xlabel"])
-        ax.set_ylabel(specs["ylabel"])
+        TimeSeries.plot_series(data=self.data, ax=ax, specs=specs)
 
         # handle eva
+        # ----------------------------------------------
         if specs["include_eva"]:
             if self.eva is not None:
                 # ---- plot EVA series
@@ -1412,7 +1397,7 @@ class TimeSeries(Univar):
                 data = self.eva["Data"][self.varfield].values
                 ax2.hist(
                     data,
-                    bins=Univar.nbins_fd(data=data),
+                    bins=Univar.get_nbins_fd(data=data),
                     color=specs["color_eva"],
                     alpha=0.5,
                     orientation="horizontal",
@@ -1456,7 +1441,8 @@ class TimeSeries(Univar):
                 ax3.set_xscale("log")
                 ax3.set_xlabel("T(X)")
 
-        # -------------- SHIP --------------
+        # SHIP
+        # ----------------------------------------------------------------
         # create path
         file_path = "{}/{}.{}".format(
             specs["folder"], specs["filename"], specs["fig_format"]
@@ -1560,10 +1546,171 @@ class TimeSeries(Univar):
             return file_path
 
     @staticmethod
+    def plot_series(data, ax, specs):
+
+        if specs["fill"]:
+            if specs["color_fill"] is None:
+                specs["color_fill"] = specs["color"]
+            lower = (data[specs["yvar"]].values * 0) + specs["ymin"]
+            # Fill below the time series
+            ax.fill_between(
+                x=data[specs["xvar"]],
+                y1=lower,
+                y2=data[specs["yvar"]],
+                color=specs["color_fill"],
+                alpha=specs["alpha_fill"],
+                step="post" if specs.get("drawstyle", False) else None,
+                zorder=specs["zorder_data"],
+                label=specs["data_label"],
+                edgecolor="none",
+            )
+
+        if not specs["fill_only"]:
+            ax.plot(
+                data[specs["xvar"]],
+                data[specs["yvar"]],
+                linestyle=specs["linestyle"],
+                marker=specs["marker"],
+                color=specs["color"],
+                alpha=specs["alpha"],
+                drawstyle=specs["drawstyle"],
+                label=specs["data_label"],
+                zorder=specs["zorder_data"],
+            )
+
+        # handle dates
+        if specs["n_dates"] is not None:
+            n_dates = specs["n_dates"]
+            dates = data[specs["xvar"]]
+
+            # Handle n_dates dynamically
+            if n_dates <= 1:
+                # Just the first one
+                tick_indices = [0]
+            elif n_dates == 2:
+                # First and last
+                tick_indices = [0, len(dates) - 1]
+            else:
+                # Evenly spaced positions across the dataset
+                tick_indices = np.linspace(0, len(dates) - 1, n_dates, dtype=int)
+
+            # Get the corresponding dates
+            ticks = dates.iloc[tick_indices]
+
+            # Apply to plot
+            ax.set_xticks(ticks)
+            ax.set_xticklabels([d.strftime("%Y-%m-%d") for d in ticks])
+
+        # handle subtitle
+        if specs["subtitle_data"] is not None:
+            ax.set_title(specs["subtitle_data"], loc="left")
+
+        # handle range
+        if specs["range"] is not None:
+            ax.set_ylim(specs["range"])
+
+        # handle range x
+        if specs["range_x"] is not None:
+            ax.set_xlim(specs["range_x"])
+
+        if specs["data_legend"]:
+            ax.legend(
+                loc="upper right"
+                # todo dev more options
+            )
+
+        # basic decorations
+        ax.set_xlabel(specs["xlabel"])
+        ax.set_ylabel(specs["ylabel"])
+
+        return None
+
+    @staticmethod
     def add_hour(df, hour=12, dt_field="datetime"):
         # todo docstring
         df[dt_field] = df[dt_field].dt.normalize() + pd.to_timedelta(hour, unit="h")
         return df
+
+    @staticmethod
+    def view_compare_times_series(
+        ts_first, ts_second, specs, show=False, return_fig=False
+    ):
+
+        ts1 = ts_first
+        ts2 = ts_second
+
+        specs["mode"] = "mini"
+        specs["data_legend"] = True
+        specs["linestyle_mean"] = "dashed"
+        specs["alpha_hist"] = 0.75
+        specs["alpha_cdf"] = 1.0
+
+        specs["dpi"] = ts_first.view_specs["dpi"]
+        specs["fig_format"] = ts_first.view_specs["fig_format"]
+
+        ts1.view_specs.update(specs)
+        ts2.view_specs.update(specs)
+
+        # setup first series
+        # ----------------------------------------------------------------
+        ts1.view_specs["title"] = specs["title"]
+        # ts1.view_specs['range'] = specs['range']
+
+        # colors are the same from data
+        ts1.view_specs["color_hist"] = ts1.view_specs["color"]
+        ts1.view_specs["color_cdf"] = ts1.view_specs["color"]
+        ts1.view_specs["color_mean"] = ts1.view_specs["color"]
+
+        ts2.view_specs["color"] = ts2.view_specs["color"]
+        ts2.view_specs["color_hist"] = ts2.view_specs["color"]
+        ts2.view_specs["color_cdf"] = ts2.view_specs["color"]
+        ts2.view_specs["color_mean"] = ts2.view_specs["color"]
+
+        # label is the name
+        ts1.view_specs["data_label"] = ts1.name
+        ts2.view_specs["data_label"] = ts2.name
+
+        # hard coded specs
+        ## ts1.view_specs['pad_mean'] = 2
+        ## ts2.view_specs['pad_mean'] = 20
+
+        # plot
+        # ----------------------------------------------------------------
+        fig = ts1.view(return_fig=True)
+
+        axes = fig.get_axes()
+
+        # plot series
+        TimeSeries.plot_series(
+            data=ts2.data, ax=axes[ts2.view_specs["ax_data"]], specs=ts2.view_specs
+        )
+
+        # plot hist
+        df_clean = ts2.data.dropna()
+        data = df_clean[ts2.varfield].values
+
+        Univar.plot_histh(
+            data=data, ax=axes[ts2.view_specs["ax_histh"]], specs=ts2.view_specs
+        )
+
+        # plot cdf
+        Univar.plot_cdf(
+            cdf_df=ts2.get_cdf_weibull(),
+            ax=axes[ts2.view_specs["ax_cdf"]],
+            specs=ts2.view_specs,
+        )
+
+        # SHIP
+        # ----------------------------------------------------------------
+
+        if return_fig:
+            return fig
+        else:
+            # create path
+            file_path = "{}/{}.{}".format(
+                specs["folder"], specs["filename"], specs["fig_format"]
+            )
+            viewer.ship_fig(fig=fig, show=show, file_output=file_path, dpi=specs["dpi"])
 
 
 # Chronological classes - collections
@@ -2508,7 +2655,7 @@ class Raster(DataSet):
         self.units = "unknown"
         self.datetime = None  # "2020-01-01"
 
-        # ------------ call super ----------- #
+        # call super
         super().__init__(name=name, alias=alias)
         # -------------------------------------
         # set basic attributes
@@ -2541,7 +2688,7 @@ class Raster(DataSet):
         Expected to increment superior methods.
 
         """
-        # ------------ call super ----------- #
+        # call super
         super()._set_fields()
         # Attribute fields
         self.field_varname = "var_name"
@@ -2574,7 +2721,7 @@ class Raster(DataSet):
         :return: dictionary with all metadata
         :rtype: dict
         """
-        # ------------ call super ----------- #
+        # call super
         dict_meta = super().get_metadata()
 
         # customize local metadata:
@@ -2753,7 +2900,7 @@ class Raster(DataSet):
 
         """
         uni = self.get_univar()
-        return uni.assess_basic_stats()
+        return uni.get_basic_stats()
 
     def get_aoi(self, by_value_lo, by_value_hi):
         """
@@ -3951,7 +4098,7 @@ class QualiRaster(Raster):
     # Dunder methods
     # -------------------------------------------------------------------
     def _set_fields(self):
-        # ------------ call super ----------- #
+        # call super
         super()._set_fields()
         # Attribute fields
         self.field_id = "id"
@@ -4079,7 +4226,7 @@ class QualiRaster(Raster):
             raster_sample.apply_aoi_mask(grid_aoi=grid_aoi, inplace=True)
             # get basic stats
             raster_uni = Univar(data=raster_sample.get_grid_data(), name=varname)
-            df_stats = raster_uni.assess_basic_stats()
+            df_stats = raster_uni.get_basic_stats()
             lst_stats.append(df_stats.copy())
             # restore
             raster_sample.data = grid_raster
@@ -4890,7 +5037,7 @@ class RasterCollection(Collection):
         Set fields names.
         Expected to increment superior methods.
         """
-        # ------------ call super ----------- #
+        # call super
         super()._set_fields()
 
         # Attribute fields

@@ -340,11 +340,11 @@ class Project(FileSys):
 
         return dict_meta
 
-    def get_list_basins(self):
+    def get_basins(self):
         # todo docstring
         return os.listdir(self.folder_basins)
 
-    def get_list_scenarios_climate(self):
+    def get_scenarios_climate(self):
         # todo docstring
         ls_folder_names = os.listdir(self.folder_climate)
         ls_folders = [Path(self.folder_climate) / folder for folder in ls_folder_names]
@@ -356,7 +356,7 @@ class Project(FileSys):
                 ls_scenarios.append(os.path.basename(folder))
         return ls_scenarios
 
-    def get_list_scenarios_lulc(self):
+    def get_scenarios_lulc(self):
         # todo docstring
         ls_folder_names = os.listdir(self.folder_lulc)
         ls_folders = [Path(self.folder_lulc) / folder for folder in ls_folder_names]
@@ -738,7 +738,7 @@ class Project(FileSys):
         # todo docstring
         # setup
         # ---------------------------------------------------------------
-        ls_scenarios = self.get_list_scenarios_lulc()
+        ls_scenarios = self.get_scenarios_lulc()
         if lulc_scenario is not None:
             ls_scenarios = [lulc_scenario]
         ls_processes = []
@@ -784,10 +784,10 @@ class Project(FileSys):
         # todo docstring
         # setup
         # ---------------------------------------------------------------
-        ls_lulc_scenarios = self.get_list_scenarios_lulc()
+        ls_lulc_scenarios = self.get_scenarios_lulc()
         if lulc_scenario is not None:
             ls_lulc_scenarios = [lulc_scenario]
-        ls_climate_scenarios = self.get_list_scenarios_climate()
+        ls_climate_scenarios = self.get_scenarios_climate()
         if climate_scenario is not None:
             ls_climate_scenarios = [climate_scenario]
 
@@ -852,7 +852,7 @@ class Project(FileSys):
 
     def generate_lulc_parameters(self, lulc_scenario=None, skip_lulc_scenario=None):
 
-        ls_scenarios = self.get_list_scenarios_lulc()
+        ls_scenarios = self.get_scenarios_lulc()
 
         if lulc_scenario is not None:
             ls_scenarios = [lulc_scenario]

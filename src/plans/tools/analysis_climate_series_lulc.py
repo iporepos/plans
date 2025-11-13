@@ -135,8 +135,8 @@ class LocalTool(Tool):
         df_lulc = self.loaded_data["df_lulc"]
 
         # downscale
-        df_downscaled_ppt = ppt.downscale(freq=f"{dt_value}min")
-        df_downscaled_pet = pet.downscale(freq=f"{dt_value}min")
+        df_downscaled_ppt = ppt.scale_down(freq=f"{dt_value}min")
+        df_downscaled_pet = pet.scale_down(freq=f"{dt_value}min")
         df_downscaled = pd.merge(
             left=df_downscaled_ppt, right=df_downscaled_pet, on="datetime", how="left"
         )

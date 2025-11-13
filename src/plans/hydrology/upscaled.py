@@ -665,7 +665,7 @@ class LSRR(LinearStorage):
             input_varfield="p",
             input_dtfield=self.field_datetime,
         )
-        df_downscaled = rs.downscale(freq=self.params["dt_freq"]["value"])
+        df_downscaled = rs.scale_down(freq=self.params["dt_freq"]["value"])
 
         # set interpolated inputs variables
         self.sdata["p"] = df_downscaled["P"].values[:]
@@ -887,7 +887,7 @@ class LSRRE(LSRR):
             input_varfield="e_pot",
             input_dtfield=self.field_datetime,
         )
-        df_downscaled = rs.downscale(freq=self.params["dt_freq"]["value"])
+        df_downscaled = rs.scale_down(freq=self.params["dt_freq"]["value"])
 
         # set interpolated inputs variables
         self.sdata["e_pot"] = df_downscaled["e_pot"].values[:]

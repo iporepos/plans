@@ -47,8 +47,8 @@ class Stage:
         # todo [doctring]
         # Object attributes
         self.name = name
-        self.dtfield = "DateTime"
-        self.varfield = "Stage"
+        self.dtfield = "datetime"
+        self.varfield = "h"
         self.prefix = "snirh_stage"
 
         # data
@@ -64,7 +64,7 @@ class Stage:
         self.reading_skiprows = 15  # len(self.station_metadata) + 1
         self.reading_dtfields = ["Data", "hora"]
         self.reading_encoding = "utf-8"
-        self.reading_dtformat = "%d/%m0/%Y %H:%M:%S"
+        self.reading_dtformat = "%d/%m/%Y %H:%M:%S"
         self.reading_nan = ["null", -9999]
         self.reading_stage_fields = [
             "Cota01",
@@ -101,7 +101,8 @@ class Stage:
         ]
 
     def load_data(self, file_path):
-        """Load data from incoming data
+        """
+        Load data from incoming data
 
         :param file_path: ``.csv`` file path
         :type file_path: str
@@ -113,7 +114,8 @@ class Stage:
         return None
 
     def read_data(self, file_path):
-        """Handle data import
+        """
+        Handle data import
 
         :param file_path: ``.csv`` file path
         :type file_path: str

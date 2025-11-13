@@ -90,6 +90,7 @@ FIG_STYLES = {
         "background_axes": "white",
         "background_fig": "white",
         "grid": True,
+        "label_pad": 1.0 * MM_TO_PT,
     },
     "wien": {
         "lines_w": 0.22 * MM_TO_PT,
@@ -101,6 +102,7 @@ FIG_STYLES = {
         "background_axes": "f6f7f9ff",  # f4f4faff; e5e5ecff, eeedf3ff
         "background_fig": "white",
         "grid": True,
+        "label_pad": 1.0 * MM_TO_PT,
     },
     "wien3d": {
         "lines_w": 0.22 * MM_TO_PT,
@@ -112,6 +114,7 @@ FIG_STYLES = {
         "background_axes": "white",  # f4f4faff; e5e5ecff, eeedf3ff
         "background_fig": "white",
         "grid": True,
+        "label_pad": 1.0 * MM_TO_PT,
     },
     "wien-light": {
         "lines_w": 0.22 * MM_TO_PT,
@@ -123,6 +126,7 @@ FIG_STYLES = {
         "background_axes": "white",
         "background_fig": "white",
         "grid": True,
+        "label_pad": 1.0 * MM_TO_PT,
     },
     "wien-clean": {
         "lines_w": 0.22 * MM_TO_PT,
@@ -134,6 +138,7 @@ FIG_STYLES = {
         "background_axes": "white",
         "background_fig": "white",
         "grid": False,
+        "label_pad": 1.0 * MM_TO_PT,
     },
     "seaborn": {
         "lines_w": 0.0 * MM_TO_PT,
@@ -145,6 +150,7 @@ FIG_STYLES = {
         "background_axes": "ebebffff",
         "background_fig": "white",
         "grid": True,
+        "label_pad": 1.0 * MM_TO_PT,
     },
     "dark": {
         "lines_w": 0.22 * MM_TO_PT,
@@ -156,6 +162,7 @@ FIG_STYLES = {
         "background_axes": "black",
         "background_fig": "black",
         "grid": True,
+        "label_pad": 1.0 * MM_TO_PT,
     },
 }
 
@@ -235,8 +242,8 @@ def set_frame(style=None):
 
     # Tick label padding (distance from tick to label)
     # This applies globally to all major ticks
-    plt.rcParams["xtick.major.pad"] = MM_TO_PT
-    plt.rcParams["ytick.major.pad"] = MM_TO_PT
+    plt.rcParams["xtick.major.pad"] = FIG_STYLES[style]["label_pad"]
+    plt.rcParams["ytick.major.pad"] = FIG_STYLES[style]["label_pad"]
 
     # You might also want to set global tick length and width if not already
     plt.rcParams["xtick.major.size"] = MM_TO_PT  # Default is 3.5, adjust as needed
@@ -248,7 +255,8 @@ def set_frame(style=None):
 
     # Axes
     plt.rcParams["axes.linewidth"] = FIG_STYLES[style]["lines_w"]
-    plt.rcParams["axes.labelpad"] = MM_TO_PT
+    plt.rcParams["axes.labelpad"] = FIG_STYLES[style]["label_pad"]
+
     # grids
     plt.rcParams["grid.linewidth"] = 0.16 * MM_TO_PT  # Width of gridlines
     plt.rcParams["grid.linestyle"] = (
