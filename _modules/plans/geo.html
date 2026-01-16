@@ -39,8 +39,8 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/plans/geo';</script>
@@ -419,7 +419,8 @@
 
 <span class="c1"># Native imports</span>
 <span class="c1"># =======================================================================</span>
-<span class="c1"># import {module}</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span>
+
 <span class="c1"># ... {develop}</span>
 
 <span class="c1"># External imports</span>
@@ -1610,6 +1611,187 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">q</span> <span class="o">/</span> <span class="n">prec</span><span class="p">)</span> <span class="o">*</span> <span class="n">r</span> <span class="o">*</span> <span class="n">k</span> <span class="o">*</span> <span class="n">l</span> <span class="o">*</span> <span class="n">s</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="n">cellsize</span> <span class="o">*</span> <span class="n">cellsize</span> <span class="o">/</span> <span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span></div>
 
+
+
+<span class="c1"># Sunlight simulation</span>
+<span class="c1"># -----------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="julian_day">
+<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.julian_day">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">julian_day</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute Julian day (day of year).</span>
+
+<span class="sd">    :param dt: Calendar date</span>
+<span class="sd">    :type dt: datetime.date</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span></div>
+
+
+
+<div class="viewcode-block" id="solar_declination">
+<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.solar_declination">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">solar_declination</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solar declination based on Cooper, 1969 – widely used approximation</span>
+
+<span class="sd">    :param dt: Calendar date</span>
+<span class="sd">    :type dt: datetime.date</span>
+<span class="sd">    :return: Solar declination angle in degrees</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">J</span> <span class="o">=</span> <span class="n">julian_day</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mf">23.45</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mi">360</span> <span class="o">*</span> <span class="p">(</span><span class="mi">284</span> <span class="o">+</span> <span class="n">J</span><span class="p">)</span> <span class="o">/</span> <span class="mi">365</span><span class="p">)))</span></div>
+
+
+
+<div class="viewcode-block" id="solar_hour">
+<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.solar_hour">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">solar_hour</span><span class="p">(</span><span class="n">hour</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solar hour angle (0° at solar noon, ±15° per hour)</span>
+
+<span class="sd">    :param hour: Local solar time [0–24]</span>
+<span class="sd">    :type hour: float</span>
+<span class="sd">    :return: Hour angle in degrees</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mi">15</span> <span class="o">*</span> <span class="p">(</span><span class="n">hour</span> <span class="o">-</span> <span class="mi">12</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="solar_altitude">
+<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.solar_altitude">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">solar_altitude</span><span class="p">(</span><span class="n">latitude_deg</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute solar vertical angle (sun elevation or altitude) for a given latitude,</span>
+<span class="sd">    date, and local solar time.</span>
+
+<span class="sd">    :param latitude_deg: Latitude in degrees (positive north, negative south)</span>
+<span class="sd">    :type latitude_deg: float</span>
+<span class="sd">    :param hour: Local solar time [0–24]</span>
+<span class="sd">    :type hour: float</span>
+<span class="sd">    :param dt: Calendar date</span>
+<span class="sd">    :type dt: datetime.date</span>
+<span class="sd">    :return: Solar vertical angle in degrees above the horizon (aka solar altitude)</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Convert latitude to radians</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">latitude_deg</span><span class="p">)</span>
+
+    <span class="c1"># Solar declination (Cooper, 1969 – widely used approximation)</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">solar_declination</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+
+    <span class="c1"># Hour angle (0° at solar noon, ±15° per hour)</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">solar_hour</span><span class="p">(</span><span class="n">hour</span><span class="p">)</span>
+
+    <span class="c1"># Solar altitude (vertical angle)</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">sin_alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>
+
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">sin_alpha</span><span class="p">)</span>
+    <span class="n">alpha_deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">alpha_deg</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Sun is below the horizon for the given latitude, date, and hour.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">alpha_deg</span></div>
+
+
+
+<div class="viewcode-block" id="solar_azimuth">
+<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.solar_azimuth">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">solar_azimuth</span><span class="p">(</span><span class="n">latitude_deg</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute solar azimuth angle (degrees clockwise from North).</span>
+
+<span class="sd">    :param latitude_deg: Latitude in degrees (positive north, negative south)</span>
+<span class="sd">    :type latitude_deg: float</span>
+<span class="sd">    :param hour: Local solar time [0–24]</span>
+<span class="sd">    :type hour: float</span>
+<span class="sd">    :param dt: Calendar date</span>
+<span class="sd">    :type dt: datetime.date</span>
+<span class="sd">    :return: Solar azimuth angle in degrees</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Convert latitude to radians</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">latitude_deg</span><span class="p">)</span>
+
+    <span class="c1"># Solar declination (Cooper, 1969 – widely used approximation)</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">solar_declination</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+
+    <span class="c1"># Hour angle</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">solar_hour</span><span class="p">(</span><span class="n">hour</span><span class="p">)</span>
+
+    <span class="c1"># Azimuth calculation</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">H</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">H</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat</span><span class="p">))</span>
+
+    <span class="c1"># Convert to degrees, shift reference to North, normalize</span>
+    <span class="n">A_deg</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="o">+</span> <span class="mi">180</span><span class="p">)</span> <span class="o">%</span> <span class="mi">360</span>
+
+    <span class="k">return</span> <span class="n">A_deg</span></div>
+
+
+
+<div class="viewcode-block" id="solar_illumination">
+<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.solar_illumination">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">solar_illumination</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">latitude_deg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simulate hourly solar altitude and azimuth for a full year.</span>
+
+<span class="sd">    :param year: Year to simulate</span>
+<span class="sd">    :type year: int</span>
+<span class="sd">    :param latitude_deg: Latitude in degrees</span>
+<span class="sd">    :type latitude_deg: float</span>
+<span class="sd">    :return: Simulation data</span>
+<span class="sd">    :rtype: pandas.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Hourly time index for the full year</span>
+    <span class="n">dt_index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span>
+        <span class="n">start</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">-01-01&quot;</span><span class="p">,</span>
+        <span class="n">end</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">year</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">-01-01&quot;</span><span class="p">,</span>
+        <span class="n">freq</span><span class="o">=</span><span class="s2">&quot;1h&quot;</span><span class="p">,</span>
+        <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">records</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">dt_index</span><span class="p">:</span>
+        <span class="n">hour</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">hour</span> <span class="o">+</span> <span class="n">dt</span><span class="o">.</span><span class="n">minute</span> <span class="o">/</span> <span class="mf">60.0</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="n">julian_day</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">alt</span> <span class="o">=</span> <span class="n">solar_altitude</span><span class="p">(</span><span class="n">latitude_deg</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+            <span class="n">az</span> <span class="o">=</span> <span class="n">solar_azimuth</span><span class="p">(</span><span class="n">latitude_deg</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">alt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">az</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="n">records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;datetime&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="p">,</span>
+                <span class="s2">&quot;julian_day&quot;</span><span class="p">:</span> <span class="n">j</span><span class="p">,</span>
+                <span class="s2">&quot;altitude&quot;</span><span class="p">:</span> <span class="n">alt</span><span class="p">,</span>
+                <span class="s2">&quot;azimuth&quot;</span><span class="p">:</span> <span class="n">az</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">records</span><span class="p">)</span></div>
+
 </pre></div>
 
                 </article>
@@ -1660,7 +1842,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>

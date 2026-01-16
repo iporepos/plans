@@ -39,8 +39,8 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/plans/datasets/core';</script>
@@ -882,6 +882,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Get a copy of the inputs DataFrame</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">input_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># filter only for input fields</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="n">input_dtfield</span><span class="p">,</span> <span class="n">input_varfield</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="c1"># Rename columns to standard format</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
@@ -4265,8 +4268,8 @@
         <span class="n">helper_geometry</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">helper_geometry</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">helper_geometry</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_map&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_map&quot;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_data&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_data&quot;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
         <span class="c1"># handle tick labels</span>
         <span class="n">ax1</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
         <span class="n">ax1</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
@@ -4367,7 +4370,7 @@
                 <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> | </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
                 <span class="s2">&quot;run_id&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">&quot;zoom_window&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;subtitle_map&quot;</span><span class="p">:</span> <span class="s2">&quot;2D distribution&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;subtitle_data&quot;</span><span class="p">:</span> <span class="s2">&quot;Map&quot;</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;ylabel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span>
@@ -5403,8 +5406,8 @@
         <span class="n">helper_geometry</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">helper_geometry</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">helper_geometry</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_map&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_map&quot;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_data&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_data&quot;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
         <span class="c1"># handle tick labels</span>
         <span class="n">ax1</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
         <span class="n">ax1</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
@@ -7212,7 +7215,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
