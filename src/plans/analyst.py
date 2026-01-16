@@ -1877,11 +1877,6 @@ class GeoUnivar(Univar):
         self.layer_name = None
 
     def _set_fields(self):
-        """
-        Set fields names.
-        Expected to increment superior methods.
-
-        """
         # ------------ call super ----------- #
         super()._set_fields()
         # Attribute fields
@@ -1889,12 +1884,6 @@ class GeoUnivar(Univar):
         # ... continues in downstream objects ... #
 
     def _set_view_specs(self):
-        """
-        Set view specifications. Expected to overwrite superior methods.
-
-        :return: None
-        :rtype: None
-        """
         super()._set_view_specs()
         self.view_specs.update(
             {
@@ -1923,6 +1912,8 @@ class GeoUnivar(Univar):
 
         :param file_data: file path to data.
         :type file_data: str
+        :param layer_name:
+        :type layer_name: str
         :return: None
         :rtype: None
         """

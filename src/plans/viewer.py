@@ -102,7 +102,7 @@ FIG_STYLES = {
         "background_axes": "f6f7f9ff",  # f4f4faff; e5e5ecff, eeedf3ff
         "background_fig": "white",
         "grid": True,
-        "label_pad": 1.0 * MM_TO_PT,
+        "label_pad": 1.2 * MM_TO_PT,
     },
     "wien3d": {
         "lines_w": 0.22 * MM_TO_PT,
@@ -126,7 +126,7 @@ FIG_STYLES = {
         "background_axes": "white",
         "background_fig": "white",
         "grid": True,
-        "label_pad": 1.0 * MM_TO_PT,
+        "label_pad": 1.1 * MM_TO_PT,
     },
     "wien-clean": {
         "lines_w": 0.22 * MM_TO_PT,
@@ -138,7 +138,7 @@ FIG_STYLES = {
         "background_axes": "white",
         "background_fig": "white",
         "grid": False,
-        "label_pad": 1.0 * MM_TO_PT,
+        "label_pad": 1.1 * MM_TO_PT,
     },
     "seaborn": {
         "lines_w": 0.0 * MM_TO_PT,

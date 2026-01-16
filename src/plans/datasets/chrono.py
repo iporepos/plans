@@ -193,7 +193,7 @@ class StreamflowSeries(WaterBalanceSeries):
         self.rawcolor = "blue"
 
     def get_baseflow(self):
-
+        # todo docstring
         df = StreamflowSeries.separate_baseflow(
             df=self.data, dt_field=self.dtfield, var_field=self.varfield
         )
@@ -202,39 +202,49 @@ class StreamflowSeries(WaterBalanceSeries):
 
     @staticmethod
     def separate_baseflow(df, dt_field="datetime", var_field="q"):
-        dt = 1
+        # todo docstring
 
-        # central derivative
-        df["delta"] = (df[var_field].shift(-1) - df[var_field].shift(1)) / (2 * dt)
-        df.loc[0, "delta"] = (df[var_field].iloc[1] - df[var_field].iloc[0]) / dt
-        df.loc[len(df) - 1, "delta"] = (
-            df[var_field].iloc[len(df) - 1] - df[var_field].iloc[len(df) - 2]
-        ) / dt
+        df = df[[dt_field, var_field]].copy()
 
-        print(df.head(15))
-
+        # todo develop -- improve with method options
+        w_size = 1
         v_rises = np.zeros(len(df))
-
-        for i in range(1, len(v_rises) - 1):
+        for i in range(w_size, len(v_rises) - w_size):
             lcl_v = df[var_field].values[i]
-            lcl_v_last = df[var_field].values[i - 1]
-            lcl_v_next = df[var_field].values[i + 1]
-
-            if lcl_v_last > lcl_v and lcl_v_next > lcl_v:
+            lcl_v_last = df[var_field].values[i - w_size]
+            lcl_v_next = df[var_field].values[i + w_size]
+            if lcl_v_next > lcl_v and lcl_v_last >= lcl_v:
                 v_rises[i] = lcl_v
 
         df_qb = df.copy()
-        df_qb["Qb"] = v_rises
-        df_qb["Qb"] = df_qb["Qb"].replace(0, np.nan)
+        df_qb["qb"] = v_rises
+        df_qb["qb"] = df_qb["qb"].replace(0, np.nan)
         df_qb.dropna(inplace=True)
 
-        print(df_qb.head(15))
+        ts = StreamflowSeries()
+        ts.varfield = "qb"
 
-        plt.plot(df["datetime"], df["q"])
-        plt.plot(df_qb["datetime"], df_qb["Qb"], marker="o")
-        plt.show()
+        # todo develop -- handle gapsize better
+        ts.gapsize = 100
 
-        return df_qb
+        ts.set_data(input_df=df_qb, input_dtfield=dt_field, input_varfield="qb")
+        ts.standardize()
+        df_qb = ts.interpolate_gaps(method="linear", inplace=False)
+        df_qb = df_qb[[ts.dtfield, f"{ts.varfield}_interp"]].copy()
+        df_qb = df_qb.rename(
+            columns={f"{ts.varfield}_interp": ts.varfield, ts.dtfield: dt_field}
+        )
+        df = pd.merge(left=df_qb, right=df, on=dt_field, how="left")
+
+        # fix qb
+        vq = df[var_field].values
+        vqb = df["qb"].values
+        df["qb"] = np.where(vqb > vq, vq, vqb)
+
+        # get qq
+        df["qq"] = df[var_field] - df["qb"]
+
+        return df
 
 
 class ETSeries(WaterBalanceSeries):

@@ -470,6 +470,9 @@ class TimeSeries(Univar):
         # Get a copy of the inputs DataFrame
         df = input_df.copy()
 
+        # filter only for input fields
+        df = df[[input_dtfield, input_varfield]].copy()
+
         # Rename columns to standard format
         df = df.rename(
             columns={input_dtfield: self.dtfield, input_varfield: self.varfield}
@@ -3588,8 +3591,8 @@ class Raster(DataSet):
         helper_geometry = specs["geometry"]
         if helper_geometry is not None:
             helper_geometry.plot(ax=ax1, color="none", edgecolor="k")
-        if specs["subtitle_map"] is not None:
-            ax1.set_title(specs["subtitle_map"], loc="left")
+        if specs["subtitle_data"] is not None:
+            ax1.set_title(specs["subtitle_data"], loc="left")
         # handle tick labels
         ax1.yaxis.set_major_formatter(formatter)
         ax1.xaxis.set_major_formatter(formatter)
@@ -3687,7 +3690,7 @@ class Raster(DataSet):
                 "title": "{} | {}".format(self.varname, self.name),
                 "run_id": None,
                 "zoom_window": None,
-                "subtitle_map": "2D distribution",
+                "subtitle_data": "Map",
             }
         )
         self.view_specs["ylabel"] = self.units
@@ -4618,8 +4621,8 @@ class QualiRaster(Raster):
         helper_geometry = specs["geometry"]
         if helper_geometry is not None:
             helper_geometry.plot(ax=ax1, color="none", edgecolor="k")
-        if specs["subtitle_map"] is not None:
-            ax1.set_title(specs["subtitle_map"], loc="left")
+        if specs["subtitle_data"] is not None:
+            ax1.set_title(specs["subtitle_data"], loc="left")
         # handle tick labels
         ax1.yaxis.set_major_formatter(formatter)
         ax1.xaxis.set_major_formatter(formatter)

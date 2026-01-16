@@ -37,7 +37,8 @@ In a lacinia nisl.
 
 # Native imports
 # =======================================================================
-# import {module}
+from datetime import date
+
 # ... {develop}
 
 # External imports
@@ -1144,3 +1145,166 @@ def usle_m_a(q, prec, r, k, l, s, c, p, cellsize=30):
     :rtype: :class:`numpy.ndarray`
     """
     return (q / prec) * r * k * l * s * c * p * (cellsize * cellsize / (100 * 100))
+
+
+# Sunlight simulation
+# -----------------------------------------------------------------------
+
+
+def julian_day(dt):
+    """
+    Compute Julian day (day of year).
+
+    :param dt: Calendar date
+    :type dt: datetime.date
+
+    """
+    return dt.timetuple().tm_yday
+
+
+def solar_declination(dt):
+    """
+    Solar declination based on Cooper, 1969 – widely used approximation
+
+    :param dt: Calendar date
+    :type dt: datetime.date
+    :return: Solar declination angle in degrees
+    :rtype: float
+    """
+    J = julian_day(dt)
+    return np.deg2rad(23.45 * np.sin(np.deg2rad(360 * (284 + J) / 365)))
+
+
+def solar_hour(hour):
+    """
+    Solar hour angle (0° at solar noon, ±15° per hour)
+
+    :param hour: Local solar time [0–24]
+    :type hour: float
+    :return: Hour angle in degrees
+    :rtype: float
+    """
+    return np.deg2rad(15 * (hour - 12))
+
+
+def solar_altitude(latitude_deg, hour, dt):
+    """
+    Compute solar vertical angle (sun elevation or altitude) for a given latitude,
+    date, and local solar time.
+
+    :param latitude_deg: Latitude in degrees (positive north, negative south)
+    :type latitude_deg: float
+    :param hour: Local solar time [0–24]
+    :type hour: float
+    :param dt: Calendar date
+    :type dt: datetime.date
+    :return: Solar vertical angle in degrees above the horizon (aka solar altitude)
+    :rtype: float
+    """
+
+    # Convert latitude to radians
+    # ------------------------------------------------------------------
+    lat = np.deg2rad(latitude_deg)
+
+    # Solar declination (Cooper, 1969 – widely used approximation)
+    # ------------------------------------------------------------------
+    delta = solar_declination(dt)
+
+    # Hour angle (0° at solar noon, ±15° per hour)
+    # ------------------------------------------------------------------
+    H = solar_hour(hour)
+
+    # Solar altitude (vertical angle)
+    # ------------------------------------------------------------------
+    sin_alpha = np.sin(lat) * np.sin(delta) + np.cos(lat) * np.cos(delta) * np.cos(H)
+
+    alpha = np.arcsin(sin_alpha)
+    alpha_deg = np.rad2deg(alpha)
+
+    if alpha_deg <= 0:
+        raise ValueError(
+            "Sun is below the horizon for the given latitude, date, and hour."
+        )
+
+    return alpha_deg
+
+
+def solar_azimuth(latitude_deg, hour, dt):
+    """
+    Compute solar azimuth angle (degrees clockwise from North).
+
+    :param latitude_deg: Latitude in degrees (positive north, negative south)
+    :type latitude_deg: float
+    :param hour: Local solar time [0–24]
+    :type hour: float
+    :param dt: Calendar date
+    :type dt: datetime.date
+    :return: Solar azimuth angle in degrees
+    :rtype: float
+    """
+
+    # Convert latitude to radians
+    # ------------------------------------------------------------------
+    lat = np.deg2rad(latitude_deg)
+
+    # Solar declination (Cooper, 1969 – widely used approximation)
+    # ------------------------------------------------------------------
+    delta = solar_declination(dt)
+
+    # Hour angle
+    # ------------------------------------------------------------------
+    H = solar_hour(hour)
+
+    # Azimuth calculation
+    # ------------------------------------------------------------------
+    A = np.arctan2(np.sin(H), np.cos(H) * np.sin(lat) - np.tan(delta) * np.cos(lat))
+
+    # Convert to degrees, shift reference to North, normalize
+    A_deg = (np.rad2deg(A) + 180) % 360
+
+    return A_deg
+
+
+def solar_illumination(year, latitude_deg):
+    """
+    Simulate hourly solar altitude and azimuth for a full year.
+
+    :param year: Year to simulate
+    :type year: int
+    :param latitude_deg: Latitude in degrees
+    :type latitude_deg: float
+    :return: Simulation data
+    :rtype: pandas.DataFrame
+    """
+
+    # Hourly time index for the full year
+    dt_index = pd.date_range(
+        start=f"{year}-01-01",
+        end=f"{year + 1}-01-01",
+        freq="1h",
+        inclusive="left",
+    )
+
+    records = []
+
+    for dt in dt_index:
+        hour = dt.hour + dt.minute / 60.0
+        j = julian_day(dt)
+
+        try:
+            alt = solar_altitude(latitude_deg, hour, dt)
+            az = solar_azimuth(latitude_deg, hour, dt)
+        except ValueError:
+            alt = np.nan
+            az = np.nan
+
+        records.append(
+            {
+                "datetime": dt,
+                "julian_day": j,
+                "altitude": alt,
+                "azimuth": az,
+            }
+        )
+
+    return pd.DataFrame.from_records(records)
