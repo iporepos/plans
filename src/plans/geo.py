@@ -37,7 +37,7 @@ In a lacinia nisl.
 
 # Native imports
 # =======================================================================
-from datetime import date
+import datetime
 
 # ... {develop}
 
@@ -1075,6 +1075,7 @@ def usle_l(slope, cellsize):
     """
     Calculate the USLE L factor of Wischmeier & Smith (1978)
 
+    # todo [docstring] improve notes sphinx design
     L = (x / 22.13) ^ m0
 
     where:
@@ -1092,6 +1093,51 @@ def usle_l(slope, cellsize):
     :type cellsize: float
     :return: Wischmeier & Smith (1978) L factor 2d array
     :rtype: :class:`numpy.ndarray`
+
+    .. dropdown:: Notes
+        :icon: bookmark-fill
+
+        This implementation follows the slope length (L) factor formulation
+        proposed by Wischmeier & Smith (1978) as part of the Universal Soil Loss
+        Equation (USLE). The L factor accounts for the effect of slope length on
+        erosion by scaling soil loss relative to a standard plot length of
+        22.13 m.
+
+
+        The slope length factor is computed as:
+
+
+        .. math::
+
+            L = {\\left( \\frac{x}{22.13} \\right)}^{m}
+
+
+        where:
+
+        * :math:`x` is the effective slope length (m), here approximated as
+          :math:`x = 1.4142 \\times \\text{cellsize}`, corresponding to the
+          diagonal length of a raster cell.
+        * :math:`m` is an empirical exponent dependent on slope steepness,
+          defined as a function of :math:`\\sin \\theta`.
+
+        The exponent :math:`m` is assigned according to the following criteria:
+
+        * :math:`m = 0.2` when :math:`\\sin \\theta < 0.01`
+        * :math:`m = 0.3` when :math:`0.01 \\le \\sin \\theta \\le 0.03`
+        * :math:`m = 0.4` when :math:`0.03 < \\sin \\theta < 0.05`
+        * :math:`m = 0.5` when :math:`\\sin \\theta \\ge 0.05`
+
+        This formulation is widely used in raster-based implementations of USLE
+        where slope length is approximated at the grid-cell scale.
+
+
+    .. dropdown:: References
+        :icon: book
+
+        Wischmeier, W. H., & Smith, D. D. (1978). *Predicting rainfall erosion losses: A guide to conservation planning*.
+        USDA Agriculture Handbook No. 537, U.S. Department of Agriculture, Washington, DC.
+
+
     """
     slope_rad = np.pi * 2 * slope / 360
     lcl_grad = np.sin(slope_rad)
@@ -1105,14 +1151,43 @@ def usle_l(slope, cellsize):
 
 def usle_s(slope):
     """
-    Calculates the USLE S-factor (slope steepness factor) based on the Wischmeier & Smith (1978) equation.
-
-    S = 65.41(sinθ)^2 + 4.56sinθ + 0.065
+    Calculates the USLE S-factor (slope steepness factor)
+    based on the Wischmeier & Smith (1978) equation.
 
     :param slope: Slope in degrees of terrain.
     :type slope: :class:`numpy.ndarray`
     :return: The USLE S-factor.
     :rtype: :class:`numpy.ndarray`
+
+    .. dropdown:: Notes
+        :icon: bookmark-fill
+
+        This implementation follows the slope steepness (S) factor formulation
+        proposed by Wischmeier & Smith (1978), where the slope angle is expressed
+        in degrees and internally converted to radians prior to evaluation.
+
+        The factor is defined as a function of the sine of the slope angle
+        (:math:`\\theta`), making it suitable for raster-based terrain analysis
+        where slope is commonly derived in angular units.
+
+        .. math::
+
+            S = 65.41 \\, (\\sin \\theta)^2 + 4.56 \\, \\sin \\theta + 0.065
+
+        where:
+
+        * :math:`\\theta` is the slope angle in radians.
+        * :math:`S` is a dimensionless slope steepness factor used in the
+          Universal Soil Loss Equation (USLE).
+
+
+    .. dropdown:: References
+        :icon: book
+
+        Wischmeier, W. H., & Smith, D. D. (1978). *Predicting rainfall erosion losses: A guide to conservation planning*.
+        USDA Agriculture Handbook No. 537, U.S. Department of Agriculture, Washington, DC.
+
+
     """
     slope_rad = np.pi * 2 * slope / 360
     lcl_grad = np.sin(slope_rad)
@@ -1122,6 +1197,8 @@ def usle_s(slope):
 def usle_m_a(q, prec, r, k, l, s, c, p, cellsize=30):
     """
     USLE-M Annual Soil Loss (Kinnell & Risse, 1998)
+
+    # todo [docstring] improve notes sphinx design
 
     :param q: Annual runoff in mm/year.
     :type q: :class:`numpy.ndarray`
@@ -1151,28 +1228,37 @@ def usle_m_a(q, prec, r, k, l, s, c, p, cellsize=30):
 # -----------------------------------------------------------------------
 
 
-def julian_day(dt):
+def julian_day(date):
     """
     Compute Julian day (day of year).
 
-    :param dt: Calendar date
-    :type dt: datetime.date
+    :param date: Calendar date in `YYYY-MM-DD` format
+    :type date: str
+    :return: Julian day
+    :rtype: int
 
     """
+    year = int(date.split("-")[0])
+    month = int(date.split("-")[1])
+    day = int(date.split("-")[2])
+    dt = datetime.date(year, month, day)
     return dt.timetuple().tm_yday
 
 
-def solar_declination(dt):
+def solar_declination(date):
     """
-    Solar declination based on Cooper, 1969 – widely used approximation
+    Solar declination based on Cooper (1969) widely used approximation
 
-    :param dt: Calendar date
-    :type dt: datetime.date
+    :param date: Calendar date in `YYYY-MM-DD` format
+    :type date: str
     :return: Solar declination angle in degrees
     :rtype: float
+
+
+
     """
-    J = julian_day(dt)
-    return np.deg2rad(23.45 * np.sin(np.deg2rad(360 * (284 + J) / 365)))
+    j = julian_day(date=date)
+    return np.deg2rad(23.45 * np.sin(np.deg2rad(360 * (284 + j) / 365)))
 
 
 def solar_hour(hour):
@@ -1187,7 +1273,7 @@ def solar_hour(hour):
     return np.deg2rad(15 * (hour - 12))
 
 
-def solar_altitude(latitude_deg, hour, dt):
+def solar_altitude(latitude_deg, hour, date):
     """
     Compute solar vertical angle (sun elevation or altitude) for a given latitude,
     date, and local solar time.
@@ -1196,8 +1282,8 @@ def solar_altitude(latitude_deg, hour, dt):
     :type latitude_deg: float
     :param hour: Local solar time [0–24]
     :type hour: float
-    :param dt: Calendar date
-    :type dt: datetime.date
+    :param date: Calendar date in `YYYY-MM-DD` format
+    :type date: str
     :return: Solar vertical angle in degrees above the horizon (aka solar altitude)
     :rtype: float
     """
@@ -1206,30 +1292,29 @@ def solar_altitude(latitude_deg, hour, dt):
     # ------------------------------------------------------------------
     lat = np.deg2rad(latitude_deg)
 
-    # Solar declination (Cooper, 1969 – widely used approximation)
+    # Solar declination
     # ------------------------------------------------------------------
-    delta = solar_declination(dt)
+    delta = solar_declination(date=date)
 
     # Hour angle (0° at solar noon, ±15° per hour)
     # ------------------------------------------------------------------
-    H = solar_hour(hour)
+    h = solar_hour(hour)
 
     # Solar altitude (vertical angle)
     # ------------------------------------------------------------------
-    sin_alpha = np.sin(lat) * np.sin(delta) + np.cos(lat) * np.cos(delta) * np.cos(H)
+    sin_alpha = np.sin(lat) * np.sin(delta) + np.cos(lat) * np.cos(delta) * np.cos(h)
 
     alpha = np.arcsin(sin_alpha)
     alpha_deg = np.rad2deg(alpha)
 
     if alpha_deg <= 0:
-        raise ValueError(
-            "Sun is below the horizon for the given latitude, date, and hour."
-        )
+        # Sun is below the horizon for the given setting. Defaulting to 0.
+        alpha_deg = 0
 
     return alpha_deg
 
 
-def solar_azimuth(latitude_deg, hour, dt):
+def solar_azimuth(latitude_deg, hour, date):
     """
     Compute solar azimuth angle (degrees clockwise from North).
 
@@ -1237,8 +1322,8 @@ def solar_azimuth(latitude_deg, hour, dt):
     :type latitude_deg: float
     :param hour: Local solar time [0–24]
     :type hour: float
-    :param dt: Calendar date
-    :type dt: datetime.date
+    :param date: Calendar date in `YYYY-MM-DD` format
+    :type date: str
     :return: Solar azimuth angle in degrees
     :rtype: float
     """
@@ -1249,23 +1334,23 @@ def solar_azimuth(latitude_deg, hour, dt):
 
     # Solar declination (Cooper, 1969 – widely used approximation)
     # ------------------------------------------------------------------
-    delta = solar_declination(dt)
+    delta = solar_declination(date)
 
     # Hour angle
     # ------------------------------------------------------------------
-    H = solar_hour(hour)
+    h = solar_hour(hour)
 
     # Azimuth calculation
     # ------------------------------------------------------------------
-    A = np.arctan2(np.sin(H), np.cos(H) * np.sin(lat) - np.tan(delta) * np.cos(lat))
+    a = np.arctan2(np.sin(h), np.cos(h) * np.sin(lat) - np.tan(delta) * np.cos(lat))
 
     # Convert to degrees, shift reference to North, normalize
-    A_deg = (np.rad2deg(A) + 180) % 360
+    a_deg = (np.rad2deg(a) + 180) % 360
 
-    return A_deg
+    return a_deg
 
 
-def solar_illumination(year, latitude_deg):
+def solar_illumination(year, latitude_deg, frequency="1h"):
     """
     Simulate hourly solar altitude and azimuth for a full year.
 
@@ -1273,15 +1358,17 @@ def solar_illumination(year, latitude_deg):
     :type year: int
     :param latitude_deg: Latitude in degrees
     :type latitude_deg: float
+    :param frequency: Frequency flag for step simulation based on pandas
+    :type frequency: str
     :return: Simulation data
-    :rtype: pandas.DataFrame
+    :rtype: pandas.`DataFrame`
     """
 
     # Hourly time index for the full year
     dt_index = pd.date_range(
         start=f"{year}-01-01",
         end=f"{year + 1}-01-01",
-        freq="1h",
+        freq=frequency,
         inclusive="left",
     )
 
@@ -1289,12 +1376,12 @@ def solar_illumination(year, latitude_deg):
 
     for dt in dt_index:
         hour = dt.hour + dt.minute / 60.0
-        j = julian_day(dt)
+        j = julian_day(date=dt.strftime("%Y-%m-%d"))
 
-        try:
-            alt = solar_altitude(latitude_deg, hour, dt)
-            az = solar_azimuth(latitude_deg, hour, dt)
-        except ValueError:
+        alt = solar_altitude(latitude_deg, hour, dt.strftime("%Y-%m-%d"))
+        az = solar_azimuth(latitude_deg, hour, dt.strftime("%Y-%m-%d"))
+
+        if alt == 0:
             alt = np.nan
             az = np.nan
 

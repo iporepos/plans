@@ -61,6 +61,7 @@ extensions = [
     "sphinx_copybutton",  # install by `python -m pip install sphinx-copybutton`
     # -- converter for markdown files in docs
     "myst_parser",  # install by `python -m pip install myst-parser`
+    "sphinx_design",  # install by `python -m pip install sphinx-design`
 ]
 
 source_suffix = {

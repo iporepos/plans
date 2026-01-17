@@ -35,14 +35,15 @@ Build docs and open index.html:
 
 
 """
-import pprint
-import shutil
 
 # IMPORTS
 # ***********************************************************************
 
 # Native imports
 # =======================================================================
+import argparse
+import pprint
+import shutil
 import glob
 import os
 import re
@@ -149,7 +150,7 @@ DC_FILES_STRUCTURES = {
 
 # FUNCTIONS -- Project-level
 # =======================================================================
-def build_docs(open_docs=False):
+def build_docs(open_site=False):
     """
     Build Sphinx documentation and open the index.html file.
 
@@ -172,10 +173,9 @@ def build_docs(open_docs=False):
         ],
         check=True,
     )
-    if open_docs:
+    if open_site:
         # Open the generated index.html in the default web browser
         webbrowser.open(INDEX_FILE.resolve().as_uri())
-        # print(f"Documentation built successfully! Opened {INDEX_FILE}")
     return None
 
 
@@ -578,21 +578,33 @@ def delete_field_tables():
 # ***********************************************************************
 if __name__ == "__main__":
 
-    b_run = True
-    if b_run:
-        # Build figures from csv file
-        # ===================================================================
-        build_figs()
+    # Handle parsing
+    # ------------------------------------------------------------------
+    parser = argparse.ArgumentParser(description="Build Sphinx HTML documentation.")
 
-        # Build catalog
-        # ===================================================================
-        # first get updated files tables
-        update_default_parameters()
-        get_system_table()
-        get_files_tables()
-        # then generate the index
-        build_file_index()
+    parser.add_argument(
+        "--open",
+        "-o",
+        action="store_true",
+        default=False,
+        help="Open index.html in the default browser after building.",
+    )
 
-        # Build docs using sphinx
-        # ===================================================================
-        build_docs()
+    args = parser.parse_args()
+
+    # Build figures from csv file
+    # ===================================================================
+    build_figs()
+
+    # Build catalog
+    # ===================================================================
+    # first get updated files tables
+    update_default_parameters()
+    get_system_table()
+    get_files_tables()
+    # then generate the index
+    build_file_index()
+
+    # Build docs using sphinx
+    # ===================================================================
+    build_docs(open_site=args.open)

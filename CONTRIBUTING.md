@@ -129,7 +129,7 @@ sphinx-build -b html ./docs ./docs/_build --write-all
 For automating tasks before and after building, consider run:
 
 ```bash
-python ./docs/docs_update.py
+python -m docs.build --open
 ```
 
 ```{important}

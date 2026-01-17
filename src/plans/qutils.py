@@ -5,12 +5,9 @@
 # See LICENSE for license details.
 
 """
-Utility routines for QGIS 3.x Python console
+Utility routines for QGIS 3.x Python Scripting Tool
 
-Overview
---------
-
-Required dependencies in QGIS:
+Required dependencies in the QGIS Python Environment:
 
 - pcraster
 - saga
@@ -18,22 +15,6 @@ Required dependencies in QGIS:
 - processing
 - geopandas
 
-Example
--------
-
-# todo [major docstring improvement] -- examples
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,
-in porttitor lacus lobortis vitae. In a lacinia nisl.
-
-.. code-block:: python
-
-    import numpy as np
-    print("Hello World!")
-
-Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl.
 """
 # IMPORTS
 # ***********************************************************************
@@ -42,6 +23,7 @@ In a lacinia nisl.
 # Native imports
 # =======================================================================
 import glob, os, shutil
+import pprint
 from pathlib import Path
 
 # ... {develop}
@@ -1199,6 +1181,251 @@ def get_tps(
         dtype="byte",
     )
     return file_output
+
+
+def get_hillshade(
+    file_dem, file_output, solar_altitude=45, solar_azimuth=300, vertical_exaggeration=3
+):
+    """
+    Generate a hillshade raster from a Digital Elevation Model (DEM) using
+    solar illumination parameters.
+
+
+    :param file_dem:
+        Path to the input DEM raster file.
+    :type file_dem: str or pathlib.Path
+
+    :param file_output:
+        Path where the output hillshade raster will be written.
+    :type file_output: str or pathlib.Path
+
+    :param solar_altitude:
+        Solar altitude angle in degrees above the horizon. Internally converted
+        to GDAL vertical angle convention (``V_ANGLE = 90 - solar_altitude``).
+        Defaults to 45.
+    :type solar_altitude: int or float
+
+    :param solar_azimuth:
+        Solar azimuth angle in degrees, measured clockwise from north.
+        Defaults to 300.
+    :type solar_azimuth: int or float
+
+    :param vertical_exaggeration:
+        Vertical exaggeration factor (Z-factor) applied to the DEM elevations.
+        Defaults to 3.
+    :type vertical_exaggeration: int or float
+
+    :return:
+        Path to the generated hillshade raster.
+    :rtype: str
+
+
+    .. dropdown:: Script sample
+        :icon: code-square
+
+        .. warning::
+
+            The following script is expected to be executed under the QGIS Python
+            Environment with required depencies installed.
+
+        .. code-block:: python
+
+            # WARNING: run this in QGIS Python Environment
+
+            import importlib.util as iu
+
+            # define the paths to this module
+            # ----------------------------------------
+            the_module = "path/to/qutils.py" [change this]
+
+            spec = iu.spec_from_file_location("module", the_module)
+            module = iu.module_from_spec(spec)
+            spec.loader.exec_module(module)
+
+            # define the path to input DEM
+            # ----------------------------------------
+            input_dem = "path/to/dem.tif" # [change this]
+
+            # define the model parameters
+            # ----------------------------------------
+            solar_altitude = 45  # [change this]
+            solar_azimuth = 300  # [change this]
+            vertical_exaggeration = 3  # [change this]
+
+            # define the model output
+            # ----------------------------------------
+            # [change this]
+            s1 = str(solar_altitude).zfill(3)
+            s2 = str(solar_azimuth).zfill(3)
+            s3 = str(vertical_exaggeration).zfill(3)
+            file_output = f'path/to/hillshade_{s1}_{s2}_{s3}.tif'
+
+            # call the function
+            # ----------------------------------------
+            file_output = module.get_hillshade(
+                file_dem=input_dem,
+                file_output=output,
+                solar_altitude=solar_altitude,
+                solar_azimuth=solar_azimuth,
+                vertical_exaggeration=vertical_exaggeration
+            )
+
+
+    """
+
+    # Setup parameters
+    # ------------------------------------------------------------------
+    dc_params = {
+        "INPUT": file_dem,
+        "Z_FACTOR": vertical_exaggeration,
+        "AZIMUTH": solar_azimuth,
+        "V_ANGLE": 90 - solar_altitude,  # GDAL convention
+        "OUTPUT": "TEMPORARY_OUTPUT",
+    }
+
+    # Run model
+    # ------------------------------------------------------------------
+    # return output
+    hs_tmp = processing.run("native:hillshade", dc_params)["OUTPUT"]
+    print("HEY")
+    print(hs_tmp)
+
+    # Convert to Byte
+    # ------------------------------------------------------------------
+    # EXTRA: -ot Byte enforces byte output
+    # EXTRA: -scale 0 255 0 254"
+    dc_translate = {
+        "INPUT": hs_tmp,
+        "TARGET_CRS": None,
+        "NODATA": 255,
+        "COPY_SUBDATASETS": False,
+        "OPTIONS": "",
+        "EXTRA": "-scale 0 255 0 254",
+        "DATA_TYPE": 1,  # Byte (explicit, but EXTRA already enforces it)
+        "OUTPUT": file_output,
+    }
+
+    processing.run("gdal:translate", dc_translate)
+
+    return file_output
+
+
+def get_hillshade_batch(
+    file_dem, folder_output, df_parameters, prefix="hillshade", suffix=None
+):
+    """
+
+    :param file_dem:
+    :type file_dem:
+    :param folder_output:
+    :type folder_output:
+    :param df_parameters:
+    :type df_parameters:
+    :param prefix:
+    :type prefix:
+    :param suffix:
+    :type suffix:
+    :return:
+    :rtype:
+
+    .. dropdown:: Script sample
+        :icon: code-square
+
+        .. warning::
+
+            The following script is expected to be executed under the QGIS Python
+            Environment with required depencies installed.
+
+        .. code-block:: python
+
+            # WARNING: run this in QGIS Python Environment
+
+            import importlib.util as iu
+            import pandas as pd
+
+            # define the paths to this module
+            # ----------------------------------------
+            the_module = "path/to/qutils.py" [change this]
+
+            spec = iu.spec_from_file_location("module", the_module)
+            module = iu.module_from_spec(spec)
+            spec.loader.exec_module(module)
+
+            # define the path to input DEM
+            # ----------------------------------------
+            input_dem = "path/to/dem.tif" # [change this]
+
+            # define the model output
+            # ----------------------------------------
+            folder_output = 'path/to/folder' # [change this]
+
+            # define the model parameters
+            # ----------------------------------------
+            dc = {
+                "altitude": [15, 45, 60, 75, 90],
+                "azimuth": [90, 45, 0, 315, 270],
+                "zfactor": [3, 3, 3, 3, 3]
+            }
+            df = pd.DataFrame(dc)
+
+            # call the function
+            # ----------------------------------------
+            file_output = module.get_hillshade_batch(
+                file_dem=input_dem,
+                folder_output=folder_output,
+                df_parameters=df,
+                prefix="hillshade",
+                suffix="testing",
+            )
+
+    """
+
+    # Handle prefix and suffix
+    # ------------------------------------------------------------------
+    if prefix is None:
+        prefix = ""
+    else:
+        prefix = prefix + "_"
+
+    if suffix is None:
+        suffix = ""
+    else:
+        suffix = "_" + suffix
+
+    # Handle output folder
+    # ------------------------------------------------------------------
+    os.makedirs(folder_output, exist_ok=True)
+
+    # Iterate over rows as dictionaries
+    # ------------------------------------------------------------------
+    for dc_row in df_parameters.to_dict(orient="records"):
+
+        pprint.pprint(dc_row)
+
+        # define the model parameters
+        # ----------------------------------------
+        solar_altitude = dc_row["altitude"]
+        solar_azimuth = dc_row["azimuth"]
+        vertical_exaggeration = dc_row["zfactor"]
+
+        # define the model output file
+        # ----------------------------------------
+        s1 = str(solar_altitude).zfill(3)
+        s2 = str(solar_azimuth).zfill(3)
+        s3 = str(vertical_exaggeration).zfill(3)
+        file_output = f"{folder_output}/{prefix}{s1}_{s2}_{s3}{suffix}.tif"
+
+        # Run model
+        # ----------------------------------------
+        get_hillshade(
+            file_dem=file_dem,
+            file_output=file_output,
+            solar_altitude=solar_altitude,
+            solar_azimuth=solar_azimuth,
+            vertical_exaggeration=vertical_exaggeration,
+        )
+
+    return None
 
 
 # todo [script example] -- standalone version using importlib
@@ -2663,7 +2890,8 @@ def old_get_rain(
     layer_aoi="aoi",
     layer_rain_gauges="rain",
 ):
-    """Get ``rain`` datasets for running PLANS.
+    """
+    Get ``rain`` datasets for running PLANS.
 
     :param output_folder: path to output folder
     :type output_folder: str

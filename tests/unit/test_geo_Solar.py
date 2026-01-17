@@ -18,7 +18,6 @@ todo docstring
 # =======================================================================
 # import {module}
 import unittest
-from datetime import date
 
 # ... {develop}
 
@@ -64,7 +63,7 @@ class TestSolar(unittest.TestCase):
         """
         January 1st must always be day 1.
         """
-        dt = date(2024, 1, 1)
+        dt = "2024-01-01"
         j = geo.julian_day(dt)
         print("\n")
         print(testmsg(f"Date: {dt}"))
@@ -75,7 +74,7 @@ class TestSolar(unittest.TestCase):
         """
         December 31st in a non-leap year must be day 365.
         """
-        dt = date(2023, 12, 31)
+        dt = "2023-12-31"
         j = geo.julian_day(dt)
         print("\n")
         print(testmsg(f"Date: {dt}"))
@@ -86,7 +85,7 @@ class TestSolar(unittest.TestCase):
         """
         December 31st in a leap year must be day 366.
         """
-        dt = date(2024, 12, 31)
+        dt = "2024-12-31"
         j = geo.julian_day(dt)
         print("\n")
         print(testmsg(f"Date: {dt}"))
@@ -100,7 +99,8 @@ class TestSolar(unittest.TestCase):
         """
         Equator + equinox + noon → Sun at zenith.
         """
-        v = geo.solar_altitude(0.0, 12.0, date(2024, 3, 20))
+        date = "2024-03-20"
+        v = geo.solar_altitude(0.0, 12.0, date)
         print("\n")
         print(testmsg("Equator Setting: 0, 12, 2024-03-20"))
         print(testmsg(f"Vertical Angle: {v}"))
@@ -110,7 +110,8 @@ class TestSolar(unittest.TestCase):
         """
         Tropic of Capricorn + December solstice → zenith Sun.
         """
-        v = geo.solar_altitude(-23.45, 12.0, date(2024, 12, 21))
+        date = "2024-12-21"
+        v = geo.solar_altitude(-23.45, 12.0, date)
         print("\n")
         print(testmsg("Capricorn Setting: -23, 12, 2024-12-21"))
         print(testmsg(f"Vertical Angle: {v}"))
@@ -120,18 +121,12 @@ class TestSolar(unittest.TestCase):
         """
         Tropic of Cancer + June solstice → zenith Sun.
         """
-        v = geo.solar_altitude(23.45, 12.0, date(2024, 6, 21))
+        date = "2024-06-21"
+        v = geo.solar_altitude(23.45, 12.0, date)
         print("\n")
         print(testmsg("Cancer Setting: 23, 12, 2024-06-21"))
         print(testmsg(f"Vertical Angle: {v}"))
         self.assertTrue(88 <= v <= 92)
-
-    def test_nighttime_raises(self):
-        """
-        Nightime Sun must raise a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            geo.solar_altitude(0.0, 0.0, date(2024, 3, 20))
 
     # ------------------------------------------------------------------
     # Solar azimuth tests
@@ -141,7 +136,8 @@ class TestSolar(unittest.TestCase):
         """
         Equator + equinox + morning → Sun must be in the eastern sky.
         """
-        az = geo.solar_azimuth(0.0, 9.0, date(2024, 3, 20))
+        date = "2024-03-20"
+        az = geo.solar_azimuth(0.0, 9.0, date)
         print("\n", testmsg(f"Azimuth (equator, morning): {az:.2f}"), sep="\n")
         self.assertTrue(45 <= az <= 135)
 
@@ -149,7 +145,8 @@ class TestSolar(unittest.TestCase):
         """
         Equator + equinox + afternoon → Sun must be in the western sky.
         """
-        az = geo.solar_azimuth(0.0, 15.0, date(2024, 3, 20))
+        date = "2024-03-20"
+        az = geo.solar_azimuth(0.0, 15.0, date)
         print("\n", testmsg(f"Azimuth (equator, afternoon): {az:.2f}"), sep="\n")
         self.assertTrue(225 <= az <= 315)
 
@@ -157,7 +154,8 @@ class TestSolar(unittest.TestCase):
         """
         Northern Hemisphere midday Sun must come from the south.
         """
-        az = geo.solar_azimuth(45.0, 12.0, date(2024, 6, 21))
+        date = "2024-06-21"
+        az = geo.solar_azimuth(45.0, 12.0, date)
         print("\n", testmsg(f"Azimuth (NH noon): {az:.2f}"), sep="\n")
         self.assertTrue(135 <= az <= 225)
 
@@ -165,7 +163,8 @@ class TestSolar(unittest.TestCase):
         """
         Southern Hemisphere midday Sun must come from the north.
         """
-        az = geo.solar_azimuth(-45.0, 12.0, date(2024, 12, 21))
+        date = "2024-12-21"
+        az = geo.solar_azimuth(-45.0, 12.0, date)
         print("\n", testmsg(f"Azimuth (SH noon): {az:.2f}"), sep="\n")
         self.assertTrue(az <= 45 or az >= 315)
 
@@ -173,9 +172,10 @@ class TestSolar(unittest.TestCase):
         """
         Azimuth must increase monotonically during the morning.
         """
-        az1 = geo.solar_azimuth(0.0, 9.0, date(2024, 3, 20))
-        az2 = geo.solar_azimuth(0.0, 10.0, date(2024, 3, 20))
-        az3 = geo.solar_azimuth(0.0, 11.0, date(2024, 3, 20))
+        date = "2024-03-20"
+        az1 = geo.solar_azimuth(0.0, 9.0, date)
+        az2 = geo.solar_azimuth(0.0, 10.0, date)
+        az3 = geo.solar_azimuth(0.0, 11.0, date)
 
         print(
             "\n",
@@ -190,9 +190,10 @@ class TestSolar(unittest.TestCase):
         """
         Azimuth must increase monotonically after noon.
         """
-        az1 = geo.solar_azimuth(0.0, 13.0, date(2024, 3, 20))
-        az2 = geo.solar_azimuth(0.0, 14.0, date(2024, 3, 20))
-        az3 = geo.solar_azimuth(0.0, 15.0, date(2024, 3, 20))
+        date = "2024-03-20"
+        az1 = geo.solar_azimuth(0.0, 13.0, date)
+        az2 = geo.solar_azimuth(0.0, 14.0, date)
+        az3 = geo.solar_azimuth(0.0, 15.0, date)
 
         print(
             "\n",
@@ -207,8 +208,9 @@ class TestSolar(unittest.TestCase):
         """
         Morning and afternoon azimuths should be symmetric around solar noon.
         """
-        az_morning = geo.solar_azimuth(0.0, 10.0, date(2024, 3, 20))
-        az_afternoon = geo.solar_azimuth(0.0, 14.0, date(2024, 3, 20))
+        date = "2024-03-20"
+        az_morning = geo.solar_azimuth(0.0, 10.0, date)
+        az_afternoon = geo.solar_azimuth(0.0, 14.0, date)
 
         print(
             "\n",
@@ -231,7 +233,7 @@ class TestSolar(unittest.TestCase):
         Diagnostic test: print head and tail of the annual simulation
         for manual inspection in CI logs.
         """
-        df = geo.solar_illumination(2024, 65.0)
+        df = geo.solar_illumination(2024, 65.0, frequency="1h")
 
         print("\n--- solar_illumination HEAD ---")
         print(df.head(10))
@@ -242,12 +244,19 @@ class TestSolar(unittest.TestCase):
         # Minimal sanity check to keep this as a valid unit test
         self.assertGreater(len(df), 0)
 
-    def test_simulation_length_non_leap_year(self):
+    def test_simulation_length_non_leap_year_1h(self):
         """
         Non-leap year must have 365 * 24 hourly records.
         """
-        df = geo.solar_illumination(2023, 0.0)
+        df = geo.solar_illumination(2023, 0.0, frequency="1h")
         self.assertEqual(len(df), 365 * 24)
+
+    def test_simulation_length_non_leap_year_2h(self):
+        """
+        Non-leap year must have 365 * 24 hourly records.
+        """
+        df = geo.solar_illumination(2023, 0.0, frequency="2h")
+        self.assertEqual(len(df), 365 * 12)
 
     def test_simulation_length_leap_year(self):
         """
@@ -321,8 +330,8 @@ class TestSolar(unittest.TestCase):
         dt = row["datetime"]
         hour = dt.hour + dt.minute / 60
 
-        alt = geo.solar_altitude(0.0, hour, dt)
-        az = geo.solar_azimuth(0.0, hour, dt)
+        alt = geo.solar_altitude(0.0, hour, date=dt.strftime("%Y-%m-%d"))
+        az = geo.solar_azimuth(0.0, hour, date=dt.strftime("%Y-%m-%d"))
 
         if pd.isna(alt):
             self.assertTrue(pd.isna(row["altitude"]))
