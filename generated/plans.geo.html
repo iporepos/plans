@@ -32,6 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -40,10 +41,12 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/plans.geo';</script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -416,6 +419,7 @@ in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
 <p>Mauris gravida ex quam, in porttitor lacus lobortis vitae.
 In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.
 In a lacinia nisl.</p>
+</section>
 <p class="rubric">Functions</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
@@ -470,7 +474,7 @@ In a lacinia nisl.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#plans.geo.get_upstream_features" title="plans.geo.get_upstream_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_upstream_features</span></code></a>(features, field_id, ...)</p></td>
 <td><p>Retrieves all upstream features from a given starting point.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#plans.geo.julian_day" title="plans.geo.julian_day"><code class="xref py py-obj docutils literal notranslate"><span class="pre">julian_day</span></code></a>(dt)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.geo.julian_day" title="plans.geo.julian_day"><code class="xref py py-obj docutils literal notranslate"><span class="pre">julian_day</span></code></a>(date)</p></td>
 <td><p>Compute Julian day (day of year).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#plans.geo.normalize" title="plans.geo.normalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize</span></code></a>(array[, min_value, max_value])</p></td>
@@ -491,19 +495,19 @@ In a lacinia nisl.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#plans.geo.soils" title="plans.geo.soils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">soils</span></code></a>(slope, hand[, slope_threshold, ...])</p></td>
 <td><p>Calculates a basic soil classification grid based on slope and HAND (Height Above Nearest Drainage) data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#plans.geo.solar_altitude" title="plans.geo.solar_altitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solar_altitude</span></code></a>(latitude_deg, hour, dt)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.geo.solar_altitude" title="plans.geo.solar_altitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solar_altitude</span></code></a>(latitude_deg, hour, date)</p></td>
 <td><p>Compute solar vertical angle (sun elevation or altitude) for a given latitude, date, and local solar time.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#plans.geo.solar_azimuth" title="plans.geo.solar_azimuth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solar_azimuth</span></code></a>(latitude_deg, hour, dt)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.geo.solar_azimuth" title="plans.geo.solar_azimuth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solar_azimuth</span></code></a>(latitude_deg, hour, date)</p></td>
 <td><p>Compute solar azimuth angle (degrees clockwise from North).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#plans.geo.solar_declination" title="plans.geo.solar_declination"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solar_declination</span></code></a>(dt)</p></td>
-<td><p>Solar declination based on Cooper, 1969 – widely used approximation</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.geo.solar_declination" title="plans.geo.solar_declination"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solar_declination</span></code></a>(date)</p></td>
+<td><p>Solar declination based on Cooper (1969) widely used approximation</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#plans.geo.solar_hour" title="plans.geo.solar_hour"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solar_hour</span></code></a>(hour)</p></td>
 <td><p>Solar hour angle (0° at solar noon, ±15° per hour)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#plans.geo.solar_illumination" title="plans.geo.solar_illumination"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solar_illumination</span></code></a>(year, latitude_deg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.geo.solar_illumination" title="plans.geo.solar_illumination"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solar_illumination</span></code></a>(year, latitude_deg[, ...])</p></td>
 <td><p>Simulate hourly solar altitude and azimuth for a full year.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#plans.geo.twi" title="plans.geo.twi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">twi</span></code></a>(slope, flowacc, cellsize)</p></td>
@@ -524,7 +528,6 @@ In a lacinia nisl.</p>
 </tbody>
 </table>
 </div>
-</section>
 <dl class="py function">
 <dt class="sig sig-object py" id="plans.geo.extents_to_wkt_box">
 <span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">extents_to_wkt_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ymin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ymax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#extents_to_wkt_box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.extents_to_wkt_box" title="Link to this definition">#</a></dt>
@@ -1136,7 +1139,8 @@ The resulting GeoDataFrame can optionally be dissolved into a single feature for
 <dt class="sig sig-object py" id="plans.geo.usle_l">
 <span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">usle_l</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellsize</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#usle_l"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.usle_l" title="Link to this definition">#</a></dt>
 <dd><p>Calculate the USLE L factor of Wischmeier &amp; Smith (1978)</p>
-<p>L = (x / 22.13) ^ m0</p>
+<p># todo [docstring] improve notes sphinx design
+L = (x / 22.13) ^ m0</p>
 <p>where:</p>
 <p>m0 = 0.2 when sinθ &lt; 0.01;
 m0 = 0.3 when 0.01 ≤ sinθ ≤ 0.03;
@@ -1157,13 +1161,48 @@ m0 = 0.5 when sinθ ≥ 0.05</p>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
 </dd>
 </dl>
-</dd></dl>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-bookmark-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.69 2h10.56c.966 0 1.75.784 1.75 1.75v17.5a.75.75 0 0 1-1.218.585L12 17.21l-5.781 4.626A.75.75 0 0 1 5 21.253L4.94 3.756A1.748 1.748 0 0 1 6.69 2Z"></path></svg></span><span class="sd-summary-text">Notes</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">This implementation follows the slope length (L) factor formulation
+proposed by Wischmeier &amp; Smith (1978) as part of the Universal Soil Loss
+Equation (USLE). The L factor accounts for the effect of slope length on
+erosion by scaling soil loss relative to a standard plot length of
+22.13 m.</p>
+<p class="sd-card-text">The slope length factor is computed as:</p>
+<div class="math notranslate nohighlight">
+\[L = {\left( \frac{x}{22.13} \right)}^{m}\]</div>
+<p class="sd-card-text">where:</p>
+<ul class="simple">
+<li><p class="sd-card-text"><span class="math notranslate nohighlight">\(x\)</span> is the effective slope length (m), here approximated as
+<span class="math notranslate nohighlight">\(x = 1.4142 \times \text{cellsize}\)</span>, corresponding to the
+diagonal length of a raster cell.</p></li>
+<li><p class="sd-card-text"><span class="math notranslate nohighlight">\(m\)</span> is an empirical exponent dependent on slope steepness,
+defined as a function of <span class="math notranslate nohighlight">\(\sin \theta\)</span>.</p></li>
+</ul>
+<p class="sd-card-text">The exponent <span class="math notranslate nohighlight">\(m\)</span> is assigned according to the following criteria:</p>
+<ul class="simple">
+<li><p class="sd-card-text"><span class="math notranslate nohighlight">\(m = 0.2\)</span> when <span class="math notranslate nohighlight">\(\sin \theta &lt; 0.01\)</span></p></li>
+<li><p class="sd-card-text"><span class="math notranslate nohighlight">\(m = 0.3\)</span> when <span class="math notranslate nohighlight">\(0.01 \le \sin \theta \le 0.03\)</span></p></li>
+<li><p class="sd-card-text"><span class="math notranslate nohighlight">\(m = 0.4\)</span> when <span class="math notranslate nohighlight">\(0.03 &lt; \sin \theta &lt; 0.05\)</span></p></li>
+<li><p class="sd-card-text"><span class="math notranslate nohighlight">\(m = 0.5\)</span> when <span class="math notranslate nohighlight">\(\sin \theta \ge 0.05\)</span></p></li>
+</ul>
+<p class="sd-card-text">This formulation is widely used in raster-based implementations of USLE
+where slope length is approximated at the grid-cell scale.</p>
+</div>
+</details><details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-book" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c1.227 0 2.317.59 3 1.501A3.743 3.743 0 0 1 11.006 1h4.245a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75h-4.507a2.25 2.25 0 0 0-1.591.659l-.622.621a.75.75 0 0 1-1.06 0l-.622-.621A2.25 2.25 0 0 0 5.258 13H.75a.75.75 0 0 1-.75-.75Zm7.251 10.324.004-5.073-.002-2.253A2.25 2.25 0 0 0 5.003 2.5H1.5v9h3.757a3.75 3.75 0 0 1 1.994.574ZM8.755 4.75l-.004 7.322a3.752 3.752 0 0 1 1.992-.572H14.5v-9h-3.495a2.25 2.25 0 0 0-2.25 2.25Z"></path></svg></span><span class="sd-summary-text">References</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">Wischmeier, W. H., &amp; Smith, D. D. (1978). <em>Predicting rainfall erosion losses: A guide to conservation planning</em>.
+USDA Agriculture Handbook No. 537, U.S. Department of Agriculture, Washington, DC.</p>
+</div>
+</details></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plans.geo.usle_s">
 <span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">usle_s</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slope</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#usle_s"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.usle_s" title="Link to this definition">#</a></dt>
-<dd><p>Calculates the USLE S-factor (slope steepness factor) based on the Wischmeier &amp; Smith (1978) equation.</p>
-<p>S = 65.41(sinθ)^2 + 4.56sinθ + 0.065</p>
+<dd><p>Calculates the USLE S-factor (slope steepness factor)
+based on the Wischmeier &amp; Smith (1978) equation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>slope</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Slope in degrees of terrain.</p>
@@ -1175,12 +1214,37 @@ m0 = 0.5 when sinθ ≥ 0.05</p>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
 </dd>
 </dl>
-</dd></dl>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-bookmark-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.69 2h10.56c.966 0 1.75.784 1.75 1.75v17.5a.75.75 0 0 1-1.218.585L12 17.21l-5.781 4.626A.75.75 0 0 1 5 21.253L4.94 3.756A1.748 1.748 0 0 1 6.69 2Z"></path></svg></span><span class="sd-summary-text">Notes</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">This implementation follows the slope steepness (S) factor formulation
+proposed by Wischmeier &amp; Smith (1978), where the slope angle is expressed
+in degrees and internally converted to radians prior to evaluation.</p>
+<p class="sd-card-text">The factor is defined as a function of the sine of the slope angle
+(<span class="math notranslate nohighlight">\(\theta\)</span>), making it suitable for raster-based terrain analysis
+where slope is commonly derived in angular units.</p>
+<div class="math notranslate nohighlight">
+\[S = 65.41 \, (\sin \theta)^2 + 4.56 \, \sin \theta + 0.065\]</div>
+<p class="sd-card-text">where:</p>
+<ul class="simple">
+<li><p class="sd-card-text"><span class="math notranslate nohighlight">\(\theta\)</span> is the slope angle in radians.</p></li>
+<li><p class="sd-card-text"><span class="math notranslate nohighlight">\(S\)</span> is a dimensionless slope steepness factor used in the
+Universal Soil Loss Equation (USLE).</p></li>
+</ul>
+</div>
+</details><details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-book" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c1.227 0 2.317.59 3 1.501A3.743 3.743 0 0 1 11.006 1h4.245a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75h-4.507a2.25 2.25 0 0 0-1.591.659l-.622.621a.75.75 0 0 1-1.06 0l-.622-.621A2.25 2.25 0 0 0 5.258 13H.75a.75.75 0 0 1-.75-.75Zm7.251 10.324.004-5.073-.002-2.253A2.25 2.25 0 0 0 5.003 2.5H1.5v9h3.757a3.75 3.75 0 0 1 1.994.574ZM8.755 4.75l-.004 7.322a3.752 3.752 0 0 1 1.992-.572H14.5v-9h-3.495a2.25 2.25 0 0 0-2.25 2.25Z"></path></svg></span><span class="sd-summary-text">References</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">Wischmeier, W. H., &amp; Smith, D. D. (1978). <em>Predicting rainfall erosion losses: A guide to conservation planning</em>.
+USDA Agriculture Handbook No. 537, U.S. Department of Agriculture, Washington, DC.</p>
+</div>
+</details></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plans.geo.usle_m_a">
 <span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">usle_m_a</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#usle_m_a"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.usle_m_a" title="Link to this definition">#</a></dt>
 <dd><p>USLE-M Annual Soil Loss (Kinnell &amp; Risse, 1998)</p>
+<p># todo [docstring] improve notes sphinx design</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1206,22 +1270,28 @@ m0 = 0.5 when sinθ ≥ 0.05</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plans.geo.julian_day">
-<span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">julian_day</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#julian_day"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.julian_day" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">julian_day</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#julian_day"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.julian_day" title="Link to this definition">#</a></dt>
 <dd><p>Compute Julian day (day of year).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dt</strong> (<em>datetime.date</em>) – Calendar date</p>
+<dd class="field-odd"><p><strong>date</strong> (<em>str</em>) – Calendar date in <cite>YYYY-MM-DD</cite> format</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Julian day</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plans.geo.solar_declination">
-<span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">solar_declination</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#solar_declination"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.solar_declination" title="Link to this definition">#</a></dt>
-<dd><p>Solar declination based on Cooper, 1969 – widely used approximation</p>
+<span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">solar_declination</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#solar_declination"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.solar_declination" title="Link to this definition">#</a></dt>
+<dd><p>Solar declination based on Cooper (1969) widely used approximation</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dt</strong> (<em>datetime.date</em>) – Calendar date</p>
+<dd class="field-odd"><p><strong>date</strong> (<em>str</em>) – Calendar date in <cite>YYYY-MM-DD</cite> format</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Solar declination angle in degrees</p>
@@ -1251,7 +1321,7 @@ m0 = 0.5 when sinθ ≥ 0.05</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plans.geo.solar_altitude">
-<span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">solar_altitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">latitude_deg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hour</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#solar_altitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.solar_altitude" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">solar_altitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">latitude_deg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hour</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#solar_altitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.solar_altitude" title="Link to this definition">#</a></dt>
 <dd><p>Compute solar vertical angle (sun elevation or altitude) for a given latitude,
 date, and local solar time.</p>
 <dl class="field-list simple">
@@ -1259,7 +1329,7 @@ date, and local solar time.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>latitude_deg</strong> (<em>float</em>) – Latitude in degrees (positive north, negative south)</p></li>
 <li><p><strong>hour</strong> (<em>float</em>) – Local solar time [0–24]</p></li>
-<li><p><strong>dt</strong> (<em>datetime.date</em>) – Calendar date</p></li>
+<li><p><strong>date</strong> (<em>str</em>) – Calendar date in <cite>YYYY-MM-DD</cite> format</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1273,14 +1343,14 @@ date, and local solar time.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plans.geo.solar_azimuth">
-<span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">solar_azimuth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">latitude_deg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hour</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#solar_azimuth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.solar_azimuth" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">solar_azimuth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">latitude_deg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hour</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#solar_azimuth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.solar_azimuth" title="Link to this definition">#</a></dt>
 <dd><p>Compute solar azimuth angle (degrees clockwise from North).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>latitude_deg</strong> (<em>float</em>) – Latitude in degrees (positive north, negative south)</p></li>
 <li><p><strong>hour</strong> (<em>float</em>) – Local solar time [0–24]</p></li>
-<li><p><strong>dt</strong> (<em>datetime.date</em>) – Calendar date</p></li>
+<li><p><strong>date</strong> (<em>str</em>) – Calendar date in <cite>YYYY-MM-DD</cite> format</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1294,20 +1364,21 @@ date, and local solar time.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plans.geo.solar_illumination">
-<span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">solar_illumination</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latitude_deg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#solar_illumination"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.solar_illumination" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">plans.geo.</span></span><span class="sig-name descname"><span class="pre">solar_illumination</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latitude_deg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1h'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/geo.html#solar_illumination"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.geo.solar_illumination" title="Link to this definition">#</a></dt>
 <dd><p>Simulate hourly solar altitude and azimuth for a full year.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>year</strong> (<em>int</em>) – Year to simulate</p></li>
 <li><p><strong>latitude_deg</strong> (<em>float</em>) – Latitude in degrees</p></li>
+<li><p><strong>frequency</strong> (<em>str</em>) – Frequency flag for step simulation based on pandas</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Simulation data</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pandas.DataFrame</p>
+<dd class="field-odd"><p>pandas.`DataFrame`</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1443,7 +1514,7 @@ date, and local solar time.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

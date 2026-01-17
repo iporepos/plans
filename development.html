@@ -32,6 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
   <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -40,10 +41,11 @@
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="_static/documentation_options.js?v=8d563738"></script>
-    <script src="_static/doctools.js?v=fd6eb6e6"></script>
-    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'development';</script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
@@ -393,8 +395,8 @@
 <p class="admonition-title">Warning</p>
 <p>Documentation website under active development. This is not a stable release.</p>
 </div>
-<span class="target" id="development"></span><section id="id1">
-<h1>Development<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<span class="target" id="development"></span><section id="development">
+<h1>Development<a class="headerlink" href="#development" title="Link to this heading">#</a></h1>
 <p>This section provides guidance for those who wish to contribute to the project.
 It includes instructions for setting up the development environment, cloning the repository, installing the project in development mode, running tests, and building the documentation.</p>
 <p>To ensure that new features and changes adhere to project standards, maintain quality, and keep the documentation up to date, contributors are required to follow:</p>
@@ -428,7 +430,7 @@ other projects.</p>
 <p>Of course, you need Python installed in your system</p>
 </div>
 <p>Move to the repo root folder:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># [CHANGE THIS] set your own actual local path </span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># [CHANGE THIS] set your own actual local path</span>
 <span class="nb">cd</span><span class="w"> </span>./path/to/<span class="o">{</span>plans<span class="o">}</span>
 </pre></div>
 </div>
@@ -480,7 +482,7 @@ Every feature must be documented with standard Sphinx rST format, like the follo
 <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a docstring of a function.</span>
-<span class="sd">    </span>
+
 <span class="sd">    :param x: the x value</span>
 <span class="sd">    :type x: float</span>
 <span class="sd">    :param y: some string</span>
@@ -499,7 +501,7 @@ Every feature must be documented with standard Sphinx rST format, like the follo
 </pre></div>
 </div>
 <p>For automating tasks before and after building, consider run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>./docs/docs_update.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>docs.build<span class="w"> </span>--open
 </pre></div>
 </div>
 <div class="admonition important">
@@ -528,15 +530,15 @@ Every feature must be documented with standard Sphinx rST format, like the follo
 <h3>Example tests<a class="headerlink" href="#example-tests" title="Link to this heading">#</a></h3>
 <p>Create single-line example tests in docstring:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">num1</span><span class="p">,</span> <span class="n">num2</span><span class="p">):</span>
-<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">	</span>
-<span class="sd">	**Examples**</span>
-<span class="sd">	</span>
-<span class="sd">	&gt;&gt;&gt; add(1, 2)</span>
-<span class="sd">	3</span>
-<span class="sd">		</span>
-<span class="sd">	&quot;&quot;&quot;</span>
-	<span class="k">return</span> <span class="n">num1</span> <span class="o">+</span> <span class="n">num2</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        **Examples**</span>
+
+<span class="sd">        &gt;&gt;&gt; add(1, 2)</span>
+<span class="sd">        3</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">num1</span> <span class="o">+</span> <span class="n">num2</span>
 </pre></div>
 </div>
 <p>Test the module using <code class="docutils literal notranslate"><span class="pre">doctest</span></code>:</p>
@@ -714,7 +716,7 @@ A template for this is provided in <code class="docutils literal notranslate"><s
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

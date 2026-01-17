@@ -32,6 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -40,10 +41,11 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/plans.qutils';</script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -395,10 +397,8 @@
                   
   <section id="module-plans.qutils">
 <span id="plans-qutils"></span><h1>plans.qutils<a class="headerlink" href="#module-plans.qutils" title="Link to this heading">#</a></h1>
-<p>Utility routines for QGIS 3.x Python console</p>
-<section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p>Required dependencies in QGIS:</p>
+<p>Utility routines for QGIS 3.x Python Scripting Tool</p>
+<p>Required dependencies in the QGIS Python Environment:</p>
 <ul class="simple">
 <li><p>pcraster</p></li>
 <li><p>saga</p></li>
@@ -406,20 +406,6 @@
 <li><p>processing</p></li>
 <li><p>geopandas</p></li>
 </ul>
-</section>
-<section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Link to this heading">#</a></h2>
-<p># todo [major docstring improvement] – examples
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,
-in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl.</p>
 <p class="rubric">Functions</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
@@ -470,6 +456,12 @@ In a lacinia nisl.</p>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#plans.qutils.get_hand" title="plans.qutils.get_hand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_hand</span></code></a>(folder_project, file_dem_filled[, ...])</p></td>
 <td><p>Get the HAND raster map from a DEM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.qutils.get_hillshade" title="plans.qutils.get_hillshade"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_hillshade</span></code></a>(file_dem, file_output[, ...])</p></td>
+<td><p>Generate a hillshade raster from a Digital Elevation Model (DEM) using solar illumination parameters.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.qutils.get_hillshade_batch" title="plans.qutils.get_hillshade_batch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_hillshade_batch</span></code></a>(file_dem, folder_output, ...)</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#plans.qutils.get_htwi" title="plans.qutils.get_htwi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_htwi</span></code></a>(file_ftwi, file_fhand, file_output, ...)</p></td>
 <td><p>Get the HAND-enhanced TWI map from HAND, TWI and HAND weight</p></td>
@@ -531,7 +523,6 @@ In a lacinia nisl.</p>
 </tbody>
 </table>
 </div>
-</section>
 <dl class="py function">
 <dt class="sig sig-object py" id="plans.qutils.get_cellsize">
 <span class="sig-prename descclassname"><span class="pre">plans.qutils.</span></span><span class="sig-name descname"><span class="pre">get_cellsize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/qutils.html#get_cellsize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.qutils.get_cellsize" title="Link to this definition">#</a></dt>
@@ -1051,6 +1042,156 @@ Reverse bounds to reverse membership.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="plans.qutils.get_hillshade">
+<span class="sig-prename descclassname"><span class="pre">plans.qutils.</span></span><span class="sig-name descname"><span class="pre">get_hillshade</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_dem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solar_altitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">45</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solar_azimuth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_exaggeration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/qutils.html#get_hillshade"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.qutils.get_hillshade" title="Link to this definition">#</a></dt>
+<dd><p>Generate a hillshade raster from a Digital Elevation Model (DEM) using
+solar illumination parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_dem</strong> (<em>str</em><em> or </em><em>pathlib.Path</em>) – Path to the input DEM raster file.</p></li>
+<li><p><strong>file_output</strong> (<em>str</em><em> or </em><em>pathlib.Path</em>) – Path where the output hillshade raster will be written.</p></li>
+<li><p><strong>solar_altitude</strong> (<em>int</em><em> or </em><em>float</em>) – Solar altitude angle in degrees above the horizon. Internally converted
+to GDAL vertical angle convention (<code class="docutils literal notranslate"><span class="pre">V_ANGLE</span> <span class="pre">=</span> <span class="pre">90</span> <span class="pre">-</span> <span class="pre">solar_altitude</span></code>).
+Defaults to 45.</p></li>
+<li><p><strong>solar_azimuth</strong> (<em>int</em><em> or </em><em>float</em>) – Solar azimuth angle in degrees, measured clockwise from north.
+Defaults to 300.</p></li>
+<li><p><strong>vertical_exaggeration</strong> (<em>int</em><em> or </em><em>float</em>) – Vertical exaggeration factor (Z-factor) applied to the DEM elevations.
+Defaults to 3.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Path to the generated hillshade raster.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-code-square" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25Zm7.47 3.97a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L10.69 8 9.22 6.53a.75.75 0 0 1 0-1.06ZM6.78 6.53 5.31 8l1.47 1.47a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215l-2-2a.75.75 0 0 1 0-1.06l2-2a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"></path></svg></span><span class="sd-summary-text">Script sample</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p class="sd-card-text">The following script is expected to be executed under the QGIS Python
+Environment with required depencies installed.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># WARNING: run this in QGIS Python Environment</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib.util</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">iu</span>
+
+<span class="c1"># define the paths to this module</span>
+<span class="c1"># ----------------------------------------</span>
+<span class="n">the_module</span> <span class="o">=</span> <span class="s2">&quot;path/to/qutils.py&quot;</span> <span class="p">[</span><span class="n">change</span> <span class="n">this</span><span class="p">]</span>
+
+<span class="n">spec</span> <span class="o">=</span> <span class="n">iu</span><span class="o">.</span><span class="n">spec_from_file_location</span><span class="p">(</span><span class="s2">&quot;module&quot;</span><span class="p">,</span> <span class="n">the_module</span><span class="p">)</span>
+<span class="n">module</span> <span class="o">=</span> <span class="n">iu</span><span class="o">.</span><span class="n">module_from_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+<span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+
+<span class="c1"># define the path to input DEM</span>
+<span class="c1"># ----------------------------------------</span>
+<span class="n">input_dem</span> <span class="o">=</span> <span class="s2">&quot;path/to/dem.tif&quot;</span> <span class="c1"># [change this]</span>
+
+<span class="c1"># define the model parameters</span>
+<span class="c1"># ----------------------------------------</span>
+<span class="n">solar_altitude</span> <span class="o">=</span> <span class="mi">45</span>  <span class="c1"># [change this]</span>
+<span class="n">solar_azimuth</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># [change this]</span>
+<span class="n">vertical_exaggeration</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># [change this]</span>
+
+<span class="c1"># define the model output</span>
+<span class="c1"># ----------------------------------------</span>
+<span class="c1"># [change this]</span>
+<span class="n">s1</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">solar_altitude</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">solar_azimuth</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">vertical_exaggeration</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">file_output</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;path/to/hillshade_</span><span class="si">{</span><span class="n">s1</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">s2</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">s3</span><span class="si">}</span><span class="s1">.tif&#39;</span>
+
+<span class="c1"># call the function</span>
+<span class="c1"># ----------------------------------------</span>
+<span class="n">file_output</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">get_hillshade</span><span class="p">(</span>
+    <span class="n">file_dem</span><span class="o">=</span><span class="n">input_dem</span><span class="p">,</span>
+    <span class="n">file_output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
+    <span class="n">solar_altitude</span><span class="o">=</span><span class="n">solar_altitude</span><span class="p">,</span>
+    <span class="n">solar_azimuth</span><span class="o">=</span><span class="n">solar_azimuth</span><span class="p">,</span>
+    <span class="n">vertical_exaggeration</span><span class="o">=</span><span class="n">vertical_exaggeration</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plans.qutils.get_hillshade_batch">
+<span class="sig-prename descclassname"><span class="pre">plans.qutils.</span></span><span class="sig-name descname"><span class="pre">get_hillshade_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_dem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hillshade'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/qutils.html#get_hillshade_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.qutils.get_hillshade_batch" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_dem</strong></p></li>
+<li><p><strong>folder_output</strong></p></li>
+<li><p><strong>df_parameters</strong></p></li>
+<li><p><strong>prefix</strong></p></li>
+<li><p><strong>suffix</strong></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-code-square" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25Zm7.47 3.97a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L10.69 8 9.22 6.53a.75.75 0 0 1 0-1.06ZM6.78 6.53 5.31 8l1.47 1.47a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215l-2-2a.75.75 0 0 1 0-1.06l2-2a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"></path></svg></span><span class="sd-summary-text">Script sample</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p class="sd-card-text">The following script is expected to be executed under the QGIS Python
+Environment with required depencies installed.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># WARNING: run this in QGIS Python Environment</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib.util</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">iu</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="c1"># define the paths to this module</span>
+<span class="c1"># ----------------------------------------</span>
+<span class="n">the_module</span> <span class="o">=</span> <span class="s2">&quot;path/to/qutils.py&quot;</span> <span class="p">[</span><span class="n">change</span> <span class="n">this</span><span class="p">]</span>
+
+<span class="n">spec</span> <span class="o">=</span> <span class="n">iu</span><span class="o">.</span><span class="n">spec_from_file_location</span><span class="p">(</span><span class="s2">&quot;module&quot;</span><span class="p">,</span> <span class="n">the_module</span><span class="p">)</span>
+<span class="n">module</span> <span class="o">=</span> <span class="n">iu</span><span class="o">.</span><span class="n">module_from_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+<span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+
+<span class="c1"># define the path to input DEM</span>
+<span class="c1"># ----------------------------------------</span>
+<span class="n">input_dem</span> <span class="o">=</span> <span class="s2">&quot;path/to/dem.tif&quot;</span> <span class="c1"># [change this]</span>
+
+<span class="c1"># define the model output</span>
+<span class="c1"># ----------------------------------------</span>
+<span class="n">folder_output</span> <span class="o">=</span> <span class="s1">&#39;path/to/folder&#39;</span> <span class="c1"># [change this]</span>
+
+<span class="c1"># define the model parameters</span>
+<span class="c1"># ----------------------------------------</span>
+<span class="n">dc</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;altitude&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">90</span><span class="p">],</span>
+    <span class="s2">&quot;azimuth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">90</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">315</span><span class="p">,</span> <span class="mi">270</span><span class="p">],</span>
+    <span class="s2">&quot;zfactor&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dc</span><span class="p">)</span>
+
+<span class="c1"># call the function</span>
+<span class="c1"># ----------------------------------------</span>
+<span class="n">file_output</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">get_hillshade_batch</span><span class="p">(</span>
+    <span class="n">file_dem</span><span class="o">=</span><span class="n">input_dem</span><span class="p">,</span>
+    <span class="n">folder_output</span><span class="o">=</span><span class="n">folder_output</span><span class="p">,</span>
+    <span class="n">df_parameters</span><span class="o">=</span><span class="n">df</span><span class="p">,</span>
+    <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;hillshade&quot;</span><span class="p">,</span>
+    <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;testing&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="plans.qutils.get_twi">
 <span class="sig-prename descclassname"><span class="pre">plans.qutils.</span></span><span class="sig-name descname"><span class="pre">get_twi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_slope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_upa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_output</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/qutils.html#get_twi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.qutils.get_twi" title="Link to this definition">#</a></dt>
 <dd><p>Get the TWI map from Slope and Upslope Area</p>
@@ -1566,8 +1707,6 @@ Required fields in layer:</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.qutils.get_cellsize"><code class="docutils literal notranslate"><span class="pre">get_cellsize()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.qutils.read_raster"><code class="docutils literal notranslate"><span class="pre">read_raster()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.qutils.write_raster"><code class="docutils literal notranslate"><span class="pre">write_raster()</span></code></a></li>
@@ -1588,6 +1727,8 @@ Required fields in layer:</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.qutils.get_carved_dem"><code class="docutils literal notranslate"><span class="pre">get_carved_dem()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.qutils.get_shalstab"><code class="docutils literal notranslate"><span class="pre">get_shalstab()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.qutils.get_tps"><code class="docutils literal notranslate"><span class="pre">get_tps()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.qutils.get_hillshade"><code class="docutils literal notranslate"><span class="pre">get_hillshade()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.qutils.get_hillshade_batch"><code class="docutils literal notranslate"><span class="pre">get_hillshade_batch()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.qutils.get_twi"><code class="docutils literal notranslate"><span class="pre">get_twi()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.qutils.get_dto"><code class="docutils literal notranslate"><span class="pre">get_dto()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.qutils.get_path_areas"><code class="docutils literal notranslate"><span class="pre">get_path_areas()</span></code></a></li>
@@ -1649,7 +1790,7 @@ Required fields in layer:</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>
