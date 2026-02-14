@@ -66,7 +66,7 @@ import pandas as pd
 APP_NAME = "plans"
 
 # App
-APP_DIR = Path(user_data_dir(APP_NAME, appauthor=False))
+APP_DIR = Path(str(user_data_dir(APP_NAME, appauthor=False)))
 PROJECTS_ROOT_CONFIG = APP_DIR / "plans-projects-root.txt"
 DEFAULT_PROJECTS_ROOT = Path.home() / "PlansProjects"
 

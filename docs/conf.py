@@ -83,6 +83,7 @@ autodoc_mock_imports = [
     "geopandas",
     "PyPDF2",
     "rasterio",
+    "platformdirs",
 ]
 
 autodoc_member_order = "bysource"
