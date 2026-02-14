@@ -32,16 +32,10 @@ at the hillslope scale.
 
 ## Quick Gallery
 
-Mapping riparian wetlands dynamics:
+Mapping riparian wetlands dynamics during infiltration event:
 
 <a example2>
 <img src="https://github.com/iporepos/plans-assets/blob/main/docs/gallery/example2.gif?raw=true">
-</a>
-
-Mapping infiltration potential:
-
-<a example1>
-<img src="https://github.com/iporepos/plans-assets/blob/main/docs/gallery/example1.gif?raw=true">
 </a>
 
 
