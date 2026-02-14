@@ -10,9 +10,11 @@
 # 'requires' lists the packages that are needed to build your project
 # These are only needed at build time, not when running your package
 # Default values are fine for most projects
+
 requires = [
-    "setuptools>=65.0",  # Standard Python packaging tool
-    "wheel"              # Required to build wheel distributions (.whl)
+    "setuptools>=68.0",     # Standard Python packaging tool
+    "setuptools-scm>=8.0",  # Helper dependency for version management
+    "wheel"                 # Required to build wheel distributions (.whl)
     # ... [ADD MORE IF NEDDED]
 ]
 
@@ -37,16 +39,19 @@ build-backend = "setuptools.build_meta"
 # The name of your package/project
 name = "plans"
 # Version number
-version = "1.0.0"
+dynamic = ["version"]    # used for automated versioning
 # Short description
-description = "PLANS is a tool that helps water resources managers and engineers plan nature-based solutions for water at the hillslope scale."
+description = "A simulation tool for planning nature-based solutions in watershed conservation projects"
 # Keywords (optional) for search on PyPI
 keywords = [
     "python",
-    "water resources",
-    "hydrology",
+    "watershed conservation",
     "nature-based solutions",
     "ecosystem services",
+    "water resources",
+    "hydrology",
+    "topmodel",
+    "hillslope hydrology",
 ]
 
 
@@ -63,6 +68,8 @@ readme = "README.md"
 authors = [
     { name = "Iporã Possantti"},
     { name = "Rafael Barbedo"},
+    { name = "Marcelo Kronbauer"},
+    { name = "Guilherme Fernandes Marques"},
     # ... [ADD MORE IF NEDDED]
     # tip: include email if needed:
     # { name = "NAME", email = "myemail@org"}
@@ -71,6 +78,7 @@ authors = [
 # Can include multiple people responsible for maintaining the project
 maintainers = [
     { name = "Iporã Possantti"},
+    { name = "Rafael Barbedo"},
     # ... [ADD MORE IF NEDDED]
     # tip: include email if needed:
     # { name = "NAME", email = "myemail@org"}
@@ -165,3 +173,14 @@ docs = [
 # ***********************************************************************
 [tool.setuptools.packages.find]
 where = ["src"]  # <-- Tell setuptools to look for packages in /src
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"*" = ["data/**/*"]
+
+[tool.setuptools_scm]
+version_scheme = "no-guess-dev"
+local_scheme = "no-local-version"
+fallback_version = "0.0.0"

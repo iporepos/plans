@@ -1,0 +1,67 @@
+# PACKAGE WORKFLOW CONFIGURATION FILE
+# #######################################################################
+# Configuration file for delivery package to PyPI
+# GitHub CI services (GitHub Actions and GitHub Pages)
+
+
+# TEMPLATE INSTRUCTIONS
+# ***********************************************************************
+# 1) look for '[CHANGE THIS]' for mandatory modifications
+# 2) look for '[CHECK THIS]' for possible modifications
+# 3) look for '[EXAMPLE]' for simple examples (comment or uncomment it if needed)
+# 4) look for '[ADD MORE IF NEDDED]' for possible extra features
+# 5) placeholders are designated by curly braces: {replace-this}
+
+
+# WORKFLOW FILE
+# ***********************************************************************
+
+# Workflow
+# =======================================================================
+name: pypi
+
+# Triggers
+# =======================================================================
+on:
+  push:
+    tags:
+      - "v*"
+
+# JOBS
+# =======================================================================
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Get your code
+      # -----------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Python environment
+      # -----------------------------------------------------------------
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11" # <-- [CHECK THIS] Specs the version you use locally
+
+      # Step 3: Install build dependencies
+      # -----------------------------------------------------------------
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      # Step 4: Build
+      # -----------------------------------------------------------------
+      - name: Build package
+        run: python -m build
+
+      # Step 5: Upload
+      # -----------------------------------------------------------------
+      - name: Publish to PyPI
+        run: twine upload dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}

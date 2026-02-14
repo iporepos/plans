@@ -102,7 +102,7 @@ DC_OPERATIONS = {
 # This routines work without expecting any sort of folder struture
 
 
-# todo [test script]
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def get_cellsize(file_input):
     """
@@ -122,7 +122,7 @@ def get_cellsize(file_input):
     return cellsize
 
 
-# todo [test script]
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def read_raster(file_input, n_band=1, metadata=True):
     """
@@ -162,7 +162,7 @@ def read_raster(file_input, n_band=1, metadata=True):
     return dc_output
 
 
-# todo [test script]
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def write_raster(grid_output, dc_metadata, file_output, dtype="float32", n_band=1):
     """
@@ -204,7 +204,7 @@ def write_raster(grid_output, dc_metadata, file_output, dtype="float32", n_band=
     return file_output
 
 
-# todo [test script]
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def clip_layer(
     db_input, layer_input, db_overlay, layer_overlay, db_output, layer_output
@@ -219,7 +219,7 @@ def clip_layer(
     return layer_output
 
 
-# todo [test script]
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def reproject_layer(
     db_input, layer_name, crs_target, db_output=None, layer_output=None
@@ -258,6 +258,7 @@ def reproject_layer(
     return layer_output
 
 
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def is_bounded_by(extent_a, extent_b):
     """
@@ -276,7 +277,6 @@ def is_bounded_by(extent_a, extent_b):
     )
 
 
-# test in bcmk/qutils_layers.py
 def get_extent_from_raster(file_input):
     """
     Get the extent from a raster layer
@@ -327,7 +327,6 @@ def get_extent_from_raster(file_input):
     }
 
 
-# test in bcmk/qutils_layers.py
 def get_extent_from_vector(input_db, layer_name):
     """
     Get the extent from a vector layer
@@ -385,7 +384,6 @@ def get_extent_from_vector(input_db, layer_name):
     }
 
 
-# test in bcmk/qutils_layers.py
 def count_vector_features(input_db, layer_name):
     """
     Get the number of features from a vector layer
@@ -437,6 +435,7 @@ def count_vector_features(input_db, layer_name):
     return int(layer.featureCount())
 
 
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def retrieve_raster_tiles(
     db_aoi,
@@ -540,6 +539,7 @@ def retrieve_raster_tiles(
     return output_file
 
 
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def retrieve_upstream_basins(
     db_basins,
@@ -603,6 +603,7 @@ def retrieve_upstream_basins(
     return None
 
 
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def get_basins_areas(file_basins, ids_basins):
     """
@@ -657,6 +658,7 @@ def get_basins_areas(file_basins, ids_basins):
     return {"Id": ids_basins, "UpstreamArea": basin_areas}
 
 
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def get_blank(file_input, file_output, blank_value=0, dtype="byte"):
     """
@@ -702,6 +704,7 @@ def get_blank(file_input, file_output, blank_value=0, dtype="byte"):
     return file_output
 
 
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def get_boolean(file_input, file_output, bool_value, condition="ET"):
     """
@@ -758,6 +761,7 @@ def get_boolean(file_input, file_output, bool_value, condition="ET"):
     return file_output
 
 
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def get_fuzzy(file_input, file_output, low_bound, high_bound):
     """
@@ -787,6 +791,7 @@ def get_fuzzy(file_input, file_output, low_bound, high_bound):
     return file_output
 
 
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def get_dem(
     file_src_dem,
@@ -854,6 +859,7 @@ def get_dem(
     return file_output
 
 
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 # todo [optimize] using read_raster and write_raster
 def get_downstream_ids(file_ldd, file_basins, file_outlets):
@@ -960,6 +966,7 @@ def get_downstream_ids(file_ldd, file_basins, file_outlets):
     return {"Id": list_ids, "Downstream_Id": list_ds_ids}
 
 
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def get_carved_dem(file_dem, file_rivers, file_output, wedge_width=3, wedge_depth=10):
     """
@@ -977,8 +984,6 @@ def get_carved_dem(file_dem, file_rivers, file_output, wedge_width=3, wedge_dept
     :type wedge_depth: float
     :return: file path of output (echo)
     :rtype: str
-
-    # todo [script example]
 
     """
     from plans import geo
@@ -1018,6 +1023,7 @@ def get_carved_dem(file_dem, file_rivers, file_output, wedge_width=3, wedge_dept
     return file_output
 
 
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 # todo [docstring]
 # todo [optimize]
@@ -1123,6 +1129,7 @@ def get_shalstab(
     return file_output1, file_output2
 
 
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def get_tps(
     file_tpi, file_upa, file_output, upa_min=0.01, upa_max=2, tpi_v=-2, tpi_r=10
@@ -1236,7 +1243,7 @@ def get_hillshade(
 
             # define the paths to this module
             # ----------------------------------------
-            the_module = "path/to/qutils.py" [change this]
+            the_module = "path/to/qutils.py" # [change this]
 
             spec = iu.spec_from_file_location("module", the_module)
             module = iu.module_from_spec(spec)
@@ -1310,6 +1317,7 @@ def get_hillshade(
     return file_output
 
 
+# todo [develop test]
 def get_hillshade_batch(
     file_dem, folder_output, df_parameters, prefix="hillshade", suffix=None
 ):
@@ -1345,7 +1353,7 @@ def get_hillshade_batch(
 
             # define the paths to this module
             # ----------------------------------------
-            the_module = "path/to/qutils.py" [change this]
+            the_module = "path/to/qutils.py" # [change this]
 
             spec = iu.spec_from_file_location("module", the_module)
             module = iu.module_from_spec(spec)
@@ -1429,6 +1437,7 @@ def get_hillshade_batch(
 
 
 # todo [script example] -- standalone version using importlib
+# todo [develop test]
 def get_twi(file_slope, file_upa, file_output):
     """
     Get the TWI map from Slope and Upslope Area
@@ -1475,6 +1484,7 @@ def get_twi(file_slope, file_upa, file_output):
 
 # todo [script example] -- standalone version using importlib
 # todo [docstring]
+# todo [develop test]
 def get_dto(file_ldd, file_output):
 
     from plans import geo
@@ -1506,6 +1516,7 @@ def get_dto(file_ldd, file_output):
 
 # todo [script example] -- standalone version using importlib
 # todo [docstring]
+# todo [develop test]
 def get_path_areas(file_dto, dc_basins, file_output, n_bins=100):
     # -------------------------------------------------------------------------
     # LOAD DTO
@@ -1550,6 +1561,7 @@ def get_path_areas(file_dto, dc_basins, file_output, n_bins=100):
 
 
 # todo [script example] -- standalone version using importlib
+# todo [develop test]
 def get_htwi(file_ftwi, file_fhand, file_output, hand_w):
     """
     Get the HAND-enhanced TWI map from HAND, TWI and HAND weight
@@ -1598,6 +1610,7 @@ def get_htwi(file_ftwi, file_fhand, file_output, hand_w):
 
 
 # todo [script example] -- standalone version using importlib
+# todo [develop test]
 def get_htwi_list(file_ftwi, file_fhand, folder_output, ls_weights=[0, 50, 100]):
     """
     Get a list of HTWI based on many weights
@@ -1633,6 +1646,7 @@ def get_htwi_list(file_ftwi, file_fhand, folder_output, ls_weights=[0, 50, 100])
 
 
 # todo [script example] -- standalone version using importlib
+# todo [develop test]
 def get_hand(
     folder_project,
     file_dem_filled,
@@ -1819,6 +1833,7 @@ def get_hand(
     return d_files
 
 
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def setup_topo(
     folder_project,
@@ -1985,6 +2000,7 @@ def setup_topo(
     }
 
 
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def get_topo(
     folder_project,
@@ -2413,6 +2429,7 @@ def get_topo(
     return None
 
 
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def retrieve_lulc(
     folder_src, folder_project, crs_target, crs_src, file_target, file_style_src=None
@@ -2553,6 +2570,7 @@ def retrieve_lulc(
     return folder_aux
 
 
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def convert_lulc(
     folder_src,
@@ -2672,6 +2690,7 @@ def rasterize_roads():
 """
 
 
+# todo [develop test]
 # todo [script example] -- standalone version using importlib
 def get_lulc(
     folder_src,
@@ -2744,8 +2763,10 @@ def get_lulc(
     return None
 
 
+# todo [docstring]
+# todo [develop test]
 def get_basins(folder_project, db_outlets, layer_outlets, code_outlets, crs_target):
-    # todo [docstring]
+
     # ----- SETUP -----
     # these folders and files are expected to exist
     folder_topo = "{}/inputs/topo".format(folder_project)
