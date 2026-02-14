@@ -27,24 +27,74 @@ for beginners and remove the burden of setting Python environments.
 Installation
 ***********************************************************************
 
-On a Python environment, install ``plans`` via terminal:
+Install as a Python package
+============================================
+
+For Python regular users, install the latest package deploy
+to a Python 3 environment via pip:
 
 .. code-block:: console
 
-    python -m pip install git+https://github.com/iporepos/plans.git@main
+    python -m pip install copyme
 
-
-On `Jupyter`_ or `Colab`_, run this command on a cell:
+Or any desired branch or version via github url:
 
 .. code-block:: console
 
-    %pip install git+https://github.com/iporepos/plans.git@main
+    python -m pip install git+https://github.com/iporepos/copyme.git@main
+
+On a `Jupyter`_ or `Colab`_ environment, run this command on a cell:
+
+.. code-block:: console
+
+    %pip install plans
 
 
-This installation procedure is also enough for installing all dependencies needed for running ``plans``.
+Install as a Tool for Windows
+============================================
 
+For users seeking only the tool experience in Windows:
 
+1. Make sure the latest Python 3 is installed and added to PATH: https://www.python.org
 
+2. Download the installer PowerShell file ``install-plans.ps1`` from the GitHub repository;
+
+3. Right-click the installer file and click the option ``Run with PowerShell``;
+
+4. Follow the instructions prompted until the end;
+
+**Application folder**
+
+The application tool will live in ``C:\Users\{You}\AppData\Local\plans``.
+
+To check if the app is alive, open ``PowerShell`` and type:
+
+.. code-block:: console
+
+    plans check
+
+The output should result in no error or warning.
+
+**Projects root**
+
+By default, projects for ``plans`` will live under ``C:\Users\{You}\PlansProjects``.
+
+Change the projects root location by editing the ``projects-root.txt`` file located at ``C:\Users\{You}\AppData\Local\plans``
+
+**Update or uninstall**
+
+To update the current installation, just install again from the latest version.
+The existing version will be overwritten.
+
+To uninstall, open ``PowerShell`` and type:
+
+.. code-block:: console
+
+    plans uninstall
+
+.. note::
+
+   For a complete purge, manually remove ``plans`` from Windows PATH
 
 
 .. _user guide workflow:

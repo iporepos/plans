@@ -41,8 +41,8 @@
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="_static/documentation_options.js?v=8d563738"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
@@ -421,15 +421,53 @@ for beginners and remove the burden of setting Python environments.</p>
 </div>
 <section id="installation">
 <span id="id1"></span><h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
-<p>On a Python environment, install <code class="docutils literal notranslate"><span class="pre">plans</span></code> via terminal:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m pip install git+https://github.com/iporepos/plans.git@main</span>
+<section id="install-as-a-python-package">
+<h3>Install as a Python package<a class="headerlink" href="#install-as-a-python-package" title="Link to this heading">#</a></h3>
+<p>For Python regular users, install the latest package deploy
+to a Python 3 environment via pip:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m pip install copyme</span>
 </pre></div>
 </div>
-<p>On <a class="reference external" href="https://jupyter.org/">Jupyter</a> or <a class="reference external" href="https://colab.research.google.com/notebook">Colab</a>, run this command on a cell:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">%</span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/iporepos/plans.git@main
+<p>Or any desired branch or version via github url:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m pip install git+https://github.com/iporepos/copyme.git@main</span>
 </pre></div>
 </div>
-<p>This installation procedure is also enough for installing all dependencies needed for running <code class="docutils literal notranslate"><span class="pre">plans</span></code>.</p>
+<p>On a <a class="reference external" href="https://jupyter.org/">Jupyter</a> or <a class="reference external" href="https://colab.research.google.com/notebook">Colab</a> environment, run this command on a cell:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">%</span>pip<span class="w"> </span>install<span class="w"> </span>plans
+</pre></div>
+</div>
+</section>
+<section id="install-as-a-tool-for-windows">
+<h3>Install as a Tool for Windows<a class="headerlink" href="#install-as-a-tool-for-windows" title="Link to this heading">#</a></h3>
+<p>For users seeking only the tool experience in Windows:</p>
+<ol class="arabic simple">
+<li><p>Make sure the latest Python 3 is installed and added to PATH: <a class="reference external" href="https://www.python.org">https://www.python.org</a></p></li>
+<li><p>Download the installer PowerShell file <code class="docutils literal notranslate"><span class="pre">install-plans.ps1</span></code> from the GitHub repository;</p></li>
+<li><p>Right-click the installer file and click the option <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">with</span> <span class="pre">PowerShell</span></code>;</p></li>
+<li><p>Follow the instructions prompted until the end;</p></li>
+</ol>
+<p><strong>Application folder</strong></p>
+<p>The application tool will live in <code class="docutils literal notranslate"><span class="pre">C:\Users\{You}\AppData\Local\plans</span></code>.</p>
+<p>To check if the app is alive, open <code class="docutils literal notranslate"><span class="pre">PowerShell</span></code> and type:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plans check</span>
+</pre></div>
+</div>
+<p>The output should result in no error or warning.</p>
+<p><strong>Projects root</strong></p>
+<p>By default, projects for <code class="docutils literal notranslate"><span class="pre">plans</span></code> will live under <code class="docutils literal notranslate"><span class="pre">C:\Users\{You}\PlansProjects</span></code>.</p>
+<p>Change the projects root location by editing the <code class="docutils literal notranslate"><span class="pre">projects-root.txt</span></code> file located at <code class="docutils literal notranslate"><span class="pre">C:\Users\{You}\AppData\Local\plans</span></code></p>
+<p><strong>Update or uninstall</strong></p>
+<p>To update the current installation, just install again from the latest version.
+The existing version will be overwritten.</p>
+<p>To uninstall, open <code class="docutils literal notranslate"><span class="pre">PowerShell</span></code> and type:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">plans uninstall</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For a complete purge, manually remove <code class="docutils literal notranslate"><span class="pre">plans</span></code> from Windows PATH</p>
+</div>
+</section>
 </section>
 <section id="workflow">
 <span id="user-guide-workflow"></span><h2>Workflow<a class="headerlink" href="#workflow" title="Link to this heading">#</a></h2>
@@ -540,7 +578,11 @@ Tables are formatted in <code class="docutils literal notranslate"><span class="
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-as-a-python-package">Install as a Python package</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-as-a-tool-for-windows">Install as a Tool for Windows</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#workflow">Workflow</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup">Setup</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#projects">Projects</a></li>
@@ -594,7 +636,7 @@ Tables are formatted in <code class="docutils literal notranslate"><span class="
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>

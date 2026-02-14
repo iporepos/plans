@@ -41,8 +41,8 @@
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="_static/documentation_options.js?v=8d563738"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
@@ -395,16 +395,87 @@
 <p class="admonition-title">Warning</p>
 <p>Documentation website under active development. This is not a stable release.</p>
 </div>
-<span class="target" id="development"></span><section id="development">
-<h1>Development<a class="headerlink" href="#development" title="Link to this heading">#</a></h1>
+<span class="target" id="development"></span><section id="id1">
+<h1>Development<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
 <p>This section provides guidance for those who wish to contribute to the project.
-It includes instructions for setting up the development environment, cloning the repository, installing the project in development mode, running tests, and building the documentation.</p>
-<p>To ensure that new features and changes adhere to project standards, maintain quality, and keep the documentation up to date, contributors are required to follow:</p>
+It includes instructions for setting up the development environment, cloning the
+repository, installing the project in development mode, running tests,
+and building the documentation.</p>
+<p>To ensure that new features and changes adhere to project standards,
+maintain quality, and keep the documentation up to date,
+contributors are required to follow:</p>
 <ul class="simple">
 <li><p>Style-consistent formatting;</p></li>
 <li><p>Documentation-oriented practices;</p></li>
 <li><p>Test-driven development;</p></li>
 </ul>
+<section id="minimal-workflow">
+<h2>Minimal Workflow<a class="headerlink" href="#minimal-workflow" title="Link to this heading">#</a></h2>
+<p>This is a quick guide for a development protocol.
+Hence, some important but obvious steps are ommited.
+See more details in the sections below.</p>
+<section id="setup">
+<h3>Setup<a class="headerlink" href="#setup" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>Clone the repository to a local branch;</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/iporepos/plans.git
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Install dependencies in dev mode:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>dev,docs<span class="o">]</span>
+</pre></div>
+</div>
+</section>
+<section id="development-loop">
+<h3>Development loop<a class="headerlink" href="#development-loop" title="Link to this heading">#</a></h3>
+<ol class="arabic simple" start="3">
+<li><p>Develop features under the <code class="docutils literal notranslate"><span class="pre">./src/plans/</span></code> folder;</p></li>
+<li><p>Develop unit tests for the features under <code class="docutils literal notranslate"><span class="pre">./tests/unit</span></code> or <code class="docutils literal notranslate"><span class="pre">./tests/bcmk</span></code>;</p></li>
+<li><p>Document features directly using docstrings;</p></li>
+<li><p>Document features in the API by editing <code class="docutils literal notranslate"><span class="pre">./docs/api.rst</span></code> file;</p></li>
+<li><p>If ready, proceed to checkout. Repeat otherwise.</p></li>
+</ol>
+</section>
+<section id="checkout">
+<h3>Checkout<a class="headerlink" href="#checkout" title="Link to this heading">#</a></h3>
+<ol class="arabic simple" start="8">
+<li><p>Apply style:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>dev.style
+</pre></div>
+</div>
+<ol class="arabic simple" start="9">
+<li><p>Build docs (locally):</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>dev.docs<span class="w"> </span>--open
+</pre></div>
+</div>
+<ol class="arabic simple" start="10">
+<li><p>If previous passed, run all CI-based tests:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>dev.tests
+</pre></div>
+</div>
+<ol class="arabic simple" start="12">
+<li><p>If previous step passed, stage and commit;</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>add<span class="w"> </span>.
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Message&quot;</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="15">
+<li><p>If appropriate, tag and publish.</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>vX.Y.Z<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Release X.Y.Z (message)&quot;</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>main
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>--tags
+</pre></div>
+</div>
+</section>
+</section>
 <section id="cloning">
 <h2>Cloning<a class="headerlink" href="#cloning" title="Link to this heading">#</a></h2>
 <p>Use your IDE for authenticate in GitHub and clone the repo branch of interest
@@ -414,13 +485,12 @@ in your local system.</p>
 <p>Of course, Git must be set as the version control system</p>
 </div>
 <p>Alternatively, clone via terminal:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># [CHECK THIS] adapt this for branches or other repos</span>
-git<span class="w"> </span>clone<span class="w"> </span>https://github.com/iporepos/plans.git
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/iporepos/plans.git
 </pre></div>
 </div>
 </section>
-<section id="installing">
-<h2>Installing<a class="headerlink" href="#installing" title="Link to this heading">#</a></h2>
+<section id="installing-as-a-developer">
+<h2>Installing as a developer<a class="headerlink" href="#installing-as-a-developer" title="Link to this heading">#</a></h2>
 <p>For developing, it’s recommended to set up a python
 <strong>Virtual Environment</strong> (<code class="docutils literal notranslate"><span class="pre">venv</span></code>) locally for developing the repo.
 This is best for avoiding falling into a <a class="reference external" href="https://en.wikipedia.org/wiki/Dependency_hell">dependency hell</a> with your
@@ -430,16 +500,14 @@ other projects.</p>
 <p>Of course, you need Python installed in your system</p>
 </div>
 <p>Move to the repo root folder:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># [CHANGE THIS] set your own actual local path</span>
-<span class="nb">cd</span><span class="w"> </span>./path/to/<span class="o">{</span>plans<span class="o">}</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>./path/to/plans
 </pre></div>
 </div>
 <p>Create a python <code class="docutils literal notranslate"><span class="pre">venv</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
 </pre></div>
 </div>
-<p>Activate the <code class="docutils literal notranslate"><span class="pre">venv</span></code> session.</p>
-<p>On Unix (Linux/Mac):</p>
+<p>Activate the <code class="docutils literal notranslate"><span class="pre">venv</span></code> session. On Unix (Linux/Mac):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
 </pre></div>
 </div>
@@ -456,52 +524,265 @@ dependencies in editable mode <code class="docutils literal notranslate"><span c
 developing and documentation.</p>
 </section>
 <hr class="docutils" />
-<section id="style">
-<h2>Style<a class="headerlink" href="#style" title="Link to this heading">#</a></h2>
-<p>In this project, we enforce using <a class="reference external" href="https://black.readthedocs.io">Black</a> to ensure a consistent code style.</p>
-<p>Since <code class="docutils literal notranslate"><span class="pre">black</span></code> is listed in <code class="docutils literal notranslate"><span class="pre">dev</span></code> dependencies, you may run manually before push:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>black<span class="w"> </span>.
+<section id="versioning">
+<h2>Versioning<a class="headerlink" href="#versioning" title="Link to this heading">#</a></h2>
+<p>Versioning system of the project is based on <code class="docutils literal notranslate"><span class="pre">git</span></code> and the remote
+is hosted in <code class="docutils literal notranslate"><span class="pre">github</span></code>.</p>
+<section id="versioning-cycle">
+<h3>Versioning cycle<a class="headerlink" href="#versioning-cycle" title="Link to this heading">#</a></h3>
+<p>Before and after a development session, a health practice is to run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>status
+</pre></div>
+</div>
+<p>Considering the status output, add all changed files to the staging area:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>add<span class="w"> </span>.
+</pre></div>
+</div>
+<p>After some substantial development, consider commit
+the changes to the local git system:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Commit message (eg, &#39;Bug Fixes&#39;)&quot;</span>
+</pre></div>
+</div>
+<p>Repeat the cycle until if feels ready to publish to the remote host.</p>
+</section>
+<section id="publishing">
+<h3>Publishing<a class="headerlink" href="#publishing" title="Link to this heading">#</a></h3>
+<p>Before publishing, a health practice is to check the tags available:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>tag
+</pre></div>
+</div>
+<p>Considering the output, decide a new tag and add it:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>vX.Y.Z<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Release X.Y.Z (message)&quot;</span>
+</pre></div>
+</div>
+<p>After tagging, publish explicitly:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>main
+</pre></div>
+</div>
+<p>Or simply:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>push
+</pre></div>
+</div>
+<p>Then append the tags</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>--tags
+</pre></div>
+</div>
+</section>
+<section id="tags-convention">
+<h3>Tags convention<a class="headerlink" href="#tags-convention" title="Link to this heading">#</a></h3>
+<p>This project tags follows Semantic Versioning (<code class="docutils literal notranslate"><span class="pre">vMAJOR.MINOR.PATCH</span></code>)
+with the interpretations below.</p>
+<section id="major-vx-y-z-project-maturity-level">
+<h4>Major <code class="docutils literal notranslate"><span class="pre">vX.y.z</span></code> — Project Maturity Level<a class="headerlink" href="#major-vx-y-z-project-maturity-level" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>v0.x.x — Experimental</strong></p>
+<ul>
+<li><p>Playground for exploring architecture and project layout.</p></li>
+<li><p>Breaking changes are expected.</p></li>
+</ul>
+</li>
+<li><p><strong>v1.x.x — Stable Foundation</strong></p>
+<ul>
+<li><p>Production-ready core architecture.</p></li>
+<li><p>Actively developed.</p></li>
+<li><p>Backward compatibility is expected.</p></li>
+</ul>
+</li>
+<li><p><strong>v2.x.x — Next Generation</strong></p>
+<ul>
+<li><p>May introduce new syntax or paradigms.</p></li>
+<li><p>Can be incompatible with <code class="docutils literal notranslate"><span class="pre">v1.x.x</span></code>.</p></li>
+<li><p>More mature, better documented, and more stable.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="minor-vx-y-z-milestones">
+<h4>Minor <code class="docutils literal notranslate"><span class="pre">vx.Y.z</span></code> — Milestones<a class="headerlink" href="#minor-vx-y-z-milestones" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p>Major feature additions.</p></li>
+<li><p>Large refactors within the same architecture.</p></li>
+<li><p>Treated as logical restore points.</p></li>
+</ul>
+</section>
+<section id="patch-vx-y-z-maintenance">
+<h4>Patch <code class="docutils literal notranslate"><span class="pre">vx.y.Z</span></code> — Maintenance<a class="headerlink" href="#patch-vx-y-z-maintenance" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p>Bug fixes.</p></li>
+<li><p>Small improvements.</p></li>
+<li><p>Documentation corrections.</p></li>
+<li><p>No behavioral changes.</p></li>
+</ul>
+</section>
+</section>
+<section id="releases">
+<h3>Releases<a class="headerlink" href="#releases" title="Link to this heading">#</a></h3>
+<p>Releases may receive human-readable names.
+Suggested names are South-America rivers, aquifers of other hydrological landscape features.</p>
+<ul class="simple">
+<li><p>Amazon</p></li>
+<li><p>Solimões</p></li>
+<li><p>Paraná</p></li>
+<li><p>São Francisco</p></li>
+<li><p>Madeira</p></li>
+<li><p>Tapajós</p></li>
+<li><p>Xingu</p></li>
+<li><p>Capibaripe</p></li>
+<li><p>Itacurubi</p></li>
+<li><p>Tocantins</p></li>
+<li><p>Negro</p></li>
+<li><p>Casiquiare</p></li>
+<li><p>Uruguay</p></li>
+<li><p>Orinoco</p></li>
+<li><p>Magdalena</p></li>
+<li><p>Essequibo</p></li>
+<li><p>Guarany</p></li>
+<li><p>Urucuya</p></li>
+<li><p>Pantanal</p></li>
+<li><p>Iberás</p></li>
+<li><p>Iguazu</p></li>
+<li><p>Chiquita</p></li>
+<li><p>Titicaca</p></li>
+<li><p>Patos</p></li>
+<li><p>Atacama</p></li>
+<li><p>Guahyba</p></li>
+<li><p>Taquary</p></li>
+<li><p>Jacuhy</p></li>
+<li><p>Ibicuhy</p></li>
+<li><p>Camaquã</p></li>
+<li><p>Itajay</p></li>
+<li><p>Capivary</p></li>
+<li><p>Paranoa</p></li>
+<li><p>Jequitinhonha</p></li>
+<li><p>Taramandahy</p></li>
+<li><p>Gravatahy</p></li>
+<li><p>Piratiny</p></li>
+<li><p>Paranapanema</p></li>
+<li><p>Parnahyba</p></li>
+<li><p>Maracaibo</p></li>
+<li><p>Uyuni</p></li>
+<li><p>Ucayali</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="packaging">
+<h2>Packaging<a class="headerlink" href="#packaging" title="Link to this heading">#</a></h2>
+<p>This project relies on the PyPI platform for package distribution.</p>
+<section id="first-time-distribution-workflow">
+<h3>First-time distribution workflow<a class="headerlink" href="#first-time-distribution-workflow" title="Link to this heading">#</a></h3>
+<p>As a first time distribution, manual workflow is recommended.</p>
+<ol class="arabic simple">
+<li><p>Register and save API tokens from https://pypi.org/ and https://test.pypi.org.</p></li>
+<li><p>Install packaging utilities:</p></li>
+</ol>
+<p>For building the distribution:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>build
+</pre></div>
+</div>
+<p>For uploading to PyPI</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>twine
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Build distro</p></li>
+</ol>
+<p>Cleanup first</p>
+<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="nb">Remove-Item</span> <span class="n">-Recurse</span> <span class="n">-Force</span> <span class="n">dist</span><span class="p">,</span> <span class="n">build</span><span class="p">,</span> <span class="p">*.</span><span class="n">egg-info</span>
+</pre></div>
+</div>
+<p>Run the build command</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>build
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dist</span><span class="o">/</span>
+  <span class="n">yourpkg</span><span class="o">-</span><span class="mf">0.1.0</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+  <span class="n">yourpkg</span><span class="o">-</span><span class="mf">0.1.0</span><span class="o">-</span><span class="n">py3</span><span class="o">-</span><span class="n">none</span><span class="o">-</span><span class="nb">any</span><span class="o">.</span><span class="n">whl</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>these are the packages in the repo. This folder is ignored by git.</p>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li><p>Validade build</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>twine<span class="w"> </span>check<span class="w"> </span>dist/*
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p>Publish on TestPyPI</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>twine<span class="w"> </span>upload<span class="w"> </span>--repository<span class="w"> </span>testpypi<span class="w"> </span>dist/*
 </pre></div>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Unformatted contributions are not going to pass because GitHub checks for style
-consistency.</p>
+<p>Use the token from TestPyPI</p>
 </div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>There are tools for automating <code class="docutils literal notranslate"><span class="pre">black</span></code> before commit. See <a class="reference external" href="https://pre-commit.com/">https://pre-commit.com/</a></p>
+<ol class="arabic simple" start="6">
+<li><p>Check test package under a clear environment</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--index-url<span class="w"> </span>https://test.pypi.org/simple<span class="w"> </span>--extra-index-url<span class="w"> </span>https://pypi.org/simple<span class="w"> </span>&lt;yourpkg&gt;<span class="o">==</span>Z.Y.X
+</pre></div>
+</div>
+<ol class="arabic simple" start="7">
+<li><p>Publish on PyPI:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>twine<span class="w"> </span>upload<span class="w"> </span>dist/*
+</pre></div>
+</div>
+<ol class="arabic simple" start="8">
+<li><p>Check package installation in a clear environment</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>&lt;yourpkg&gt;
+</pre></div>
+</div>
+</section>
+<section id="continous-distribution">
+<h3>Continous distribution<a class="headerlink" href="#continous-distribution" title="Link to this heading">#</a></h3>
+<p>An automated system is set for continous distribution via GitHub Actions.
+The workflow file lives in <code class="docutils literal notranslate"><span class="pre">.github/workflows/dist.yaml</span></code> and
+is only triggered by a new tag being pushed.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>To work properly, the API token for PyPI must be included in GitHub
+repository secrets as PYPI_API_TOKEN.</p>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="style">
+<h2>Style<a class="headerlink" href="#style" title="Link to this heading">#</a></h2>
+<p>In this project, we enforce using <a class="reference external" href="https://black.readthedocs.io">Black</a> to ensure a consistent code style.</p>
+<p>Since <code class="docutils literal notranslate"><span class="pre">black</span></code> is listed in dev dependencies, you may run manually before push:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>black<span class="w"> </span>.
+</pre></div>
+</div>
+<blockquote>
+<div><p>from the repo root, under the venv session</p>
+</div></blockquote>
+<p>The built-in wrapper is:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>dev.style
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Unformatted contributions are not going to pass because GitHub checks for style consistency.</p>
 </div>
 </section>
 <hr class="docutils" />
 <section id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">#</a></h2>
-<p>Documentation-oriented development is recommended.
-Every feature must be documented with standard Sphinx rST format, like the following docstring:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># a function</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is a docstring of a function.</span>
-
-<span class="sd">    :param x: the x value</span>
-<span class="sd">    :type x: float</span>
-<span class="sd">    :param y: some string</span>
-<span class="sd">    :type y: str</span>
-<span class="sd">    :return: a formatted string</span>
-<span class="sd">    :rtype: str</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s1">&#39;</span>
-
-</pre></div>
-</div>
+<p>Documentation-oriented development is recommended. Every feature must be documented with standard Sphinx (rST) format.</p>
 <section id="build-locally">
 <h3>Build locally<a class="headerlink" href="#build-locally" title="Link to this heading">#</a></h3>
 <p>Use Sphinx for building the documentation website locally. Run this via terminal:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span>./docs<span class="w"> </span>./docs/_build<span class="w"> </span>--write-all
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span>.<span class="se">\d</span>ocs<span class="w"> </span>.<span class="se">\d</span>ocs<span class="se">\_</span>build<span class="w"> </span>--write-all
 </pre></div>
 </div>
-<p>For automating tasks before and after building, consider run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>docs.build<span class="w"> </span>--open
+<p>The built-in wrapper is:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>dev.docs<span class="w"> </span>--open
 </pre></div>
 </div>
 <div class="admonition important">
@@ -518,44 +799,14 @@ Every feature must be documented with standard Sphinx rST format, like the follo
 <h2>Testing<a class="headerlink" href="#testing" title="Link to this heading">#</a></h2>
 <p>Test-driven development is recommended. Tests are split into the following categories:</p>
 <ul class="simple">
-<li><p><strong>Example tests</strong> - single line tests presented in docstrings.</p></li>
 <li><p><strong>Unit tests</strong> - short and targeting feature behavior.</p></li>
 <li><p><strong>Benchmark tests</strong> - may take longer time, targeting full performance, includes inputs and outputs evaluations.</p></li>
+<li><p><strong>Example tests</strong> - single line tests presented in docstrings.</p></li>
 </ul>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>Run tests under a virtual environment session.</p>
 </div>
-<section id="example-tests">
-<h3>Example tests<a class="headerlink" href="#example-tests" title="Link to this heading">#</a></h3>
-<p>Create single-line example tests in docstring:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">num1</span><span class="p">,</span> <span class="n">num2</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">        **Examples**</span>
-
-<span class="sd">        &gt;&gt;&gt; add(1, 2)</span>
-<span class="sd">        3</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">num1</span> <span class="o">+</span> <span class="n">num2</span>
-</pre></div>
-</div>
-<p>Test the module using <code class="docutils literal notranslate"><span class="pre">doctest</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>doctest<span class="w"> </span>-v<span class="w"> </span>/path/to/module.py
-</pre></div>
-</div>
-<p>Alternatively, test the module in the script part:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
-    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
-</pre></div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>See more in <a class="reference external" href="https://docs.python.org/3/library/doctest.html">doctest library</a> for details on example tests.</p>
-</div>
-</section>
 <section id="unit-tests">
 <h3>Unit tests<a class="headerlink" href="#unit-tests" title="Link to this heading">#</a></h3>
 <p>Run all unit tests in <code class="docutils literal notranslate"><span class="pre">/tests</span></code> via terminal:</p>
@@ -566,12 +817,21 @@ Every feature must be documented with standard Sphinx rST format, like the follo
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>tests.unit.test_module
 </pre></div>
 </div>
-<p>For a single class inside the module:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>-v<span class="w"> </span>tests.unit.test_module.TestClass
+<p>The built-in wrapper is:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>dev.tests
 </pre></div>
 </div>
-<p>For a single method:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>-v<span class="w"> </span>tests.unit.test_module.TestClass.test_method
+<p>Variations include:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>dev.tests<span class="w"> </span>--which<span class="w"> </span><span class="s2">&quot;unit&quot;</span>
+</pre></div>
+</div>
+<p>For benchmarks (run this locally)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>dev.tests<span class="w"> </span>--which<span class="w"> </span><span class="s2">&quot;bcmk&quot;</span>
+</pre></div>
+</div>
+<p>For all tests:
+For benchmarks (run this locally)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>dev.tests<span class="w"> </span>--all
 </pre></div>
 </div>
 <div class="admonition seealso">
@@ -586,10 +846,14 @@ A template for this is provided in <code class="docutils literal notranslate"><s
 </section>
 <section id="benchmark-tests">
 <h3>Benchmark tests<a class="headerlink" href="#benchmark-tests" title="Link to this heading">#</a></h3>
-<p>Benchmark tests are unit tests related to full-integration of features, sometimes associated with input and output data. Some benchmark tests will install heavy datasets from provided URLs.</p>
+<p>Benchmark tests are unit tests related to full-integration of features,
+sometimes associated with input and output data. Some benchmark tests
+will install heavy datasets from provided URLs.</p>
 <section id="enable-benchmark-tests">
 <h4>Enable benchmark tests<a class="headerlink" href="#enable-benchmark-tests" title="Link to this heading">#</a></h4>
-<p>For running benchmark tests, they must be enabled manually. This is because benchmarks may take too long and can deplete resources for CI services. Once enabled, just run the unit tests as usual.</p>
+<p>For running benchmark tests, they must be enabled. This is
+because benchmarks may take too long and can deplete resources for CI services.
+Once enabled, just run the unit tests as usual.</p>
 <p>Enabling benchmarks on Unix:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">RUN_BENCHMARKS</span><span class="o">=</span><span class="m">1</span>
 </pre></div>
@@ -611,6 +875,36 @@ A template for this is provided in <code class="docutils literal notranslate"><s
 </pre></div>
 </div>
 </section>
+</section>
+<section id="example-tests">
+<h3>Example tests<a class="headerlink" href="#example-tests" title="Link to this heading">#</a></h3>
+<p>Create single-line example tests in docstring:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">num1</span><span class="p">,</span> <span class="n">num2</span><span class="p">):</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	</span>
+<span class="sd">	**Examples**</span>
+<span class="sd">	</span>
+<span class="sd">	&gt;&gt;&gt; add(1, 2)</span>
+<span class="sd">	3</span>
+<span class="sd">		</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">return</span> <span class="n">num1</span> <span class="o">+</span> <span class="n">num2</span>
+</pre></div>
+</div>
+<p>Test the module using <code class="docutils literal notranslate"><span class="pre">doctest</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>doctest<span class="w"> </span>-v<span class="w"> </span>/path/to/module.py
+</pre></div>
+</div>
+<p>Alternatively, test the module in the script part:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>See more in <a class="reference external" href="https://docs.python.org/3/library/doctest.html">doctest library</a> for details on example tests.</p>
+</div>
 </section>
 </section>
 </section>
@@ -653,21 +947,44 @@ A template for this is provided in <code class="docutils literal notranslate"><s
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#minimal-workflow">Minimal Workflow</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setup">Setup</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#development-loop">Development loop</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#checkout">Checkout</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cloning">Cloning</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installing">Installing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-as-a-developer">Installing as a developer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#versioning">Versioning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#versioning-cycle">Versioning cycle</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#publishing">Publishing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tags-convention">Tags convention</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#major-vx-y-z-project-maturity-level">Major <code class="docutils literal notranslate"><span class="pre">vX.y.z</span></code> — Project Maturity Level</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#minor-vx-y-z-milestones">Minor <code class="docutils literal notranslate"><span class="pre">vx.Y.z</span></code> — Milestones</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#patch-vx-y-z-maintenance">Patch <code class="docutils literal notranslate"><span class="pre">vx.y.Z</span></code> — Maintenance</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#releases">Releases</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#packaging">Packaging</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#first-time-distribution-workflow">First-time distribution workflow</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#continous-distribution">Continous distribution</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#style">Style</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation">Documentation</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#build-locally">Build locally</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testing">Testing</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-tests">Example tests</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#unit-tests">Unit tests</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmark-tests">Benchmark tests</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#enable-benchmark-tests">Enable benchmark tests</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#enable-large-benchmark-tests">Enable large benchmark tests</a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-tests">Example tests</a></li>
 </ul>
 </li>
 </ul>
@@ -716,7 +1033,7 @@ A template for this is provided in <code class="docutils literal notranslate"><s
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
