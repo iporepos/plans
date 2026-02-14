@@ -92,10 +92,6 @@ To uninstall, open ``PowerShell`` and type:
 
     plans uninstall
 
-.. note::
-
-   For a complete purge, manually remove ``plans`` from Windows PATH
-
 
 .. _user guide workflow:
 
