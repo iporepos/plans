@@ -43,7 +43,7 @@ Examples
 
 
 """
-
+import shutil
 
 # IMPORTS
 # ***********************************************************************
@@ -90,6 +90,7 @@ def build_docs(open_site=False):
     """
     # Clean generated files
     delete_generated()
+    delete_tutorials_outputs()
     # Run sphinx-build
     subprocess.run(
         ["sphinx-build", "-b", "html", str(DOCS_DIR), str(BUILD_DIR), "--write-all"],
@@ -108,13 +109,19 @@ def delete_generated():
     """
     Delete all ``rst`` generated files prior to build.
     """
-    ls_files = glob.glob("./generated/*.rst")
+    ls_files = glob.glob("./docs/generated/*.rst")
     if len(ls_files) == 0:
         pass
     else:
         for f in ls_files:
             os.remove(f)
     return None
+
+
+def delete_tutorials_outputs():
+    target = Path("./docs/tutorials/outputs")
+    if target.is_dir():
+        shutil.rmtree("./docs/tutorials/outputs")
 
 
 # CLASSES
@@ -125,7 +132,7 @@ def delete_generated():
 # SCRIPT
 # ***********************************************************************
 if __name__ == "__main__":
-
+    print(os.getcwd())
     # Handle parsing
     # ------------------------------------------------------------------
     parser = argparse.ArgumentParser(description="Build Sphinx HTML documentation.")

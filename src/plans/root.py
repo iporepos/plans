@@ -1166,6 +1166,10 @@ class FileSys(DataSet):
         FileSys.archive_folder(src_dir=self.folder_root, dst_dir=dst_dir)
         return None
 
+    def view(self):
+        s_tree = self.get_tree(folder_root=self.folder_root)
+        print(s_tree)
+
     # ----------------- STATIC METHODS ----------------- #
     @staticmethod
     def archive_folder(src_dir, dst_dir):
@@ -1251,6 +1255,24 @@ class FileSys(DataSet):
         # Convert bytes to megabytes
         file_size_mb = file_size_bytes / (1024 * 1024)
         return file_size_mb
+
+    @staticmethod
+    def get_tree(folder_root):
+        # todo docstring
+        root_name = Path(folder_root).name
+        lines = [root_name]
+
+        def _tree(path, prefix=""):
+            contents = list(path.iterdir())
+            for i, p in enumerate(contents):
+                connector = "└── " if i == len(contents) - 1 else "├── "
+                lines.append(prefix + connector + p.name)
+                if p.is_dir():
+                    extension = "    " if i == len(contents) - 1 else "│   "
+                    _tree(p, prefix + extension)
+
+        _tree(Path(folder_root))
+        return "\n".join(lines)
 
 
 # todo [refactor] -- consider remove from plans lib

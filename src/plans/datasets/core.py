@@ -223,36 +223,35 @@ class TimeSeries(Univar):
         super()._set_fields()
 
         # TimeSeries fields
-        # todo evaluate to make this fields snakecase
         self.code_field = "code"
         self.x_field = "x"
         self.y_field = "y"
 
-        self.varfield_field = "VarField"
-        self.varname_field = "VarName"
-        self.varalias_field = "VarAlias"
-        self.datarange_min_field = "VarRange_min"
-        self.datarange_max_field = "VarRange_max"
-        self.var_min_field = "Var_min"
-        self.var_max_field = "Var_max"
+        self.varfield_field = "variable_field"
+        self.varname_field = "variable_name"
+        self.varalias_field = "variable_alias"
+        self.datarange_min_field = "variable_range_min"
+        self.datarange_max_field = "variable_range_max"
+        self.var_min_field = "variable_min"
+        self.var_max_field = "variable_max"
 
-        self.dtfield_field = "DtField"
-        self.dtfreq_field = "DtFreq"
-        self.dtres_field = "DtRes"
-        self.start_field = "Start"
-        self.end_field = "End"
+        self.dtfield_field = "datetime_field"
+        self.dtfreq_field = "datetime_freq"
+        self.dtres_field = "datetime_res"
+        self.start_field = "start"
+        self.end_field = "end"
 
-        self.isstandard_field = "IsStandard"
+        self.isstandard_field = "is_standard"
 
         # Epochs
-        self.gapsize_field = "GapSize"
-        self.epochs_n_field = "Epochs_n"
-        self.smallgaps_n_field = "SmallGaps_n"
-        self.epochs_id_field = "Epoch_Id"
+        self.gapsize_field = "gap_size"
+        self.epochs_n_field = "epochs_n"
+        self.smallgaps_n_field = "small_gaps_n"
+        self.epochs_id_field = "epoch_id"
 
         # file fields
-        self.file_data_dtfield_field = "File_Data_DtField"
-        self.file_data_varfield_field = "File_Data_VarField"
+        self.file_data_dtfield_field = "file_data_datetime_field"
+        self.file_data_varfield_field = "file_data_variable_field"
 
         # ... continues in downstream objects ... #
 
@@ -323,10 +322,10 @@ class TimeSeries(Univar):
         :rtype: dict
         """
         # call super
-        dict_meta = super().get_metadata()
+        dc_meta = super().get_metadata()
 
         # customize local metadata:
-        dict_meta_local = {
+        dc_meta_local = {
             # TS info
             self.code_field: self.code,
             self.x_field: self.x,
@@ -357,11 +356,11 @@ class TimeSeries(Univar):
         }
 
         # update
-        dict_meta.update(dict_meta_local)
-        # mode file_data to the end
-        dict_meta.pop(self.field_file_data)
-        dict_meta[self.field_file_data] = self.file_data
-        return dict_meta
+        dc_meta.update(dc_meta_local)
+        # move file_data to the end
+        dc_meta.pop(self.field_file_data)
+        dc_meta[self.field_file_data] = self.file_data
+        return dc_meta
 
     def get_range_datetime(self):
         # todo docstring
@@ -1211,9 +1210,13 @@ class TimeSeries(Univar):
             fig.add_subplot(gs[2:10, 2:21])
             fig.add_subplot(gs[2:10, 23:28])
             fig.add_subplot(gs[2:10, 29:])
+
         elif specs["mode"] == "simple":
-            print("hey")
-            fig.add_subplot(gs[2:10, 2:31])
+            fig.add_subplot(gs[2:10, 2:34])
+
+        elif specs["mode"] == "simple-shallow":
+            fig.add_subplot(gs[2:10, 2:34])
+
         else:
             fig.add_subplot(gs[2:10, 2:21])
             fig.add_subplot(gs[2:10, 23:28])
@@ -1235,6 +1238,20 @@ class TimeSeries(Univar):
                 "width": viewer.FIG_SIZES["L"]["w"],
                 "height": viewer.FIG_SIZES["L"]["h"],
             }
+        elif mode == "simple":
+            specs_aux = {
+                "ncols": 34,
+                "nrows": 12,
+                "width": viewer.FIG_SIZES["M"]["w"],
+                "height": viewer.FIG_SIZES["M"]["h"],
+            }
+        elif mode == "simple-shallow":
+            specs_aux = {
+                "ncols": 34,
+                "nrows": 12,
+                "width": viewer.FIG_SIZES["M3"]["w"],
+                "height": viewer.FIG_SIZES["M3"]["h"],
+            }
         else:
             specs_aux = {
                 "ncols": 34,
@@ -1251,11 +1268,7 @@ class TimeSeries(Univar):
         return specs
 
     def _plot(self, fig, gs, specs):
-        # handle mode
-        if specs["mode"] == "simple":
-            fig = super()._plot(fig=fig, gs=gs, specs=specs)
-        else:
-            fig = super()._plot(fig=fig, gs=gs, specs=specs)
+        fig = super()._plot(fig=fig, gs=gs, specs=specs)
 
         # todo continue plots
 
@@ -1351,7 +1364,7 @@ class TimeSeries(Univar):
             self.view_specs["xlabel_b"] = "p(X)"
 
         # handle mode specs
-        if specs["mode"] == "simple":
+        if "simple" in specs["mode"]:
             self.view_specs["ax_histh"] = False
             self.view_specs["ax_cdf"] = False
         else:
@@ -1714,6 +1727,82 @@ class TimeSeries(Univar):
                 specs["folder"], specs["filename"], specs["fig_format"]
             )
             viewer.ship_fig(fig=fig, show=show, file_output=file_path, dpi=specs["dpi"])
+
+    @staticmethod
+    def make_synthetic_tsn(
+        start,
+        end,
+        base,
+        trend,
+        amplitude,
+        noise_sd,
+        freq="10min",
+        seasonal_period="YS",
+        minor_seasonal_period="D",
+        minor_amplitude=0,
+        variable="level",
+    ):
+        """
+        Generates a synthetic time series `pandas.DataFrame` incorporating trend, dual seasonality, and Gaussian noise.
+
+        :param start: The starting date for the time series.
+        :type start: str or :class:`pandas.Timestamp`
+        :param end: The ending date for the time series.
+        :type end: str or :class:`pandas.Timestamp`
+        :param base: The initial base level of the series.
+        :type base: float
+        :param trend: The linear change applied per time step.
+        :type trend: float
+        :param amplitude: The amplitude of the primary (major) seasonal sine wave.
+        :type amplitude: float
+        :param noise_sd: The standard deviation of the normal distribution used for noise.
+        :type noise_sd: float
+        :param freq: The frequency string for the date range. Default value = ``10min``
+        :type freq: str
+        :param seasonal_period: The period string for the major seasonality. Default value = ``YS``
+        :type seasonal_period: str
+        :param minor_seasonal_period: The period string for the secondary seasonality. Default value = ``D``
+        :type minor_seasonal_period: str
+        :param minor_amplitude: The amplitude of the secondary seasonal sine wave. Default value = 0
+        :type minor_amplitude: float
+        :param variable: The name of the column containing the generated values. Default value = ``level``
+        :type variable: str
+        :return: A DataFrame containing the ``datetime`` index and the generated synthetic values.
+        :rtype: :class:`pandas.DataFrame`
+        """
+
+        # 1. Generate the actual time index
+        date_range = pd.date_range(start=start, end=end, freq=freq)
+        steps = len(date_range)
+        step_indices = np.arange(steps)
+
+        # Helper to calculate steps per cycle based on the provided start date
+        def get_steps_per_cycle(p_freq):
+            f_delta = pd.date_range(start=start, periods=2, freq=freq).diff()[-1]
+            p_delta = pd.date_range(start=start, periods=2, freq=p_freq).diff()[-1]
+            return p_delta.total_seconds() / f_delta.total_seconds()
+
+        # 2. Major Seasonality (e.g., Yearly)
+        major_steps = get_steps_per_cycle(seasonal_period)
+        major_seasonality = amplitude * np.sin(2 * np.pi * (step_indices / major_steps))
+
+        # 3. Minor Seasonality (e.g., Daily)
+        # If minor_amplitude is 0, this whole series becomes 0
+        minor_steps = get_steps_per_cycle(minor_seasonal_period)
+        minor_seasonality = minor_amplitude * np.sin(
+            2 * np.pi * (step_indices / minor_steps)
+        )
+
+        # 4. Other Components
+        trend_series = step_indices * trend
+        noise_series = np.random.normal(loc=0, scale=noise_sd, size=steps)
+
+        # 5. Combine All
+        time_series_values = (
+            base + trend_series + major_seasonality + minor_seasonality + noise_series
+        )
+
+        return pd.DataFrame({"datetime": date_range, variable: time_series_values})
 
 
 # Chronological classes - collections

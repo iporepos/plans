@@ -58,6 +58,10 @@ FIG_SIZES = {
         "w": 120,
         "h": 60,
     },
+    "M3": {
+        "w": 120,
+        "h": 30,
+    },
     "L": {
         "w": 170,
         "h": 80,
@@ -72,10 +76,10 @@ FIG_SIZES = {
 GRID_SPECS = {
     "gs_wspace": 0.05,
     "gs_hspace": 0.05,
-    "gs_left": 0.01,
+    "gs_left": 0.02,
     "gs_right": 0.98,
     "gs_top": 0.98,
-    "gs_bottom": 0.02,
+    "gs_bottom": 0.06,
 }
 
 

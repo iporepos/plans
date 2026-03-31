@@ -127,7 +127,7 @@ class Univar(DataSet):
 
     def __init__(self, name="MyUnivar", alias="Uv0"):
         # ------------ set defaults ----------- #
-        self.varfield = "V"
+        self.varfield = "v"
         self.varalias = "Var"
         self.varname = "Variable"
         self.units = "units"
@@ -141,6 +141,41 @@ class Univar(DataSet):
         self.stats_df = None
         self.freq_df = None
         self.weibull_df = None
+
+    def _set_fields(self):
+        """
+        Set catalog fields names. Expected to increment superior methods.
+        """
+        # call super
+        # ----------------------------------------------------------------
+        super()._set_fields()
+
+        # Univar fields
+        self.units_field = "units"
+
+    def get_metadata(self):
+        """
+        Get a dictionary with object metadata.
+        Expected to increment superior methods.
+
+        .. note::
+
+            Metadata does **not** necessarily inclue all object attributes.
+
+        :return: dictionary with all metadata
+        :rtype: dict
+        """
+        # call super
+        dc_meta = super().get_metadata()
+
+        # customize local metadata
+        dc_meta_local = {self.units_field: self.units}
+        # update
+        dc_meta.update(dc_meta_local)
+        # move file_data to the end
+        dc_meta.pop(self.field_file_data)
+        dc_meta[self.field_file_data] = self.file_data
+        return dc_meta
 
     def load_data(self, file_data):
         """
@@ -875,6 +910,7 @@ class Univar(DataSet):
                 "width": viewer.FIG_SIZES["M2"]["w"],
                 "height": viewer.FIG_SIZES["M2"]["h"],
             }
+
         # update sizes
         specs.update(specs_aux)
 
@@ -896,8 +932,8 @@ class Univar(DataSet):
                 # layout
                 "style": "wien",
                 "mode": "full",
-                "width": viewer.FIG_SIZES["M"]["w"],
-                "height": viewer.FIG_SIZES["M"]["h"],
+                # "width": viewer.FIG_SIZES["M"]["w"],
+                # "height": viewer.FIG_SIZES["M"]["h"],
                 # titles
                 "subtitle_data": "Distribution",
                 "subtitle_hist": "Histogram",
@@ -951,6 +987,10 @@ class Univar(DataSet):
                 "zorder_cdf": 1,
             }
         )
+
+        del self.view_specs["width"]
+        del self.view_specs["height"]
+
         return None
 
     def view(self, show=True, return_fig=False):

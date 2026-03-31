@@ -60,8 +60,8 @@ extensions = [
     # -- nice copy button for codeblocks
     "sphinx_copybutton",  # install by `python -m pip install sphinx-copybutton`
     # -- converter for markdown files in docs
-    "myst_parser",  # install by `python -m pip install myst-parser`
     "sphinx_design",  # install by `python -m pip install sphinx-design`
+    "myst_nb",  # # install by `python -m pip install myst-nb`
 ]
 
 source_suffix = {
@@ -115,7 +115,13 @@ exclude_patterns = [
     "figs/*.rst",
     "includes/*.rst",
     "_aux/*.rst",
+    "jupyter_execute",
+    ".jupyter_cache",
 ]
+
+# Jupyter Notebooks variables from myst-nb
+nb_execution_mode = "cache"
+highlight_language = "python"
 
 # HTML AND THEMES
 # ***********************************************************************
@@ -144,12 +150,13 @@ External (requires installation):
 """
 html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
-html_context = {"default_mode": "light"}
 html_logo = (
     "https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true"
 )
-
-
+html_context = {
+    # ...
+    "default_mode": "light"
+}
 html_theme_options = {
     "github_url": "https://github.com/iporepos/plans",
     "logo": {
