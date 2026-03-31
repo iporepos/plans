@@ -1,0 +1,218 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "77bc2def06000bba",
+   "metadata": {},
+   "source": [
+    "# Working with projects"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4ddfd906d692fb25",
+   "metadata": {},
+   "source": [
+    "## Notebook setup"
+   ]
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "import sys\n",
+    "from pathlib import Path\n",
+    "\n",
+    "# define output folder\n",
+    "OUTPUT_DIR = Path(\"outputs\")\n",
+    "OUTPUT_DIR.mkdir(parents=True, exist_ok=True)\n",
+    "print(f\"Outputs will be saved to: ./{OUTPUT_DIR}\")\n",
+    "\n",
+    "# Install `plans` in `google.colab`.\n",
+    "# Use `pip install plans` for other environments.\n",
+    "\n",
+    "if \"google.colab\" in sys.modules:\n",
+    "    import os\n",
+    "\n",
+    "    os.system(f\"{sys.executable} -m pip install -q plans\")"
+   ],
+   "id": "4c500a08307fbc1e",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c6ae6f08fb43b6b1",
+   "metadata": {},
+   "source": [
+    "Import `plans`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "id": "2b713a39f6e30380",
+   "metadata": {},
+   "source": [
+    "import plans"
+   ],
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "cell_type": "markdown",
+   "id": "eda83e1649c555c4",
+   "metadata": {},
+   "source": [
+    "## Create a new project"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "78265234b0f32fdd",
+   "metadata": {},
+   "source": [
+    "Set new project details in a python ``dict``:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "id": "426ae6e138761298",
+   "metadata": {},
+   "source": [
+    "project_specs = {\n",
+    "    \"folder_base\": OUTPUT_DIR,\n",
+    "    \"name\": \"newProject\",\n",
+    "    \"alias\": \"NPrj\",\n",
+    "    \"source\": \"Me\",\n",
+    "    \"description\": \"Just a test\"\n",
+    "}"
+   ],
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "cell_type": "markdown",
+   "id": "51b5d1c1cda005f9",
+   "metadata": {},
+   "source": [
+    "Then call the ``plans.new_project()`` function:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "id": "620615e23ecd0ae5",
+   "metadata": {},
+   "source": [
+    "plans.new_project(specs=project_specs)"
+   ],
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8f584492e5f14fc6",
+   "metadata": {},
+   "source": [
+    "```{warning}\n",
+    "An error is raised if project already exists\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fd772bb173c3fb58",
+   "metadata": {},
+   "source": [
+    "This pattern creates _and_ loads to a variable the ``plans.Project`` instance:"
+   ]
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "project_specs = {\n",
+    "    \"folder_base\": OUTPUT_DIR,\n",
+    "    \"name\": \"newProject2\",\n",
+    "    \"alias\": \"NPrj2\",\n",
+    "    \"source\": \"Me\",\n",
+    "    \"description\": \"Just a test\"\n",
+    "}\n",
+    "\n",
+    "prj = plans.new_project(specs=project_specs)"
+   ],
+   "id": "67ac7712f3320a6e",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "View project structure using the `.view()` method:",
+   "id": "738586ae65a6833b"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "prj.view()",
+   "id": "e7c0dee22b8b4cb7",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b269d5f670d0cafb",
+   "metadata": {},
+   "source": [
+    "## Load an existing project"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bac294aa24e524bd",
+   "metadata": {},
+   "source": [
+    "Use the `plans.load_project()` function for loading an existing project from a folder path."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "id": "a1b34b168ef85827",
+   "metadata": {},
+   "source": [
+    "folder = f\"{OUTPUT_DIR}/newProject\"\n",
+    "prj = plans.load_project(project_folder=folder)"
+   ],
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6e5ff709bd9b497e",
+   "metadata": {},
+   "source": [
+    "Inspect the project variable"
+   ]
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "print(prj)",
+   "id": "82183bc8d34bc360",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "",
+   "id": "4c8c2f2b1852d1e5"
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

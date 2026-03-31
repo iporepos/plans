@@ -32,6 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
@@ -344,7 +345,11 @@
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="projects.html">Projects</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/project_01.html">Working with projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/timeseries_01.html">Time Series - the basics</a></li>
+</ul>
+</details></li>
 </ul>
 </div>
 </nav></div>
@@ -698,7 +703,7 @@ impacts on model outputs. A best practice is to interpolate and fill
 voids <em>prior</em> to the processing so users can understand what is going on.</p>
 <p>For instance, consider the following <code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">Series</span></code> that has a <strong>gap</strong>
 (missing Jan/3 and Jan/4 dates) and a <strong>void</strong> for <code class="docutils literal notranslate"><span class="pre">ppt</span></code> in Jan/8:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>               <span class="n">datetime</span><span class="p">;</span>  <span class="n">ppt</span><span class="p">;</span>  <span class="n">tas</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>               <span class="n">datetime</span><span class="p">;</span>  <span class="n">ppt</span><span class="p">;</span>  <span class="n">tas</span>
 <span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">20.1</span>
 <span class="hll"><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">5.1</span><span class="p">;</span> <span class="mf">24.3</span>
 </span><span class="hll"><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">05</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">21.5</span>
@@ -710,7 +715,7 @@ voids <em>prior</em> to the processing so users can understand what is going on.
 </div>
 <p>In this case, <code class="docutils literal notranslate"><span class="pre">plans</span></code> would interpolate temperature <code class="docutils literal notranslate"><span class="pre">tas</span></code> and fill
 with 0 the precipitation <code class="docutils literal notranslate"><span class="pre">ppt</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>               <span class="n">datetime</span><span class="p">;</span>  <span class="n">ppt</span><span class="p">;</span>  <span class="n">tas</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>               <span class="n">datetime</span><span class="p">;</span>  <span class="n">ppt</span><span class="p">;</span>  <span class="n">tas</span>
 <span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">20.1</span>
 <span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">5.1</span><span class="p">;</span> <span class="mf">24.3</span>
 <span class="hll"><span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000</span><span class="p">;</span>  <span class="mf">0.0</span><span class="p">;</span> <span class="mf">23.3</span>

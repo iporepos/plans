@@ -32,6 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
@@ -50,7 +51,7 @@
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API" href="api.html" />
+    <link rel="next" title="Working with projects" href="tutorials/project_01.html" />
     <link rel="prev" title="Projects" href="projects.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -344,7 +345,11 @@
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="projects.html">Projects</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Examples</a></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/project_01.html">Working with projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/timeseries_01.html">Time Series - the basics</a></li>
+</ul>
+</details></li>
 </ul>
 </div>
 </nav></div>
@@ -416,46 +421,14 @@
 <p class="admonition-title">Install <code class="docutils literal notranslate"><span class="pre">plans</span></code></p>
 <p>Check out <a class="reference internal" href="userguide.html#installation"><span class="std std-ref">Installation</span></a> section in the <a class="reference internal" href="userguide.html#userguide"><span class="std std-ref">User Guide</span></a>.</p>
 </div>
-<section id="setting-up-projects">
-<span id="example-projects-setup"></span><h2>Setting up projects<a class="headerlink" href="#setting-up-projects" title="Link to this heading">#</a></h2>
-<p>Import <code class="docutils literal notranslate"><span class="pre">plans</span></code></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">plans</span>
-</pre></div>
+<section id="available-tutorials">
+<span id="examples-list"></span><h2>Available tutorials<a class="headerlink" href="#available-tutorials" title="Link to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/project_01.html">Working with projects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/timeseries_01.html">Time Series - the basics</a></li>
+</ul>
 </div>
-<section id="new-project">
-<span id="example-projects-new"></span><h3>New project<a class="headerlink" href="#new-project" title="Link to this heading">#</a></h3>
-<p>Set new project details in a python <code class="docutils literal notranslate"><span class="pre">dict</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># [CHANGE THIS] setup specs dictionary</span>
-<span class="n">project_specs</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;folder_base&quot;</span><span class="p">:</span> <span class="s2">&quot;C:/plans&quot;</span><span class="p">,</span> <span class="c1"># change this path</span>
-    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;newProject&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;NPrj&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;Me&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Just a test&quot;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>Then call <code class="docutils literal notranslate"><span class="pre">plans.new_project()</span></code></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plans</span><span class="o">.</span><span class="n">new_project</span><span class="p">(</span><span class="n">specs</span><span class="o">=</span><span class="n">project_specs</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This will make a new project in the base folder provided.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>An error is raised if a project already exists with this name.</p>
-</div>
-<p>This syntax creates and load to a variable the <code class="docutils literal notranslate"><span class="pre">plans.Project</span></code> instance:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prj</span> <span class="o">=</span> <span class="n">plans</span><span class="o">.</span><span class="n">new_project</span><span class="p">(</span><span class="n">specs</span><span class="o">=</span><span class="n">project_specs</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="load-project">
-<span id="example-projects-load"></span><h3>Load project<a class="headerlink" href="#load-project" title="Link to this heading">#</a></h3>
-<p>Call <code class="docutils literal notranslate"><span class="pre">plans.load_project()</span></code></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prj</span> <span class="o">=</span> <span class="n">plans</span><span class="o">.</span><span class="n">load_project</span><span class="p">(</span><span class="n">project_folder</span><span class="o">=</span><span class="s2">&quot;C:/plans/NewProject&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
 </section>
 </section>
 
@@ -479,11 +452,11 @@
       </div>
     </a>
     <a class="right-next"
-       href="api.html"
+       href="tutorials/project_01.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">API</p>
+        <p class="prev-next-title">Working with projects</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -506,11 +479,7 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-projects">Setting up projects</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#new-project">New project</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-project">Load project</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#available-tutorials">Available tutorials</a></li>
 </ul>
   </nav></div>
 
