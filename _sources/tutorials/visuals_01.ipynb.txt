@@ -1,0 +1,393 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "8c281cd5b38713c6",
+   "metadata": {},
+   "source": "# Visualizations - the basics"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "This tutorial focuses on working with general principles of visualizations in `plans`.",
+   "id": "3536ad34a268ba66"
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bf7d86c6e4cdd29b",
+   "metadata": {},
+   "source": [
+    "## Notebook setup\n",
+    "\n",
+    "For users running this tutorial as a Jupyter Notebook, this cell must be executed first:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "id": "initial_id",
+   "metadata": {},
+   "source": [
+    "import sys\n",
+    "from pathlib import Path\n",
+    "import pprint\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import matplotlib.pyplot as plt\n",
+    "\n",
+    "# Install `plans` in `google.colab`.\n",
+    "# Use `pip install plans` for other environments.\n",
+    "\n",
+    "if \"google.colab\" in sys.modules:\n",
+    "    import os\n",
+    "    os.system(f\"{sys.executable} -m pip install -q plans\")\n",
+    "\n",
+    "# This avoids warnings related to uninstalled fonts\n",
+    "import logging\n",
+    "# Set the matplotlib font manager logger to only show errors (hides warnings)\n",
+    "logging.getLogger('matplotlib.font_manager').setLevel(logging.ERROR)\n",
+    "\n",
+    "# define output folder\n",
+    "OUTPUT_DIR = Path(\"outputs/visualizations\")\n",
+    "OUTPUT_DIR.mkdir(parents=True, exist_ok=True)\n",
+    "print(f\"Outputs will be saved to: ./{OUTPUT_DIR}\")"
+   ],
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "## Data setup\n",
+    "\n",
+    "The cell bellow creates a synthetic time series and loads it to a `plans.datasets.TimeSeries` object.\n",
+    "\n",
+    "```{seealso}\n",
+    "Check out more about `TimeSeries` on the {doc}`Time series data - the basics <timeseries_01>` tutorial.\n",
+    "```"
+   ],
+   "id": "bee978712d17a695"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "from plans.datasets import TimeSeries\n",
+    "\n",
+    "# make synthetic TSN (Trend-Seasonality-Noise) time-series\n",
+    "df = TimeSeries.make_synthetic_tsn(\n",
+    "    start=\"2020-01-01\",\n",
+    "    end=\"2022-01-01\",\n",
+    "    base=100,\n",
+    "    freq=\"D\",\n",
+    "    trend=0.05,\n",
+    "    noise_sd=3.0,\n",
+    "    amplitude=50,\n",
+    "    seasonal_period=\"YS\",\n",
+    "    minor_amplitude=20,\n",
+    "    minor_seasonal_period=\"D\"\n",
+    ")\n",
+    "\n",
+    "# Export CSV file\n",
+    "file_csv = OUTPUT_DIR / \"time_series.csv\"\n",
+    "df.to_csv(file_csv, sep=\";\", index=\"False\")\n",
+    "print(f\"Saved to: {file_csv}\")\n",
+    "\n",
+    "# Set the ts variable\n",
+    "ts = TimeSeries(name=\"Testing\", alias=\"tst\")\n",
+    "\n",
+    "# Load data from CSV\n",
+    "ts.load_data(\n",
+    "    file_data=file_csv,  # file path\n",
+    "    input_dtfield=\"datetime\", # name of datetime field\n",
+    "    input_varfield=\"level\",  # name of variable\n",
+    "    in_sep=\";\",  # input separator\n",
+    ")\n"
+   ],
+   "id": "926db6e2a22dd877",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "## Standard visualization",
+   "id": "6d16dea808500b5a"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Get the standard visual using the `.view()` method",
+   "id": "cce803c65af91264"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "ts.view()",
+   "id": "6d3afdf459f1bbe9",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "## Fine-tuning",
+   "id": "1b21bcfb1d69f42a"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Fine-tune the visualization by editing the `.view_specs` attribute dictionary",
+   "id": "f56e2799b9c75ccb"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "# color of the main line\n",
+    "ts.view_specs[\"color\"] = \"blue\"\n",
+    "ts.view_specs[\"color_hist\"] = \"green\"\n",
+    "\n",
+    "# Labels\n",
+    "ts.view_specs[\"ylabel\"] = f\"Level (cm)\"\n",
+    "ts.view_specs[\"xlabel\"] = \"Date\"\n",
+    "\n",
+    "# Titles\n",
+    "ts.view_specs[\"title\"] = \"Hello! This is just a tutorial!\"\n",
+    "ts.view_specs[\"subtitle_data\"] = \"a. Time Series\"\n",
+    "ts.view_specs[\"subtitle_hist\"] = \"b. Histogram\"\n",
+    "ts.view_specs[\"subtitle_cdf\"] = \"c. CDF\"\n",
+    "\n",
+    "# Data Y Axis range\n",
+    "ts.view_specs[\"range\"] = [0, 200.0]\n",
+    "\n",
+    "# Number of dates in the X axis (TimeSeries only)\n",
+    "ts.view_specs[\"n_dates\"] = 7\n",
+    "\n",
+    "# Call view() again\n",
+    "ts.view()"
+   ],
+   "id": "c5c1d20669364ad5",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "List all view specs keys for the current object:",
+   "id": "16915f6c85ef4257"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "pprint.pp(ts.view_specs.keys())",
+   "id": "a455d631e90da43e",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Reset view specs to default values:",
+   "id": "3cdb44ede2b00e1"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "ts._set_view_specs()",
+   "id": "b1a0f02d12ca571c",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "## Save to image file",
+   "id": "25ec44f295ed484a"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Save to an image file the visual by setting `show=False`. This will save in the same folder of the data with a standard name.",
+   "id": "8bc027271355f608"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "ts.view(show=False)",
+   "id": "fd46530d4ce437ed",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "A custom image export can be achieved by changing the `folder`, `filename`, and `fig_format` parameters of the `.view_specs`",
+   "id": "a4481c658678fbf8"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "ts.view_specs[\"folder\"] = OUTPUT_DIR\n",
+    "ts.view_specs[\"filename\"] = \"Testing - blue - 2\"\n",
+    "ts.view_specs[\"fig_format\"] = \"jpeg\" # instead of jpg\n",
+    "\n",
+    "ts.view(show=False)"
+   ],
+   "id": "17572ad92c8b6df6",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "## Visual style",
+   "id": "142a35ac10581685"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "The visual overall style can be switched via the `style` key. The default style is `wien`.",
+   "id": "149d1ebe1a20a216"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "List all available styles:",
+   "id": "449c465b623883e7"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "from plans.viewer import FIG_STYLES\n",
+    "pprint.pp(FIG_STYLES.keys())"
+   ],
+   "id": "618f2767c7c5dcdd",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "ts.view_specs[\"style\"] = \"wien-light\"\n",
+    "ts.view()"
+   ],
+   "id": "64a3e89570af9664",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "ts.view_specs[\"style\"] = \"wien-clean\"\n",
+    "ts.view()"
+   ],
+   "id": "2dcc807a7eeb4a31",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "ts.view_specs[\"style\"] = \"dark\"\n",
+    "ts.view()"
+   ],
+   "id": "77f3b48a2b03ff76",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "ts.view_specs[\"style\"] = \"seaborn\"\n",
+    "ts.view()"
+   ],
+   "id": "7fc1a96cf113fe35",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "ts.view_specs[\"style\"] = \"bare\"\n",
+    "ts.view()"
+   ],
+   "id": "2fa7e94e645ecc6d",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "# reset view specs\n",
+    "ts._set_view_specs()"
+   ],
+   "id": "21e2a736e4f53314",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "## Visual layout\n",
+    "\n",
+    "The visual layout mode can be changed via the `mode` key. The default mode is `full`.\n",
+    "\n",
+    "```{warning}\n",
+    "\n",
+    "Layout options can vary according to the object\n",
+    "```"
+   ],
+   "id": "698dfb6cabed5266"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "ts.view_specs[\"layout\"] = \"full\"\n",
+    "ts.view()"
+   ],
+   "id": "9f3757786a8eebe8",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "ts.view_specs[\"layout\"] = \"mini\"\n",
+    "ts.view()"
+   ],
+   "id": "b266b2219cd4c68e",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "ts.view_specs[\"layout\"] = \"simple\"\n",
+    "ts.view()"
+   ],
+   "id": "e97a2eb8712f28c0",
+   "outputs": [],
+   "execution_count": null
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

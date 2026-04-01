@@ -1,0 +1,1899 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Univariate data - the basics &#8212; plans 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/univar_01';</script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Time series data - the basics" href="timeseries_01.html" />
+    <link rel="prev" title="Working with projects" href="project_01.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-light" alt=""/>
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">plans</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../files.html">Files</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../files.html">Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_structures.html">Data Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../files_index.html">Files Index</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Projects</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="project_01.html">Working with projects</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Univariate data - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time series data - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - the basics</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../userguide.html" class="nav-link">User Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../examples.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Univariate data - the basics</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="univariate-data-the-basics">
+<h1>Univariate data - the basics<a class="headerlink" href="#univariate-data-the-basics" title="Link to this heading">#</a></h1>
+<p>This tutorial focuses on working with basic univariate data management and analysis using <code class="docutils literal notranslate"><span class="pre">plans</span></code>.</p>
+<section id="notebook-setup">
+<h2>Notebook setup<a class="headerlink" href="#notebook-setup" title="Link to this heading">#</a></h2>
+<p>For users running this tutorial as a Jupyter Notebook, this cell must be executed first:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pprint</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># Install `plans` in `google.colab`.</span>
+<span class="c1"># Use `pip install plans` for other environments.</span>
+
+<span class="k">if</span> <span class="s2">&quot;google.colab&quot;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="si">}</span><span class="s2"> -m pip install -q plans&quot;</span><span class="p">)</span>
+
+<span class="c1"># This avoids warnings related to uninstalled fonts</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="c1"># Set the matplotlib font manager logger to only show errors (hides warnings)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;matplotlib.font_manager&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+
+<span class="c1"># define output folder</span>
+<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;outputs/univariate&quot;</span><span class="p">)</span>
+<span class="n">OUTPUT_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Outputs will be saved to: ./</span><span class="si">{</span><span class="n">OUTPUT_DIR</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Outputs will be saved to: ./outputs/univariate
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-univar-object">
+<h2>The <code class="docutils literal notranslate"><span class="pre">Univar</span></code> object<a class="headerlink" href="#the-univar-object" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Univar</span></code> object is a very primitive class that lives under <code class="docutils literal notranslate"><span class="pre">plans.analyst</span></code> module.
+This object is a child from the <code class="docutils literal notranslate"><span class="pre">DataSet</span></code> object that lives in <code class="docutils literal notranslate"><span class="pre">plans.root</span></code> module.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Univar</span></code> stores all core methods for working with univariate data.</p>
+<p>Import <code class="docutils literal notranslate"><span class="pre">Univar</span></code> object:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.analyst</span><span class="w"> </span><span class="kn">import</span> <span class="n">Univar</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Create an instance of the <code class="docutils literal notranslate"><span class="pre">Univar</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span> <span class="o">=</span> <span class="n">Univar</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Testing Univar&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;uni-tst&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Check out the variable type:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">unv</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;plans.analyst.Univar&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="handle-data-attributes">
+<h2>Handle data attributes<a class="headerlink" href="#handle-data-attributes" title="Link to this heading">#</a></h2>
+<p>Inspect state for major attributes:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">unv</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Testing Univar (uni-tst)]
+Univar (DS):	&lt;class &#39;plans.analyst.Univar&#39;&gt;
+      field          value
+       name Testing Univar
+      alias        uni-tst
+       size            NaN
+      color           blue
+     source            NaN
+description            NaN
+      units          units
+  file_data            NaN
+Data:
+None
+</pre></div>
+</div>
+</div>
+</div>
+<p>Edit attributes directly and inspect again</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;A testing univariate for a tutorial&quot;</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;cm&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">unv</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Testing Univar (uni-tst)]
+Univar (DS):	&lt;class &#39;plans.analyst.Univar&#39;&gt;
+      field                               value
+       name                      Testing Univar
+      alias                             uni-tst
+       size                                 NaN
+      color                                blue
+     source                                 NaN
+description A testing univariate for a tutorial
+      units                                  cm
+  file_data                                 NaN
+Data:
+None
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="working-with-data">
+<h2>Working with data<a class="headerlink" href="#working-with-data" title="Link to this heading">#</a></h2>
+<section id="create-synthetic-gaussian-dataset">
+<h3>Create synthetic gaussian dataset<a class="headerlink" href="#create-synthetic-gaussian-dataset" title="Link to this heading">#</a></h3>
+<p>Lets first make a synthetic gaussian dataset using <code class="docutils literal notranslate"><span class="pre">numpy.random</span></code> and save it to a CSV file using <code class="docutils literal notranslate"><span class="pre">pandas</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make synthetic gaussian data</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="c1"># ensure reproducibility</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;variable&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span>
+
+<span class="c1"># Export CSV file</span>
+<span class="n">file_csv</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">&quot;univariate_gauss.csv&quot;</span>
+<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_csv</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s2">&quot;False&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved to: </span><span class="si">{</span><span class="n">file_csv</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Saved to: outputs/univariate/univariate_gauss.csv
+</pre></div>
+</div>
+</div>
+</div>
+<p>The whole dataset looks like this:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get simple visualization</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/524ac5f2cb0a19a890e8377027bde3f8923bcd354eed20e551585e2612152d59.png" src="../_images/524ac5f2cb0a19a890e8377027bde3f8923bcd354eed20e551585e2612152d59.png" />
+</div>
+</div>
+</section>
+<section id="loading-data-from-the-csv-file">
+<h3>Loading data from the CSV file<a class="headerlink" href="#loading-data-from-the-csv-file" title="Link to this heading">#</a></h3>
+<p>Call the <code class="docutils literal notranslate"><span class="pre">.load_data()</span></code> method for loading from CSV file:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># reset the uv variable</span>
+<span class="n">unv</span> <span class="o">=</span> <span class="n">Univar</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Testing Univar&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;uni-tst&quot;</span><span class="p">)</span>
+
+<span class="n">unv</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
+    <span class="n">file_data</span><span class="o">=</span><span class="n">file_csv</span><span class="p">,</span>  <span class="c1"># file path</span>
+    <span class="n">input_varfield</span><span class="o">=</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span>  <span class="c1"># name of column/field</span>
+    <span class="n">in_sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span>  <span class="c1"># input separator</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Data is stored in the <code class="docutils literal notranslate"><span class="pre">.data</span></code> attribute as a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>v</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>113.315865</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>107.152790</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>84.545997</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>99.916162</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>106.213360</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>995</th>
+      <td>89.856608</td>
+    </tr>
+    <tr>
+      <th>996</th>
+      <td>96.681723</td>
+    </tr>
+    <tr>
+      <th>997</th>
+      <td>114.406974</td>
+    </tr>
+    <tr>
+      <th>998</th>
+      <td>96.097821</td>
+    </tr>
+    <tr>
+      <th>999</th>
+      <td>106.424506</td>
+    </tr>
+  </tbody>
+</table>
+<p>1000 rows × 1 columns</p>
+</div></div></div>
+</div>
+</section>
+<section id="access-computed-metadata">
+<h3>Access computed metadata<a class="headerlink" href="#access-computed-metadata" title="Link to this heading">#</a></h3>
+<p>After loading data, some useful attributes are computed automatically.</p>
+<p>Basic statistics are stored in <code class="docutils literal notranslate"><span class="pre">.stats_df</span></code> as a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span><span class="o">.</span><span class="n">stats_df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>statistic</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>count</td>
+      <td>1000.000000</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>sum</td>
+      <td>99854.433644</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>mean</td>
+      <td>99.854434</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>sd</td>
+      <td>9.379578</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>min</td>
+      <td>67.955987</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>p01</td>
+      <td>78.678389</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>p05</td>
+      <td>84.521828</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>p10</td>
+      <td>87.959449</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>p20</td>
+      <td>92.072856</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>p25</td>
+      <td>93.609900</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>p40</td>
+      <td>97.618150</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>p50</td>
+      <td>99.765252</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>p60</td>
+      <td>102.116821</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>p75</td>
+      <td>106.010132</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>p80</td>
+      <td>107.549608</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>p90</td>
+      <td>111.678248</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>p95</td>
+      <td>114.846091</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>p99</td>
+      <td>122.426391</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>max</td>
+      <td>126.799103</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Data frequencies are stored in <code class="docutils literal notranslate"><span class="pre">.freq_df</span></code> as a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span><span class="o">.</span><span class="n">freq_df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Percentiles</th>
+      <th>Exceedance</th>
+      <th>Frequency</th>
+      <th>Empirical Probability</th>
+      <th>Values</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>100</td>
+      <td>1</td>
+      <td>0.001</td>
+      <td>67.955987</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>99</td>
+      <td>0</td>
+      <td>0.000</td>
+      <td>78.678389</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>98</td>
+      <td>0</td>
+      <td>0.000</td>
+      <td>80.584361</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>97</td>
+      <td>1</td>
+      <td>0.001</td>
+      <td>82.311344</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>96</td>
+      <td>0</td>
+      <td>0.000</td>
+      <td>83.409942</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>95</th>
+      <td>95</td>
+      <td>5</td>
+      <td>2</td>
+      <td>0.002</td>
+      <td>114.846091</td>
+    </tr>
+    <tr>
+      <th>96</th>
+      <td>96</td>
+      <td>4</td>
+      <td>2</td>
+      <td>0.002</td>
+      <td>116.115753</td>
+    </tr>
+    <tr>
+      <th>97</th>
+      <td>97</td>
+      <td>3</td>
+      <td>0</td>
+      <td>0.000</td>
+      <td>118.178726</td>
+    </tr>
+    <tr>
+      <th>98</th>
+      <td>98</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0.000</td>
+      <td>120.658142</td>
+    </tr>
+    <tr>
+      <th>99</th>
+      <td>99</td>
+      <td>1</td>
+      <td>3</td>
+      <td>0.003</td>
+      <td>122.426391</td>
+    </tr>
+  </tbody>
+</table>
+<p>100 rows × 5 columns</p>
+</div></div></div>
+</div>
+<p>Data weibull CDF is stored in <code class="docutils literal notranslate"><span class="pre">.weibull_df</span></code> as a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span><span class="o">.</span><span class="n">weibull_df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Data</th>
+      <th>P(X)</th>
+      <th>F(X)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>126.799103</td>
+      <td>0.000999</td>
+      <td>0.999001</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>126.716851</td>
+      <td>0.001998</td>
+      <td>0.998002</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>126.625775</td>
+      <td>0.002997</td>
+      <td>0.997003</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>124.676511</td>
+      <td>0.003996</td>
+      <td>0.996004</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>124.653251</td>
+      <td>0.004995</td>
+      <td>0.995005</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>995</th>
+      <td>74.885309</td>
+      <td>0.995005</td>
+      <td>0.004995</td>
+    </tr>
+    <tr>
+      <th>996</th>
+      <td>71.849387</td>
+      <td>0.996004</td>
+      <td>0.003996</td>
+    </tr>
+    <tr>
+      <th>997</th>
+      <td>71.839988</td>
+      <td>0.997003</td>
+      <td>0.002997</td>
+    </tr>
+    <tr>
+      <th>998</th>
+      <td>70.204032</td>
+      <td>0.998002</td>
+      <td>0.001998</td>
+    </tr>
+    <tr>
+      <th>999</th>
+      <td>67.955987</td>
+      <td>0.999001</td>
+      <td>0.000999</td>
+    </tr>
+  </tbody>
+</table>
+<p>1000 rows × 3 columns</p>
+</div></div></div>
+</div>
+</section>
+</section>
+<section id="visualizations">
+<h2>Visualizations<a class="headerlink" href="#visualizations" title="Link to this heading">#</a></h2>
+<p>Most <code class="docutils literal notranslate"><span class="pre">plans.</span></code> objects comes with built-in methods for getting visualizations, both inline and figure output.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>Check out more about visualizations on the <a class="reference internal" href="visuals_01.html"><span class="doc">Visualizations - the basics</span></a> tutorial.</p>
+</div>
+<section id="standard-visualization">
+<h3>Standard visualization<a class="headerlink" href="#standard-visualization" title="Link to this heading">#</a></h3>
+<p>Get the standard visual using the <code class="docutils literal notranslate"><span class="pre">.view()</span></code> method</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/da68469019cfb562332f04c8d54120cf26329ee079d394d34725c9463c7b6de4.png" src="../_images/da68469019cfb562332f04c8d54120cf26329ee079d394d34725c9463c7b6de4.png" />
+</div>
+</div>
+</section>
+<section id="fine-tuning-visuals">
+<h3>Fine-tuning visuals<a class="headerlink" href="#fine-tuning-visuals" title="Link to this heading">#</a></h3>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">.view_specs</span></code> keys for fine tuning the visual. Example of some possibilities:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Y axis range</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">]</span>
+<span class="c1"># Scatter</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;scatter_factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># occupy more space</span>
+<span class="c1"># Color</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color_hist&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;green&quot;</span>
+<span class="c1"># Decorations</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;plot_mean&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;plot_mean_data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Hello! This is a tutorial!&quot;</span>
+<span class="c1"># call view again</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/0ef9cb54b1d1cbd6ab3655c21ca3bdcfb42a2b05ee0f227778ae33a9bf94d337.png" src="../_images/0ef9cb54b1d1cbd6ab3655c21ca3bdcfb42a2b05ee0f227778ae33a9bf94d337.png" />
+</div>
+</div>
+</section>
+<section id="layouts-available">
+<h3>Layouts available<a class="headerlink" href="#layouts-available" title="Link to this heading">#</a></h3>
+<p>List available layout keys:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">unv</span><span class="o">.</span><span class="n">layouts</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>dict_keys([&#39;full&#39;, &#39;mini&#39;, &#39;simple&#39;, &#39;simple-shallow&#39;, &#39;default&#39;])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mini&quot;</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/6898023c4d531fb102d5597eae183214626915788feeaf0508d3d306e0ccb0bc.png" src="../_images/6898023c4d531fb102d5597eae183214626915788feeaf0508d3d306e0ccb0bc.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;simple&quot;</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/4776146e7202489cbb211c1c5d5c4206ea81d7dabb9a4d673ffe9dc6614fe1d4.png" src="../_images/4776146e7202489cbb211c1c5d5c4206ea81d7dabb9a4d673ffe9dc6614fe1d4.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;simple-shallow&quot;</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/96e66c0608f08b769429a4a518c31c3e574f170aa7cd07d0337e96eec6b467bc.png" src="../_images/96e66c0608f08b769429a4a518c31c3e574f170aa7cd07d0337e96eec6b467bc.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="analysis-methods">
+<h2>Analysis methods<a class="headerlink" href="#analysis-methods" title="Link to this heading">#</a></h2>
+<section id="normality-assessment">
+<h3>Normality assessment<a class="headerlink" href="#normality-assessment" title="Link to this heading">#</a></h3>
+<p>Assess if the data is normal via the <code class="docutils literal notranslate"><span class="pre">.get_normality()</span></code> method:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">unv</span><span class="o">.</span><span class="n">get_normality</span><span class="p">(</span><span class="n">clevel</span><span class="o">=</span><span class="mf">0.95</span><span class="p">)</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Test</th>
+      <th>Statistic</th>
+      <th>p-value</th>
+      <th>is_normal</th>
+      <th>Confidence</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Kolmogorov-Smirnov</td>
+      <td>0.013838</td>
+      <td>0.989545</td>
+      <td>True</td>
+      <td>0.95</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Shapiro-Wilk</td>
+      <td>0.998710</td>
+      <td>0.695039</td>
+      <td>True</td>
+      <td>0.95</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>D'Agostino-Pearson</td>
+      <td>0.477945</td>
+      <td>0.787436</td>
+      <td>True</td>
+      <td>0.95</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="weibull-distribution">
+<h3>Weibull distribution<a class="headerlink" href="#weibull-distribution" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">unv</span><span class="o">.</span><span class="n">get_cdf_weibull</span><span class="p">()</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Data</th>
+      <th>P(X)</th>
+      <th>F(X)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>126.799103</td>
+      <td>0.000999</td>
+      <td>0.999001</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>126.716851</td>
+      <td>0.001998</td>
+      <td>0.998002</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>126.625775</td>
+      <td>0.002997</td>
+      <td>0.997003</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>124.676511</td>
+      <td>0.003996</td>
+      <td>0.996004</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>124.653251</td>
+      <td>0.004995</td>
+      <td>0.995005</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>995</th>
+      <td>74.885309</td>
+      <td>0.995005</td>
+      <td>0.004995</td>
+    </tr>
+    <tr>
+      <th>996</th>
+      <td>71.849387</td>
+      <td>0.996004</td>
+      <td>0.003996</td>
+    </tr>
+    <tr>
+      <th>997</th>
+      <td>71.839988</td>
+      <td>0.997003</td>
+      <td>0.002997</td>
+    </tr>
+    <tr>
+      <th>998</th>
+      <td>70.204032</td>
+      <td>0.998002</td>
+      <td>0.001998</td>
+    </tr>
+    <tr>
+      <th>999</th>
+      <td>67.955987</td>
+      <td>0.999001</td>
+      <td>0.000999</td>
+    </tr>
+  </tbody>
+</table>
+<p>1000 rows × 3 columns</p>
+</div></div></div>
+</div>
+</section>
+<section id="gumbel-distribution">
+<h3>Gumbel distribution<a class="headerlink" href="#gumbel-distribution" title="Link to this heading">#</a></h3>
+<p>The method <code class="docutils literal notranslate"><span class="pre">.get_cdf_gumbel()</span></code> performs a full assessment for the Gumbel distribution.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method assumes the data is a collection of maxima values.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc_gumbel</span> <span class="o">=</span> <span class="n">unv</span><span class="o">.</span><span class="n">get_cdf_gumbel</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>View model results:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">dc_gumbel</span><span class="p">[</span><span class="s2">&quot;Metadata&quot;</span><span class="p">]</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Metadata</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>N</td>
+      <td>1000</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Gumbel a</td>
+      <td>95.633125</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Gumbel b</td>
+      <td>7.313227</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>KS-test s-value</td>
+      <td>0.076734</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>KS-test p-value</td>
+      <td>0.000014</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>KS-test Is Gumbel (NullH)</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>QQ-plot c0</td>
+      <td>2.405764</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>QQ plot c1</td>
+      <td>0.975998</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>QQ-plot r2</td>
+      <td>0.970525</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>View data:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">dc_gumbel</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>v</th>
+      <th>Rank</th>
+      <th>P(X)_Empirical</th>
+      <th>P(X)_Weibull</th>
+      <th>T(X)_Weibull</th>
+      <th>P(X)_Gringorten</th>
+      <th>P(X)_Gumbel</th>
+      <th>T(X)_Gumbel</th>
+      <th>T(X)_Gumbel_SE90</th>
+      <th>T(X)_Gumbel_P05</th>
+      <th>T(X)_Gumbel_P95</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>126.799103</td>
+      <td>1</td>
+      <td>0.001</td>
+      <td>0.000999</td>
+      <td>1001.000000</td>
+      <td>0.000560</td>
+      <td>0.014001</td>
+      <td>71.423884</td>
+      <td>1.784416</td>
+      <td>56.068652</td>
+      <td>91.022575</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>126.716851</td>
+      <td>2</td>
+      <td>0.002</td>
+      <td>0.001998</td>
+      <td>500.500000</td>
+      <td>0.001560</td>
+      <td>0.014158</td>
+      <td>70.630695</td>
+      <td>1.780045</td>
+      <td>55.480053</td>
+      <td>89.956708</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>126.625775</td>
+      <td>3</td>
+      <td>0.003</td>
+      <td>0.002997</td>
+      <td>333.666667</td>
+      <td>0.002560</td>
+      <td>0.014334</td>
+      <td>69.762759</td>
+      <td>1.775206</td>
+      <td>54.835575</td>
+      <td>88.791140</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>124.676511</td>
+      <td>4</td>
+      <td>0.004</td>
+      <td>0.003996</td>
+      <td>250.250000</td>
+      <td>0.003560</td>
+      <td>0.018671</td>
+      <td>53.557703</td>
+      <td>1.671825</td>
+      <td>42.715790</td>
+      <td>67.184470</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>124.653251</td>
+      <td>5</td>
+      <td>0.005</td>
+      <td>0.004995</td>
+      <td>200.200000</td>
+      <td>0.004559</td>
+      <td>0.018730</td>
+      <td>53.389231</td>
+      <td>1.670594</td>
+      <td>42.588833</td>
+      <td>66.961535</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>995</th>
+      <td>74.885309</td>
+      <td>996</td>
+      <td>0.996</td>
+      <td>0.995005</td>
+      <td>1.005020</td>
+      <td>0.995441</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.172041</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>996</th>
+      <td>71.849387</td>
+      <td>997</td>
+      <td>0.997</td>
+      <td>0.996004</td>
+      <td>1.004012</td>
+      <td>0.996440</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.328611</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>997</th>
+      <td>71.839988</td>
+      <td>998</td>
+      <td>0.998</td>
+      <td>0.997003</td>
+      <td>1.003006</td>
+      <td>0.997440</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.329099</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>998</th>
+      <td>70.204032</td>
+      <td>999</td>
+      <td>0.999</td>
+      <td>0.998002</td>
+      <td>1.002002</td>
+      <td>0.998440</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.414199</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>999</th>
+      <td>67.955987</td>
+      <td>1000</td>
+      <td>1.000</td>
+      <td>0.999001</td>
+      <td>1.001000</td>
+      <td>0.999440</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>1000 rows × 11 columns</p>
+</div></div></div>
+</div>
+<p>View return periods T(X):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span><span class="n">dc_gumbel</span><span class="p">[</span><span class="s2">&quot;Data_T(X)&quot;</span><span class="p">]</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>T(X)_Gumbel</th>
+      <th>v</th>
+      <th>v_P25</th>
+      <th>v_P75</th>
+      <th>v_P05</th>
+      <th>v_P95</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2</td>
+      <td>98.313631</td>
+      <td>98.129944</td>
+      <td>98.497319</td>
+      <td>97.865427</td>
+      <td>98.761836</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>3</td>
+      <td>102.235039</td>
+      <td>102.001629</td>
+      <td>102.468448</td>
+      <td>101.665511</td>
+      <td>102.804566</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>4</td>
+      <td>104.744783</td>
+      <td>104.469400</td>
+      <td>105.020167</td>
+      <td>104.072837</td>
+      <td>105.416730</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>5</td>
+      <td>106.602640</td>
+      <td>106.293272</td>
+      <td>106.912009</td>
+      <td>105.847769</td>
+      <td>107.357511</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>6</td>
+      <td>108.080229</td>
+      <td>107.742617</td>
+      <td>108.417842</td>
+      <td>107.256442</td>
+      <td>108.904016</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>994</th>
+      <td>996</td>
+      <td>146.118235</td>
+      <td>144.961888</td>
+      <td>147.274581</td>
+      <td>143.296704</td>
+      <td>148.939765</td>
+    </tr>
+    <tr>
+      <th>995</th>
+      <td>997</td>
+      <td>146.125577</td>
+      <td>144.969068</td>
+      <td>147.282087</td>
+      <td>143.303650</td>
+      <td>148.947505</td>
+    </tr>
+    <tr>
+      <th>996</th>
+      <td>998</td>
+      <td>146.132913</td>
+      <td>144.976241</td>
+      <td>147.289584</td>
+      <td>143.310589</td>
+      <td>148.955236</td>
+    </tr>
+    <tr>
+      <th>997</th>
+      <td>999</td>
+      <td>146.140240</td>
+      <td>144.983406</td>
+      <td>147.297074</td>
+      <td>143.317521</td>
+      <td>148.962960</td>
+    </tr>
+    <tr>
+      <th>998</th>
+      <td>1000</td>
+      <td>146.147561</td>
+      <td>144.990565</td>
+      <td>147.304557</td>
+      <td>143.324446</td>
+      <td>148.970676</td>
+    </tr>
+  </tbody>
+</table>
+<p>999 rows × 6 columns</p>
+</div></div></div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="project_01.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Working with projects</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="timeseries_01.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Time series data - the basics</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notebook-setup">Notebook setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-univar-object">The <code class="docutils literal notranslate"><span class="pre">Univar</span></code> object</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#handle-data-attributes">Handle data attributes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#working-with-data">Working with data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-synthetic-gaussian-dataset">Create synthetic gaussian dataset</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-data-from-the-csv-file">Loading data from the CSV file</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#access-computed-metadata">Access computed metadata</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizations">Visualizations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#standard-visualization">Standard visualization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fine-tuning-visuals">Fine-tuning visuals</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#layouts-available">Layouts available</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analysis-methods">Analysis methods</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#normality-assessment">Normality assessment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#weibull-distribution">Weibull distribution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gumbel-distribution">Gumbel distribution</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/univar_01.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Iporã Possantti.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
