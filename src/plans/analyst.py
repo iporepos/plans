@@ -138,9 +138,47 @@ class Univar(DataSet):
         # overwriters
 
         # attributes
+        self.var_min = None
+        self.var_max = None
+        self.start = None
+        self.end = None
+
         self.stats_df = None
         self.freq_df = None
         self.weibull_df = None
+
+        self.layouts = {
+            "full": {
+                "ncols": 24,
+                "nrows": 16,
+                "width": viewer.FIG_SIZES["M"]["w"],
+                "height": viewer.FIG_SIZES["M"]["h"],
+            },
+            "mini": {
+                "ncols": 24,
+                "nrows": 12,
+                "width": viewer.FIG_SIZES["M2"]["w"],
+                "height": viewer.FIG_SIZES["M2"]["h"],
+            },
+            "simple": {
+                "ncols": 24,
+                "nrows": 12,
+                "width": viewer.FIG_SIZES["S"]["w"],
+                "height": viewer.FIG_SIZES["S"]["h"],
+            },
+            "simple-shallow": {
+                "ncols": 24,
+                "nrows": 12,
+                "width": viewer.FIG_SIZES["S2"]["w"],
+                "height": viewer.FIG_SIZES["S2"]["h"],
+            },
+            "default": {
+                "ncols": 24,
+                "nrows": 16,
+                "width": viewer.FIG_SIZES["M"]["w"],
+                "height": viewer.FIG_SIZES["M"]["h"],
+            },
+        }
 
     def _set_fields(self):
         """
@@ -177,7 +215,7 @@ class Univar(DataSet):
         dc_meta[self.field_file_data] = self.file_data
         return dc_meta
 
-    def load_data(self, file_data):
+    def load_data(self, file_data, input_varfield=None, in_sep=";"):
         """
         Load data from file. Expected to overwrite superior methods.
 
@@ -191,21 +229,27 @@ class Univar(DataSet):
         self.file_data = os.path.abspath(file_data)
 
         # -------------- implement loading logic -------------- #
+
+        s_key = self.varfield
+        if input_varfield is not None:
+            s_key = input_varfield
+
         default_columns = {
-            #'DateTime': 'datetime64[1s]',
-            self.varfield: float,
+            s_key: float,
         }
 
         # -------------- call loading function -------------- #
-        self.data = pd.read_csv(
+        df = pd.read_csv(
             self.file_data,
-            sep=self.file_csv_sep,
+            sep=in_sep,
             dtype=default_columns,
             usecols=list(default_columns.keys()),
         )
 
         # -------------- post-loading logic -------------- #
-        self.data.dropna(inplace=True)
+        df = df.rename(columns={s_key: self.varfield})
+        df.dropna(inplace=True)
+        self.data = df.copy()
 
         # -------------- update other mutables -------------- #
         self.update()
@@ -234,9 +278,19 @@ class Univar(DataSet):
 
         # update stats
         if self.data is not None:
+
+            self.var_min = self.data[self.varfield].min()
+            self.var_max = self.data[self.varfield].max()
+            self.size = len(self.data)
+            self.start = self.data.index.min()
+            self.end = self.data.index.max()
+
             self.stats_df = self.get_basic_stats()
             self.freq_df = self.get_frequency()
             self.weibull_df = self.get_cdf_weibull()
+
+            # view specs
+            self.view_specs["range"] = [self.var_min, self.var_max]
 
         # ... continues in downstream objects ... #
         return None
@@ -521,183 +575,6 @@ class Univar(DataSet):
     # ===================================================================
     # Plotting methods
     # todo [DRY] evaluate to discard or refactor for viewer styles
-    def plot_hist(
-        self,
-        bins=100,
-        colored=False,
-        annotated=False,
-        rule=None,
-        show=False,
-        folder="C:/sample",
-        filename="histogram",
-        specs=None,
-        dpi=300,
-    ):
-        """
-        Plot histogram of sample
-
-        :param bins: number of bins
-        :type bins: int
-        :param colored: Boolean to quantile-colored histogram
-        :type colored: bool
-        :param annotated: Boolean to plot stats texts over histogram
-        :type annotated: bool
-        :param rule: name of rule to compute bins
-        :type rule: str
-        :param show: Boolean to show instead of saving
-        :type show: bool
-        :param folder: output folder
-        :type folder: str
-        :param filename: image file name
-        :type filename: str
-        :param specs: specification dictionary
-        :type specs: dict
-        :param dpi: image resolution (default = 96)
-        :type dpi: int
-        """
-
-        # get bins
-        if rule is None:
-            pass
-        else:
-            bins = self.get_nbins_by_rule(rule=rule)
-
-        # get specs
-        default_specs = {
-            "color": "tab:grey",
-            "title": "Histogram of {}".format(self.name),
-            "width": 4 * 1.618,
-            "height": 4,
-            "xlabel": "value",
-            "range": (0, 0.1),
-            "range_x": (
-                0.95 * np.min(self.data[self.varfield]),
-                1.05 * np.max(self.data[self.varfield]),
-            ),
-            "subtitle": None,
-            "cmap": "viridis",
-            "colors": None,
-            "n_classes": 5,
-            "grid": False,
-            "quantiles": True,
-        }
-        # handle inputs specs
-        if specs is None:
-            pass
-        else:  # override default
-            for k in specs:
-                default_specs[k] = specs[k]
-        specs = default_specs
-
-        # start plot
-        fig = plt.figure(figsize=(specs["width"], specs["height"]))  # Width, Height
-        ax = plt.gca()
-        ax.set_position([0.15, 0.15, 0.75, 0.75])
-        if specs["subtitle"] is None:
-            plt.title(specs["title"])
-        else:
-            plt.title("{} | {}".format(specs["title"], specs["subtitle"]))
-
-        # Calculate quantiles
-        data = pd.Series(self.data[self.varfield])
-        # filter data to range x
-        data = data[data.between(specs["range_x"][0], specs["range_x"][1])]
-        if specs["quantiles"]:
-            quantiles = data.quantile(np.linspace(0, 1, specs["n_classes"] + 1))
-        else:
-            quantiles = pd.Series(
-                np.linspace(
-                    start=data.min(), stop=data.max(), num=specs["n_classes"] + 1
-                )
-            )
-
-        # Determine the overall bin width you desire
-        bin_width = (
-            data.max() - data.min()
-        ) / bins  # for example, 40 equal width bins across the data range
-        # handle colored plots
-        if colored:
-            if specs["colors"] is None:
-                cmap = mpl.colormaps[specs["cmap"]]
-                colors = [cmap(i) for i in np.linspace(0, 1, len(quantiles) - 1)]
-            else:
-                colors = specs["colors"]
-
-            # Create the bins
-            binsv = np.arange(start=data.min(), stop=data.max(), step=bin_width)
-            binsv = np.append(
-                binsv, data.max()
-            )  # Ensure the last bin includes the max value
-
-            # Plot the histogram
-            n, bins, patches = plt.hist(
-                self.data,
-                bins=binsv,
-                linewidth=0,
-                weights=np.ones(len(self.data)) / len(self.data),
-            )
-
-            # Color the bars based on the quantile
-            for patch, edge in zip(patches, bins[:-1]):
-                if edge < quantiles.values[1]:
-                    plt.setp(patch, "facecolor", colors[0])
-                elif edge < quantiles.values[2]:
-                    plt.setp(patch, "facecolor", colors[1])
-                elif edge < quantiles.values[3]:
-                    plt.setp(patch, "facecolor", colors[2])
-                elif edge < quantiles.values[4]:
-                    plt.setp(patch, "facecolor", colors[3])
-                else:
-                    plt.setp(patch, "facecolor", colors[4])
-        else:
-            plt.hist(
-                self.data,
-                bins=bins,
-                weights=np.ones(len(self.data)) / len(self.data),
-                color=specs["color"],
-            )
-
-        plt.xlabel(specs["xlabel"])
-        plt.ylim(specs["range"])
-        plt.xlim(specs["range_x"])
-        plt.grid(specs["grid"])
-        # Optionally, add vertical lines for each quantile and annotate them
-        mu = np.mean(self.data)
-        plt.axvline(mu, color="r", linestyle="dashed", linewidth=1)
-        plt.text(
-            mu,
-            plt.gca().get_ylim()[1] * 0.92,
-            rf"$\mu$ = {mu:.1f}",
-            ha="left",
-            va="bottom",
-            fontsize=10,
-            rotation=0,
-            color="red",
-        )
-        if annotated:
-            aux = 0
-            for q in quantiles:
-                plt.axvline(q, color="k", linestyle="dashed", linewidth=1)
-                plt.text(
-                    q,
-                    plt.gca().get_ylim()[1] * (0.9 - aux),
-                    f"{q:.1f}",
-                    ha="right",
-                    va="bottom",
-                    fontsize=10,
-                    rotation=0,
-                )
-                aux = aux + 0.05
-        # plt.tight_layout()
-        # show or save
-        if show:
-            plt.show()
-        else:
-            plt.savefig(
-                "{}/{}_{}.png".format(folder, self.name, filename),
-                dpi=dpi,
-                bbox_inches="tight",
-            )
 
     # todo [evaluate]
     def plot_qqplot(
@@ -812,17 +689,17 @@ class Univar(DataSet):
 
         # DATA
         ax_data = False
-        if specs["ax_data"]:
+        if specs["ax_data"] is not False:
             ax_data = all_axes[specs["ax_data"]]
 
         # HIST
-        ax_histh = False
-        if specs["ax_histh"]:
-            ax_histh = all_axes[specs["ax_histh"]]
+        ax_hist = False
+        if specs["ax_hist"] is not False:
+            ax_hist = all_axes[specs["ax_hist"]]
 
         # CDF
         ax_cdf = False
-        if specs["ax_cdf"]:
+        if specs["ax_cdf"] is not False:
             ax_cdf = all_axes[specs["ax_cdf"]]
 
         # CLEANUP
@@ -837,14 +714,13 @@ class Univar(DataSet):
             ax=ax_data,
             specs=specs,
             formatter=formatter,
-            x_factor=2,
         )
 
         # PLOT HIST
         # -------------------------------------------------------------------
         Univar.plot_histh(
             data=data,
-            ax=ax_histh,
+            ax=ax_hist,
             specs=specs,
             formatter=formatter,
         )
@@ -860,7 +736,8 @@ class Univar(DataSet):
 
         # PLOT STATS
         # -------------------------------------------------------------------
-        if specs["mode"] == "full":
+        if specs["layout"] == "full":
+
             x_stats = specs["x_stats"]
             x_stats_sep = specs["x_stats_sep"]
             y_stats = specs["y_stats"]
@@ -875,18 +752,27 @@ class Univar(DataSet):
     def _build_axes(self, fig, gs, specs):
         # todo [docstring]
         # ------------ setup axes ------------
-        if specs["mode"] == "full":
+        if specs["layout"] == "full":
             fig.add_subplot(gs[2:10, 2:10])
             fig.add_subplot(gs[2:10, 13:18])
             fig.add_subplot(gs[2:10, 19:])
-        elif specs["mode"] == "mini":
+
+        elif specs["layout"] == "mini":
             fig.add_subplot(gs[2:10, 2:10])
             fig.add_subplot(gs[2:10, 13:18])
             fig.add_subplot(gs[2:10, 19:])
+
+        elif specs["layout"] == "simple":
+            fig.add_subplot(gs[2:12, 4:])
+
+        elif specs["layout"] == "simple-shallow":
+            fig.add_subplot(gs[2:10, 4:])
+
         else:
             fig.add_subplot(gs[2:10, 2:10])
             fig.add_subplot(gs[2:10, 13:18])
             fig.add_subplot(gs[2:10, 19:])
+
         return fig
 
     def _get_fig_specs(self):
@@ -894,22 +780,18 @@ class Univar(DataSet):
         # handle specs
         specs = self.view_specs.copy()
 
-        # handle mode
-        mode = specs["mode"]
-        if mode == "full":
-            specs_aux = {
-                "ncols": 24,
-                "nrows": 16,
-                "width": viewer.FIG_SIZES["M"]["w"],
-                "height": viewer.FIG_SIZES["M"]["h"],
-            }
-        else:
-            specs_aux = {
-                "ncols": 24,
-                "nrows": 12,
-                "width": viewer.FIG_SIZES["M2"]["w"],
-                "height": viewer.FIG_SIZES["M2"]["h"],
-            }
+        # handle layout
+        layout = specs["layout"]
+        if layout not in list(self.layouts.keys()):
+            layout = "default"
+
+        # overwrite parameters
+        if "simple" in layout:
+            specs["title"] = None
+            specs["ax_hist"] = False
+            specs["ax_cdf"] = False
+
+        specs_aux = self.layouts[layout].copy()
 
         # update sizes
         specs.update(specs_aux)
@@ -931,11 +813,9 @@ class Univar(DataSet):
             {
                 # layout
                 "style": "wien",
-                "mode": "full",
-                # "width": viewer.FIG_SIZES["M"]["w"],
-                # "height": viewer.FIG_SIZES["M"]["h"],
+                "layout": "full",
                 # titles
-                "subtitle_data": "Distribution",
+                "subtitle_data": "Data Points",
                 "subtitle_hist": "Histogram",
                 "subtitle_cdf": "CDF",
                 # fields
@@ -950,6 +830,7 @@ class Univar(DataSet):
                 "data_label": self.name,
                 "data_legend": False,
                 # colors
+                "color": "tab:grey",
                 "color_hist": "tab:grey",
                 "color_cdf": "black",
                 "color_mean": "red",
@@ -957,9 +838,8 @@ class Univar(DataSet):
                 # cmaps
                 "scheme_cmap": None,
                 "cmap": "viridis",
-                "colorize_scatter": False,
                 # alphas
-                "alpha": 0.4,
+                "alpha": 0.8,
                 "alpha_hist": 1,
                 "alpha_cdf": 1,
                 # ranges
@@ -967,15 +847,17 @@ class Univar(DataSet):
                 "range_x": None,
                 # mean
                 "plot_mean": True,
+                "plot_mean_data": False,
                 "linestyle_mean": "solid",
                 "pad_mean": 1,
+                "plot_mean_label": True,
                 # histogram
                 "hist_density": True,  # todo check this may be deprecated
                 "bins": 20,
                 "bins_density": False,
                 # axes
                 "ax_data": 0,
-                "ax_histh": 1,
+                "ax_hist": 1,
                 "ax_cdf": 2,
                 # stats locators
                 "x_stats": 0.01,
@@ -985,6 +867,9 @@ class Univar(DataSet):
                 "zorder_data": 1,
                 "zorder_histh": 1,
                 "zorder_cdf": 1,
+                # scatter
+                "scatter_factor": 4,
+                "colorize_scatter": False,
             }
         )
 
@@ -1040,23 +925,25 @@ class Univar(DataSet):
         if specs["color_mean_text"] is None:
             specs["color_mean_text"] = "black"
 
-        pad = specs["pad_mean"] * " "
-        s = r"{}$\mu$ = {}".format(pad, round(y_mu, 2))
-        ax.annotate(
-            s,
-            xy=(0, y_mu),
-            xytext=(1, 3),
-            textcoords="offset points",
-            color=specs["color_mean_text"],
-        )
+        if specs["plot_mean_label"]:
+            pad = specs["pad_mean"] * " "
+            s = r"{}$\mu$ = {}".format(pad, round(y_mu, 2))
+            ax.annotate(
+                s,
+                xy=(xmin, y_mu),
+                xytext=(1, 3),
+                textcoords="offset points",
+                color=specs["color_mean_text"],
+            )
         return None
 
     @staticmethod
-    def plot_scatter(data, ax, specs, formatter=None, x_factor=4):
+    def plot_scatter(data, ax, specs, formatter=None):
         # todo [docstring]
         if not ax:
             return None
         x_values = np.arange(len(data))
+        x_factor = specs["scatter_factor"]
         # handle scheme
         if specs["colorize_scatter"]:
             color_data = Univar.classify(
@@ -1118,7 +1005,7 @@ class Univar(DataSet):
 
         # PLOT MEAN LINE
         # -------------------------------------------------------------------
-        if specs["plot_mean"]:
+        if specs["plot_mean_data"]:
             # data
             Univar.plot_mean(
                 ax,
@@ -1930,7 +1817,7 @@ class GeoUnivar(Univar):
                 "subtitle_map": "Map",
                 "ax_map": 0,
                 "ax_data": 1,
-                "ax_histh": 2,
+                "ax_hist": 2,
                 "ax_cdf": 3,
                 "x_stats": 0.55,
                 "zorder_map": 0,
@@ -2058,7 +1945,7 @@ class GeoUnivar(Univar):
         if specs["cbar_histh"]:
             Univar.plot_cbar(
                 data=self.data[specs["yvar_field"]].values,
-                ax=all_axes[specs["ax_histh"]],
+                ax=all_axes[specs["ax_hist"]],
                 scheme=specs["scheme_cmap"],
                 cmap=specs["cmap"],
             )

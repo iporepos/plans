@@ -23,5 +23,7 @@ Available tutorials
    :maxdepth: 1
 
    tutorials/project_01
+   tutorials/univar_01
    tutorials/timeseries_01
+   tutorials/visuals_01
 

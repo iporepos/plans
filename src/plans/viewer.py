@@ -50,6 +50,10 @@ FIG_SIZES = {
         "w": 81,
         "h": 80,
     },
+    "S2": {
+        "w": 81,
+        "h": 30,
+    },
     "M": {
         "w": 120,
         "h": 80,
@@ -274,6 +278,8 @@ def set_frame(style=None):
     # Set the default line width for all lines
     plt.rcParams["lines.linewidth"] = 0.35 * MM_TO_PT  # Default linewidth for all lines
 
+    # allow only built-in math mode
+    plt.rcParams["text.usetex"] = False
     return None
 
 

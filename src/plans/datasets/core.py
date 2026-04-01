@@ -189,10 +189,6 @@ class TimeSeries(Univar):
         # todo refactor names here later on --- why?
         self.dtfreq = None
         self.dtres = None
-        self.start = None
-        self.end = None
-        self.var_min = None
-        self.var_max = None
         self.is_standard = False
         self.gapsize = 6
         self.epochs_stats = None
@@ -204,6 +200,39 @@ class TimeSeries(Univar):
         self.file_input = None  # todo rename to file_data??
         self.file_data_dtfield = self.dtfield
         self.file_data_varfield = self.varfield
+
+        self.layouts = {
+            "full": {
+                "ncols": 34,
+                "nrows": 16,
+                "width": viewer.FIG_SIZES["L"]["w"],
+                "height": viewer.FIG_SIZES["L"]["h"],
+            },
+            "mini": {
+                "ncols": 34,
+                "nrows": 12,
+                "width": viewer.FIG_SIZES["L"]["w"],
+                "height": viewer.FIG_SIZES["L"]["h"],
+            },
+            "simple": {
+                "ncols": 34,
+                "nrows": 12,
+                "width": viewer.FIG_SIZES["M"]["w"],
+                "height": viewer.FIG_SIZES["M"]["h"],
+            },
+            "simple-shallow": {
+                "ncols": 34,
+                "nrows": 12,
+                "width": viewer.FIG_SIZES["M3"]["w"],
+                "height": viewer.FIG_SIZES["M3"]["h"],
+            },
+            "default": {
+                "ncols": 34,
+                "nrows": 16,
+                "width": viewer.FIG_SIZES["L"]["w"],
+                "height": viewer.FIG_SIZES["L"]["h"],
+            },
+        }
 
         # call internals
         # ----------------------------------------------------------------
@@ -389,9 +418,6 @@ class TimeSeries(Univar):
             self._set_frequency()
             self.start = self.data[self.dtfield].min()
             self.end = self.data[self.dtfield].max()
-            self.var_min = self.data[self.varfield].min()
-            self.var_max = self.data[self.varfield].max()
-            self.size = len(self.data)
             self._set_view_specs()
             self.view_specs["xmax_aux"] = 1.2 * self.freq_df["Frequency"].max()
             self.view_specs["ymax"] = self.data[self.varfield].max()
@@ -1205,16 +1231,22 @@ class TimeSeries(Univar):
 
     def _build_axes(self, fig, gs, specs):
         # todo [docstring]
+
         # ------------ setup axes ------------
-        if specs["mode"] == "full":
+        if specs["layout"] == "full":
             fig.add_subplot(gs[2:10, 2:21])
             fig.add_subplot(gs[2:10, 23:28])
             fig.add_subplot(gs[2:10, 29:])
 
-        elif specs["mode"] == "simple":
+        elif specs["layout"] == "mini":
+            fig.add_subplot(gs[2:10, 2:21])
+            fig.add_subplot(gs[2:10, 23:28])
+            fig.add_subplot(gs[2:10, 29:])
+
+        elif specs["layout"] == "simple":
             fig.add_subplot(gs[2:10, 2:34])
 
-        elif specs["mode"] == "simple-shallow":
+        elif specs["layout"] == "simple-shallow":
             fig.add_subplot(gs[2:10, 2:34])
 
         else:
@@ -1224,48 +1256,25 @@ class TimeSeries(Univar):
 
         return fig
 
-    def _get_fig_specs(self):
+        """    def _get_fig_specs(self):
         # todo [docstring]
         # handle specs
         specs = self.view_specs.copy()
 
-        # handle mode
-        mode = specs["mode"]
-        if mode == "full":
-            specs_aux = {
-                "ncols": 34,
-                "nrows": 16,
-                "width": viewer.FIG_SIZES["L"]["w"],
-                "height": viewer.FIG_SIZES["L"]["h"],
-            }
-        elif mode == "simple":
-            specs_aux = {
-                "ncols": 34,
-                "nrows": 12,
-                "width": viewer.FIG_SIZES["M"]["w"],
-                "height": viewer.FIG_SIZES["M"]["h"],
-            }
-        elif mode == "simple-shallow":
-            specs_aux = {
-                "ncols": 34,
-                "nrows": 12,
-                "width": viewer.FIG_SIZES["M3"]["w"],
-                "height": viewer.FIG_SIZES["M3"]["h"],
-            }
-        else:
-            specs_aux = {
-                "ncols": 34,
-                "nrows": 12,
-                "width": viewer.FIG_SIZES["L2"]["w"],
-                "height": viewer.FIG_SIZES["L2"]["h"],
-            }
+        # handle layout
+        layout = specs["layout"]
+        if layout not in list(self.layouts.keys()):
+            layout = "default"
+
+        specs_aux = self.layouts[layout].copy()
+
         # update sizes
         specs.update(specs_aux)
 
         # update gridspecs
         specs.update(viewer.GRID_SPECS)
 
-        return specs
+        return specs"""
 
     def _plot(self, fig, gs, specs):
         fig = super()._plot(fig=fig, gs=gs, specs=specs)
@@ -1295,7 +1304,7 @@ class TimeSeries(Univar):
                 "folder": self.folder_src,
                 # titles
                 "title": s_title,
-                "subtitle_data": None,
+                "subtitle_data": "Time Series",
                 # fields
                 "xvar": self.dtfield,
                 "yvar": self.varfield,
@@ -1364,11 +1373,11 @@ class TimeSeries(Univar):
             self.view_specs["xlabel_b"] = "p(X)"
 
         # handle mode specs
-        if "simple" in specs["mode"]:
-            self.view_specs["ax_histh"] = False
+        if "simple" in specs["layout"]:
+            self.view_specs["ax_hist"] = False
             self.view_specs["ax_cdf"] = False
         else:
-            self.view_specs["ax_histh"] = 1
+            self.view_specs["ax_hist"] = 1
             self.view_specs["ax_cdf"] = 2
 
         # BUILD FIG
@@ -1655,7 +1664,7 @@ class TimeSeries(Univar):
         ts1 = ts_first
         ts2 = ts_second
 
-        specs["mode"] = "mini"
+        specs["layout"] = "mini"
         specs["data_legend"] = True
         specs["linestyle_mean"] = "dashed"
         specs["alpha_hist"] = 0.75
@@ -1706,7 +1715,7 @@ class TimeSeries(Univar):
         data = df_clean[ts2.varfield].values
 
         Univar.plot_histh(
-            data=data, ax=axes[ts2.view_specs["ax_histh"]], specs=ts2.view_specs
+            data=data, ax=axes[ts2.view_specs["ax_hist"]], specs=ts2.view_specs
         )
 
         # plot cdf
