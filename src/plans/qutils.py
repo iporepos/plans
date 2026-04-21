@@ -78,10 +78,14 @@ DC_GDAL_TYPES = {
 # provider base
 DC_PROVIDERS = {
     "4326": "EPSG",
+    # UTM fuses in Brazil
     "31983": "EPSG",
     "31982": "EPSG",
     "31981": "EPSG",
+    # Mercator (not recommended)
     "5641": "EPSG",
+    # Brazil Polyconic based on SIRGAS
+    "5880": "EPSG",
     "102033": "ESRI",
 }
 # operations base (hard-coded catalog)
@@ -90,6 +94,7 @@ DC_OPERATIONS = {
     "31982": "+proj=pipeline +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=utm +zone=22 +south +ellps=GRS80",
     "31981": "+proj=pipeline +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=utm +zone=21 +south +ellps=GRS80",
     "5641": "+proj=pipeline +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=merc +lat_ts=-2 +lon_0=-43 +x_0=5000000 +y_0=10000000 +ellps=GRS80",
+    "5880": "+proj=pipeline +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=poly +lat_0=0 +lon_0=-54 +x_0=5000000 +y_0=10000000 +ellps=GRS80",
     "102033": "+proj=pipeline +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=push +v_3 +step +proj=cart +ellps=WGS84 +step +proj=helmert +x=57 +y=-1 +z=41 +step +inv +proj=cart +ellps=aust_SA +step +proj=pop +v_3 +step +proj=aea +lat_0=-32 +lon_0=-60 +lat_1=-5 +lat_2=-42 +x_0=0 +y_0=0 +ellps=aust_SA",
 }
 
@@ -235,6 +240,37 @@ def reproject_layer(
     :type layer_name: str
     :return: new layer name (echo)
     :rtype: str
+
+    **Example**
+
+    .. code-block:: python
+
+        import importlib.util as iu
+
+        # define the paths to this module
+        # ----------------------------------------
+        the_module = "path/to/plans/qutils.py"
+
+        # setup module with importlib
+        # ----------------------------------------
+        spec = iu.spec_from_file_location("module", the_module)
+        module = iu.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        # define input and outputs
+        # ----------------------------------------
+        input_db = "path/to/data.gpkg"
+        layer_name = "layer"
+
+        # call the function
+        # ----------------------------------------
+        output = module.get_extent_from_vector(
+            input_db=input_db,
+            layer_name=layer_name
+        )
+
+        print(output)
+
     """
     input_file = "{}|layername={}".format(db_input, layer_name)
     if layer_output is None:
@@ -275,6 +311,20 @@ def is_bounded_by(extent_a, extent_b):
         extent_a["xmin"] <= extent_b["xmin"] <= extent_b["xmax"] <= extent_a["xmax"]
         and extent_a["ymin"] <= extent_b["ymin"] <= extent_b["ymax"] <= extent_a["ymax"]
     )
+
+
+def get_extent_deltas(extent):
+    # todo docstring
+    delta_x = extent["xmax"] - extent["xmin"]
+    delta_y = extent["ymax"] - extent["ymin"]
+    return (delta_x, delta_y)
+
+
+def get_extent_buffer(extent, factor=0.25):
+    # todo docstring
+    deltas = get_extent_deltas(extent)
+    delta_max = max(deltas)
+    return delta_max * factor
 
 
 def get_extent_from_raster(file_input):
@@ -327,12 +377,12 @@ def get_extent_from_raster(file_input):
     }
 
 
-def get_extent_from_vector(input_db, layer_name):
+def get_extent_from_vector(db_input, layer_name):
     """
     Get the extent from a vector layer
 
-    :param input_db: path to geopackage database
-    :type input_db: str
+    :param db_input: path to geopackage database
+    :type db_input: str
     :param layer_name: name of the layer in geopackage database
     :type layer_name: str
     :return: dictionary of bouding box: xmin, xmax, ymin, ymax
@@ -356,13 +406,13 @@ def get_extent_from_vector(input_db, layer_name):
 
         # define input and outputs
         # ----------------------------------------
-        input_db = "path/to/data.gpkg"
+        db_input = "path/to/data.gpkg"
         layer_name = "layer"
 
         # call the function
         # ----------------------------------------
         output = module.get_extent_from_vector(
-            input_db=input_db,
+            db_input=db_input,
             layer_name=layer_name
         )
 
@@ -373,7 +423,7 @@ def get_extent_from_vector(input_db, layer_name):
 
     # Create the vector layer from the GeoPackage
     layer = QgsVectorLayer(
-        "{}|layername={}".format(input_db, layer_name), layer_name, "ogr"
+        "{}|layername={}".format(db_input, layer_name), layer_name, "ogr"
     )
     layer_extent = layer.extent()
     return {
@@ -384,12 +434,43 @@ def get_extent_from_vector(input_db, layer_name):
     }
 
 
-def count_vector_features(input_db, layer_name):
+def get_vector_buffer(db_input, layer_name, db_output, layer_output, buffer_distance):
+    # todo docstring
+    parameters = {
+        "INPUT": f"{db_input}|layername={layer_name}",
+        "DISTANCE": buffer_distance,
+        "SEGMENTS": 5,
+        "END_CAP_STYLE": 0,
+        "JOIN_STYLE": 0,
+        "MITER_LIMIT": 2,
+        "DISSOLVE": False,
+        "SEPARATE_DISJOINT": False,
+        "OUTPUT": "ogr:dbname='{}' table=\"{}\" (geom)".format(db_output, layer_output),
+    }
+    processing.run("native:buffer", parameters)
+    return None
+
+
+def get_vector_bbox(db_input, layer_name, db_output, layer_output, buffer_factor=0.25):
+    # todo docstring
+
+    parameters = {
+        "INPUT": f"{db_input}|layername={layer_name}",
+        "ROUND_TO": 0,
+        "OUTPUT": "ogr:dbname='{}' table=\"{}\" (geom)".format(db_output, layer_output),
+    }
+
+    processing.run("native:polygonfromlayerextent", parameters)
+
+    return None
+
+
+def count_vector_features(db_input, layer_name):
     """
     Get the number of features from a vector layer
 
-    :param input_db: path to geopackage database
-    :type input_db: str or Path
+    :param db_input: path to geopackage database
+    :type db_input: str or Path
     :param layer_name: name of the layer in geopackage database
     :type layer_name: str
     :return: number of features
@@ -413,13 +494,13 @@ def count_vector_features(input_db, layer_name):
 
         # define input and outputs
         # ----------------------------------------
-        input_db = "path/to/data.gpkg"
+        db_input = "path/to/data.gpkg"
         layer_name = "layer"
 
         # call the function
         # ----------------------------------------
         output = module.count_vector_features(
-            input_db=input_db,
+            db_input=db_input,
             layer_name=layer_name
         )
 
@@ -430,7 +511,7 @@ def count_vector_features(input_db, layer_name):
 
     # Create the vector layer from the GeoPackage
     layer = QgsVectorLayer(
-        "{}|layername={}".format(input_db, layer_name), layer_name, "ogr"
+        "{}|layername={}".format(db_input, layer_name), layer_name, "ogr"
     )
     return int(layer.featureCount())
 
@@ -601,6 +682,198 @@ def retrieve_upstream_basins(
     basins_upstream.to_file(db_output, layer=layer_output, driver="GPKG")
 
     return None
+
+
+def setup_project_folder_data(folder_project):
+    # todo docstring
+    folder_output = "{}/data".format(folder_project)
+    os.makedirs(folder_output, exist_ok=True)
+    return Path(folder_output)
+
+
+def setup_project_data(file_info, buffer_factor=0.2):
+
+    # convert info into dict
+    df = pd.read_csv(file_info, sep=";", dtype=str)
+    dc = {}
+    for i in range(len(df)):
+        field = df["field"].values[i].strip()
+        value = str(df["value"].values[i]).strip()
+        dc[field] = value
+
+    folder_project = Path(dc["folder_base"]) / dc["name"]
+
+    # setup aoi
+    db_project = setup_aoi(
+        db_input=dc["src_aoi_db"],
+        layer_aoi=dc["src_aoi_layer"],
+        crs_target=dc["dst_crs"],
+        folder_project=str(folder_project),
+        buffer_factor=buffer_factor,
+    )
+
+    print("getting extent")
+    extent = get_extent_from_vector(db_project, layer_name="aoi_bbox")
+
+    print("getting canonical")
+    # setup canonical raster
+    file_canonical = folder_project / "data/canonical.tif"
+    get_canonical_raster(
+        file_input=dc["src_canonical"],
+        file_output=str(file_canonical),
+        crs_output=dc["dst_crs"],
+        extent_output=extent,
+        cellsize_output=float(dc["dst_cellsize"]),
+    )
+
+    print("make blank raster")
+    get_blank(
+        file_input=file_canonical,
+        file_output=str(folder_project / "data/blank.tif"),
+        blank_value=0,
+        dtype="byte",
+    )
+
+    print("get topo rasters")
+
+    ls_topo = ["dem", "slope", "hand", "upa"]
+
+    for f in ls_topo:
+        key = f"src_{f}"
+        entry = dc.get(key, None)
+        if entry is not None and entry != "nan":
+            print(f"getting {f}")
+            file_output = folder_project / f"data/topo/{f}.tif"
+            file_output.parent.mkdir(exist_ok=True)
+            print(file_output)
+            get_canonical_raster(
+                file_input=dc[key],
+                file_output=str(file_output),
+                crs_output=dc["dst_crs"],
+                extent_output=extent,
+                cellsize_output=float(dc["dst_cellsize"]),
+                resampling=1,
+                nodata=-99999,
+                datatype=6,
+            )
+
+    # handle LULC
+    print("get lulc rasters")
+    for k in list(dc.keys()):
+        if "src_lulc_" in k:
+            ls_k = k.split("_")
+            if len(ls_k) == 3:
+                scenario = ls_k[-1]
+                folder_input = Path(dc[f"src_lulc_{scenario}"])
+                pattern = dc[f"src_lulc_{scenario}_pattern"]
+                ls_files = list(folder_input.glob(pattern))
+
+                folder_lulc_scenario = folder_project / f"data/lulc/{scenario}"
+                folder_lulc_scenario.mkdir(parents=True, exist_ok=True)
+
+                fk_style = f"src_lulc_{scenario}_style"
+                f_style = dc[fk_style]
+                print(f_style)
+
+                for f in ls_files:
+                    print(f)
+                    p = Path(f)
+
+                    dt = p.stem.split("_")[-1]
+                    if len(dt) == 4:
+                        dt = dt + "-01-01"
+                    elif len(dt) == 7:
+                        dt = dt + "-01"
+                    else:
+                        pass
+
+                    file_output = folder_lulc_scenario / f"lulc_{dt}.tif"
+                    get_canonical_raster(
+                        file_input=str(f),
+                        file_output=str(file_output),
+                        crs_output=dc["dst_crs"],
+                        extent_output=extent,
+                        cellsize_output=float(dc["dst_cellsize"]),
+                        resampling=0,
+                        nodata=250,
+                        datatype=1,
+                    )
+
+                    if Path(f_style).is_file():
+                        fo = folder_lulc_scenario / f"{file_output.stem}.qml"
+                        shutil.copy(src=f_style, dst=fo)
+
+                # handle table
+                fk_table = f"src_lulc_{scenario}_attributes"
+                f_table = dc[fk_table]
+                if Path(f_table).is_file():
+                    fo = folder_lulc_scenario / "lulc_attributes.csv"
+                    shutil.copy(src=f_table, dst=fo)
+
+    # handle misc rasters
+    print("get misc rasters")
+    folder_misc = folder_project / "data/misc"
+    for k in list(dc.keys()):
+        if "src_misc_" in k:
+            ls_k = k.split("_")
+            nm = "_".join(ls_k[2:])
+            file_output = folder_misc / f"{nm}.tif"
+            file_output.parent.mkdir(parents=True, exist_ok=True)
+            get_canonical_raster(
+                file_input=dc[k],
+                file_output=str(file_output),
+                crs_output=dc["dst_crs"],
+                extent_output=extent,
+                cellsize_output=float(dc["dst_cellsize"]),
+                resampling=1,
+                nodata=-99999,
+                datatype=6,
+            )
+
+
+def setup_aoi(db_input, layer_aoi, crs_target, folder_project, buffer_factor=0.2):
+    # todo docstring
+    # todo add sample script
+
+    folder_project = Path(folder_project)
+    folder_output = setup_project_folder_data(folder_project=folder_project)
+
+    project_name = folder_project.stem
+    db_output = f"{folder_output}/{project_name}.gpkg"
+    layer_output = "aoi"
+
+    # reproject
+    layer_o = reproject_layer(
+        db_input=db_input,
+        layer_name=layer_aoi,
+        crs_target=crs_target,
+        db_output=db_output,
+        layer_output=layer_output,
+    )
+
+    extent_dc = get_extent_from_vector(db_output, layer_o)
+    buffer = get_extent_buffer(extent_dc, buffer_factor)
+
+    if buffer > 0:
+        layer_output_buffer = f"{layer_output}_buffer"
+        get_vector_buffer(
+            db_output,
+            layer_o,
+            db_output,
+            layer_output=layer_output_buffer,
+            buffer_distance=buffer,
+        )
+        layer_o = layer_output_buffer
+
+    layer_output2 = f"{layer_output}_bbox"
+    get_vector_bbox(
+        db_input=db_output,
+        layer_name=layer_o,
+        db_output=db_output,
+        layer_output=layer_output2,
+    )
+
+    return db_output
 
 
 # todo [develop test]
@@ -788,6 +1061,55 @@ def get_fuzzy(file_input, file_output, low_bound, high_bound):
         "OUTPUT": file_output,
     }
     processing.run("native:fuzzifyrasterlinearmembership", dc_specs)
+    return file_output
+
+
+def get_canonical_raster(
+    file_input,
+    file_output,
+    crs_output,
+    extent_output,
+    cellsize_output,
+    crs_input="4326",
+    resampling=1,
+    nodata=-99999,
+    datatype=6,
+):
+    # todo docstring
+    # get extent string
+    target_extent_str = "{},{},{},{} [{}:{}]".format(
+        extent_output["xmin"],
+        extent_output["xmax"],
+        extent_output["ymin"],
+        extent_output["ymax"],
+        DC_PROVIDERS[crs_output],
+        crs_output,
+    )
+    # run warp
+    processing.run(
+        "gdal:warpreproject",
+        {
+            "INPUT": file_input,
+            "SOURCE_CRS": QgsCoordinateReferenceSystem(
+                "{}:{}".format(DC_PROVIDERS[crs_input], crs_input)
+            ),
+            "TARGET_CRS": QgsCoordinateReferenceSystem(
+                "{}:{}".format(DC_PROVIDERS[crs_output], crs_output)
+            ),
+            "RESAMPLING": resampling,  # average=5; nearest=0, bilinear=1
+            "NODATA": nodata,
+            "TARGET_RESOLUTION": cellsize_output,  # in meters
+            "OPTIONS": "",
+            "DATA_TYPE": datatype,  # float32=6, byte=1
+            "TARGET_EXTENT": target_extent_str,
+            "TARGET_EXTENT_CRS": QgsCoordinateReferenceSystem(
+                "{}:{}".format(DC_PROVIDERS[crs_output], crs_output)
+            ),
+            "MULTITHREADING": False,
+            "EXTRA": "",
+            "OUTPUT": file_output,
+        },
+    )
     return file_output
 
 
@@ -1962,7 +2284,7 @@ def setup_topo(
 
     # get aoi extent
     print("get aoi extent...")
-    dict_bbox = get_extent_from_vector(input_db=db_project, layer_name=new_layer_aoi)
+    dict_bbox = get_extent_from_vector(db_input=db_project, layer_name=new_layer_aoi)
 
     # clip and warp dem
     print(r"[gdal] clip-n-warp dem...")
@@ -3049,7 +3371,7 @@ def old_get_rain(
 
     # first check number of features
     n_rain_gauges = count_vector_features(
-        input_db=input_db, layer_name=layer_rain_gauges
+        db_input=input_db, layer_name=layer_rain_gauges
     )
     dict_blank = {"constant": 0, "voronoi": 0}
     s_type = "voronoi"
@@ -3067,10 +3389,10 @@ def old_get_rain(
 
         # first validade extents
         dict_extent_aoi = get_extent_from_vector(
-            input_db=input_db, layer_name=layer_aoi
+            db_input=input_db, layer_name=layer_aoi
         )
         dict_extent_rain = get_extent_from_vector(
-            input_db=input_db, layer_name=layer_rain_gauges
+            db_input=input_db, layer_name=layer_rain_gauges
         )
 
         # check is is bounded:

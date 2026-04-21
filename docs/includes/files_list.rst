@@ -126,7 +126,7 @@ Digital elevation model (DEM) raster file. It is a raster file representing terr
 .. csv-table::
    :widths: auto
 
-   Workflow, ":ref:`Optional Input File<io-input-files-optional>`"
+   Workflow, ":ref:`Required Input File<io-input-files-required>`"
    Data Structure, ":ref:`Raster<io-raster>`"
    File, "``dem.tif``"
    Project Folder, "``{project}/data/topo``"
@@ -231,7 +231,7 @@ A raster map indicating unitary accumulated water at each pixel based on upslope
 
    Workflow, ":ref:`Optional Input File<io-input-files-optional>`"
    Data Structure, ":ref:`Raster<io-raster>`"
-   File, "``flowacc.tif``"
+   File, "``acc.tif``"
    Project Folder, "``{project}/data/topo``"
    Pixel Units, "m^2"
    Data Type, "``float32``"
@@ -291,7 +291,7 @@ A raster representing shaded relief, calculated from a DEM using parameters such
 
    Workflow, ":ref:`Optional Input File<io-input-files-optional>`"
    Data Structure, ":ref:`Raster<io-raster>`"
-   File, "``hillshade.tif``"
+   File, "``shd.tif``"
    Project Folder, "``{project}/data/topo``"
    Pixel Units, "unitless"
    Data Type, "``uint8``"
@@ -571,6 +571,16 @@ A table that contains metadata describing the project, such as name, alias, sour
    :widths: auto
    :delim: ;
 
+**Optional Horizontal Fields**
+
+Optional fields can be useful while setting up a ``plans`` project from scratch.
+
+.. csv-table::
+   :file: ../data/h_fields_project_info_optional.csv
+   :header-rows: 1
+   :widths: auto
+   :delim: ;
+
 **File Sample**
 
 .. literalinclude:: ./data/samples/project_info.csv
@@ -665,7 +675,7 @@ A raster file representing the inclination of the terrain in degrees. It can be 
 .. csv-table::
    :widths: auto
 
-   Workflow, ":ref:`Optional Input File<io-input-files-optional>`"
+   Workflow, ":ref:`Required Input File<io-input-files-required>`"
    Data Structure, ":ref:`Raster<io-raster>`"
    File, "``slope.tif``"
    Project Folder, "``{project}/data/topo``"
@@ -868,7 +878,7 @@ A raster file that records the exact contributing area draining into each pixel,
 
    Workflow, ":ref:`Optional Input File<io-input-files-optional>`"
    Data Structure, ":ref:`Raster<io-raster>`"
-   File, "``uparea.tif``"
+   File, "``upa.tif``"
    Project Folder, "``{project}/data/topo``"
    Pixel Units, "m^2"
    Data Type, "``float32``"
