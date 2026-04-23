@@ -1,0 +1,780 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "8c281cd5b38713c6",
+   "metadata": {},
+   "source": "# Raster data - the basics"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "This tutorial focuses on working with basic Raster data management and analysis using `plans`.",
+   "id": "3536ad34a268ba66"
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bf7d86c6e4cdd29b",
+   "metadata": {},
+   "source": [
+    "## Notebook setup\n",
+    "\n",
+    "For users running this tutorial as a Jupyter Notebook, this cell must be executed first:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "id": "initial_id",
+   "metadata": {},
+   "source": [
+    "import sys\n",
+    "from pathlib import Path\n",
+    "import pprint\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import matplotlib.pyplot as plt\n",
+    "\n",
+    "# Install `plans` in `google.colab`.\n",
+    "# Use `pip install plans` for other environments.\n",
+    "\n",
+    "if \"google.colab\" in sys.modules:\n",
+    "    import os\n",
+    "    os.system(f\"{sys.executable} -m pip install -q plans\")\n",
+    "\n",
+    "# This avoids warnings related to uninstalled fonts\n",
+    "import logging\n",
+    "# Set the matplotlib font manager logger to only show errors (hides warnings)\n",
+    "logging.getLogger('matplotlib.font_manager').setLevel(logging.ERROR)\n",
+    "\n",
+    "# define output folder\n",
+    "OUTPUT_DIR = Path(\"outputs/raster\")\n",
+    "OUTPUT_DIR.mkdir(parents=True, exist_ok=True)\n",
+    "print(f\"Outputs will be saved to: ./{OUTPUT_DIR}\")"
+   ],
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "## The `Raster` object\n",
+    "\n",
+    "The `Raster` object is a primitive class that lives under `plans.datasets` module. The `Raster` object stores all core methods for working with single-banded, gridded spatial data (maps)."
+   ],
+   "id": "e492dc4655c74230"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Import `Raster` object:",
+   "id": "e30768d3efec4369"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "from plans.datasets import Raster",
+   "id": "ba62f818ed9c3b3d",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Create an instance of the `Raster`:",
+   "id": "7e23a7f25dcbc962"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "rs = Raster(name=\"Testing\", alias=\"tst\")",
+   "id": "ea9ebbd440623901",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Check out the `rs` variable type:",
+   "id": "733fddc2904d407c"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "print(type(rs))",
+   "id": "151454dca15b1994",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Edit and inspect attributes:",
+   "id": "d2b079a54615e59d"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "rs.units = \"cm\"\n",
+    "rs.description = \"Just a tutorial\"\n",
+    "print(rs)"
+   ],
+   "id": "f154523078d46c32",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "## Working with data\n",
+    "\n",
+    "Raster data files are expected to be in the standard `tif` (GeoTiff) format.\n",
+    "\n",
+    "For the `Raster` core object, data type is parsed as `float32`, that is, the data is treated as real numbers by default (instead of integers, for example).\n"
+   ],
+   "id": "d551819e06105839"
+  },
+  {
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-04-23T14:10:00.695649Z",
+     "start_time": "2026-04-23T14:10:00.684873Z"
+    }
+   },
+   "cell_type": "markdown",
+   "source": "### Setup a built-in example project",
+   "id": "121250c4864af17d"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Access simple example raster files via the `TOY_PROJECT` feature:",
+   "id": "b33702f4051b6858"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "from plans.config import TOY_PROJECT\n",
+    "from plans.project import load_project\n",
+    "pj = load_project(TOY_PROJECT)"
+   ],
+   "id": "8a1093aef8311bbe",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "### Load data from tif file\n",
+    "\n",
+    "Let's now get the slope map from the `topo` folder:"
+   ],
+   "id": "bcc91011e14580c2"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "raster_file = Path(pj.folder_topo) / \"slope.tif\"",
+   "id": "9cb69a7d4bb0aacc",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Then use `load_data()`",
+   "id": "80795532be2c010"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "rs.load_data(file_data=raster_file)",
+   "id": "cf4c25f5c7b16f78",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "### Inspect and view data",
+   "id": "c0efff2731339680"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Inspect raster metadata:",
+   "id": "38d27c1a5721d971"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "pprint.pp(rs.raster_metadata)",
+   "id": "fa2b392611548f4b",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Inspect data (numpy array):",
+   "id": "e3f2e043a135746c"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "print(rs.data)",
+   "id": "6e8440e88dc6ebc6",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "View map:",
+   "id": "c72d1ee1e9a3a32d"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "rs.view()",
+   "id": "87bc981113ba9fbb",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Compute data from an `Univar` instance:",
+   "id": "e73020b0e0339871"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "uv = rs.get_univar()",
+   "id": "7449338c7c80ddfe",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Get statistics",
+   "id": "dbbddb6df93074e"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "uv.stats_df",
+   "id": "d61685813ec51cfb",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "### Export to other file\n",
+    "\n",
+    "Tif format is exported by default."
+   ],
+   "id": "b32e505c132b733c"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "fo = rs.export(folder=OUTPUT_DIR, filename=\"slope_example\")\n",
+    "print(fo)\n",
+    "print(f\"File was created: {Path(fo).is_file()}\")"
+   ],
+   "id": "32c5ae475f75e407",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "### Copy raster structure\n",
+    "\n",
+    "Sometimes it is useful to process raster data and then save it back to the same raster grid."
+   ],
+   "id": "bc428cdae33a29ea"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Example: making a brand new data grid with the same size using `numpy.random`",
+   "id": "f550e5f2c7bfd927"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "new_data = np.random.normal(loc=100, scale=10, size=np.shape(rs.data))\n",
+    "print(type(new_data))"
+   ],
+   "id": "913fcecf37af3f08",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Define new raster, copy structure from other and set data:",
+   "id": "81aaf4efd67f0868"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "# define a new raster\n",
+    "rs_new = Raster()\n",
+    "# copy structure from rs object\n",
+    "rs_new.copy_structure(raster_ref=rs)\n",
+    "# set data\n",
+    "rs_new.set_data(grid=new_data)"
+   ],
+   "id": "5d65f9da09c356ad",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "View and/or save",
+   "id": "f97a6fa0e2999dc8"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "rs_new.view()",
+   "id": "c671b4b1eff3bc8b",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "rs_new.export(folder=OUTPUT_DIR, filename=\"new_data\")",
+   "id": "ccfcd281b55de5d0",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "## Types of Rasters",
+   "id": "5a060ddebda65dca"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "The `Raster` class is extented into several families or types.",
+   "id": "f3d43c863d073c27"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "### `SciRaster` family\n",
+    "\n",
+    "This is a large family of rasters that are numerical values. Behaviour is nearly the same from `Raster` base class, but `NODATA_value` and `dtype` is enforced to the incoming data.\n",
+    "\n",
+    "Members of this family are all conventional quantitative spatial variables, like terrain elevation or soil water content."
+   ],
+   "id": "b477c89baa468227"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "from plans.datasets import SciRaster",
+   "id": "7de7c2ccaeb8df2e",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "sciraster = SciRaster()\n",
+    "sciraster.load_data(file_data=raster_file)\n",
+    "print(f\"Data type: {sciraster.dtype}\")\n",
+    "print(f\"No-data value: {sciraster.raster_metadata[\"NODATA_value\"]}\")"
+   ],
+   "id": "721365b0725cd393",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "View layout is the same from `Raster`:",
+   "id": "4adf6693e9151964"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "sciraster.view()",
+   "id": "3b5e222df038916c",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "### `QualiRaster` family\n",
+    "\n",
+    "This is a large family of rasters that supports categorical maps, eg., land use maps. Data is always accompanied by an auxiliar Attribute Table with `id`, `name`, `alias` and `color` fields:"
+   ],
+   "id": "399373d2ea47b085"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "from plans.datasets import QualiRaster",
+   "id": "d0dd6adb5e0f3f39",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Define new files (raster and table):",
+   "id": "7976c1de83a246e5"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "quali_raster_file = Path(pj.folder_lulc) / \"observed/lulc_2020-01-01.tif\"\n",
+    "quali_raster_table = Path(pj.folder_lulc) / \"observed/lulc_attributes.csv\""
+   ],
+   "id": "2a60c0a19b829a82",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "qualiraster = QualiRaster()\n",
+    "qualiraster.load_data(\n",
+    "    file_data=quali_raster_file,\n",
+    "    file_table=quali_raster_table\n",
+    ")\n",
+    "print(f\"Data type: {qualiraster.dtype}\")\n",
+    "print(f\"No-data value: {qualiraster.raster_metadata[\"NODATA_value\"]}\")"
+   ],
+   "id": "fc6fb6af9eaa2f37",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Access the Attribute Table:",
+   "id": "84e53314621e555e"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "qualiraster.table.head()",
+   "id": "b0fc439b5d9a2903",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "View scheme provides a horizontal bar for aereal ratios:",
+   "id": "e18f1b1be4aa4890"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "qualiraster.view()",
+   "id": "6772371bee808348",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "### Dedicated extensions\n",
+    "\n",
+    "`plans.datasets.spatial` offers a series of dedicated `Rasters` for spatial variables. This helps to shortcut attributes and visual setup. Some examples are provided below."
+   ],
+   "id": "d97277be15d00a9f"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "#### `Elevation` raster",
+   "id": "14f552a73ee941d2"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "from plans.datasets.spatial import Elevation\n",
+    "dem_file = Path(pj.folder_topo) / \"dem.tif\"\n",
+    "dem_raster = Elevation()\n",
+    "dem_raster.load_data(file_data=dem_file)\n",
+    "dem_raster.view_specs[\"range\"] = [800, 1200]\n",
+    "dem_raster.view()"
+   ],
+   "id": "b5fd31ac1a2d9da2",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "#### `Slope` raster",
+   "id": "fc1942437f493845"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "from plans.datasets.spatial import Slope\n",
+    "slope_file = Path(pj.folder_topo) / \"slope.tif\"\n",
+    "slope_raster = Slope()\n",
+    "slope_raster.load_data(file_data=slope_file)\n",
+    "slope_raster.view()"
+   ],
+   "id": "b19b773e67ba413b",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "#### `HAND` raster",
+   "id": "4770d184c449f25a"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "from plans.datasets.spatial import HAND\n",
+    "hand_file = Path(pj.folder_topo) / \"hand.tif\"\n",
+    "hand_raster = HAND()\n",
+    "hand_raster.load_data(file_data=hand_file)\n",
+    "hand_raster.view()"
+   ],
+   "id": "f48130a9d6237259",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "#### `TWI` raster",
+   "id": "83aa96dabc2715bb"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "from plans.datasets.spatial import TWI\n",
+    "twi_file = Path(pj.folder_topo) / \"twi.tif\"\n",
+    "twi_raster = TWI()\n",
+    "twi_raster.load_data(file_data=twi_file)\n",
+    "twi_raster.view()"
+   ],
+   "id": "2caf5e8c5a8ebefd",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "#### `LDD` raster\n",
+    "\n",
+    "LDD (Local Drain Direction) is a core map for hydrological analysis. It depends on a convention of integer numbers."
+   ],
+   "id": "c5be24ecfc8a069a"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "from plans.datasets.spatial import LDD\n",
+    "\n",
+    "ldd_file = Path(pj.folder_topo) / \"ldd.tif\"\n",
+    "ldd_raster = LDD()\n",
+    "ldd_raster.load_data(file_data=ldd_file)\n",
+    "ldd_raster.view()"
+   ],
+   "id": "6fea487f74404369",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "#### `Soils` raster\n",
+    "\n",
+    "Soils may reflect soils classes and lithology. Requires the Attribute Table."
+   ],
+   "id": "c681ee288f379773"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "from plans.datasets.spatial import Soils\n",
+    "# define file\n",
+    "soils_file = Path(pj.folder_soils) / \"soils.tif\"\n",
+    "# define table\n",
+    "soils_table = Path(pj.folder_soils) / \"soils_attributes.csv\"\n",
+    "# define name and datetime\n",
+    "soils_raster = Soils()\n",
+    "soils_raster.load_data(file_data=soils_file, file_table=soils_table)\n",
+    "soils_raster.view()"
+   ],
+   "id": "f3cab6e4a9a216ef",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "#### `LULC` raster\n",
+    "\n",
+    "LULC (Land Use and Land Cover) requires the Attrituve Table and date to be provided."
+   ],
+   "id": "5fad4d2e47fc36b3"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "from plans.datasets.spatial import LULC\n",
+    "# define file\n",
+    "lulc_file = Path(pj.folder_lulc) / \"observed/lulc_2020-01-01.tif\"\n",
+    "# define table\n",
+    "lulc_table = Path(pj.folder_lulc) / \"observed/lulc_attributes.csv\"\n",
+    "# define name and datetime\n",
+    "lulc_raster = LULC(name=\"LULC\", datetime=\"2020-01-01\")\n",
+    "lulc_raster.load_data(file_data=lulc_file, file_table=lulc_table)\n",
+    "lulc_raster.view_specs[\"title\"] = \"Land Use in 2020\"\n",
+    "lulc_raster.view()\n"
+   ],
+   "id": "4af990c5e49fae1a",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "#### `AOI` Raster\n",
+    "\n",
+    "The `AOI` Raster (Area-Of-Interest) is a member of the `QualiRaster` family.\n",
+    "\n",
+    "It is a boolean grid used mostly for masking operations. In this case, there is no need for an Attribute Table to be provided."
+   ],
+   "id": "6a2e94ad9cdcc04e"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "from plans.datasets import AOI\n",
+    "aoi = AOI()\n",
+    "# define basin raster for the AOI\n",
+    "aoi_file = Path(pj.folder_basins) / \"main/basin.tif\"\n",
+    "aoi.load_data(file_data=aoi_file)\n",
+    "aoi.view()"
+   ],
+   "id": "16f1d866f75cc62d",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "## Masking Operations\n",
+    "\n",
+    "Masking is a very basic operation when working with Rasters, since in most cases we need to filter the data to a given AOI, like a catchment basin.\n",
+    "\n",
+    "Say we want to know the average slope of a basin:"
+   ],
+   "id": "40e2cae646a0dd2e"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "# use the data from the aoi map\n",
+    "slope_raster.apply_aoi_mask(grid_aoi=aoi.data)\n",
+    "slope_raster.view_specs[\"title\"] = \"Slope map for the basin\"\n",
+    "slope_raster.view()"
+   ],
+   "id": "f90035fe9855cadd",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "The AOI mask can be realeased:",
+   "id": "d61fe691f4afc796"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "slope_raster.release_aoi_mask()\n",
+    "slope_raster.view_specs[\"title\"] = \"Slope map for the full extension\"\n",
+    "slope_raster.view()"
+   ],
+   "id": "7622a03fc4bb00fc",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "The same can be done with qualitative maps:",
+   "id": "f98078aa562f9162"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "lulc_raster.apply_aoi_mask(grid_aoi=aoi.data)\n",
+    "lulc_raster.view_specs[\"title\"] = \"Land Use of the basin in 2020\"\n",
+    "lulc_raster.view()"
+   ],
+   "id": "1d4b83ff7f5d0124",
+   "outputs": [],
+   "execution_count": null
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  },
+  "kernelspec": {
+   "name": "python3",
+   "language": "python",
+   "display_name": "Python 3 (ipykernel)"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

@@ -26,4 +26,5 @@ Available tutorials
    tutorials/univar_01
    tutorials/timeseries_01
    tutorials/visuals_01
+   tutorials/raster_01
 
