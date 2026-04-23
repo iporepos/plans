@@ -55,7 +55,6 @@ import pandas as pd
 
 # Project-level imports
 # =======================================================================
-# import {module}
 # ... {develop}
 
 
@@ -74,6 +73,10 @@ DEFAULT_PROJECTS_ROOT = Path.home() / "PlansProjects"
 DATA_DIR = Path(__file__).parent / "data"
 FILE_FIELDS = DATA_DIR / "fields.csv"
 FILE_FILES = DATA_DIR / "files.csv"
+
+# Example files
+DATA_EXAMPLES_DIR = DATA_DIR / "examples"
+TOY_PROJECT = DATA_EXAMPLES_DIR / "toy"
 
 
 # ... {develop}

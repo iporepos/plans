@@ -48,6 +48,7 @@ In a lacinia nisl.
 # Native imports
 # =======================================================================
 import os
+import pprint
 
 # External imports
 # =======================================================================
@@ -836,7 +837,7 @@ class Univar(DataSet):
                 "color_mean": "red",
                 "color_mean_text": None,
                 # cmaps
-                "scheme_cmap": None,
+                "scheme_cmap": "equal",
                 "cmap": "viridis",
                 # alphas
                 "alpha": 0.8,
@@ -1874,15 +1875,16 @@ class GeoUnivar(Univar):
 
     # todo [dev] -- export method
 
-    def _build_axes(self, fig, gs, specs):
+    @staticmethod
+    def _build_axes(fig, gs, specs):
         # todo [docstring]
         # ------------ setup axes ------------
-        if specs["mode"] == "full":
+        if specs["layout"] == "full":
             fig.add_subplot(gs[2:15, 1:14])
             fig.add_subplot(gs[2:10, 16:21])
             fig.add_subplot(gs[2:10, 23:28])
             fig.add_subplot(gs[2:10, 29:])
-        elif specs["mode"] == "mini":
+        elif specs["layout"] == "mini":
             fig.add_subplot(gs[2:10, 2:10])
             fig.add_subplot(gs[2:10, 16:21])
             fig.add_subplot(gs[2:10, 23:28])
@@ -1895,7 +1897,7 @@ class GeoUnivar(Univar):
         specs = self.view_specs.copy()
 
         # handle mode
-        mode = specs["mode"]
+        mode = specs["layout"]
         if mode == "full":
             specs_aux = {
                 "ncols": 34,
@@ -1927,7 +1929,7 @@ class GeoUnivar(Univar):
         # ------------ map plot ------------
         ax_map = all_axes[specs["ax_map"]]
 
-        GeoUnivar.plot_map(data=self.data, ax=ax_map, column=self.varfield, specs=specs)
+        self.plot_map(data=self.data, ax=ax_map, column=self.varfield, specs=specs)
 
         # ------------ scatter cbar plot ------------
         # handle plotting conflict
@@ -1954,10 +1956,12 @@ class GeoUnivar(Univar):
 
     @staticmethod
     def plot_map(data, ax, column, specs, legend=False):
+
         if not specs["empty_map"]:
 
             # handle scheme
             if specs["colorize_map"]:
+
                 color_data = Univar.classify(
                     data=data[column].values, n_classes=5, scheme=specs["scheme_cmap"]
                 )

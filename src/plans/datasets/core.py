@@ -51,6 +51,8 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import matplotlib.dates as mdates
 from matplotlib.ticker import MaxNLocator
+import matplotlib.ticker as mticker
+import matplotlib.colors as mcolors
 import rasterio
 
 # ... {develop}
@@ -2730,7 +2732,6 @@ class TimeSeriesSpatialSamples(TimeSeriesSamples):
 
 
 class Raster(DataSet):
-    # todo[docstring] -- examples
     """
     The basic Raster map dataset.
 
@@ -2765,6 +2766,7 @@ class Raster(DataSet):
         self.is_masked = False
         self.file_prj = None
         self.prj = None
+
         # accessible values
         self.nodatavalue = self.raster_metadata["NODATA_value"]
         self.cellsize = self.raster_metadata["cellsize"]
@@ -3255,13 +3257,19 @@ class Raster(DataSet):
 
         """
         dict_meta = raster_ref.raster_metadata.copy()
+
         # handle new nodatavalue
         if n_nodatavalue is None:
             pass
         else:
             dict_meta["NODATA_value"] = n_nodatavalue
+
         self.set_raster_metadata(metadata=dict_meta)
-        self.prj = raster_ref.prj[:]
+
+        # handle prj
+        if raster_ref.prj is not None:
+            self.prj = raster_ref.prj[:]
+
         return None
 
     # Export methods
@@ -3277,19 +3285,22 @@ class Raster(DataSet):
         :type filename: str
         :param mode: The export format, either "tif" (default) or "asc". Default value = "tif"
         :type mode: str
-
+        :return: file path to output file
+        :rtype: str
 
         """
         if filename is None:
             filename = self.name
         # handle mode
         if mode == "asc":
-            self.export_asc(folder=folder, filename=filename)
+            fo = self.export_asc(folder=folder, filename=filename)
         else:
-            self.export_tif(folder=folder, filename=filename)
+            fo = self.export_tif(folder=folder, filename=filename)
+
         # export prj
         self.export_prj(folder=folder, filename=filename)
-        return None
+
+        return fo
 
     def export_tif(self, folder, filename=None):
         """
@@ -3499,8 +3510,6 @@ class Raster(DataSet):
         After releasing the AOI mask, the backup grid is set to None, and the raster object is no longer considered to have an AOI mask.
 
 
-
-
         """
         if self.is_masked:
             self.set_data(grid=self.backup_data)
@@ -3587,6 +3596,28 @@ class Raster(DataSet):
     # View internal methods
     # -------------------------------------------------------------------
 
+    def _set_view_specs(self):
+        """
+        Set default view specs.
+
+        """
+        super()._set_view_specs()
+        # borrow from Univar
+        uv = GeoUnivar()
+        self.view_specs.update(uv.view_specs)
+        self.view_specs.update(
+            {
+                "cmap": self.cmap,
+                "title": "{} | {}".format(self.varname, self.name),
+                "run_id": None,
+                "zoom_window": None,
+                "subtitle_data": "Map",
+            }
+        )
+        self.view_specs["ylabel"] = self.units
+        self.view_specs["grid_map"] = False
+        return None
+
     def _plot(self, fig, gs, specs):
         """
         Generates a plot visualizing the Raster data.
@@ -3650,7 +3681,7 @@ class Raster(DataSet):
         # handle aux vars
         plot_mean = specs["plot_mean"]
 
-        # ------------ setup axes ------------
+        # build axes ------------
         ax1 = fig.add_subplot(gs[2:14, 0:12])
         ax2 = fig.add_subplot(gs[2:8, 15:19])
         ax3 = fig.add_subplot(gs[2:8, 20:])
@@ -3773,30 +3804,28 @@ class Raster(DataSet):
         )
         return fig
 
-    def _set_view_specs(self):
-        """
-        Set default view specs.
+    def _get_fig_specs(self):
+        # todo [docstring]
+        # handle specs
+        specs = self.view_specs.copy()
 
-        """
-        super()._set_view_specs()
-        # borrow from Univar
-        uv = GeoUnivar()
-        self.view_specs.update(uv.view_specs)
-        self.view_specs.update(
-            {
-                "cmap": self.cmap,
-                "title": "{} | {}".format(self.varname, self.name),
-                "run_id": None,
-                "zoom_window": None,
-                "subtitle_data": "Map",
-            }
-        )
-        self.view_specs["ylabel"] = self.units
-        self.view_specs["grid_map"] = False
-        return None
+        # handle mode
+        mode = specs["layout"]
 
-    # View methods
-    # -------------------------------------------------------------------
+        specs_aux = {
+            "ncols": 24,
+            "nrows": 16,
+            "width": viewer.FIG_SIZES["M"]["w"],
+            "height": viewer.FIG_SIZES["M"]["h"],
+        }
+
+        # update sizes
+        specs.update(specs_aux)
+
+        # update gridspecs
+        specs.update(viewer.GRID_SPECS)
+
+        return specs
 
     def view(self, show=True, return_fig=False, helper_geometry=None):
         """
@@ -3811,18 +3840,9 @@ class Raster(DataSet):
         :return: The matplotlib figure object if `return_fig` is True, otherwise None.
         :rtype: :class:`matplotlib.figure.Figure` or None
         """
-        # handle specs
-        specs = self.view_specs.copy()
-        specs_aux = {
-            "ncols": 24,
-            "nrows": 16,
-            "width": viewer.FIG_SIZES["M"]["w"],
-            "height": viewer.FIG_SIZES["M"]["h"],
-        }
-        # update
-        specs.update(specs_aux)
-        # update gridspecs
-        specs.update(viewer.GRID_SPECS)
+
+        specs = self._get_fig_specs()
+
         # update geometry
         specs["geometry"] = helper_geometry
 
