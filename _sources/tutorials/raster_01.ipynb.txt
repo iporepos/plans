@@ -234,6 +234,23 @@
   {
    "metadata": {},
    "cell_type": "markdown",
+   "source": "Get basic statistics in a `dict`:",
+   "id": "8243915f2ec0c029"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "outputs": [],
+   "execution_count": null,
+   "source": [
+    "stats_dict = rs.get_stats()\n",
+    "pprint.pp(stats_dict)"
+   ],
+   "id": "fc239c5843a500d4"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
    "source": "View map:",
    "id": "c72d1ee1e9a3a32d"
   },
@@ -248,13 +265,16 @@
   {
    "metadata": {},
    "cell_type": "markdown",
-   "source": "Compute data from an `Univar` instance:",
+   "source": "Convert and get an `Univar` instance:",
    "id": "e73020b0e0339871"
   },
   {
    "metadata": {},
    "cell_type": "code",
-   "source": "uv = rs.get_univar()",
+   "source": [
+    "uv = rs.get_univar()\n",
+    "print(type(uv))"
+   ],
    "id": "7449338c7c80ddfe",
    "outputs": [],
    "execution_count": null
@@ -262,16 +282,16 @@
   {
    "metadata": {},
    "cell_type": "markdown",
-   "source": "Get statistics",
-   "id": "dbbddb6df93074e"
+   "source": "View as Univar:",
+   "id": "71bca8fd54df4c1a"
   },
   {
    "metadata": {},
    "cell_type": "code",
-   "source": "uv.stats_df",
-   "id": "d61685813ec51cfb",
    "outputs": [],
-   "execution_count": null
+   "execution_count": null,
+   "source": "uv.view()",
+   "id": "2b62418400ede891"
   },
   {
    "metadata": {},
@@ -492,6 +512,23 @@
   {
    "metadata": {},
    "cell_type": "markdown",
+   "source": "Get areas table:",
+   "id": "7a5937b72dd484bb"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "outputs": [],
+   "execution_count": null,
+   "source": [
+    "areas_df = qualiraster.get_areas()\n",
+    "areas_df"
+   ],
+   "id": "24df76a0cfe36bf8"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
    "source": "View scheme provides a horizontal bar for aereal ratios:",
    "id": "e18f1b1be4aa4890"
   },
@@ -638,7 +675,7 @@
     "soils_file = Path(pj.folder_soils) / \"soils.tif\"\n",
     "# define table\n",
     "soils_table = Path(pj.folder_soils) / \"soils_attributes.csv\"\n",
-    "# define name and datetime\n",
+    "# define raster\n",
     "soils_raster = Soils()\n",
     "soils_raster.load_data(file_data=soils_file, file_table=soils_table)\n",
     "soils_raster.view()"
@@ -653,7 +690,7 @@
    "source": [
     "#### `LULC` raster\n",
     "\n",
-    "LULC (Land Use and Land Cover) requires the Attrituve Table and date to be provided."
+    "LULC (Land Use and Land Cover) requires the Attribute Table and date to be provided."
    ],
    "id": "5fad4d2e47fc36b3"
   },

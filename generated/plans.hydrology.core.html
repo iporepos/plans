@@ -47,12 +47,13 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/plans.hydrology.core';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="plans.hydrology.upscaled" href="plans.hydrology.upscaled.html" />
+    <link rel="next" title="plans.hydrology.design" href="plans.hydrology.design.html" />
     <link rel="prev" title="plans.hydrology" href="plans.hydrology.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -448,6 +449,24 @@ todo docstring</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#plans.hydrology.core.compute_flow" title="plans.hydrology.core.compute_flow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_flow</span></code></a>(flow_pot, flow_cap)</p></td>
 <td><p></p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.hydrology.core.convert_deg_to_percent" title="plans.hydrology.core.convert_deg_to_percent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_deg_to_percent</span></code></a>(theta_deg)</p></td>
+<td><p>Converts a slope angle from degrees to a percentage value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.hydrology.core.convert_deg_to_ratio" title="plans.hydrology.core.convert_deg_to_ratio"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_deg_to_ratio</span></code></a>(theta_deg)</p></td>
+<td><p>Converts a slope angle from degrees to a decimal ratio (m/m).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.hydrology.core.convert_m2_to_km2" title="plans.hydrology.core.convert_m2_to_km2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_m2_to_km2</span></code></a>(values)</p></td>
+<td><p>Convert area from square meters (m²) to square kilometers (km²).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.hydrology.core.convert_m_to_ft" title="plans.hydrology.core.convert_m_to_ft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_m_to_ft</span></code></a>(L)</p></td>
+<td><p>Converts a length measurement from meters to feet.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.hydrology.core.convert_mm_to_m3s" title="plans.hydrology.core.convert_mm_to_m3s"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_mm_to_m3s</span></code></a>(values, area_km2[, dt_seconds])</p></td>
+<td><p>Convert rainfall/runoff from mm per timestep to m³/s.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.hydrology.core.uh_convolution" title="plans.hydrology.core.uh_convolution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uh_convolution</span></code></a>(flow, uh)</p></td>
+<td><p>Convolve a flow time series with a unit hydrograph (full output).</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -470,6 +489,151 @@ todo docstring</p>
 <dt class="sig sig-object py" id="plans.hydrology.core.compute_flow">
 <span class="sig-prename descclassname"><span class="pre">plans.hydrology.core.</span></span><span class="sig-name descname"><span class="pre">compute_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow_pot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_cap</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/hydrology/core.html#compute_flow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.hydrology.core.compute_flow" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plans.hydrology.core.uh_convolution">
+<span class="sig-prename descclassname"><span class="pre">plans.hydrology.core.</span></span><span class="sig-name descname"><span class="pre">uh_convolution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../_modules/plans/hydrology/core.html#uh_convolution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.hydrology.core.uh_convolution" title="Link to this definition">#</a></dt>
+<dd><p>Convolve a flow time series with a unit hydrograph (full output).</p>
+<p>The routed discharge is computed via discrete convolution:</p>
+<div class="math notranslate nohighlight">
+\[Q(t) = \sum_{\tau=0}^{t} P_e(\tau) \cdot UH(t - \tau)\]</div>
+<p>The output length is:</p>
+<div class="math notranslate nohighlight">
+\[N_{out} = N_{flow} + N_{UH} - 1\]</div>
+<p>which represents the full hydrograph including the recession limb.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flow</strong> (<em>numpy.ndarray</em>) – Input flow time series.</p></li>
+<li><p><strong>uh</strong> (<em>numpy.ndarray</em>) – Unit hydrograph ordinates (must sum to 1).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Routed hydrograph (full length).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If inputs are not 1D or UH does not sum to unity.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>This implementation always preserves mass (no truncation).</p></li>
+<li><p>Additional timesteps correspond to routing memory.</p></li>
+<li><p>Time alignment must be handled externally.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plans.hydrology.core.convert_deg_to_ratio">
+<span class="sig-prename descclassname"><span class="pre">plans.hydrology.core.</span></span><span class="sig-name descname"><span class="pre">convert_deg_to_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_deg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/hydrology/core.html#convert_deg_to_ratio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.hydrology.core.convert_deg_to_ratio" title="Link to this definition">#</a></dt>
+<dd><p>Converts a slope angle from degrees to a decimal ratio (m/m).</p>
+<div class="math notranslate nohighlight">
+\[S_{ratio} = \tan(\theta_{deg})\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>theta_deg</strong> (float or <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Slope angle in degrees</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Slope expressed as m/m</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plans.hydrology.core.convert_deg_to_percent">
+<span class="sig-prename descclassname"><span class="pre">plans.hydrology.core.</span></span><span class="sig-name descname"><span class="pre">convert_deg_to_percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_deg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/hydrology/core.html#convert_deg_to_percent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.hydrology.core.convert_deg_to_percent" title="Link to this definition">#</a></dt>
+<dd><p>Converts a slope angle from degrees to a percentage value.</p>
+<div class="math notranslate nohighlight">
+\[S_{\%} = 100 \cdot \tan(\theta_{deg})\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>theta_deg</strong> (float or <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Slope angle in degrees</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Slope expressed as a percentage</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plans.hydrology.core.convert_m_to_ft">
+<span class="sig-prename descclassname"><span class="pre">plans.hydrology.core.</span></span><span class="sig-name descname"><span class="pre">convert_m_to_ft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/hydrology/core.html#convert_m_to_ft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.hydrology.core.convert_m_to_ft" title="Link to this definition">#</a></dt>
+<dd><p>Converts a length measurement from meters to feet.</p>
+<div class="math notranslate nohighlight">
+\[L_{ft} = L_{m} \cdot 3.28084\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>L</strong> (<em>float</em>) – Length in meters</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Length in feet</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plans.hydrology.core.convert_m2_to_km2">
+<span class="sig-prename descclassname"><span class="pre">plans.hydrology.core.</span></span><span class="sig-name descname"><span class="pre">convert_m2_to_km2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../_modules/plans/hydrology/core.html#convert_m2_to_km2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.hydrology.core.convert_m2_to_km2" title="Link to this definition">#</a></dt>
+<dd><p>Convert area from square meters (m²) to square kilometers (km²).</p>
+<div class="math notranslate nohighlight">
+\[A_{km^2} = \frac{A_{m^2}}{10^6}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>values</strong> (<em>array-like</em>) – Area values in m².</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Area values in km².</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plans.hydrology.core.convert_mm_to_m3s">
+<span class="sig-prename descclassname"><span class="pre">plans.hydrology.core.</span></span><span class="sig-name descname"><span class="pre">convert_mm_to_m3s</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_km2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3600.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/hydrology/core.html#convert_mm_to_m3s"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.hydrology.core.convert_mm_to_m3s" title="Link to this definition">#</a></dt>
+<dd><p>Convert rainfall/runoff from mm per timestep to m³/s.</p>
+<div class="math notranslate nohighlight">
+\[Q = \frac{P \cdot A \cdot 10^{3}}{\Delta t}\]</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(P\)</span> is depth [mm]</p></li>
+<li><p><span class="math notranslate nohighlight">\(A\)</span> is area [km²]</p></li>
+<li><p><span class="math notranslate nohighlight">\(\Delta t\)</span> is timestep [s]</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<em>float</em><em> or </em><em>array-like</em>) – Input series (mm per timestep, e.g. mm/h if dt=3600 s).</p></li>
+<li><p><strong>area_km2</strong> (<em>float</em>) – Drainage area.</p></li>
+<li><p><strong>dt_seconds</strong> (<em>float</em>) – Time step in seconds.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Discharge in m³/s.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="plans.hydrology.core.Model">
@@ -850,11 +1014,11 @@ with a specified frequency.</p>
       </div>
     </a>
     <a class="right-next"
-       href="plans.hydrology.upscaled.html"
+       href="plans.hydrology.design.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">plans.hydrology.upscaled</p>
+        <p class="prev-next-title">plans.hydrology.design</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -882,6 +1046,12 @@ with a specified frequency.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.hydrology.core.compute_decay"><code class="docutils literal notranslate"><span class="pre">compute_decay()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.hydrology.core.compute_flow"><code class="docutils literal notranslate"><span class="pre">compute_flow()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.hydrology.core.uh_convolution"><code class="docutils literal notranslate"><span class="pre">uh_convolution()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.hydrology.core.convert_deg_to_ratio"><code class="docutils literal notranslate"><span class="pre">convert_deg_to_ratio()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.hydrology.core.convert_deg_to_percent"><code class="docutils literal notranslate"><span class="pre">convert_deg_to_percent()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.hydrology.core.convert_m_to_ft"><code class="docutils literal notranslate"><span class="pre">convert_m_to_ft()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.hydrology.core.convert_m2_to_km2"><code class="docutils literal notranslate"><span class="pre">convert_m2_to_km2()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.hydrology.core.convert_mm_to_m3s"><code class="docutils literal notranslate"><span class="pre">convert_mm_to_m3s()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.hydrology.core.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.hydrology.core.Model.__init__"><code class="docutils literal notranslate"><span class="pre">Model.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.hydrology.core.Model._set_fields"><code class="docutils literal notranslate"><span class="pre">Model._set_fields()</span></code></a></li>

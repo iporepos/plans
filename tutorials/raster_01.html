@@ -615,6 +615,38 @@ Metadata:
 </div>
 </div>
 </div>
+<p>Get basic statistics in a <code class="docutils literal notranslate"><span class="pre">dict</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stats_dict</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span>
+<span class="n">pprint</span><span class="o">.</span><span class="n">pp</span><span class="p">(</span><span class="n">stats_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;count&#39;: 9016.0,
+ &#39;sum&#39;: 67032.2890625,
+ &#39;mean&#39;: 7.434814453125,
+ &#39;sd&#39;: 6.424027919769287,
+ &#39;min&#39;: 0.03058564104139805,
+ &#39;p01&#39;: 0.1082386001944542,
+ &#39;p05&#39;: 0.3892689347267151,
+ &#39;p10&#39;: 0.8747305870056152,
+ &#39;p20&#39;: 1.5102627277374268,
+ &#39;p25&#39;: 1.8075969219207764,
+ &#39;p40&#39;: 3.5482723712921143,
+ &#39;p50&#39;: 5.570770263671875,
+ &#39;p60&#39;: 7.9957275390625,
+ &#39;p75&#39;: 12.0378999710083,
+ &#39;p80&#39;: 13.618303298950195,
+ &#39;p90&#39;: 17.239530563354492,
+ &#39;p95&#39;: 19.720626831054688,
+ &#39;p99&#39;: 23.914939880371094,
+ &#39;max&#39;: 29.092971801757812}
+</pre></div>
+</div>
+</div>
+</div>
 <p>View map:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -623,146 +655,33 @@ Metadata:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f1154c9f941da9df797fce96c8243e13d7d3b2f524eaa74ee95c4ddc245d0a53.png" src="../_images/f1154c9f941da9df797fce96c8243e13d7d3b2f524eaa74ee95c4ddc245d0a53.png" />
+<img alt="../_images/9e739cb2d699298d90e0bf80de0f3b9c80d60beb1fa1c26ce90a30d546b6c10d.png" src="../_images/9e739cb2d699298d90e0bf80de0f3b9c80d60beb1fa1c26ce90a30d546b6c10d.png" />
 </div>
 </div>
-<p>Compute data from an <code class="docutils literal notranslate"><span class="pre">Univar</span></code> instance:</p>
+<p>Convert and get an <code class="docutils literal notranslate"><span class="pre">Univar</span></code> instance:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="n">get_univar</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-</div>
-<p>Get statistics</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span><span class="o">.</span><span class="n">stats_df</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">uv</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>statistic</th>
-      <th>value</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>count</td>
-      <td>9016.000000</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>sum</td>
-      <td>67032.289062</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>mean</td>
-      <td>7.434814</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>sd</td>
-      <td>6.424028</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>min</td>
-      <td>0.030586</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>p01</td>
-      <td>0.108239</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>p05</td>
-      <td>0.389269</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>p10</td>
-      <td>0.874731</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>p20</td>
-      <td>1.510263</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>p25</td>
-      <td>1.807597</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>p40</td>
-      <td>3.548272</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>p50</td>
-      <td>5.570770</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>p60</td>
-      <td>7.995728</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>p75</td>
-      <td>12.037900</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>p80</td>
-      <td>13.618303</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>p90</td>
-      <td>17.239531</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>p95</td>
-      <td>19.720627</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>p99</td>
-      <td>23.914940</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>max</td>
-      <td>29.092972</td>
-    </tr>
-  </tbody>
-</table>
-</div></div></div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;plans.analyst.Univar&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>View as Univar:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/91fa9c1a3559bdbb1c43938aa226326b900beed61723f7bf5587ccff47129527.png" src="../_images/91fa9c1a3559bdbb1c43938aa226326b900beed61723f7bf5587ccff47129527.png" />
+</div>
 </div>
 </section>
 <section id="export-to-other-file">
@@ -822,7 +741,7 @@ File was created: True
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/74cd9d8c5d069ead8073d34de36191ae3eac989725e9a7d0cfff41a0d8499c58.png" src="../_images/74cd9d8c5d069ead8073d34de36191ae3eac989725e9a7d0cfff41a0d8499c58.png" />
+<img alt="../_images/bda924e4a7ae987acb17d3f7f7e960b74416c4d2af4791ab34d25cafd6fb0495.png" src="../_images/bda924e4a7ae987acb17d3f7f7e960b74416c4d2af4791ab34d25cafd6fb0495.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -877,7 +796,7 @@ No-data value: -99999
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fe6f334b78ba934c32b334077f1ee14960b2f0252922f5fbeda2a5f92827b3be.png" src="../_images/fe6f334b78ba934c32b334077f1ee14960b2f0252922f5fbeda2a5f92827b3be.png" />
+<img alt="../_images/4ecac6dddec18a5afb88ec4e87bd826de95fe1a227855acb582e0055814364ab.png" src="../_images/4ecac6dddec18a5afb88ec4e87bd826de95fe1a227855acb582e0055814364ab.png" />
 </div>
 </div>
 </section>
@@ -1051,6 +970,479 @@ No-data value: 255
 </table>
 </div></div></div>
 </div>
+<p>Get areas table:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">areas_df</span> <span class="o">=</span> <span class="n">qualiraster</span><span class="o">.</span><span class="n">get_areas</span><span class="p">()</span>
+<span class="n">areas_df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>name</th>
+      <th>alias</th>
+      <th>color</th>
+      <th>count</th>
+      <th>area_m2</th>
+      <th>area_ha</th>
+      <th>area_km2</th>
+      <th>area_f</th>
+      <th>area_%</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>3</td>
+      <td>Forest</td>
+      <td>Fr</td>
+      <td>#1f8d49</td>
+      <td>843</td>
+      <td>758700.0</td>
+      <td>75.87</td>
+      <td>0.7587</td>
+      <td>0.093500</td>
+      <td>9.350044</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>4</td>
+      <td>Savanna</td>
+      <td>Sv</td>
+      <td>#7dc975</td>
+      <td>4644</td>
+      <td>4179600.0</td>
+      <td>417.96</td>
+      <td>4.1796</td>
+      <td>0.515084</td>
+      <td>51.508429</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>5</td>
+      <td>Mangrove</td>
+      <td>Mg</td>
+      <td>#04381d</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>6</td>
+      <td>Floodable Forest</td>
+      <td>Fl</td>
+      <td>#026975</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>9</td>
+      <td>Forest Plantation</td>
+      <td>Fp</td>
+      <td>#7a5900</td>
+      <td>43</td>
+      <td>38700.0</td>
+      <td>3.87</td>
+      <td>0.0387</td>
+      <td>0.004769</td>
+      <td>0.476930</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>11</td>
+      <td>Wetland</td>
+      <td>We</td>
+      <td>#519799</td>
+      <td>6</td>
+      <td>5400.0</td>
+      <td>0.54</td>
+      <td>0.0054</td>
+      <td>0.000665</td>
+      <td>0.066548</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>12</td>
+      <td>Grassland</td>
+      <td>Gr</td>
+      <td>#d6bc74</td>
+      <td>1183</td>
+      <td>1064700.0</td>
+      <td>106.47</td>
+      <td>1.0647</td>
+      <td>0.131211</td>
+      <td>13.121118</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>13</td>
+      <td>Not-Forest</td>
+      <td>Nf</td>
+      <td>#d89f5c</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>15</td>
+      <td>Pasture</td>
+      <td>Ps</td>
+      <td>#edde8e</td>
+      <td>1117</td>
+      <td>1005300.0</td>
+      <td>100.53</td>
+      <td>1.0053</td>
+      <td>0.123891</td>
+      <td>12.389086</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>20</td>
+      <td>Sugar cane</td>
+      <td>Sc</td>
+      <td>#db7093</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>21</td>
+      <td>Mosaic of Uses</td>
+      <td>Mu</td>
+      <td>#ffefc3</td>
+      <td>505</td>
+      <td>454500.0</td>
+      <td>45.45</td>
+      <td>0.4545</td>
+      <td>0.056012</td>
+      <td>5.601154</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>23</td>
+      <td>Beach, Dune and Sand Spot</td>
+      <td>Sd</td>
+      <td>#ffa07a</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>24</td>
+      <td>Urban Area</td>
+      <td>Ur</td>
+      <td>#d4271e</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>25</td>
+      <td>Non-Vegetated</td>
+      <td>Nv</td>
+      <td>#db4d4f</td>
+      <td>137</td>
+      <td>123300.0</td>
+      <td>12.33</td>
+      <td>0.1233</td>
+      <td>0.015195</td>
+      <td>1.519521</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>29</td>
+      <td>Rocky Outcrop</td>
+      <td>Ro</td>
+      <td>#ffaa5f</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>30</td>
+      <td>Mining</td>
+      <td>Mi</td>
+      <td>#9c0027</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>31</td>
+      <td>Aquaculture</td>
+      <td>Aq</td>
+      <td>#091077</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>32</td>
+      <td>Hypersaline Tidal Flat</td>
+      <td>Sf</td>
+      <td>#fc8114</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>33</td>
+      <td>River, Lake and Ocean</td>
+      <td>W</td>
+      <td>#2532e4</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>35</td>
+      <td>Palm Oil</td>
+      <td>Po</td>
+      <td>#9065d0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>39</td>
+      <td>Soybean</td>
+      <td>Sy</td>
+      <td>#f5b3c8</td>
+      <td>538</td>
+      <td>484200.0</td>
+      <td>48.42</td>
+      <td>0.4842</td>
+      <td>0.059672</td>
+      <td>5.967169</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>40</td>
+      <td>Rice</td>
+      <td>Rc</td>
+      <td>#c71585</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>41</td>
+      <td>Temporary Crops</td>
+      <td>Tc</td>
+      <td>#f54ca9</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>46</td>
+      <td>Coffee</td>
+      <td>Cf</td>
+      <td>#d68fe2</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>47</td>
+      <td>Citrus</td>
+      <td>Ci</td>
+      <td>#9932cc</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>48</td>
+      <td>Other Perennial Crops</td>
+      <td>Pc</td>
+      <td>#e6ccff</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>49</td>
+      <td>Wooded Sandbank Vegetation</td>
+      <td>Ws</td>
+      <td>#02d659</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>50</td>
+      <td>Herbaceous Sandbank Vegetation</td>
+      <td>Hs</td>
+      <td>#ad5100</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>62</td>
+      <td>Cotton</td>
+      <td>Ct</td>
+      <td>#ff69b4</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>101</td>
+      <td>Dirty Road</td>
+      <td>Rd</td>
+      <td>#D2CFC0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>102</td>
+      <td>Paved Road</td>
+      <td>Rs</td>
+      <td>#D4AD9B</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>31</th>
+      <td>103</td>
+      <td>Railway</td>
+      <td>Rr</td>
+      <td>#B5A295</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>255</td>
+      <td>Not Observed</td>
+      <td>No</td>
+      <td>#ffffff</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>0.0000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
 <p>View scheme provides a horizontal bar for aereal ratios:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1059,7 +1451,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d0f5f7a7889a141271ce5b5f7dedbef47b4d709e71395eff43482992af25072c.png" src="../_images/d0f5f7a7889a141271ce5b5f7dedbef47b4d709e71395eff43482992af25072c.png" />
+<img alt="../_images/6b5332f1f65a3cb98344959eed6ed457282538fced236a3c6141c1b67f07b0fe.png" src="../_images/6b5332f1f65a3cb98344959eed6ed457282538fced236a3c6141c1b67f07b0fe.png" />
 </div>
 </div>
 </section>
@@ -1080,7 +1472,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/29951f9682ebf368fe58ee313b722f5bd8d7ab031c1f5f87777bdab1e18d935b.png" src="../_images/29951f9682ebf368fe58ee313b722f5bd8d7ab031c1f5f87777bdab1e18d935b.png" />
+<img alt="../_images/f3b924a9ce02b06f64271c37be446e949e72b84607e9bec20577d894fc745372.png" src="../_images/f3b924a9ce02b06f64271c37be446e949e72b84607e9bec20577d894fc745372.png" />
 </div>
 </div>
 </section>
@@ -1097,7 +1489,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/bc8f79f477fc4d71ee99806b0ed84bc130d88c141e3eb7ee8c2bb76571af2844.png" src="../_images/bc8f79f477fc4d71ee99806b0ed84bc130d88c141e3eb7ee8c2bb76571af2844.png" />
+<img alt="../_images/ba8fe57c765d3055895a73ee3a8b0d877918671d9af9747e535da3cf3d998eab.png" src="../_images/ba8fe57c765d3055895a73ee3a8b0d877918671d9af9747e535da3cf3d998eab.png" />
 </div>
 </div>
 </section>
@@ -1114,7 +1506,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/57f0fd4910e13e0cbc00286ed848ce386d4f4585df0f16bacf94af210aa4f559.png" src="../_images/57f0fd4910e13e0cbc00286ed848ce386d4f4585df0f16bacf94af210aa4f559.png" />
+<img alt="../_images/9f203c327b1f31567f5e16bd9effc982e80d1882f518aec1a303b1ca84683043.png" src="../_images/9f203c327b1f31567f5e16bd9effc982e80d1882f518aec1a303b1ca84683043.png" />
 </div>
 </div>
 </section>
@@ -1131,7 +1523,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/62ba934e9e0364e1331024358c67c830bd8786f6284ef0f414809fd0e5e6eab9.png" src="../_images/62ba934e9e0364e1331024358c67c830bd8786f6284ef0f414809fd0e5e6eab9.png" />
+<img alt="../_images/24a88ac20aadefe36796be93cc12ac0ab56d9ee6ffa43b38f530a8c14c3757ad.png" src="../_images/24a88ac20aadefe36796be93cc12ac0ab56d9ee6ffa43b38f530a8c14c3757ad.png" />
 </div>
 </div>
 </section>
@@ -1150,7 +1542,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8a56761dbfc3ac9329ebee54841402c710c60f2d6bfc9137aa39fe4da037ad73.png" src="../_images/8a56761dbfc3ac9329ebee54841402c710c60f2d6bfc9137aa39fe4da037ad73.png" />
+<img alt="../_images/48a5ae9088943b8174c5cc8b3bbbf5113af28b6feaf9a692e825abd56ce210b3.png" src="../_images/48a5ae9088943b8174c5cc8b3bbbf5113af28b6feaf9a692e825abd56ce210b3.png" />
 </div>
 </div>
 </section>
@@ -1164,7 +1556,7 @@ No-data value: 255
 <span class="n">soils_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_soils</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;soils.tif&quot;</span>
 <span class="c1"># define table</span>
 <span class="n">soils_table</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_soils</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;soils_attributes.csv&quot;</span>
-<span class="c1"># define name and datetime</span>
+<span class="c1"># define raster</span>
 <span class="n">soils_raster</span> <span class="o">=</span> <span class="n">Soils</span><span class="p">()</span>
 <span class="n">soils_raster</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_data</span><span class="o">=</span><span class="n">soils_file</span><span class="p">,</span> <span class="n">file_table</span><span class="o">=</span><span class="n">soils_table</span><span class="p">)</span>
 <span class="n">soils_raster</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
@@ -1172,13 +1564,13 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/6ea058aa664530a777fa39774a708c34c5fdce0b14c567709d6bce696863f539.png" src="../_images/6ea058aa664530a777fa39774a708c34c5fdce0b14c567709d6bce696863f539.png" />
+<img alt="../_images/71e102b42d177afc3cc404c2a49dc86f436ac2408c5bd128c0a149b22231cc26.png" src="../_images/71e102b42d177afc3cc404c2a49dc86f436ac2408c5bd128c0a149b22231cc26.png" />
 </div>
 </div>
 </section>
 <section id="lulc-raster">
 <h4><code class="docutils literal notranslate"><span class="pre">LULC</span></code> raster<a class="headerlink" href="#lulc-raster" title="Link to this heading">#</a></h4>
-<p>LULC (Land Use and Land Cover) requires the Attrituve Table and date to be provided.</p>
+<p>LULC (Land Use and Land Cover) requires the Attribute Table and date to be provided.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.spatial</span><span class="w"> </span><span class="kn">import</span> <span class="n">LULC</span>
@@ -1195,7 +1587,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2102dc42c99fe4cb0430a85f2176065c9e85f7443c103f472af493c523cac757.png" src="../_images/2102dc42c99fe4cb0430a85f2176065c9e85f7443c103f472af493c523cac757.png" />
+<img alt="../_images/d81248e410288a3689947788ba192afd7a2d476154b32a9a0fbebdc862b46782.png" src="../_images/d81248e410288a3689947788ba192afd7a2d476154b32a9a0fbebdc862b46782.png" />
 </div>
 </div>
 </section>
@@ -1215,7 +1607,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5742e03c9f566e233b11d664f37d83ee5680e30a9ac414da37a99a0e3ebf86a4.png" src="../_images/5742e03c9f566e233b11d664f37d83ee5680e30a9ac414da37a99a0e3ebf86a4.png" />
+<img alt="../_images/7c5c5547a0845d2db149749e3cb7e9b5dffedca12dac02e381a122bca5f0b958.png" src="../_images/7c5c5547a0845d2db149749e3cb7e9b5dffedca12dac02e381a122bca5f0b958.png" />
 </div>
 </div>
 </section>
@@ -1235,7 +1627,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b5a47b4111df330c9a33e624538418e178224c3bf10b4887d2ffc54114261a8a.png" src="../_images/b5a47b4111df330c9a33e624538418e178224c3bf10b4887d2ffc54114261a8a.png" />
+<img alt="../_images/2d70c62c496ec1b248df0c28fcd8f590392f6275797a1e74585132a07ed0ff89.png" src="../_images/2d70c62c496ec1b248df0c28fcd8f590392f6275797a1e74585132a07ed0ff89.png" />
 </div>
 </div>
 <p>The AOI mask can be realeased:</p>
@@ -1248,7 +1640,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ad6e501c699c76bc51acb58d483ef24eb574791d664eb97405524eb7f2a85bee.png" src="../_images/ad6e501c699c76bc51acb58d483ef24eb574791d664eb97405524eb7f2a85bee.png" />
+<img alt="../_images/15266585da6141829f45951cacbbd170e6e3d23fb99faad0be0febbc72bed7c2.png" src="../_images/15266585da6141829f45951cacbbd170e6e3d23fb99faad0be0febbc72bed7c2.png" />
 </div>
 </div>
 <p>The same can be done with qualitative maps:</p>
@@ -1261,7 +1653,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f228ae8bd1fe96dd30f35763892b5528d97455e4a3dc9d1940d566b12b3dd836.png" src="../_images/f228ae8bd1fe96dd30f35763892b5528d97455e4a3dc9d1940d566b12b3dd836.png" />
+<img alt="../_images/5a70b4189f846fa5b341818d76fd38631a370fd76af38f7c8b3991e2b997fb70.png" src="../_images/5a70b4189f846fa5b341818d76fd38631a370fd76af38f7c8b3991e2b997fb70.png" />
 </div>
 </div>
 </section>

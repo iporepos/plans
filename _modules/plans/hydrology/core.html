@@ -503,6 +503,174 @@
 
 
 
+<div class="viewcode-block" id="uh_convolution">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.uh_convolution">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">uh_convolution</span><span class="p">(</span><span class="n">flow</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">uh</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convolve a flow time series with a unit hydrograph (full output).</span>
+
+<span class="sd">    The routed discharge is computed via discrete convolution:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        Q(t) = \\sum_{\\tau=0}^{t} P_e(\\tau) \\cdot UH(t - \\tau)</span>
+
+<span class="sd">    The output length is:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        N_{out} = N_{flow} + N_{UH} - 1</span>
+
+<span class="sd">    which represents the full hydrograph including the recession limb.</span>
+
+<span class="sd">    :param flow: Input flow time series.</span>
+<span class="sd">    :type flow: numpy.ndarray</span>
+<span class="sd">    :param uh: Unit hydrograph ordinates (must sum to 1).</span>
+<span class="sd">    :type uh: numpy.ndarray</span>
+
+<span class="sd">    :return: Routed hydrograph (full length).</span>
+<span class="sd">    :rtype: numpy.ndarray</span>
+
+<span class="sd">    :raises ValueError: If inputs are not 1D or UH does not sum to unity.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        - This implementation always preserves mass (no truncation).</span>
+<span class="sd">        - Additional timesteps correspond to routing memory.</span>
+<span class="sd">        - Time alignment must be handled externally.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">flow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">flow</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">uh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">uh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">flow</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">uh</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Inputs must be 1D arrays.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">uh</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unit hydrograph must sum to 1.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">flow</span><span class="p">,</span> <span class="n">uh</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;full&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="convert_deg_to_ratio">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.convert_deg_to_ratio">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_deg_to_ratio</span><span class="p">(</span><span class="n">theta_deg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a slope angle from degrees to a decimal ratio (m/m).</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        S_{ratio} = \\tan(\\theta_{deg})</span>
+
+<span class="sd">    :param theta_deg: Slope angle in degrees</span>
+<span class="sd">    :type theta_deg: float or :class:`numpy.ndarray`</span>
+<span class="sd">    :return: Slope expressed as m/m</span>
+<span class="sd">    :rtype: float or :class:`numpy.ndarray`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta_deg</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="convert_deg_to_percent">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.convert_deg_to_percent">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_deg_to_percent</span><span class="p">(</span><span class="n">theta_deg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a slope angle from degrees to a percentage value.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        S_{\\%} = 100 \\cdot \\tan(\\theta_{deg})</span>
+
+
+<span class="sd">    :param theta_deg: Slope angle in degrees</span>
+<span class="sd">    :type theta_deg: float or :class:`numpy.ndarray`</span>
+<span class="sd">    :return: Slope expressed as a percentage</span>
+<span class="sd">    :rtype: float or :class:`numpy.ndarray`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">convert_deg_to_ratio</span><span class="p">(</span><span class="n">theta_deg</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="convert_m_to_ft">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.convert_m_to_ft">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_m_to_ft</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a length measurement from meters to feet.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        L_{ft} = L_{m} \\cdot 3.28084</span>
+
+<span class="sd">    :param L: Length in meters</span>
+<span class="sd">    :type L: float</span>
+<span class="sd">    :return: Length in feet</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mf">3.28084</span> <span class="o">*</span> <span class="n">L</span></div>
+
+
+
+<div class="viewcode-block" id="convert_m2_to_km2">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.convert_m2_to_km2">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_m2_to_km2</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert area from square meters (m²) to square kilometers (km²).</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        A_{km^2} = \\frac{A_{m^2}}{10^6}</span>
+
+<span class="sd">    :param values: Area values in m².</span>
+<span class="sd">    :type values: array-like</span>
+
+<span class="sd">    :return: Area values in km².</span>
+<span class="sd">    :rtype: numpy.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">arr</span> <span class="o">/</span> <span class="mf">1e6</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="convert_mm_to_m3s">
+<a class="viewcode-back" href="../../../generated/plans.hydrology.core.html#plans.hydrology.core.convert_mm_to_m3s">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_mm_to_m3s</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">area_km2</span><span class="p">,</span> <span class="n">dt_seconds</span><span class="o">=</span><span class="mf">3600.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert rainfall/runoff from mm per timestep to m³/s.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        Q = \\frac{P \\cdot A \\cdot 10^{3}}{\\Delta t}</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        - :math:`P` is depth [mm]</span>
+<span class="sd">        - :math:`A` is area [km²]</span>
+<span class="sd">        - :math:`\\Delta t` is timestep [s]</span>
+
+<span class="sd">    :param values: Input series (mm per timestep, e.g. mm/h if dt=3600 s).</span>
+<span class="sd">    :type values: float or array-like</span>
+<span class="sd">    :param area_km2: Drainage area.</span>
+<span class="sd">    :type area_km2: float</span>
+<span class="sd">    :param dt_seconds: Time step in seconds.</span>
+<span class="sd">    :type dt_seconds: float</span>
+
+<span class="sd">    :return: Discharge in m³/s.</span>
+<span class="sd">    :rtype: float or numpy.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">values</span> <span class="o">*</span> <span class="n">area_km2</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">)</span> <span class="o">/</span> <span class="n">dt_seconds</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
 <span class="c1"># ... {develop}</span>
 
 <span class="c1"># FUNCTIONS -- Module-level</span>

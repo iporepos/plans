@@ -1803,6 +1803,7 @@
                 <span class="s2">&quot;drawstyle&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">&quot;n_bins&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
                 <span class="s2">&quot;n_dates&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;format_dates&quot;</span><span class="p">:</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;include_eva&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="c1"># stats locators</span>
                 <span class="s2">&quot;x_stats&quot;</span><span class="p">:</span> <span class="mf">0.73</span><span class="p">,</span>
@@ -2060,7 +2061,11 @@
                 <span class="n">y2</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;yvar&quot;</span><span class="p">]],</span>
                 <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;color_fill&quot;</span><span class="p">],</span>
                 <span class="n">alpha</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;alpha_fill&quot;</span><span class="p">],</span>
-                <span class="n">step</span><span class="o">=</span><span class="s2">&quot;post&quot;</span> <span class="k">if</span> <span class="n">specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;drawstyle&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">step</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;drawstyle&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;drawstyle&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="kc">None</span>
+                <span class="p">),</span>
                 <span class="n">zorder</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;zorder_data&quot;</span><span class="p">],</span>
                 <span class="n">label</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">&quot;data_label&quot;</span><span class="p">],</span>
                 <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
@@ -2100,7 +2105,9 @@
 
             <span class="c1"># Apply to plot</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">ticks</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="n">d</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ticks</span><span class="p">])</span>
+            <span class="n">format_dates</span> <span class="o">=</span> <span class="n">specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format_dates&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">format_dates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="n">d</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">format_dates</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ticks</span><span class="p">])</span>
 
         <span class="c1"># handle subtitle</span>
         <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;subtitle_data&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
