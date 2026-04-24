@@ -105,6 +105,156 @@ def compute_flow(flow_pot, flow_cap):
     return np.where(flow_pot > flow_cap, flow_cap, flow_pot)
 
 
+def uh_convolution(flow: np.ndarray, uh: np.ndarray) -> np.ndarray:
+    """
+    Convolve a flow time series with a unit hydrograph (full output).
+
+    The routed discharge is computed via discrete convolution:
+
+    .. math::
+
+        Q(t) = \\sum_{\\tau=0}^{t} P_e(\\tau) \\cdot UH(t - \\tau)
+
+    The output length is:
+
+    .. math::
+
+        N_{out} = N_{flow} + N_{UH} - 1
+
+    which represents the full hydrograph including the recession limb.
+
+    :param flow: Input flow time series.
+    :type flow: numpy.ndarray
+    :param uh: Unit hydrograph ordinates (must sum to 1).
+    :type uh: numpy.ndarray
+
+    :return: Routed hydrograph (full length).
+    :rtype: numpy.ndarray
+
+    :raises ValueError: If inputs are not 1D or UH does not sum to unity.
+
+    .. note::
+        - This implementation always preserves mass (no truncation).
+        - Additional timesteps correspond to routing memory.
+        - Time alignment must be handled externally.
+    """
+
+    flow = np.asarray(flow, dtype=float)
+    uh = np.asarray(uh, dtype=float)
+
+    if flow.ndim != 1 or uh.ndim != 1:
+        raise ValueError("Inputs must be 1D arrays.")
+
+    if not np.isclose(uh.sum(), 1.0, atol=1e-6):
+        raise ValueError("Unit hydrograph must sum to 1.")
+
+    return np.convolve(flow, uh, mode="full")
+
+
+def convert_deg_to_ratio(theta_deg):
+    """
+    Converts a slope angle from degrees to a decimal ratio (m/m).
+
+    .. math::
+
+        S_{ratio} = \\tan(\\theta_{deg})
+
+    :param theta_deg: Slope angle in degrees
+    :type theta_deg: float or :class:`numpy.ndarray`
+    :return: Slope expressed as m/m
+    :rtype: float or :class:`numpy.ndarray`
+    """
+    return np.tan(np.deg2rad(theta_deg))
+
+
+def convert_deg_to_percent(theta_deg):
+    """
+    Converts a slope angle from degrees to a percentage value.
+
+    .. math::
+
+        S_{\\%} = 100 \\cdot \\tan(\\theta_{deg})
+
+
+    :param theta_deg: Slope angle in degrees
+    :type theta_deg: float or :class:`numpy.ndarray`
+    :return: Slope expressed as a percentage
+    :rtype: float or :class:`numpy.ndarray`
+    """
+    return 100 * convert_deg_to_ratio(theta_deg)
+
+
+def convert_m_to_ft(L):
+    """
+    Converts a length measurement from meters to feet.
+
+    .. math::
+
+        L_{ft} = L_{m} \\cdot 3.28084
+
+    :param L: Length in meters
+    :type L: float
+    :return: Length in feet
+    :rtype: float
+    """
+    return 3.28084 * L
+
+
+def convert_m2_to_km2(values) -> np.ndarray:
+    """
+    Convert area from square meters (m²) to square kilometers (km²).
+
+    .. math::
+
+        A_{km^2} = \\frac{A_{m^2}}{10^6}
+
+    :param values: Area values in m².
+    :type values: array-like
+
+    :return: Area values in km².
+    :rtype: numpy.ndarray
+    """
+    arr = np.asarray(values, dtype=float)
+    result = arr / 1e6
+
+    if np.isscalar(values):
+        return float(result)
+
+    return result
+
+
+def convert_mm_to_m3s(values, area_km2, dt_seconds=3600.0):
+    """
+    Convert rainfall/runoff from mm per timestep to m³/s.
+
+    .. math::
+
+        Q = \\frac{P \\cdot A \\cdot 10^{3}}{\\Delta t}
+
+    where:
+        - :math:`P` is depth [mm]
+        - :math:`A` is area [km²]
+        - :math:`\\Delta t` is timestep [s]
+
+    :param values: Input series (mm per timestep, e.g. mm/h if dt=3600 s).
+    :type values: float or array-like
+    :param area_km2: Drainage area.
+    :type area_km2: float
+    :param dt_seconds: Time step in seconds.
+    :type dt_seconds: float
+
+    :return: Discharge in m³/s.
+    :rtype: float or numpy.ndarray
+    """
+    arr = np.asarray(values, dtype=float)
+    result = (values * area_km2 * 1e3) / dt_seconds
+
+    if np.isscalar(values):
+        return float(result)
+
+    return result
+
+
 # ... {develop}
 
 # FUNCTIONS -- Module-level

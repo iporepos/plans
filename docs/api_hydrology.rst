@@ -11,6 +11,11 @@
 .. autosummary::
    :toctree: generated
 
+   plans.hydrology.design
+
+.. autosummary::
+   :toctree: generated
+
    plans.hydrology.upscaled
 
 .. autosummary::

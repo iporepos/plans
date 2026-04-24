@@ -1338,6 +1338,7 @@ class TimeSeries(Univar):
                 "drawstyle": None,
                 "n_bins": 100,
                 "n_dates": None,
+                "format_dates": "%Y-%m-%d",
                 "include_eva": False,
                 # stats locators
                 "x_stats": 0.73,
@@ -1586,7 +1587,11 @@ class TimeSeries(Univar):
                 y2=data[specs["yvar"]],
                 color=specs["color_fill"],
                 alpha=specs["alpha_fill"],
-                step="post" if specs.get("drawstyle", False) else None,
+                step=(
+                    specs["drawstyle"].split("-")[1]
+                    if specs.get("drawstyle", False)
+                    else None
+                ),
                 zorder=specs["zorder_data"],
                 label=specs["data_label"],
                 edgecolor="none",
@@ -1626,7 +1631,9 @@ class TimeSeries(Univar):
 
             # Apply to plot
             ax.set_xticks(ticks)
-            ax.set_xticklabels([d.strftime("%Y-%m-%d") for d in ticks])
+            format_dates = specs.get("format_dates", None)
+            if format_dates is not None:
+                ax.set_xticklabels([d.strftime(format_dates) for d in ticks])
 
         # handle subtitle
         if specs["subtitle_data"] is not None:
