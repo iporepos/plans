@@ -788,7 +788,6 @@ class Univar(DataSet):
 
         # overwrite parameters
         if "simple" in layout:
-            specs["title"] = None
             specs["ax_hist"] = False
             specs["ax_cdf"] = False
 

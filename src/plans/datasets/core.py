@@ -1575,6 +1575,7 @@ class TimeSeries(Univar):
 
     @staticmethod
     def plot_series(data, ax, specs):
+        # todo docstring
 
         if specs["fill"]:
             if specs["color_fill"] is None:
@@ -1598,6 +1599,12 @@ class TimeSeries(Univar):
             )
 
         if not specs["fill_only"]:
+
+            if specs["fill"]:
+                label = None
+            else:
+                label = specs["data_label"]
+
             ax.plot(
                 data[specs["xvar"]],
                 data[specs["yvar"]],
@@ -1606,7 +1613,7 @@ class TimeSeries(Univar):
                 color=specs["color"],
                 alpha=specs["alpha"],
                 drawstyle=specs["drawstyle"],
-                label=specs["data_label"],
+                label=label,
                 zorder=specs["zorder_data"],
             )
 

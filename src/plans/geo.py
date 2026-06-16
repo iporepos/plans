@@ -117,7 +117,7 @@ def get_basins_by_gauges(
     dissolve=True,
 ):
     """
-    Retrieve a list of upstream basins for a list of gauges.
+    Retrieve a list of upstream basins for a list of river gauges.
 
     :param basins: A GeoDataFrame containing the basin features.
     :type basins: :class:`geopandas.GeoDataFrame`
@@ -138,7 +138,7 @@ def get_basins_by_gauges(
 
     **Notes**
 
-    This function identifies the basins in which each gauge
+    This function identifies the basins in which each river gauge
     is located and then finds all upstream basins for each of these basins.
     The resulting GeoDataFrame can optionally be dissolved into a single feature for each gauge.
 
@@ -163,7 +163,7 @@ def get_basins_by_gauges(
         ls_basins = []
         for i in range(len(gauges)):
             gauge_id = gauges[field_gauge].values[i]
-            basins_upstream = get_upstream_features(
+            basins_upstream = get_upstream_features_iterative(
                 features=basins,
                 field_id=field_basin,
                 field_id_down=field_basin_down,
@@ -185,7 +185,61 @@ def get_basins_by_gauges(
         return None
 
 
-def get_upstream_features(
+def get_upstream_features_iterative(
+    features,
+    field_id,
+    field_id_down,
+    start_id,
+    include_start=True,
+    field_geometry="geometry",
+):
+    """
+    Retrieves all upstream features from a given starting point using an
+    iterative (stack-based) traversal.
+
+    :param features: A DataFrame containing all features.
+    :type features: :class:`pandas.DataFrame` or :class:`geopandas.GeoDataFrame`
+    :param field_id: The name of the column containing the feature's unique ID.
+    :type field_id: str
+    :param field_id_down: The name of the column containing the ID of the downstream feature.
+    :type field_id_down: str
+    :param start_id: The ID of the starting feature.
+    :type start_id: int or str
+    :param include_start: [optional] Whether to include the starting feature in the output. Default value = True
+    :type include_start: bool
+    :param field_geometry: [optional] The name of the column containing the geometry of the feature. Default value = "geometry"
+    :type field_geometry: str
+    :return: A DataFrame with the upstream features.
+    :rtype: :class:`pandas.DataFrame` or :class:`geopandas.GeoDataFrame`
+    """
+
+    # precompute a lookup: downstream id -> list of upstream (child) ids
+    # this replaces repeated full-table filtering at each traversal step
+    children = features.groupby(field_id_down)[field_id].apply(list).to_dict()
+
+    # iterative depth-first traversal using an explicit stack
+    # avoids Python's recursion depth limit for long upstream chains
+    visited = []
+    stack = [start_id]
+    while stack:
+        current = stack.pop()
+        visited.append(current)
+        # push all features draining into the current one
+        stack.extend(children.get(current, []))
+
+    # optionally drop the starting feature from the result
+    if not include_start:
+        visited = [v for v in visited if v != start_id]
+
+    # select only the relevant columns for output
+    ls_fields = [field_id, field_id_down]
+    if field_geometry is not None:
+        ls_fields.append(field_geometry)
+
+    return features[features[field_id].isin(visited)][ls_fields].reset_index(drop=True)
+
+
+def get_upstream_features_recursive(
     features,
     field_id,
     field_id_down,
@@ -195,7 +249,9 @@ def get_upstream_features(
     is_starting=True,
 ):
     """
-    Retrieves all upstream features from a given starting point.
+    Retrieves all upstream features from a given starting point using a recursive system.
+
+
 
     :param features: A DataFrame containing all features.
     :type features: :class:`pandas.DataFrame` or :class:`geopandas.GeoDataFrame`
@@ -239,7 +295,7 @@ def get_upstream_features(
             # assess the local new starting point
             lcl_start_id = features_up[field_id].values[i]
             # enter recursive mode
-            output = get_upstream_features(
+            output = get_upstream_features_recursive(
                 features=features,
                 field_id=field_id,
                 field_id_down=field_id_down,
