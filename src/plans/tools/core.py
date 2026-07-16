@@ -4,16 +4,27 @@
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
 """
-Core tool objects
+Core tool objects for the PLANS toolset.
+
+This module provides the base building blocks shared by PLANS
+command-line tools:
+
+* :class:`ToolParser` -- a thin wrapper around :class:`argparse.ArgumentParser`
+  that registers the arguments common to every PLANS tool and offers
+  convenience methods to add tool-specific arguments.
+* :class:`Tool` -- a base pipeline class implementing a generic
+  ``load -> process -> export`` workflow, with per-step logging,
+  elapsed-time tracking and a plain-text run report.
+* :func:`parse_spatial_parameters` and :func:`export_parameters` -- helper
+  functions to assemble and export spatialized parameter sets.
 
 Features
 --------
-todo docstring
 
-* {feature 1}
-* {feature 2}
-* {feature 3}
-* {etc}
+* Standardized CLI argument parsing shared across PLANS tools.
+* A base tool pipeline handling logging, step timing and report generation.
+* Helpers to parse spatial parameter tables and export parameter rasters,
+  catalogs and figures.
 
 """
 
@@ -50,7 +61,26 @@ from plans.config import parse_files, parse_fields
 
 
 def parse_spatial_parameters(title, file_parameters):
-    # todo docstring
+    """Build a spatial parameters table for a given file type.
+
+    Looks up the internal file name associated with ``title`` in the
+    files specification table, selects the fields flagged for that file
+    in the fields specification table, and merges them with the values
+    provided in ``file_parameters`` to assemble a parameters table ready
+    for spatialization.
+
+    :param title: title of the target file, as registered in the files
+        specification table (see :func:`plans.config.parse_files`).
+    :type title: str
+    :param file_parameters: path to the ``;``-separated CSV file holding
+        the parameter values, with at least ``field`` and ``value``
+        columns.
+    :type file_parameters: str
+    :return: table with columns ``field`` (prefixed with ``w_``), ``name``,
+        ``value``, ``units`` and ``description`` for each parameter
+        associated with the target file.
+    :rtype: pandas.DataFrame
+    """
     df_files = parse_files()
     file_name = df_files.loc[df_files["title"] == title, "name"].values[0]
 
@@ -79,7 +109,35 @@ def parse_spatial_parameters(title, file_parameters):
 
 
 def export_parameters(folder_output, parameters, basin, views, prefix, label, logger):
-    # todo docstring
+    """Export a parameters catalog, raster maps and optional figures.
+
+    Writes the parameters catalog to a CSV file and exports each
+    parameter raster as a GeoTIFF. If ``views`` is enabled, also
+    generates a figure for the full raster extent plus a second figure
+    masked to the main basin extent.
+
+    :param folder_output: output folder where files are written.
+    :type folder_output: str or pathlib.Path
+    :param parameters: parameters collection object exposing a ``catalog``
+        (:class:`pandas.DataFrame`) and a ``collection`` mapping of raster
+        objects (each exposing ``file_data``, ``export_tif``, ``view``,
+        ``apply_aoi_mask`` and ``view_specs``).
+    :type parameters: object
+    :param basin: basin/raster object providing the ``data`` mask used to
+        clip parameters to the main basin extent.
+    :type basin: object
+    :param views: whether to export figures in addition to the raster
+        catalog.
+    :type views: bool
+    :param prefix: filename prefix for the parameters catalog file.
+    :type prefix: str
+    :param label: label used in log messages.
+    :type label: str
+    :param logger: logger instance used to report progress.
+    :type logger: logging.Logger
+    :return: ``None``
+    :rtype: None
+    """
 
     # export catalog
     # ---------------------------------------------------------------
@@ -123,9 +181,29 @@ def export_parameters(folder_output, parameters, basin, views, prefix, label, lo
 
 
 class ToolParser:
-    # todo docstring
+    """Wrapper around :class:`argparse.ArgumentParser` for PLANS CLI tools.
+
+    On instantiation, registers the arguments shared by every PLANS tool
+    (``--output``, ``--verbose``, ``--label`` and ``--project``).
+    Tool-specific arguments can be added afterwards through the ``add_*``
+    methods (e.g. :meth:`add_parameters`, :meth:`add_climate`,
+    :meth:`add_lulc`).
+
+    :param parser: argument parser instance to configure.
+    :type parser: argparse.ArgumentParser
+
+    :ivar parser: the wrapped argument parser.
+    :vartype parser: argparse.ArgumentParser
+    :ivar output_default: default value shown for the ``--output`` argument.
+    :vartype output_default: str
+    """
 
     def __init__(self, parser):
+        """Initialize the wrapper and register the base arguments.
+
+        :param parser: argument parser instance to configure.
+        :type parser: argparse.ArgumentParser
+        """
         self.parser = parser
         self.output_default = "C:/data"
 
@@ -136,6 +214,11 @@ class ToolParser:
         self.add_project()
 
     def add_output_folder(self):
+        """Register the required ``--output``/``-o`` output folder argument.
+
+        :return: ``None``
+        :rtype: None
+        """
         self.parser.add_argument(
             "--output",
             "-o",
@@ -146,6 +229,11 @@ class ToolParser:
         )
 
     def add_verbose(self):
+        """Register the ``--verbose``/``-v`` console output flag.
+
+        :return: ``None``
+        :rtype: None
+        """
         self.parser.add_argument(
             "--verbose",
             "-v",
@@ -156,6 +244,11 @@ class ToolParser:
         )
 
     def add_views(self):
+        """Register the ``--views``/``-vs`` flag to enable plot exports.
+
+        :return: ``None``
+        :rtype: None
+        """
         self.parser.add_argument(
             "--views",
             "-vs",
@@ -166,6 +259,11 @@ class ToolParser:
         )
 
     def add_label(self):
+        """Register the required ``--label``/``-lb`` utility label argument.
+
+        :return: ``None``
+        :rtype: None
+        """
         self.parser.add_argument(
             "--label",
             "-lb",
@@ -176,6 +274,11 @@ class ToolParser:
         )
 
     def add_project(self):
+        """Register the optional ``--project``/``-pro`` project name argument.
+
+        :return: ``None``
+        :rtype: None
+        """
         self.parser.add_argument(
             "--project",
             "-pro",
@@ -188,6 +291,13 @@ class ToolParser:
     # extra arguments
 
     def add_parameters(self):
+        """Register the required ``--parameters``/``-pr`` argument.
+
+        Points to the file holding the simulation parameters.
+
+        :return: ``None``
+        :rtype: None
+        """
         self.parser.add_argument(
             "--parameters",
             "-pr",
@@ -198,6 +308,13 @@ class ToolParser:
         )
 
     def add_climate(self):
+        """Register the required ``--climate``/``-cl`` argument.
+
+        Points to the file holding the climate series.
+
+        :return: ``None``
+        :rtype: None
+        """
         self.parser.add_argument(
             "--climate",
             "-cl",
@@ -208,6 +325,13 @@ class ToolParser:
         )
 
     def add_lulc(self):
+        """Register the required ``--lulc``/``-lu`` argument.
+
+        Points to the file holding the land use / land cover data.
+
+        :return: ``None``
+        :rtype: None
+        """
         self.parser.add_argument(
             "--lulc",
             "-lu",
@@ -218,6 +342,13 @@ class ToolParser:
         )
 
     def add_ldd(self):
+        """Register the required ``--ldd``/``-ld`` argument.
+
+        Points to the LDD (flow direction) map file.
+
+        :return: ``None``
+        :rtype: None
+        """
         self.parser.add_argument(
             "--ldd",
             "-ld",
@@ -228,6 +359,13 @@ class ToolParser:
         )
 
     def add_aoi(self):
+        """Register the optional ``--aoi``/``-a`` argument.
+
+        Points to the area-of-interest (AOI) map file.
+
+        :return: ``None``
+        :rtype: None
+        """
         self.parser.add_argument(
             "--aoi",
             "-a",
@@ -238,6 +376,13 @@ class ToolParser:
         )
 
     def add_attributes(self):
+        """Register the required ``--attributes``/``-att`` argument.
+
+        Points to the attributes table file.
+
+        :return: ``None``
+        :rtype: None
+        """
         self.parser.add_argument(
             "--attributes",
             "-att",
@@ -248,6 +393,13 @@ class ToolParser:
         )
 
     def add_scenario(self):
+        """Register the required ``--scenario``/``-scn`` argument.
+
+        Points to the scenario folder.
+
+        :return: ``None``
+        :rtype: None
+        """
         self.parser.add_argument(
             "--scenario",
             "-scn",
@@ -258,6 +410,13 @@ class ToolParser:
         )
 
     def add_soils(self):
+        """Register the required ``--soils``/``-so`` argument.
+
+        Points to the soils map file.
+
+        :return: ``None``
+        :rtype: None
+        """
         self.parser.add_argument(
             "--soils",
             "-so",
@@ -269,18 +428,74 @@ class ToolParser:
 
     # get methods
     def get_args(self):
+        """Parse and return the command-line arguments.
+
+        :return: parsed arguments namespace.
+        :rtype: argparse.Namespace
+        """
         return self.parser.parse_args()
 
     def get_args_as_dict(self):
+        """Parse the command-line arguments and return them as a dictionary.
+
+        :return: mapping of argument destination names to parsed values.
+        :rtype: dict
+        """
         return vars(self.parser.parse_args())
 
 
 class Tool:
-    # todo docstring
+    """Base class for PLANS command-line processing tools.
+
+    Implements a generic ``load -> process -> export`` pipeline with
+    per-step logging, elapsed-time tracking and a plain-text run report
+    (log echo preceded by a specs and runtimes header). Subclasses are
+    expected to override :meth:`load_data`, :meth:`process_data` and
+    :meth:`export_data` with their actual logic.
+
+    :param name: name of the tool, used in log messages and the report header.
+    :type name: str
+    :param folder_output: output folder where logs, report and runtime
+        files are written. Created if it does not already exist.
+    :type folder_output: str or pathlib.Path
+
+    :ivar name: tool name.
+    :vartype name: str
+    :ivar folder_output: output folder for this run.
+    :vartype folder_output: pathlib.Path
+    :ivar file_logs: path to the raw log file.
+    :vartype file_logs: pathlib.Path
+    :ivar file_report: path to the final assembled report file.
+    :vartype file_report: pathlib.Path
+    :ivar logger: logger used by the tool, set via :meth:`set_logger`.
+    :vartype logger: logging.Logger or None
+    :ivar verbose: whether the logger also writes to the console.
+    :vartype verbose: bool
+    :ivar views: whether the tool should also export figures.
+    :vartype views: bool
+    :ivar label: utility label for this run.
+    :vartype label: str
+    :ivar name_project: optional project name, included in the logger name.
+    :vartype name_project: str or None
+    :ivar runtimes: table of step runtimes, set by :meth:`export_runtimes`.
+    :vartype runtimes: pandas.DataFrame or None
+    :ivar sleeper: seconds slept by the default pipeline steps.
+    :vartype sleeper: float
+    """
 
     # Dunder methods
     # -------------------------------------------------------------------
     def __init__(self, name, folder_output):
+        """Initialize the tool and create the output folder.
+
+        :param name: name of the tool, used in log messages and the
+            report header.
+        :type name: str
+        :param folder_output: output folder where logs, report and
+            runtime files are written. Created if it does not already
+            exist.
+        :type folder_output: str or pathlib.Path
+        """
 
         # setup basic attributes
         # ---------------------------------------------------------------
@@ -336,6 +551,15 @@ class Tool:
     # Set methods
     # -------------------------------------------------------------------
     def set_logger(self):
+        """Instantiate and assign the tool's logger.
+
+        Builds the logger name from :attr:`name` (and :attr:`name_project`,
+        when set) and assigns the result to :attr:`logger` via
+        :meth:`get_logger`.
+
+        :return: ``None``
+        :rtype: None
+        """
 
         name_logger = self.name
 
@@ -349,6 +573,18 @@ class Tool:
     # Main tool method
     # -------------------------------------------------------------------
     def run(self):
+        """Execute the full tool pipeline.
+
+        Ensures a logger is set, then runs :meth:`load_data`,
+        :meth:`process_data` and :meth:`export_data` in sequence (each
+        wrapped by :meth:`step` for logging and timing). Afterwards,
+        exports the runtimes table, logs the total elapsed time and the
+        output location, and writes the final report file via
+        :meth:`make_readme_file`.
+
+        :return: ``None``
+        :rtype: None
+        """
 
         # setups
         # ---------------------------------------------------------------
@@ -386,6 +622,21 @@ class Tool:
     # Wrapper methods
     # -------------------------------------------------------------------
     def step(self, method, label):
+        """Run a single pipeline step with logging and timing.
+
+        Logs the start of the step, executes ``method``, logs its
+        completion with the elapsed time, and appends the step label and
+        elapsed time to :attr:`ls_steps` and :attr:`ls_times`.
+
+        :param method: no-argument callable implementing the step
+            (e.g. :meth:`load_data`).
+        :type method: callable
+        :param label: step label, used for logging and as the key into
+            ``self.msg["concluded"]``.
+        :type label: str
+        :return: ``None``
+        :rtype: None
+        """
         # start
         # ---------------------------------------------------------------
         start = time.time()
@@ -412,18 +663,56 @@ class Tool:
     # Data main methods
     # -------------------------------------------------------------------
     def load_data(self):
+        """Load input data.
+
+        Placeholder implementation that only sleeps for :attr:`sleeper`
+        seconds. Subclasses should override this method with actual
+        data-loading logic.
+
+        :return: ``None``
+        :rtype: None
+        """
         self.sleep()
         return None
 
     def process_data(self):
+        """Process previously loaded data.
+
+        Placeholder implementation that only sleeps for :attr:`sleeper`
+        seconds. Subclasses should override this method with actual
+        processing logic.
+
+        :return: ``None``
+        :rtype: None
+        """
         self.sleep()
         return None
 
     def export_data(self):
+        """Export processed data.
+
+        Placeholder implementation that only sleeps for :attr:`sleeper`
+        seconds. Subclasses should override this method with actual
+        export logic.
+
+        :return: ``None``
+        :rtype: None
+        """
         self.sleep()
         return None
 
     def export_runtimes(self):
+        """Build and export the runtimes table.
+
+        Assembles a table with one row per executed step plus a
+        ``total`` row, computes each step's percentage share of the
+        total elapsed time, writes it to :attr:`filename_runtimes`
+        inside :attr:`folder_output`, and stores the result in
+        :attr:`runtimes`.
+
+        :return: ``None``
+        :rtype: None
+        """
         df1 = pd.DataFrame({"step": self.ls_steps[:], "elapsed": self.ls_times[:]})
 
         df2 = pd.DataFrame({"step": ["total"], "elapsed": df1["elapsed"].sum()})
@@ -438,6 +727,12 @@ class Tool:
         return None
 
     def format_runtimes_str(self):
+        """Format the runtimes table as a fixed-width text block.
+
+        :return: column-aligned, uppercase-headed string representation
+            of :attr:`runtimes`, rounded to three decimal places.
+        :rtype: str
+        """
         df_str = self.runtimes.round(3).map(lambda x: f"{x:<10}")
         new_cols = [f"{c.upper():<10}" for c in df_str.columns]
         df_str.columns = new_cols
@@ -445,6 +740,15 @@ class Tool:
 
     # todo develop and make DRY
     def make_readme_file(self):
+        """Assemble the final run report file.
+
+        Reads the raw log file, prepends a header block (title, run
+        specs and formatted runtimes table), and writes the combined
+        content to :attr:`file_report`.
+
+        :return: ``None``
+        :rtype: None
+        """
         # read current
         # ---------------------------------------------------------------
         with open(self.file_logs, "r") as file:
@@ -501,20 +805,61 @@ class Tool:
     # Util methods
     # -------------------------------------------------------------------
     def sleep(self):
+        """Pause execution for :attr:`sleeper` seconds.
+
+        Used as a placeholder delay by the default :meth:`load_data`,
+        :meth:`process_data` and :meth:`export_data` implementations.
+
+        :return: ``None``
+        :rtype: None
+        """
         time.sleep(self.sleeper)
 
     # Static methods
     # -------------------------------------------------------------------
     @staticmethod
     def format_msg_elapsed(msg, time):
+        """Format a message with an elapsed-time suffix.
+
+        :param msg: base message.
+        :type msg: str
+        :param time: elapsed time, in seconds.
+        :type time: float
+        :return: formatted message, e.g. ``"<msg> in 1.23 seconds"``.
+        :rtype: str
+        """
         return "{} in {:.2f} seconds".format(msg, time)
 
     @staticmethod
     def format_msg_output(folder):
+        """Format a message pointing the user to an output folder.
+
+        :param folder: output folder path to display.
+        :type folder: str or pathlib.Path
+        :return: formatted message.
+        :rtype: str
+        """
         return "check results in:\n\n\t{}\n".format(folder)
 
     @staticmethod
     def get_logger(name="tool", log_file="run_log.txt", talk=True):
+        """Create (or reconfigure) a :class:`logging.Logger`.
+
+        Clears any handlers already attached to a logger of the same
+        name, then attaches a file handler (always) and, when ``talk``
+        is ``True``, a console handler as well. Both handlers share a
+        timestamped ``DEBUG``-level format that includes the logger
+        name.
+
+        :param name: logger name.
+        :type name: str
+        :param log_file: path to the log file to write to.
+        :type log_file: str or pathlib.Path
+        :param talk: whether to also emit log records to the console.
+        :type talk: bool
+        :return: configured logger instance, set to ``DEBUG`` level.
+        :rtype: logging.Logger
+        """
         # Create the logger
         # -------------------------------------------------------------------
         logger = logging.getLogger(name)

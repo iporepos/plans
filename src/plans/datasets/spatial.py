@@ -71,6 +71,29 @@ class Elevation(SciRaster):
         print("hi")
 
 
+class Depth(SciRaster):
+    """
+    Depth raster map dataset.
+    """
+
+    def __init__(self, name="Depth"):
+        """
+        Initialize dataset
+
+        :param name: name of map
+        :type name: str
+        """
+
+        super().__init__(name=name)
+        self.range_default = (0, 10)
+        self.cmap = "Blues"
+        self.varname = "Depth"
+        self.varalias = "DEP"
+        self.description = "Depth below arbitrary altitude"
+        self.units = "m"
+        self._set_view_specs()
+
+
 class Slope(SciRaster):
     """
     Slope raster map dataset.
