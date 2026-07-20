@@ -1,0 +1,1694 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>plans.tools.analysis_spatial_normals &#8212; plans 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/plans/tools/analysis_spatial_normals';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-light" alt=""/>
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">plans</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">plans.tools.analysis_spatial_normals</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for plans.tools.analysis_spatial_normals</h1><div class="highlight"><pre>
+<span></span><span class="c1"># SPDX-License-Identifier: GPL-3.0-or-later</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2025 The Project Authors</span>
+<span class="c1"># See pyproject.toml for authors/maintainers.</span>
+<span class="c1"># See LICENSE for license details.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">``analysis_spatial_normals`` -- standalone PLANS tool.</span>
+
+<span class="sd">Self-contained script: copy this single file anywhere and run it with</span>
+<span class="sd">Python 3. It has no dependency on the ``plans.tools.core`` module --</span>
+<span class="sd">all parameters are passed through a single JSON config file.</span>
+
+<span class="sd">From a monthly raster time series (e.g., NDVI), this tool builds:</span>
+
+<span class="sd">1. Annual aggregations (one or more statistics per year).</span>
+<span class="sd">2. Climatological normals -- annual and monthly, over a configurable</span>
+<span class="sd">   horizon.</span>
+<span class="sd">3. Anomalies -- monthly and annual, absolute and relative/percent.</span>
+
+<span class="sd">Assumes all input rasters share the same grid (shape, transform, CRS),</span>
+<span class="sd">and that monthly raster filenames end with a fixed ``&quot;_&lt;YYYY&gt;_&lt;MM&gt;&quot;``</span>
+<span class="sd">suffix before the extension, month zero-padded, e.g. ``NDVI_2020_01.tif``.</span>
+<span class="sd">The only third-party dependencies are ``numpy`` and ``rasterio``.</span>
+
+<span class="sd">Usage</span>
+<span class="sd">-----</span>
+
+<span class="sd">.. code-block:: bash</span>
+
+<span class="sd">    python analysis_spatial_normals.py --config config.json</span>
+
+<span class="sd">Config file</span>
+<span class="sd">-----------</span>
+
+<span class="sd">The ``--config``/``-c`` flag points to a JSON file. Template, ready to</span>
+<span class="sd">copy and paste:</span>
+
+<span class="sd">.. code-block:: json</span>
+
+<span class="sd">    {</span>
+<span class="sd">      &quot;input&quot;: &quot;data/ndvi_monthly&quot;,</span>
+<span class="sd">      &quot;output&quot;: &quot;output/run1&quot;,</span>
+<span class="sd">      &quot;label&quot;: &quot;ndvi_normals_v1&quot;,</span>
+
+<span class="sd">      &quot;pattern&quot;: &quot;*.tif&quot;,</span>
+<span class="sd">      &quot;verbose&quot;: true,</span>
+<span class="sd">      &quot;annual&quot;: {</span>
+<span class="sd">        &quot;stats&quot;: [&quot;mean&quot;, &quot;sum&quot;, &quot;max&quot;, &quot;p90&quot;],</span>
+<span class="sd">        &quot;min_months&quot;: 12</span>
+<span class="sd">      },</span>
+<span class="sd">      &quot;normals&quot;: {</span>
+<span class="sd">        &quot;stats&quot;: [&quot;mean&quot;, &quot;std&quot;],</span>
+<span class="sd">        &quot;annual_base_stat&quot;: &quot;mean&quot;,</span>
+<span class="sd">        &quot;annual_horizon&quot;: [2000, 2020],</span>
+<span class="sd">        &quot;monthly_horizon&quot;: null</span>
+<span class="sd">      },</span>
+<span class="sd">      &quot;anomalies&quot;: {</span>
+<span class="sd">        &quot;monthly&quot;: true,</span>
+<span class="sd">        &quot;annual&quot;: true,</span>
+<span class="sd">        &quot;relative&quot;: true</span>
+<span class="sd">      },</span>
+<span class="sd">      &quot;styles&quot;: {</span>
+<span class="sd">        &quot;annual&quot;: &quot;styles/annual.qml&quot;,</span>
+<span class="sd">        &quot;annual_normal&quot;: &quot;styles/annual_normal.qml&quot;,</span>
+<span class="sd">        &quot;monthly_normal&quot;: &quot;styles/monthly_normal.qml&quot;,</span>
+<span class="sd">        &quot;anomaly_absolute&quot;: &quot;styles/anomaly_absolute.qml&quot;,</span>
+<span class="sd">        &quot;anomaly_relative&quot;: &quot;styles/anomaly_relative.qml&quot;</span>
+<span class="sd">      }</span>
+<span class="sd">    }</span>
+
+<span class="sd">Required fields</span>
+<span class="sd">~~~~~~~~~~~~~~~~</span>
+<span class="sd">* ``input`` (str) -- folder containing the monthly raster files.</span>
+<span class="sd">* ``output`` (str) -- output folder for run artifacts.</span>
+<span class="sd">* ``label`` (str) -- run label, used as the logger name.</span>
+
+<span class="sd">Optional fields</span>
+<span class="sd">~~~~~~~~~~~~~~~~</span>
+<span class="sd">* ``pattern`` (str, default ``&quot;*.tif&quot;``) -- glob pattern for input files.</span>
+<span class="sd">* ``verbose`` (bool, default ``false``) -- echo logs to console.</span>
+<span class="sd">* ``annual`` (dict, default ``{}``) -- see :func:`aggregate_annual`; keys</span>
+<span class="sd">  ``stats`` (list[str], default ``[&quot;mean&quot;]``) and ``min_months`` (int,</span>
+<span class="sd">  default ``12``).</span>
+<span class="sd">* ``normals`` (dict, default ``{}``) -- see :func:`compute_annual_normals`</span>
+<span class="sd">  / :func:`compute_monthly_normals`; keys ``stats`` (list[str], default</span>
+<span class="sd">  ``[&quot;mean&quot;]``), ``annual_base_stat`` (str, default ``&quot;mean&quot;``),</span>
+<span class="sd">  ``annual_horizon`` and ``monthly_horizon`` (``[start_year, end_year]``</span>
+<span class="sd">  or ``null``, default ``null``).</span>
+<span class="sd">* ``anomalies`` (dict, default ``{}``) -- see</span>
+<span class="sd">  :func:`compute_monthly_anomalies` / :func:`compute_annual_anomalies`;</span>
+<span class="sd">  keys ``monthly`` and ``annual`` (bool, default ``true``), ``relative``</span>
+<span class="sd">  (bool, default ``true``).</span>
+<span class="sd">* ``styles`` (dict, default ``{}``) -- see :func:`apply_style`. Each key</span>
+<span class="sd">  is optional; when present, its value is a path to a QGIS ``.qml`` style</span>
+<span class="sd">  template that gets copied as a same-named sidecar next to every raster</span>
+<span class="sd">  in that output category, so QGIS auto-applies it on load. Keys:</span>
+<span class="sd">  ``annual`` (the per-year aggregates), ``annual_normal``,</span>
+<span class="sd">  ``monthly_normal``, ``anomaly_absolute`` (used for both monthly and</span>
+<span class="sd">  annual absolute anomalies), and ``anomaly_relative`` (ditto, relative</span>
+<span class="sd">  anomalies).</span>
+
+<span class="sd">The ``REQUIRED``/``OPTIONAL`` dictionaries just below are the actual</span>
+<span class="sd">validation source of truth for the top-level fields -- keep them in sync</span>
+<span class="sd">with this docstring whenever you add, rename or remove a field. Nested</span>
+<span class="sd">sub-dict defaults (``annual``, ``normals``, ``anomalies``) are filled in</span>
+<span class="sd">by :func:`process_data`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># IMPORTS</span>
+<span class="c1"># ***********************************************************************</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rasterio</span>
+
+
+<span class="c1"># CONFIG SCHEMA</span>
+<span class="c1"># ***********************************************************************</span>
+<span class="c1"># Required fields: {name: type}</span>
+<span class="n">REQUIRED</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="c1"># Optional fields: {name: (type, default)}</span>
+<span class="n">OPTIONAL</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;pattern&quot;</span><span class="p">:</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;*.tif&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;annual&quot;</span><span class="p">:</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;normals&quot;</span><span class="p">:</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;anomalies&quot;</span><span class="p">:</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;styles&quot;</span><span class="p">:</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="load_config">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals.load_config">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_config</span><span class="p">(</span><span class="n">file_config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load, validate and fill defaults for the JSON config file.</span>
+
+<span class="sd">    Checks that every key in :data:`REQUIRED` is present and of the</span>
+<span class="sd">    right type, then fills in defaults for any missing key in</span>
+<span class="sd">    :data:`OPTIONAL` and type-checks those that were provided.</span>
+
+<span class="sd">    :param file_config: path to the JSON config file.</span>
+<span class="sd">    :type file_config: str or pathlib.Path</span>
+<span class="sd">    :return: validated configuration dictionary, defaults included.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    :raises ValueError: if a required field is missing, or any field</span>
+<span class="sd">        has the wrong type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">file_config</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+
+    <span class="n">missing</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">REQUIRED</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">missing</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing required config field(s): </span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">REQUIRED</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">t</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Config field &#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&#39; must be </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span> <span class="ow">in</span> <span class="n">OPTIONAL</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">t</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Config field &#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&#39; must be </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cfg</span></div>
+
+
+
+<div class="viewcode-block" id="get_logger">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals.get_logger">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_logger</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">log_file</span><span class="p">,</span> <span class="n">talk</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a simple console + file logger.</span>
+
+<span class="sd">    :param name: logger name, shown in every log line.</span>
+<span class="sd">    :type name: str</span>
+<span class="sd">    :param log_file: path to the log file to write to.</span>
+<span class="sd">    :type log_file: str or pathlib.Path</span>
+<span class="sd">    :param talk: whether to also emit log records to the console.</span>
+<span class="sd">    :type talk: bool</span>
+<span class="sd">    :return: configured logger instance.</span>
+<span class="sd">    :rtype: logging.Logger</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">hasHandlers</span><span class="p">():</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span>
+        <span class="n">fmt</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;%(asctime)s.%(msecs)03d | %(levelname)-8s | </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> &gt;&gt;&gt; %(message)s&quot;</span><span class="p">,</span>
+        <span class="n">datefmt</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">talk</span><span class="p">:</span>
+        <span class="n">console_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+        <span class="n">console_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console_handler</span><span class="p">)</span>
+
+    <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">file_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">logger</span></div>
+
+
+
+<span class="c1"># DATA STRUCTURES</span>
+<span class="c1"># ***********************************************************************</span>
+
+
+<div class="viewcode-block" id="MonthlyRaster">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals.MonthlyRaster">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MonthlyRaster</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reference to a single monthly raster file.</span>
+
+<span class="sd">    :param year: Calendar year, e.g. ``2020``.</span>
+<span class="sd">    :type year: int</span>
+<span class="sd">    :param month: Calendar month, ``1``-``12``.</span>
+<span class="sd">    :type month: int</span>
+<span class="sd">    :param path: Path to the raster file on disk.</span>
+<span class="sd">    :type path: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">year</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">month</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span></div>
+
+
+
+<span class="c1"># STAT HELPERS</span>
+<span class="c1"># ***********************************************************************</span>
+
+<span class="c1"># Fixed filename convention: &quot;..._&lt;YYYY&gt;_&lt;MM&gt;.&lt;ext&gt;&quot;</span>
+<span class="n">_DATE_SUFFIX_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;_(\d</span><span class="si">{4}</span><span class="s2">)_(\d</span><span class="si">{2}</span><span class="s2">)(?=\.[A-Za-z0-9]+$)&quot;</span><span class="p">)</span>
+
+<span class="n">_BASE_STAT_FUNCS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">,</span>
+    <span class="s2">&quot;sum&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">,</span>
+    <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">,</span>
+    <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">,</span>
+    <span class="s2">&quot;median&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">,</span>
+    <span class="s2">&quot;std&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">_PCT_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^p(\d{1,3})$&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="_resolve_stat_func">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals._resolve_stat_func">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">_resolve_stat_func</span><span class="p">(</span><span class="n">stat</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve a stat name to a NaN-aware ``(array, axis) -&gt; array`` reducer.</span>
+
+<span class="sd">    :param stat: Statistic name. One of the keys in ``_BASE_STAT_FUNCS``</span>
+<span class="sd">        (``&quot;mean&quot;``, ``&quot;sum&quot;``, ``&quot;max&quot;``, ``&quot;min&quot;``, ``&quot;median&quot;``, ``&quot;std&quot;``),</span>
+<span class="sd">        or ``&quot;pN&quot;`` for the Nth percentile, e.g. ``&quot;p10&quot;``, ``&quot;p90&quot;``.</span>
+<span class="sd">    :type stat: str</span>
+<span class="sd">    :returns: A reducer function usable as ``func(stack, axis=0)``.</span>
+<span class="sd">    :rtype: callable</span>
+<span class="sd">    :raises ValueError: If ``stat`` is not a recognized name, or a percentile</span>
+<span class="sd">        is outside the 0-100 range.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">stat</span> <span class="ow">in</span> <span class="n">_BASE_STAT_FUNCS</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_BASE_STAT_FUNCS</span><span class="p">[</span><span class="n">stat</span><span class="p">]</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">_PCT_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">stat</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">q</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Percentile stat &#39;</span><span class="si">{</span><span class="n">stat</span><span class="si">}</span><span class="s2">&#39; out of range 0-100&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Unknown stat &#39;</span><span class="si">{</span><span class="n">stat</span><span class="si">}</span><span class="s2">&#39;. Use one of </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">_BASE_STAT_FUNCS</span><span class="p">)</span><span class="si">}</span><span class="s2"> or &#39;pN&#39; for the Nth percentile.&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="c1"># DISCOVERY / PARSING</span>
+<span class="c1"># ***********************************************************************</span>
+
+
+<div class="viewcode-block" id="parse_monthly_rasters">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals.parse_monthly_rasters">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_monthly_rasters</span><span class="p">(</span>
+    <span class="n">folder</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;*.tif&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">MonthlyRaster</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Scan a folder for monthly rasters following the fixed naming convention.</span>
+
+<span class="sd">    Files must end with a ``&quot;_&lt;YYYY&gt;_&lt;MM&gt;&quot;`` suffix before the extension,</span>
+<span class="sd">    month zero-padded, e.g. ``NDVI_2020_01.tif``.</span>
+
+<span class="sd">    :param folder: Directory to scan.</span>
+<span class="sd">    :type folder: str or pathlib.Path</span>
+<span class="sd">    :param logger: Logger instance for warnings about unmatched filenames.</span>
+<span class="sd">    :type logger: logging.Logger</span>
+<span class="sd">    :param pattern: Glob pattern used to list candidate files.</span>
+<span class="sd">    :type pattern: str</span>
+<span class="sd">    :returns: Parsed monthly rasters, sorted chronologically.</span>
+<span class="sd">    :rtype: list[MonthlyRaster]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">pattern</span><span class="p">))</span>
+    <span class="n">records</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">_DATE_SUFFIX_RE</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;filename does not match &#39;_YYYY_MM&#39; suffix convention, skipped: </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">year</span><span class="p">,</span> <span class="n">month</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)),</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+        <span class="n">records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MonthlyRaster</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="n">month</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)))</span>
+    <span class="n">records</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">month</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">records</span></div>
+
+
+
+<div class="viewcode-block" id="validate_grid_consistency">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals.validate_grid_consistency">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_grid_consistency</span><span class="p">(</span><span class="n">paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">logger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that a set of rasters share the same grid.</span>
+
+<span class="sd">    :param paths: Raster file paths to compare.</span>
+<span class="sd">    :type paths: list[str]</span>
+<span class="sd">    :param logger: Logger instance for a confirmation message.</span>
+<span class="sd">    :type logger: logging.Logger</span>
+<span class="sd">    :returns: None</span>
+<span class="sd">    :rtype: None</span>
+<span class="sd">    :raises ValueError: If any raster&#39;s width, height, transform, or CRS</span>
+<span class="sd">        differs from the first raster&#39;s.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ref</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">ref_path</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">src</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">src</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">src</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ref</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ref</span><span class="p">,</span> <span class="n">ref_path</span> <span class="o">=</span> <span class="n">key</span><span class="p">,</span> <span class="n">p</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">!=</span> <span class="n">ref</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Grid mismatch: &#39;</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">&#39; does not match reference grid &#39;</span><span class="si">{</span><span class="n">ref_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;grid consistency OK across </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span><span class="si">}</span><span class="s2"> raster(s)&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># RASTER I/O HELPERS</span>
+<span class="c1"># ***********************************************************************</span>
+
+
+<div class="viewcode-block" id="_read_as_float">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals._read_as_float">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">_read_as_float</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read band 1 of a raster as float64, converting nodata to NaN.</span>
+
+<span class="sd">    :param path: Path to the raster file.</span>
+<span class="sd">    :type path: str or pathlib.Path</span>
+<span class="sd">    :returns: A 2-tuple of the pixel array and the rasterio profile.</span>
+<span class="sd">    :rtype: tuple[numpy.ndarray, dict]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+        <span class="n">profile</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">profile</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+        <span class="n">nodata</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">nodata</span>
+        <span class="k">if</span> <span class="n">nodata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">nodata</span><span class="p">):</span>
+            <span class="n">arr</span><span class="p">[</span><span class="n">arr</span> <span class="o">==</span> <span class="n">nodata</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">return</span> <span class="n">arr</span><span class="p">,</span> <span class="n">profile</span></div>
+
+
+
+<div class="viewcode-block" id="_write_raster">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals._write_raster">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_raster</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">out_path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write a single-band float32 raster with NaN nodata.</span>
+
+<span class="sd">    :param arr: Pixel array to write.</span>
+<span class="sd">    :type arr: numpy.ndarray</span>
+<span class="sd">    :param profile: Rasterio profile to reuse (CRS, transform, etc.); its</span>
+<span class="sd">        ``dtype``, ``count``, and ``nodata`` are overridden.</span>
+<span class="sd">    :type profile: dict</span>
+<span class="sd">    :param out_path: Output file path; parent directories are created if needed.</span>
+<span class="sd">    :type out_path: str or pathlib.Path</span>
+<span class="sd">    :returns: None</span>
+<span class="sd">    :rtype: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">out_profile</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">out_profile</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nodata</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="n">out_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span>
+    <span class="n">out_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">out_profile</span><span class="p">)</span> <span class="k">as</span> <span class="n">dst</span><span class="p">:</span>
+        <span class="n">dst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="_apply_stat">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals._apply_stat">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">_apply_stat</span><span class="p">(</span><span class="n">stack</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply a stat reducer across axis 0 of a stack.</span>
+
+<span class="sd">    Silences the expected &quot;all-NaN slice&quot; warning for pixels that are</span>
+<span class="sd">    nodata in every layer of the stack (those pixels correctly come out</span>
+<span class="sd">    as NaN in the result).</span>
+
+<span class="sd">    :param stack: Array stacked along axis 0 (e.g. one layer per month or year).</span>
+<span class="sd">    :type stack: numpy.ndarray</span>
+<span class="sd">    :param func: Reducer called as ``func(stack, axis=0)``.</span>
+<span class="sd">    :type func: callable</span>
+<span class="sd">    :returns: The reduced array.</span>
+<span class="sd">    :rtype: numpy.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="n">stack</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="_read_stack">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals._read_stack">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">_read_stack</span><span class="p">(</span><span class="n">records</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">MonthlyRaster</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a list of rasters into a single stacked array.</span>
+
+<span class="sd">    :param records: Rasters to read, in the order they should be stacked.</span>
+<span class="sd">    :type records: list[MonthlyRaster]</span>
+<span class="sd">    :returns: A 2-tuple of the stacked array (axis 0 = record index) and the</span>
+<span class="sd">        rasterio profile of the first record.</span>
+<span class="sd">    :rtype: tuple[numpy.ndarray, dict]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">arrays</span><span class="p">,</span> <span class="n">profile</span> <span class="o">=</span> <span class="p">[],</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">records</span><span class="p">:</span>
+        <span class="n">arr</span><span class="p">,</span> <span class="n">prof</span> <span class="o">=</span> <span class="n">_read_as_float</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">profile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">profile</span> <span class="o">=</span> <span class="n">prof</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">profile</span></div>
+
+
+
+<span class="c1"># PIPELINE STEPS -- annual aggregation, normals, anomalies</span>
+<span class="c1"># ***********************************************************************</span>
+
+
+<div class="viewcode-block" id="aggregate_annual">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals.aggregate_annual">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">aggregate_annual</span><span class="p">(</span>
+    <span class="n">monthly_rasters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">MonthlyRaster</span><span class="p">],</span>
+    <span class="n">output_dir</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">,</span>
+    <span class="n">stats</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;mean&quot;</span><span class="p">,),</span>
+    <span class="n">min_months</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="n">file_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;annual&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Aggregate monthly rasters into one raster per year, per requested stat.</span>
+
+<span class="sd">    :param monthly_rasters: Parsed monthly rasters, as returned by</span>
+<span class="sd">        :func:`parse_monthly_rasters`.</span>
+<span class="sd">    :type monthly_rasters: list[MonthlyRaster]</span>
+<span class="sd">    :param output_dir: Directory to write ``&lt;file_prefix&gt;_&lt;stat&gt;_&lt;year&gt;.tif``</span>
+<span class="sd">        files into.</span>
+<span class="sd">    :type output_dir: str or pathlib.Path</span>
+<span class="sd">    :param logger: Logger instance for progress messages.</span>
+<span class="sd">    :type logger: logging.Logger</span>
+<span class="sd">    :param stats: Statistics to compute per year. See</span>
+<span class="sd">        :func:`_resolve_stat_func` for accepted names.</span>
+<span class="sd">    :type stats: list[str]</span>
+<span class="sd">    :param min_months: Minimum number of valid months required for a year to</span>
+<span class="sd">        be aggregated; years with fewer are skipped (with a warning).</span>
+<span class="sd">    :type min_months: int</span>
+<span class="sd">    :param file_prefix: Output filename prefix.</span>
+<span class="sd">    :type file_prefix: str</span>
+<span class="sd">    :returns: Mapping of ``{stat: {year: output_path}}``.</span>
+<span class="sd">    :rtype: dict[str, dict[int, str]]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+    <span class="n">by_year</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">MonthlyRaster</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">monthly_rasters</span><span class="p">:</span>
+        <span class="n">by_year</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+    <span class="n">output_paths</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">year</span><span class="p">,</span> <span class="n">recs</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">by_year</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">recs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">min_months</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;year </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">: only </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">recs</span><span class="p">)</span><span class="si">}</span><span class="s2"> month(s) available (&lt; </span><span class="si">{</span><span class="n">min_months</span><span class="si">}</span><span class="s2">), skipped&quot;</span>
+            <span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="n">recs_sorted</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">recs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">month</span><span class="p">)</span>
+        <span class="n">stack</span><span class="p">,</span> <span class="n">profile</span> <span class="o">=</span> <span class="n">_read_stack</span><span class="p">(</span><span class="n">recs_sorted</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">stat</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">:</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">_resolve_stat_func</span><span class="p">(</span><span class="n">stat</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">_apply_stat</span><span class="p">(</span><span class="n">stack</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
+            <span class="n">out_path</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">stat</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">.tif&quot;</span>
+            <span class="n">_write_raster</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">out_path</span><span class="p">)</span>
+            <span class="n">output_paths</span><span class="p">[</span><span class="n">stat</span><span class="p">][</span><span class="n">year</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;annual </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">: stats=</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span><span class="si">}</span><span class="s2"> (n=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">recs</span><span class="p">)</span><span class="si">}</span><span class="s2"> months)&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output_paths</span></div>
+
+
+
+<div class="viewcode-block" id="compute_annual_normals">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals.compute_annual_normals">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_annual_normals</span><span class="p">(</span>
+    <span class="n">annual_paths_by_stat</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
+    <span class="n">output_dir</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">,</span>
+    <span class="n">base_stat</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+    <span class="n">stats</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;mean&quot;</span><span class="p">,),</span>
+    <span class="n">horizon</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">file_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;annual_normal&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute annual normals from a per-year annual series.</span>
+
+<span class="sd">    For the annual series identified by ``base_stat`` (e.g. the per-year</span>
+<span class="sd">    ``&quot;mean&quot;`` rasters from :func:`aggregate_annual`), compute each stat in</span>
+<span class="sd">    ``stats`` across the years within ``horizon``.</span>
+
+<span class="sd">    :param annual_paths_by_stat: Per-year annual rasters, as returned by</span>
+<span class="sd">        :func:`aggregate_annual`.</span>
+<span class="sd">    :type annual_paths_by_stat: dict[str, dict[int, str]]</span>
+<span class="sd">    :param output_dir: Directory to write ``&lt;file_prefix&gt;_&lt;stat&gt;.tif`` files into.</span>
+<span class="sd">    :type output_dir: str or pathlib.Path</span>
+<span class="sd">    :param logger: Logger instance for progress messages.</span>
+<span class="sd">    :type logger: logging.Logger</span>
+<span class="sd">    :param base_stat: Which annual series in ``annual_paths_by_stat`` to use</span>
+<span class="sd">        as input.</span>
+<span class="sd">    :type base_stat: str</span>
+<span class="sd">    :param stats: Statistics to compute across years. See</span>
+<span class="sd">        :func:`_resolve_stat_func` for accepted names.</span>
+<span class="sd">    :type stats: list[str]</span>
+<span class="sd">    :param horizon: Inclusive ``(start_year, end_year)`` window; ``None`` uses</span>
+<span class="sd">        every available year.</span>
+<span class="sd">    :type horizon: tuple[int, int] or None</span>
+<span class="sd">    :param file_prefix: Output filename prefix.</span>
+<span class="sd">    :type file_prefix: str</span>
+<span class="sd">    :returns: Mapping of ``{stat: output_path}``.</span>
+<span class="sd">    :rtype: dict[str, str]</span>
+<span class="sd">    :raises ValueError: If ``base_stat`` was not computed in</span>
+<span class="sd">        ``annual_paths_by_stat``, or no years fall within ``horizon``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">base_stat</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">annual_paths_by_stat</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;base_stat &#39;</span><span class="si">{</span><span class="n">base_stat</span><span class="si">}</span><span class="s2">&#39; was not computed in the annual step &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(available: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">annual_paths_by_stat</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">series</span> <span class="o">=</span> <span class="n">annual_paths_by_stat</span><span class="p">[</span><span class="n">base_stat</span><span class="p">]</span>
+    <span class="n">years</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">horizon</span><span class="p">:</span>
+        <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">horizon</span>
+        <span class="n">years</span> <span class="o">=</span> <span class="p">[</span><span class="n">y</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">years</span> <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;=</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">years</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No years available within the given annual horizon.&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">recs</span> <span class="o">=</span> <span class="p">[</span><span class="n">MonthlyRaster</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">series</span><span class="p">[</span><span class="n">y</span><span class="p">])</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">years</span><span class="p">]</span>
+    <span class="n">stack</span><span class="p">,</span> <span class="n">profile</span> <span class="o">=</span> <span class="n">_read_stack</span><span class="p">(</span><span class="n">recs</span><span class="p">)</span>
+
+    <span class="n">output_paths</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">stat</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">:</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">_resolve_stat_func</span><span class="p">(</span><span class="n">stat</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_apply_stat</span><span class="p">(</span><span class="n">stack</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
+        <span class="n">out_path</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">stat</span><span class="si">}</span><span class="s2">.tif&quot;</span>
+        <span class="n">_write_raster</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">out_path</span><span class="p">)</span>
+        <span class="n">output_paths</span><span class="p">[</span><span class="n">stat</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;annual normals from &#39;</span><span class="si">{</span><span class="n">base_stat</span><span class="si">}</span><span class="s2">&#39; series &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">years</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">years</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, n=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">years</span><span class="p">)</span><span class="si">}</span><span class="s2"> years): stats=</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">output_paths</span></div>
+
+
+
+<div class="viewcode-block" id="compute_monthly_normals">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals.compute_monthly_normals">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_monthly_normals</span><span class="p">(</span>
+    <span class="n">monthly_rasters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">MonthlyRaster</span><span class="p">],</span>
+    <span class="n">output_dir</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">,</span>
+    <span class="n">stats</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;mean&quot;</span><span class="p">,),</span>
+    <span class="n">horizon</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">file_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;normal_month&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute monthly (calendar-month) climatological normals.</span>
+
+<span class="sd">    For each calendar month (1-12), compute each stat in ``stats`` across the</span>
+<span class="sd">    years within ``horizon``. ``horizon`` is independent of the horizon used</span>
+<span class="sd">    for the annual normals.</span>
+
+<span class="sd">    :param monthly_rasters: Parsed monthly rasters, as returned by</span>
+<span class="sd">        :func:`parse_monthly_rasters`.</span>
+<span class="sd">    :type monthly_rasters: list[MonthlyRaster]</span>
+<span class="sd">    :param output_dir: Directory to write ``&lt;file_prefix&gt;_&lt;MM&gt;_&lt;stat&gt;.tif``</span>
+<span class="sd">        files into.</span>
+<span class="sd">    :type output_dir: str or pathlib.Path</span>
+<span class="sd">    :param logger: Logger instance for progress messages.</span>
+<span class="sd">    :type logger: logging.Logger</span>
+<span class="sd">    :param stats: Statistics to compute per calendar month. See</span>
+<span class="sd">        :func:`_resolve_stat_func` for accepted names.</span>
+<span class="sd">    :type stats: list[str]</span>
+<span class="sd">    :param horizon: Inclusive ``(start_year, end_year)`` window; ``None`` uses</span>
+<span class="sd">        every available year.</span>
+<span class="sd">    :type horizon: tuple[int, int] or None</span>
+<span class="sd">    :param file_prefix: Output filename prefix.</span>
+<span class="sd">    :type file_prefix: str</span>
+<span class="sd">    :returns: Mapping of ``{stat: {month: output_path}}``.</span>
+<span class="sd">    :rtype: dict[str, dict[int, str]]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+    <span class="n">recs</span> <span class="o">=</span> <span class="n">monthly_rasters</span>
+    <span class="k">if</span> <span class="n">horizon</span><span class="p">:</span>
+        <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">horizon</span>
+        <span class="n">recs</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">recs</span> <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;=</span> <span class="n">r</span><span class="o">.</span><span class="n">year</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="p">]</span>
+
+    <span class="n">by_month</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">MonthlyRaster</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">recs</span><span class="p">:</span>
+        <span class="n">by_month</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+    <span class="n">output_paths</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">):</span>
+        <span class="n">month_recs</span> <span class="o">=</span> <span class="n">by_month</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">month</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">month_recs</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;month </span><span class="si">{</span><span class="n">month</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">: no data in horizon, skipped&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="n">stack</span><span class="p">,</span> <span class="n">profile</span> <span class="o">=</span> <span class="n">_read_stack</span><span class="p">(</span><span class="n">month_recs</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">stat</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">:</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">_resolve_stat_func</span><span class="p">(</span><span class="n">stat</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">_apply_stat</span><span class="p">(</span><span class="n">stack</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
+            <span class="n">out_path</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">month</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">stat</span><span class="si">}</span><span class="s2">.tif&quot;</span>
+            <span class="n">_write_raster</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">out_path</span><span class="p">)</span>
+            <span class="n">output_paths</span><span class="p">[</span><span class="n">stat</span><span class="p">][</span><span class="n">month</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;month </span><span class="si">{</span><span class="n">month</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2"> normals (n=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">month_recs</span><span class="p">)</span><span class="si">}</span><span class="s2"> years): stats=</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output_paths</span></div>
+
+
+
+<div class="viewcode-block" id="compute_monthly_anomalies">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals.compute_monthly_anomalies">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_monthly_anomalies</span><span class="p">(</span>
+    <span class="n">monthly_rasters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">MonthlyRaster</span><span class="p">],</span>
+    <span class="n">monthly_normal_paths_by_stat</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
+    <span class="n">output_dir</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">,</span>
+    <span class="n">relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">normal_stat</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute per-month anomalies against the calendar-month normal.</span>
+
+<span class="sd">    For every monthly raster, computes::</span>
+
+<span class="sd">        anomaly          = value - normal[month]</span>
+<span class="sd">        relative_anomaly = (value - normal[month]) / normal[month] * 100   # percent</span>
+
+<span class="sd">    where ``normal`` is the ``normal_stat`` monthly normal (``&quot;mean&quot;`` by</span>
+<span class="sd">    default -- anomalies are conventionally defined relative to the mean).</span>
+<span class="sd">    Pixels where the normal is exactly 0 get ``NaN`` for the relative anomaly</span>
+<span class="sd">    (percent deviation is undefined there) but still get a valid absolute</span>
+<span class="sd">    anomaly -- relevant for variables like precipitation with dry-season zeros.</span>
+
+<span class="sd">    :param monthly_rasters: Parsed monthly rasters, as returned by</span>
+<span class="sd">        :func:`parse_monthly_rasters`.</span>
+<span class="sd">    :type monthly_rasters: list[MonthlyRaster]</span>
+<span class="sd">    :param monthly_normal_paths_by_stat: Monthly normals, as returned by</span>
+<span class="sd">        :func:`compute_monthly_normals`.</span>
+<span class="sd">    :type monthly_normal_paths_by_stat: dict[str, dict[int, str]]</span>
+<span class="sd">    :param output_dir: Base directory; ``absolute/`` and ``relative/``</span>
+<span class="sd">        subdirectories are created under it.</span>
+<span class="sd">    :type output_dir: str or pathlib.Path</span>
+<span class="sd">    :param logger: Logger instance for progress messages.</span>
+<span class="sd">    :type logger: logging.Logger</span>
+<span class="sd">    :param relative: Whether to also compute the percent anomaly.</span>
+<span class="sd">    :type relative: bool</span>
+<span class="sd">    :param normal_stat: Which monthly normal stat to use as the baseline.</span>
+<span class="sd">    :type normal_stat: str</span>
+<span class="sd">    :returns: ``{&quot;absolute&quot;: {(year, month): path}, &quot;relative&quot;: {(year, month): path}}``.</span>
+<span class="sd">    :rtype: dict[str, dict[tuple[int, int], str]]</span>
+<span class="sd">    :raises ValueError: If ``normal_stat`` was not computed in</span>
+<span class="sd">        ``monthly_normal_paths_by_stat``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">normal_stat</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">monthly_normal_paths_by_stat</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;normal_stat &#39;</span><span class="si">{</span><span class="n">normal_stat</span><span class="si">}</span><span class="s2">&#39; not found among computed monthly normal stats &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(available: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">monthly_normal_paths_by_stat</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">normal_by_month</span> <span class="o">=</span> <span class="n">monthly_normal_paths_by_stat</span><span class="p">[</span><span class="n">normal_stat</span><span class="p">]</span>
+    <span class="n">normal_arrays</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">month</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">normal_by_month</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">arr</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_read_as_float</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">normal_arrays</span><span class="p">[</span><span class="n">month</span><span class="p">]</span> <span class="o">=</span> <span class="n">arr</span>
+
+    <span class="n">abs_dir</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;absolute&quot;</span>
+    <span class="n">rel_dir</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;relative&quot;</span>
+
+    <span class="n">abs_paths</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">rel_paths</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">monthly_rasters</span><span class="p">:</span>
+        <span class="n">normal_arr</span> <span class="o">=</span> <span class="n">normal_arrays</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">month</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">normal_arr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;no &#39;</span><span class="si">{</span><span class="n">normal_stat</span><span class="si">}</span><span class="s2">&#39; normal for month </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">month</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;skipping anomaly for </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">month</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="n">arr</span><span class="p">,</span> <span class="n">profile</span> <span class="o">=</span> <span class="n">_read_as_float</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">)</span>
+            <span class="n">anomaly</span> <span class="o">=</span> <span class="n">arr</span> <span class="o">-</span> <span class="n">normal_arr</span>
+
+        <span class="n">out_path</span> <span class="o">=</span> <span class="n">abs_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;anomaly_</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">month</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">.tif&quot;</span>
+        <span class="n">_write_raster</span><span class="p">(</span><span class="n">anomaly</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">out_path</span><span class="p">)</span>
+        <span class="n">abs_paths</span><span class="p">[(</span><span class="n">r</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">month</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">relative</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">)</span>
+                <span class="n">rel_anomaly</span> <span class="o">=</span> <span class="p">(</span><span class="n">anomaly</span> <span class="o">/</span> <span class="n">normal_arr</span><span class="p">)</span> <span class="o">*</span> <span class="mf">100.0</span>
+                <span class="n">rel_anomaly</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">normal_arr</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">rel_anomaly</span><span class="p">)</span>
+            <span class="n">out_path_rel</span> <span class="o">=</span> <span class="n">rel_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;anomaly_pct_</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">month</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">.tif&quot;</span>
+            <span class="n">_write_raster</span><span class="p">(</span><span class="n">rel_anomaly</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">out_path_rel</span><span class="p">)</span>
+            <span class="n">rel_paths</span><span class="p">[(</span><span class="n">r</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">month</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">out_path_rel</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;anomalies computed for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">abs_paths</span><span class="p">)</span><span class="si">}</span><span class="s2"> monthly raster(s) &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;(relative=</span><span class="si">{</span><span class="s1">&#39;yes&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">relative</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;no&#39;</span><span class="si">}</span><span class="s2">), baseline stat=&#39;</span><span class="si">{</span><span class="n">normal_stat</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;absolute&quot;</span><span class="p">:</span> <span class="n">abs_paths</span><span class="p">,</span> <span class="s2">&quot;relative&quot;</span><span class="p">:</span> <span class="n">rel_paths</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="compute_annual_anomalies">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals.compute_annual_anomalies">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_annual_anomalies</span><span class="p">(</span>
+    <span class="n">annual_paths_by_stat</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
+    <span class="n">annual_normal_paths_by_stat</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">output_dir</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">,</span>
+    <span class="n">base_stat</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+    <span class="n">relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute per-year anomalies against the mean annual normal.</span>
+
+<span class="sd">    For every year in the annual series identified by ``base_stat`` (e.g. the</span>
+<span class="sd">    per-year ``&quot;sum&quot;`` rasters from :func:`aggregate_annual`, for a total like</span>
+<span class="sd">    annual precipitation), computes::</span>
+
+<span class="sd">        anomaly          = annual_value[year] - annual_normal_mean</span>
+<span class="sd">        relative_anomaly = (annual_value[year] - annual_normal_mean) / annual_normal_mean * 100   # percent</span>
+
+<span class="sd">    The baseline is always the ``&quot;mean&quot;`` entry of ``annual_normal_paths_by_stat``,</span>
+<span class="sd">    matching the convention used for the monthly anomalies.</span>
+
+<span class="sd">    :param annual_paths_by_stat: Per-year annual rasters, as returned by</span>
+<span class="sd">        :func:`aggregate_annual`.</span>
+<span class="sd">    :type annual_paths_by_stat: dict[str, dict[int, str]]</span>
+<span class="sd">    :param annual_normal_paths_by_stat: Annual normals, as returned by</span>
+<span class="sd">        :func:`compute_annual_normals`; must include a ``&quot;mean&quot;`` entry.</span>
+<span class="sd">    :type annual_normal_paths_by_stat: dict[str, str]</span>
+<span class="sd">    :param output_dir: Base directory; ``absolute/`` and ``relative/``</span>
+<span class="sd">        subdirectories are created under it.</span>
+<span class="sd">    :type output_dir: str or pathlib.Path</span>
+<span class="sd">    :param logger: Logger instance for progress messages.</span>
+<span class="sd">    :type logger: logging.Logger</span>
+<span class="sd">    :param base_stat: Which annual series in ``annual_paths_by_stat`` to</span>
+<span class="sd">        compute anomalies for.</span>
+<span class="sd">    :type base_stat: str</span>
+<span class="sd">    :param relative: Whether to also compute the percent anomaly.</span>
+<span class="sd">    :type relative: bool</span>
+<span class="sd">    :returns: ``{&quot;absolute&quot;: {year: path}, &quot;relative&quot;: {year: path}}``.</span>
+<span class="sd">    :rtype: dict[str, dict[int, str]]</span>
+<span class="sd">    :raises ValueError: If ``base_stat`` was not computed in</span>
+<span class="sd">        ``annual_paths_by_stat``, or the ``&quot;mean&quot;`` annual normal is missing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">base_stat</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">annual_paths_by_stat</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;base_stat &#39;</span><span class="si">{</span><span class="n">base_stat</span><span class="si">}</span><span class="s2">&#39; was not computed in the annual step &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(available: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">annual_paths_by_stat</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;mean&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">annual_normal_paths_by_stat</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;annual normal &#39;mean&#39; was not computed (available: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">annual_normal_paths_by_stat</span><span class="p">)</span><span class="si">}</span><span class="s2">); &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;annual anomalies always need the mean annual normal&quot;</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">normal_arr</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_read_as_float</span><span class="p">(</span><span class="n">annual_normal_paths_by_stat</span><span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">])</span>
+    <span class="n">series</span> <span class="o">=</span> <span class="n">annual_paths_by_stat</span><span class="p">[</span><span class="n">base_stat</span><span class="p">]</span>
+
+    <span class="n">abs_dir</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;absolute&quot;</span>
+    <span class="n">rel_dir</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;relative&quot;</span>
+
+    <span class="n">abs_paths</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">rel_paths</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">year</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="n">arr</span><span class="p">,</span> <span class="n">profile</span> <span class="o">=</span> <span class="n">_read_as_float</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">)</span>
+            <span class="n">anomaly</span> <span class="o">=</span> <span class="n">arr</span> <span class="o">-</span> <span class="n">normal_arr</span>
+
+        <span class="n">out_path</span> <span class="o">=</span> <span class="n">abs_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;anomaly_</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">.tif&quot;</span>
+        <span class="n">_write_raster</span><span class="p">(</span><span class="n">anomaly</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">out_path</span><span class="p">)</span>
+        <span class="n">abs_paths</span><span class="p">[</span><span class="n">year</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">relative</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">)</span>
+                <span class="n">rel_anomaly</span> <span class="o">=</span> <span class="p">(</span><span class="n">anomaly</span> <span class="o">/</span> <span class="n">normal_arr</span><span class="p">)</span> <span class="o">*</span> <span class="mf">100.0</span>
+                <span class="n">rel_anomaly</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">normal_arr</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">rel_anomaly</span><span class="p">)</span>
+            <span class="n">out_path_rel</span> <span class="o">=</span> <span class="n">rel_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;anomaly_pct_</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">.tif&quot;</span>
+            <span class="n">_write_raster</span><span class="p">(</span><span class="n">rel_anomaly</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">out_path_rel</span><span class="p">)</span>
+            <span class="n">rel_paths</span><span class="p">[</span><span class="n">year</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">out_path_rel</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;annual anomalies computed for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">abs_paths</span><span class="p">)</span><span class="si">}</span><span class="s2"> year(s) &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;(relative=</span><span class="si">{</span><span class="s1">&#39;yes&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">relative</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;no&#39;</span><span class="si">}</span><span class="s2">), baseline=&#39;mean&#39; of &#39;</span><span class="si">{</span><span class="n">base_stat</span><span class="si">}</span><span class="s2">&#39; series&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;absolute&quot;</span><span class="p">:</span> <span class="n">abs_paths</span><span class="p">,</span> <span class="s2">&quot;relative&quot;</span><span class="p">:</span> <span class="n">rel_paths</span><span class="p">}</span></div>
+
+
+
+<span class="c1"># STYLING -- QGIS .qml sidecar files</span>
+<span class="c1"># ***********************************************************************</span>
+
+
+<div class="viewcode-block" id="_iter_paths">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals._iter_paths">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">_iter_paths</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Recursively yield every path string found in a nested dict/list structure.</span>
+
+<span class="sd">    Walks arbitrarily nested dicts and lists/tuples (matching the shapes</span>
+<span class="sd">    returned by :func:`aggregate_annual`, :func:`compute_annual_normals`,</span>
+<span class="sd">    :func:`compute_monthly_normals`, :func:`compute_monthly_anomalies`, and</span>
+<span class="sd">    :func:`compute_annual_anomalies`) and yields every string value found.</span>
+
+<span class="sd">    :param obj: nested paths structure.</span>
+<span class="sd">    :type obj: dict or list or tuple or str</span>
+<span class="sd">    :yields: each path string found.</span>
+<span class="sd">    :rtype: collections.abc.Iterator[str]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">yield from</span> <span class="n">_iter_paths</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="k">yield from</span> <span class="n">_iter_paths</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">obj</span></div>
+
+
+
+<div class="viewcode-block" id="apply_style">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals.apply_style">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_style</span><span class="p">(</span><span class="n">paths_obj</span><span class="p">,</span> <span class="n">template_path</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy a QGIS ``.qml`` style template as a same-named sidecar for each raster.</span>
+
+<span class="sd">    For every raster path found in ``paths_obj`` (any nesting of dict/list,</span>
+<span class="sd">    as returned by the pipeline step functions), copies ``template_path`` to</span>
+<span class="sd">    ``&lt;raster&gt;.qml`` -- i.e. the raster&#39;s filename with its extension</span>
+<span class="sd">    replaced by ``.qml`` -- so QGIS auto-applies the style when the raster</span>
+<span class="sd">    is added to the map.</span>
+
+<span class="sd">    :param paths_obj: nested output-paths structure to style.</span>
+<span class="sd">    :type paths_obj: dict</span>
+<span class="sd">    :param template_path: path to the ``.qml`` style template to copy.</span>
+<span class="sd">    :type template_path: str or pathlib.Path</span>
+<span class="sd">    :param logger: logger instance for progress messages.</span>
+<span class="sd">    :type logger: logging.Logger</span>
+<span class="sd">    :returns: paths of the created ``.qml`` sidecar files.</span>
+<span class="sd">    :rtype: list[str]</span>
+<span class="sd">    :raises FileNotFoundError: if ``template_path`` does not exist.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">template_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">template_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Style template not found: &#39;</span><span class="si">{</span><span class="n">template_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">written</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">raster_path</span> <span class="ow">in</span> <span class="n">_iter_paths</span><span class="p">(</span><span class="n">paths_obj</span><span class="p">):</span>
+        <span class="n">qml_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">raster_path</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.qml&quot;</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">template_path</span><span class="p">,</span> <span class="n">qml_path</span><span class="p">)</span>
+        <span class="n">written</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">qml_path</span><span class="p">))</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;applied style &#39;</span><span class="si">{</span><span class="n">template_path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; to </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">written</span><span class="p">)</span><span class="si">}</span><span class="s2"> raster(s)&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">written</span></div>
+
+
+
+<div class="viewcode-block" id="_maybe_apply_style">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals._maybe_apply_style">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">_maybe_apply_style</span><span class="p">(</span><span class="n">paths_obj</span><span class="p">,</span> <span class="n">template_path</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Call :func:`apply_style` only if ``template_path`` is truthy.</span>
+
+<span class="sd">    Small convenience wrapper so callers can pass ``styles_cfg.get(key)``</span>
+<span class="sd">    (which is ``None`` for an unconfigured style) without an ``if`` at</span>
+<span class="sd">    every call site.</span>
+
+<span class="sd">    :param paths_obj: nested output-paths structure to style.</span>
+<span class="sd">    :type paths_obj: dict</span>
+<span class="sd">    :param template_path: path to the ``.qml`` style template, or ``None``</span>
+<span class="sd">        to skip styling.</span>
+<span class="sd">    :type template_path: str or pathlib.Path or None</span>
+<span class="sd">    :param logger: logger instance for progress messages.</span>
+<span class="sd">    :type logger: logging.Logger</span>
+<span class="sd">    :returns: None</span>
+<span class="sd">    :rtype: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">template_path</span><span class="p">:</span>
+        <span class="n">apply_style</span><span class="p">(</span><span class="n">paths_obj</span><span class="p">,</span> <span class="n">template_path</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># TOOL STEPS -- load -&gt; process -&gt; export</span>
+<span class="c1"># ***********************************************************************</span>
+
+
+<div class="viewcode-block" id="load_data">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals.load_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Scan and validate the monthly raster time series described by ``cfg``.</span>
+
+<span class="sd">    :param cfg: validated configuration dictionary from :func:`load_config`.</span>
+<span class="sd">    :type cfg: dict</span>
+<span class="sd">    :param logger: logger instance for progress messages.</span>
+<span class="sd">    :type logger: logging.Logger</span>
+<span class="sd">    :return: parsed monthly rasters, sorted chronologically.</span>
+<span class="sd">    :rtype: list[MonthlyRaster]</span>
+<span class="sd">    :raises ValueError: if no monthly rasters are found in ``cfg[&quot;input&quot;]``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;scanning input folder for monthly rasters&quot;</span><span class="p">)</span>
+    <span class="n">monthly</span> <span class="o">=</span> <span class="n">parse_monthly_rasters</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">],</span> <span class="n">logger</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;pattern&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">monthly</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;No monthly rasters found in &#39;</span><span class="si">{</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;input&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; matching pattern &#39;</span><span class="si">{</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;pattern&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">validate_grid_consistency</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">path</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">monthly</span><span class="p">],</span> <span class="n">logger</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">monthly</span><span class="p">)</span><span class="si">}</span><span class="s2"> monthly rasters &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">monthly</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">monthly</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">month</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">monthly</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">monthly</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">month</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">monthly</span></div>
+
+
+
+<div class="viewcode-block" id="process_data">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals.process_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">process_data</span><span class="p">(</span><span class="n">loaded</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run annual aggregation, climatological normals, and anomalies.</span>
+
+<span class="sd">    :param loaded: monthly rasters, as returned by :func:`load_data`.</span>
+<span class="sd">    :type loaded: list[MonthlyRaster]</span>
+<span class="sd">    :param cfg: validated configuration dictionary from :func:`load_config`.</span>
+<span class="sd">    :type cfg: dict</span>
+<span class="sd">    :param logger: logger instance for progress messages.</span>
+<span class="sd">    :type logger: logging.Logger</span>
+<span class="sd">    :return: dict with keys ``&quot;annual&quot;``, ``&quot;annual_normals&quot;``,</span>
+<span class="sd">        ``&quot;monthly_normals&quot;``, ``&quot;annual_anomalies&quot;``, and</span>
+<span class="sd">        ``&quot;monthly_anomalies&quot;``, holding the structures returned by</span>
+<span class="sd">        :func:`aggregate_annual`, :func:`compute_annual_normals`,</span>
+<span class="sd">        :func:`compute_monthly_normals`, :func:`compute_annual_anomalies`,</span>
+<span class="sd">        and :func:`compute_monthly_anomalies` respectively. The two</span>
+<span class="sd">        anomaly entries are ``None`` if disabled in the config. If</span>
+<span class="sd">        ``cfg[&quot;styles&quot;]`` has entries, :func:`apply_style` is also called</span>
+<span class="sd">        for each configured category as a side effect (writing ``.qml``</span>
+<span class="sd">        sidecars next to the relevant rasters).</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">monthly</span> <span class="o">=</span> <span class="n">loaded</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">])</span>
+
+    <span class="n">annual_cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;annual&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">annual_stats</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">annual_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stats&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">]))</span>
+    <span class="n">min_months</span> <span class="o">=</span> <span class="n">annual_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;min_months&quot;</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+
+    <span class="n">normals_cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;normals&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">normal_stats</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">normals_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stats&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">]))</span>
+    <span class="n">annual_base_stat</span> <span class="o">=</span> <span class="n">normals_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;annual_base_stat&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+    <span class="n">annual_horizon</span> <span class="o">=</span> <span class="n">normals_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;annual_horizon&quot;</span><span class="p">)</span>
+    <span class="n">monthly_horizon</span> <span class="o">=</span> <span class="n">normals_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;monthly_horizon&quot;</span><span class="p">)</span>
+    <span class="n">annual_horizon</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">annual_horizon</span><span class="p">)</span> <span class="k">if</span> <span class="n">annual_horizon</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">monthly_horizon</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">monthly_horizon</span><span class="p">)</span> <span class="k">if</span> <span class="n">monthly_horizon</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="n">anomalies_cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;anomalies&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">anomalies_monthly_enabled</span> <span class="o">=</span> <span class="n">anomalies_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;monthly&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">anomalies_annual_enabled</span> <span class="o">=</span> <span class="n">anomalies_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;annual&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">anomalies_relative</span> <span class="o">=</span> <span class="n">anomalies_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;relative&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">styles_cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;styles&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="n">annual_base_stat</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">annual_stats</span><span class="p">:</span>
+        <span class="n">annual_stats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">annual_base_stat</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;adding &#39;</span><span class="si">{</span><span class="n">annual_base_stat</span><span class="si">}</span><span class="s2">&#39; to annual.stats (required as normals.annual_base_stat)&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">anomalies_monthly_enabled</span> <span class="ow">or</span> <span class="n">anomalies_annual_enabled</span>
+    <span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;mean&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">normal_stats</span><span class="p">:</span>
+        <span class="n">normal_stats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;adding &#39;mean&#39; to normals.stats (anomalies are always computed against the mean normal)&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">annual_paths</span> <span class="o">=</span> <span class="n">aggregate_annual</span><span class="p">(</span>
+        <span class="n">monthly</span><span class="p">,</span>
+        <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;annual&quot;</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">,</span>
+        <span class="n">stats</span><span class="o">=</span><span class="n">annual_stats</span><span class="p">,</span>
+        <span class="n">min_months</span><span class="o">=</span><span class="n">min_months</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_maybe_apply_style</span><span class="p">(</span><span class="n">annual_paths</span><span class="p">,</span> <span class="n">styles_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;annual&quot;</span><span class="p">),</span> <span class="n">logger</span><span class="p">)</span>
+
+    <span class="n">annual_normal_paths</span> <span class="o">=</span> <span class="n">compute_annual_normals</span><span class="p">(</span>
+        <span class="n">annual_paths</span><span class="p">,</span>
+        <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;normals&quot;</span> <span class="o">/</span> <span class="s2">&quot;annual&quot;</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">,</span>
+        <span class="n">base_stat</span><span class="o">=</span><span class="n">annual_base_stat</span><span class="p">,</span>
+        <span class="n">stats</span><span class="o">=</span><span class="n">normal_stats</span><span class="p">,</span>
+        <span class="n">horizon</span><span class="o">=</span><span class="n">annual_horizon</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_maybe_apply_style</span><span class="p">(</span><span class="n">annual_normal_paths</span><span class="p">,</span> <span class="n">styles_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;annual_normal&quot;</span><span class="p">),</span> <span class="n">logger</span><span class="p">)</span>
+
+    <span class="n">annual_anomaly_paths</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">anomalies_annual_enabled</span><span class="p">:</span>
+        <span class="n">annual_anomaly_paths</span> <span class="o">=</span> <span class="n">compute_annual_anomalies</span><span class="p">(</span>
+            <span class="n">annual_paths</span><span class="p">,</span>
+            <span class="n">annual_normal_paths</span><span class="p">,</span>
+            <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;anomalies&quot;</span> <span class="o">/</span> <span class="s2">&quot;annual&quot;</span><span class="p">,</span>
+            <span class="n">logger</span><span class="p">,</span>
+            <span class="n">base_stat</span><span class="o">=</span><span class="n">annual_base_stat</span><span class="p">,</span>
+            <span class="n">relative</span><span class="o">=</span><span class="n">anomalies_relative</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">_maybe_apply_style</span><span class="p">(</span>
+            <span class="n">annual_anomaly_paths</span><span class="p">[</span><span class="s2">&quot;absolute&quot;</span><span class="p">],</span> <span class="n">styles_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;anomaly_absolute&quot;</span><span class="p">),</span> <span class="n">logger</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">anomalies_relative</span><span class="p">:</span>
+            <span class="n">_maybe_apply_style</span><span class="p">(</span>
+                <span class="n">annual_anomaly_paths</span><span class="p">[</span><span class="s2">&quot;relative&quot;</span><span class="p">],</span>
+                <span class="n">styles_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;anomaly_relative&quot;</span><span class="p">),</span>
+                <span class="n">logger</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="n">monthly_normal_paths</span> <span class="o">=</span> <span class="n">compute_monthly_normals</span><span class="p">(</span>
+        <span class="n">monthly</span><span class="p">,</span>
+        <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;normals&quot;</span> <span class="o">/</span> <span class="s2">&quot;monthly&quot;</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">,</span>
+        <span class="n">stats</span><span class="o">=</span><span class="n">normal_stats</span><span class="p">,</span>
+        <span class="n">horizon</span><span class="o">=</span><span class="n">monthly_horizon</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_maybe_apply_style</span><span class="p">(</span><span class="n">monthly_normal_paths</span><span class="p">,</span> <span class="n">styles_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;monthly_normal&quot;</span><span class="p">),</span> <span class="n">logger</span><span class="p">)</span>
+
+    <span class="n">monthly_anomaly_paths</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">anomalies_monthly_enabled</span><span class="p">:</span>
+        <span class="n">monthly_anomaly_paths</span> <span class="o">=</span> <span class="n">compute_monthly_anomalies</span><span class="p">(</span>
+            <span class="n">monthly</span><span class="p">,</span>
+            <span class="n">monthly_normal_paths</span><span class="p">,</span>
+            <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;anomalies&quot;</span> <span class="o">/</span> <span class="s2">&quot;monthly&quot;</span><span class="p">,</span>
+            <span class="n">logger</span><span class="p">,</span>
+            <span class="n">relative</span><span class="o">=</span><span class="n">anomalies_relative</span><span class="p">,</span>
+            <span class="n">normal_stat</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">_maybe_apply_style</span><span class="p">(</span>
+            <span class="n">monthly_anomaly_paths</span><span class="p">[</span><span class="s2">&quot;absolute&quot;</span><span class="p">],</span>
+            <span class="n">styles_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;anomaly_absolute&quot;</span><span class="p">),</span>
+            <span class="n">logger</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">anomalies_relative</span><span class="p">:</span>
+            <span class="n">_maybe_apply_style</span><span class="p">(</span>
+                <span class="n">monthly_anomaly_paths</span><span class="p">[</span><span class="s2">&quot;relative&quot;</span><span class="p">],</span>
+                <span class="n">styles_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;anomaly_relative&quot;</span><span class="p">),</span>
+                <span class="n">logger</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;annual&quot;</span><span class="p">:</span> <span class="n">annual_paths</span><span class="p">,</span>
+        <span class="s2">&quot;annual_normals&quot;</span><span class="p">:</span> <span class="n">annual_normal_paths</span><span class="p">,</span>
+        <span class="s2">&quot;monthly_normals&quot;</span><span class="p">:</span> <span class="n">monthly_normal_paths</span><span class="p">,</span>
+        <span class="s2">&quot;annual_anomalies&quot;</span><span class="p">:</span> <span class="n">annual_anomaly_paths</span><span class="p">,</span>
+        <span class="s2">&quot;monthly_anomalies&quot;</span><span class="p">:</span> <span class="n">monthly_anomaly_paths</span><span class="p">,</span>
+    <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="_manifest_safe">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals._manifest_safe">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">_manifest_safe</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Recursively convert a ``processed`` results structure into a JSON-safe form.</span>
+
+<span class="sd">    ``(year, month)`` tuple keys become ``&quot;YYYY-MM&quot;`` strings; everything</span>
+<span class="sd">    else is passed through unchanged.</span>
+
+<span class="sd">    :param obj: value to convert (dict, list/tuple, or scalar).</span>
+<span class="sd">    :type obj: object</span>
+<span class="sd">    :return: JSON-serializable equivalent.</span>
+<span class="sd">    :rtype: object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_manifest_safe</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">_manifest_safe</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">obj</span></div>
+
+
+
+<div class="viewcode-block" id="export_data">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals.export_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">export_data</span><span class="p">(</span><span class="n">processed</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write a JSON manifest listing every raster produced by the run.</span>
+
+<span class="sd">    :param processed: data returned by :func:`process_data`.</span>
+<span class="sd">    :type processed: dict</span>
+<span class="sd">    :param cfg: validated configuration dictionary from :func:`load_config`.</span>
+<span class="sd">    :type cfg: dict</span>
+<span class="sd">    :param logger: logger instance for progress messages.</span>
+<span class="sd">    :type logger: logging.Logger</span>
+<span class="sd">    :return: ``None``</span>
+<span class="sd">    :rtype: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">manifest_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="s2">&quot;manifest.json&quot;</span>
+    <span class="n">manifest_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">_manifest_safe</span><span class="p">(</span><span class="n">processed</span><span class="p">),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote manifest -&gt; </span><span class="si">{</span><span class="n">manifest_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="get_args">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals.get_args">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_args</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse the single ``--config``/``-c`` CLI argument.</span>
+
+<span class="sd">    :return: parsed arguments namespace, exposing ``args.config``.</span>
+<span class="sd">    :rtype: argparse.Namespace</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--config&quot;</span><span class="p">,</span> <span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the JSON config file&quot;</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../../generated/plans.tools.analysis_spatial_normals.html#plans.tools.analysis_spatial_normals.main">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Entry point: load the config and run load -&gt; process -&gt; export.</span>
+
+<span class="sd">    :return: ``None``</span>
+<span class="sd">    :rtype: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">()</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="n">folder_output</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">])</span>
+    <span class="n">folder_output</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">],</span> <span class="n">folder_output</span> <span class="o">/</span> <span class="s2">&quot;logs.txt&quot;</span><span class="p">,</span> <span class="n">talk</span><span class="o">=</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;verbose&quot;</span><span class="p">])</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;starting&quot;</span><span class="p">)</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="n">loaded</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+    <span class="n">processed</span> <span class="o">=</span> <span class="n">process_data</span><span class="p">(</span><span class="n">loaded</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+    <span class="n">export_data</span><span class="p">(</span><span class="n">processed</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;run completed in </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;results available at:</span><span class="se">\n\n\t</span><span class="si">{</span><span class="n">folder_output</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Iporã Possantti.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
