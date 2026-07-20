@@ -25,6 +25,8 @@ Modules
 
 .. include:: ./api_datasets.rst
 
+.. include:: ./api_tools.rst
+
 .. include:: ./api_parsers.rst
 
 .. include:: ./api_utils.rst
