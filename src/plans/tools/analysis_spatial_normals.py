@@ -15,7 +15,9 @@ From a monthly raster time series (e.g., NDVI), this tool builds:
 1. Annual aggregations (one or more statistics per year).
 2. Climatological normals -- annual and monthly, over a configurable
    horizon.
-3. Anomalies -- monthly and annual, absolute and relative/percent.
+3. Anomalies -- monthly and annual, absolute, relative/percent, and
+   z-score (standardized, i.e. anomaly divided by the standard-deviation
+   normal).
 
 Assumes all input rasters share the same grid (shape, transform, CRS),
 and that monthly raster filenames end with a fixed ``"_<YYYY>_<MM>"``
@@ -57,14 +59,16 @@ copy and paste:
       "anomalies": {
         "monthly": true,
         "annual": true,
-        "relative": true
+        "relative": true,
+        "zscore": true
       },
       "styles": {
         "annual": "styles/annual.qml",
         "annual_normal": "styles/annual_normal.qml",
         "monthly_normal": "styles/monthly_normal.qml",
         "anomaly_absolute": "styles/anomaly_absolute.qml",
-        "anomaly_relative": "styles/anomaly_relative.qml"
+        "anomaly_relative": "styles/anomaly_relative.qml",
+        "anomaly_zscore": "styles/anomaly_zscore.qml"
       }
     }
 
@@ -89,15 +93,18 @@ Optional fields
 * ``anomalies`` (dict, default ``{}``) -- see
   :func:`compute_monthly_anomalies` / :func:`compute_annual_anomalies`;
   keys ``monthly`` and ``annual`` (bool, default ``true``), ``relative``
-  (bool, default ``true``).
+  (bool, default ``true``), ``zscore`` (bool, default ``false``). When
+  ``zscore`` is ``true``, ``"std"`` is required among ``normals.stats``
+  (it is added automatically with a log message if missing, same as
+  ``"mean"`` is for anomalies generally).
 * ``styles`` (dict, default ``{}``) -- see :func:`apply_style`. Each key
   is optional; when present, its value is a path to a QGIS ``.qml`` style
   template that gets copied as a same-named sidecar next to every raster
   in that output category, so QGIS auto-applies it on load. Keys:
   ``annual`` (the per-year aggregates), ``annual_normal``,
   ``monthly_normal``, ``anomaly_absolute`` (used for both monthly and
-  annual absolute anomalies), and ``anomaly_relative`` (ditto, relative
-  anomalies).
+  annual absolute anomalies), ``anomaly_relative`` (ditto, relative
+  anomalies), and ``anomaly_zscore`` (ditto, z-score anomalies).
 
 The ``REQUIRED``/``OPTIONAL`` dictionaries just below are the actual
 validation source of truth for the top-level fields -- keep them in sync
@@ -236,8 +243,8 @@ class MonthlyRaster:
 # STAT HELPERS
 # ***********************************************************************
 
-# Fixed filename convention: "..._<YYYY>_<MM>.<ext>"
-_DATE_SUFFIX_RE = re.compile(r"_(\d{4})_(\d{2})(?=\.[A-Za-z0-9]+$)")
+# Fixed filename convention: "..._<YYYY>-<MM>.<ext>"
+_DATE_SUFFIX_RE = re.compile(r"_(\d{4})-(\d{2})(?=\.[A-Za-z0-9]+$)")
 
 _BASE_STAT_FUNCS: dict[str, Callable] = {
     "mean": np.nanmean,
@@ -249,6 +256,7 @@ _BASE_STAT_FUNCS: dict[str, Callable] = {
 }
 _PCT_RE = re.compile(r"^p(\d{1,3})$")
 
+INT16_NODATA = np.iinfo(np.int16).max  # 32767
 
 def _resolve_stat_func(stat: str) -> Callable:
     """Resolve a stat name to a NaN-aware ``(array, axis) -> array`` reducer.
@@ -378,6 +386,39 @@ def _write_raster(arr: np.ndarray, profile: dict, out_path) -> None:
     with rasterio.open(out_path, "w", **out_profile) as dst:
         dst.write(arr.astype("float32"), 1)
 
+def _write_raster_int16(arr, profile, out_path, scale=100, nodata=INT16_NODATA):
+    """Write a single-band Int16 raster, scaling and rounding first.
+
+    Values are multiplied by ``scale``, rounded to the nearest integer, and
+    cast to Int16. NaNs map to ``nodata``. Values whose scaled magnitude
+    exceeds the Int16 range (~ ±32767) wrap around silently on cast --
+    a deliberate size/precision tradeoff, not a clipped/saturated cast.
+
+    :param arr: pixel array to write (e.g. percent relative anomaly).
+    :type arr: numpy.ndarray
+    :param profile: rasterio profile to reuse; dtype/count/nodata are overridden.
+    :type profile: dict
+    :param out_path: output file path.
+    :type out_path: str or pathlib.Path
+    :param scale: multiplier applied before rounding, e.g. 100 to preserve
+        two decimal places of a percent value as an integer.
+    :type scale: int or float
+    :param nodata: sentinel value for NaN pixels.
+    :type nodata: int
+    :returns: None
+    :rtype: None
+    """
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=RuntimeWarning)
+        scaled = np.round(arr * scale)
+    out = np.where(np.isfinite(scaled), scaled, nodata).astype(np.int16)
+
+    out_profile = profile.copy()
+    out_profile.update(dtype="int16", count=1, nodata=nodata)
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with rasterio.open(out_path, "w", **out_profile) as dst:
+        dst.write(out, 1)
 
 def _apply_stat(stack: np.ndarray, func: Callable) -> np.ndarray:
     """Apply a stat reducer across axis 0 of a stack.
@@ -624,7 +665,9 @@ def compute_monthly_anomalies(
     output_dir,
     logger,
     relative: bool = True,
+    zscore: bool = False,
     normal_stat: str = "mean",
+    std_stat: str = "std",
 ) -> dict[str, dict[tuple[int, int], str]]:
     """Compute per-month anomalies against the calendar-month normal.
 
@@ -632,12 +675,17 @@ def compute_monthly_anomalies(
 
         anomaly          = value - normal[month]
         relative_anomaly = (value - normal[month]) / normal[month] * 100   # percent
+        zscore           = (value - normal[month]) / std[month]           # dimensionless
 
     where ``normal`` is the ``normal_stat`` monthly normal (``"mean"`` by
-    default -- anomalies are conventionally defined relative to the mean).
-    Pixels where the normal is exactly 0 get ``NaN`` for the relative anomaly
-    (percent deviation is undefined there) but still get a valid absolute
-    anomaly -- relevant for variables like precipitation with dry-season zeros.
+    default -- anomalies are conventionally defined relative to the mean)
+    and ``std`` is the ``std_stat`` monthly normal (the per-calendar-month
+    standard deviation across the normals horizon). Pixels where ``normal``
+    is exactly 0 get ``NaN`` for the relative anomaly (percent deviation is
+    undefined there) but still get a valid absolute anomaly -- relevant for
+    variables like precipitation with dry-season zeros. Likewise, pixels
+    where ``std`` is exactly 0 (e.g. a constant time series at that pixel)
+    get ``NaN`` for the z-score.
 
     :param monthly_rasters: Parsed monthly rasters, as returned by
         :func:`parse_monthly_rasters`.
@@ -645,25 +693,43 @@ def compute_monthly_anomalies(
     :param monthly_normal_paths_by_stat: Monthly normals, as returned by
         :func:`compute_monthly_normals`.
     :type monthly_normal_paths_by_stat: dict[str, dict[int, str]]
-    :param output_dir: Base directory; ``absolute/`` and ``relative/``
-        subdirectories are created under it.
+    :param output_dir: Base directory; ``absolute/``, ``relative/``, and
+        ``zscore/`` subdirectories are created under it as needed.
     :type output_dir: str or pathlib.Path
     :param logger: Logger instance for progress messages.
     :type logger: logging.Logger
     :param relative: Whether to also compute the percent anomaly.
     :type relative: bool
+    :param zscore: Whether to also compute the z-score (standardized)
+        anomaly, i.e. the anomaly divided by the ``std_stat`` monthly
+        normal.
+    :type zscore: bool
     :param normal_stat: Which monthly normal stat to use as the baseline.
     :type normal_stat: str
-    :returns: ``{"absolute": {(year, month): path}, "relative": {(year, month): path}}``.
+    :param std_stat: Which monthly normal stat to use as the standard
+        deviation for the z-score. Only read when ``zscore`` is ``true``.
+    :type std_stat: str
+    :returns: ``{"absolute": {(year, month): path}, "relative": {(year, month): path},
+        "zscore": {(year, month): path}}``. ``"relative"``/``"zscore"`` are
+        empty dicts when the corresponding flag is ``false``.
     :rtype: dict[str, dict[tuple[int, int], str]]
     :raises ValueError: If ``normal_stat`` was not computed in
-        ``monthly_normal_paths_by_stat``.
+        ``monthly_normal_paths_by_stat``, or ``zscore`` is ``true`` and
+        ``std_stat`` was not computed there.
     """
     output_dir = Path(output_dir)
     if normal_stat not in monthly_normal_paths_by_stat:
         msg = (
             f"normal_stat '{normal_stat}' not found among computed monthly normal stats "
             f"(available: {list(monthly_normal_paths_by_stat)})"
+        )
+        logger.error(msg)
+        raise ValueError(msg)
+    if zscore and std_stat not in monthly_normal_paths_by_stat:
+        msg = (
+            f"std_stat '{std_stat}' not found among computed monthly normal stats "
+            f"(available: {list(monthly_normal_paths_by_stat)}); zscore anomalies "
+            f"require '{std_stat}' in normals.stats"
         )
         logger.error(msg)
         raise ValueError(msg)
@@ -674,11 +740,20 @@ def compute_monthly_anomalies(
         arr, _ = _read_as_float(path)
         normal_arrays[month] = arr
 
+    std_arrays: dict[int, np.ndarray] = {}
+    if zscore:
+        std_by_month = monthly_normal_paths_by_stat[std_stat]
+        for month, path in std_by_month.items():
+            arr, _ = _read_as_float(path)
+            std_arrays[month] = arr
+
     abs_dir = output_dir / "absolute"
     rel_dir = output_dir / "relative"
+    z_dir = output_dir / "zscore"
 
     abs_paths: dict[tuple[int, int], str] = {}
     rel_paths: dict[tuple[int, int], str] = {}
+    z_paths: dict[tuple[int, int], str] = {}
 
     for r in monthly_rasters:
         normal_arr = normal_arrays.get(r.month)
@@ -704,16 +779,35 @@ def compute_monthly_anomalies(
                 warnings.simplefilter("ignore", category=RuntimeWarning)
                 rel_anomaly = (anomaly / normal_arr) * 100.0
                 rel_anomaly = np.where(normal_arr == 0, np.nan, rel_anomaly)
-            out_path_rel = rel_dir / f"anomaly_pct_{r.year}_{r.month:02d}.tif"
-            _write_raster(rel_anomaly, profile, out_path_rel)
+            # in compute_monthly_anomalies, and compute_annual_anomalies, "relative" block:
+            out_path_rel = rel_dir / f"anomaly_pct_{r.year}_{r.month:02d}.tif"  # (or f"anomaly_pct_{year}.tif" for annual)
+            _write_raster_int16(rel_anomaly, profile, out_path_rel, scale=100)
             rel_paths[(r.year, r.month)] = str(out_path_rel)
+
+        if zscore:
+            std_arr = std_arrays.get(r.month)
+            if std_arr is None:
+                logger.warning(
+                    f"no '{std_stat}' normal for month {r.month:02d}, "
+                    f"skipping zscore anomaly for {r.year}-{r.month:02d}"
+                )
+            else:
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore", category=RuntimeWarning)
+                    z_anomaly = anomaly / std_arr
+                    z_anomaly = np.where(std_arr == 0, np.nan, z_anomaly)
+                out_path_z = z_dir / f"anomaly_z_{r.year}_{r.month:02d}.tif"
+                _write_raster_int16(z_anomaly, profile, out_path_z, scale=100)
+                z_paths[(r.year, r.month)] = str(out_path_z)
 
     logger.info(
         f"anomalies computed for {len(abs_paths)} monthly raster(s) "
-        f"(relative={'yes' if relative else 'no'}), baseline stat='{normal_stat}'"
+        f"(relative={'yes' if relative else 'no'}, zscore={'yes' if zscore else 'no'}), "
+        f"baseline stat='{normal_stat}'"
+        + (f", std stat='{std_stat}'" if zscore else "")
     )
 
-    return {"absolute": abs_paths, "relative": rel_paths}
+    return {"absolute": abs_paths, "relative": rel_paths, "zscore": z_paths}
 
 
 def compute_annual_anomalies(
@@ -723,6 +817,8 @@ def compute_annual_anomalies(
     logger,
     base_stat: str = "mean",
     relative: bool = True,
+    zscore: bool = False,
+    std_stat: str = "std",
 ) -> dict[str, dict[int, str]]:
     """Compute per-year anomalies against the mean annual normal.
 
@@ -732,18 +828,23 @@ def compute_annual_anomalies(
 
         anomaly          = annual_value[year] - annual_normal_mean
         relative_anomaly = (annual_value[year] - annual_normal_mean) / annual_normal_mean * 100   # percent
+        zscore           = (annual_value[year] - annual_normal_mean) / annual_normal_std          # dimensionless
 
     The baseline is always the ``"mean"`` entry of ``annual_normal_paths_by_stat``,
-    matching the convention used for the monthly anomalies.
+    matching the convention used for the monthly anomalies. The z-score
+    divides by the ``std_stat`` entry (``"std"`` by default) of the same
+    dict -- the interannual standard deviation over the normals horizon.
+    Pixels where that std is exactly 0 get ``NaN`` for the z-score.
 
     :param annual_paths_by_stat: Per-year annual rasters, as returned by
         :func:`aggregate_annual`.
     :type annual_paths_by_stat: dict[str, dict[int, str]]
     :param annual_normal_paths_by_stat: Annual normals, as returned by
-        :func:`compute_annual_normals`; must include a ``"mean"`` entry.
+        :func:`compute_annual_normals`; must include a ``"mean"`` entry
+        (and a ``std_stat`` entry when ``zscore`` is ``true``).
     :type annual_normal_paths_by_stat: dict[str, str]
-    :param output_dir: Base directory; ``absolute/`` and ``relative/``
-        subdirectories are created under it.
+    :param output_dir: Base directory; ``absolute/``, ``relative/``, and
+        ``zscore/`` subdirectories are created under it as needed.
     :type output_dir: str or pathlib.Path
     :param logger: Logger instance for progress messages.
     :type logger: logging.Logger
@@ -752,10 +853,20 @@ def compute_annual_anomalies(
     :type base_stat: str
     :param relative: Whether to also compute the percent anomaly.
     :type relative: bool
-    :returns: ``{"absolute": {year: path}, "relative": {year: path}}``.
+    :param zscore: Whether to also compute the z-score (standardized)
+        anomaly, i.e. the anomaly divided by the ``std_stat`` annual
+        normal.
+    :type zscore: bool
+    :param std_stat: Which annual normal stat to use as the standard
+        deviation for the z-score. Only read when ``zscore`` is ``true``.
+    :type std_stat: str
+    :returns: ``{"absolute": {year: path}, "relative": {year: path},
+        "zscore": {year: path}}``. ``"relative"``/``"zscore"`` are empty
+        dicts when the corresponding flag is ``false``.
     :rtype: dict[str, dict[int, str]]
     :raises ValueError: If ``base_stat`` was not computed in
-        ``annual_paths_by_stat``, or the ``"mean"`` annual normal is missing.
+        ``annual_paths_by_stat``, the ``"mean"`` annual normal is missing,
+        or ``zscore`` is ``true`` and ``std_stat`` was not computed.
     """
     output_dir = Path(output_dir)
     if base_stat not in annual_paths_by_stat:
@@ -772,15 +883,28 @@ def compute_annual_anomalies(
         )
         logger.error(msg)
         raise ValueError(msg)
+    if zscore and std_stat not in annual_normal_paths_by_stat:
+        msg = (
+            f"annual normal '{std_stat}' was not computed (available: "
+            f"{list(annual_normal_paths_by_stat)}); zscore anomalies require "
+            f"'{std_stat}' in normals.stats"
+        )
+        logger.error(msg)
+        raise ValueError(msg)
 
     normal_arr, _ = _read_as_float(annual_normal_paths_by_stat["mean"])
+    std_arr = None
+    if zscore:
+        std_arr, _ = _read_as_float(annual_normal_paths_by_stat[std_stat])
     series = annual_paths_by_stat[base_stat]
 
     abs_dir = output_dir / "absolute"
     rel_dir = output_dir / "relative"
+    z_dir = output_dir / "zscore"
 
     abs_paths: dict[int, str] = {}
     rel_paths: dict[int, str] = {}
+    z_paths: dict[int, str] = {}
 
     for year, path in sorted(series.items()):
         arr, profile = _read_as_float(path)
@@ -799,15 +923,26 @@ def compute_annual_anomalies(
                 rel_anomaly = (anomaly / normal_arr) * 100.0
                 rel_anomaly = np.where(normal_arr == 0, np.nan, rel_anomaly)
             out_path_rel = rel_dir / f"anomaly_pct_{year}.tif"
-            _write_raster(rel_anomaly, profile, out_path_rel)
+            _write_raster_int16(rel_anomaly, profile, out_path_rel, scale=100)
             rel_paths[year] = str(out_path_rel)
+
+        if zscore:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", category=RuntimeWarning)
+                z_anomaly = anomaly / std_arr
+                z_anomaly = np.where(std_arr == 0, np.nan, z_anomaly)
+            out_path_z = z_dir / f"anomaly_z_{year}.tif"
+            _write_raster_int16(z_anomaly, profile, out_path_z, scale=100)
+            z_paths[year] = str(out_path_z)
 
     logger.info(
         f"annual anomalies computed for {len(abs_paths)} year(s) "
-        f"(relative={'yes' if relative else 'no'}), baseline='mean' of '{base_stat}' series"
+        f"(relative={'yes' if relative else 'no'}, zscore={'yes' if zscore else 'no'}), "
+        f"baseline='mean' of '{base_stat}' series"
+        + (f", std stat='{std_stat}'" if zscore else "")
     )
 
-    return {"absolute": abs_paths, "relative": rel_paths}
+    return {"absolute": abs_paths, "relative": rel_paths, "zscore": z_paths}
 
 
 # STYLING -- QGIS .qml sidecar files
@@ -963,6 +1098,7 @@ def process_data(loaded, cfg, logger):
     anomalies_monthly_enabled = anomalies_cfg.get("monthly", True)
     anomalies_annual_enabled = anomalies_cfg.get("annual", True)
     anomalies_relative = anomalies_cfg.get("relative", True)
+    anomalies_zscore = anomalies_cfg.get("zscore", False)
 
     styles_cfg = cfg.get("styles") or {}
 
@@ -978,6 +1114,16 @@ def process_data(loaded, cfg, logger):
         normal_stats.append("mean")
         logger.info(
             "adding 'mean' to normals.stats (anomalies are always computed against the mean normal)"
+        )
+
+    if (
+        anomalies_zscore
+        and (anomalies_monthly_enabled or anomalies_annual_enabled)
+        and "std" not in normal_stats
+    ):
+        normal_stats.append("std")
+        logger.info(
+            "adding 'std' to normals.stats (required by anomalies.zscore)"
         )
 
     annual_paths = aggregate_annual(
@@ -1008,6 +1154,7 @@ def process_data(loaded, cfg, logger):
             logger,
             base_stat=annual_base_stat,
             relative=anomalies_relative,
+            zscore=anomalies_zscore,
         )
         _maybe_apply_style(
             annual_anomaly_paths["absolute"], styles_cfg.get("anomaly_absolute"), logger
@@ -1016,6 +1163,12 @@ def process_data(loaded, cfg, logger):
             _maybe_apply_style(
                 annual_anomaly_paths["relative"],
                 styles_cfg.get("anomaly_relative"),
+                logger,
+            )
+        if anomalies_zscore:
+            _maybe_apply_style(
+                annual_anomaly_paths["zscore"],
+                styles_cfg.get("anomaly_zscore"),
                 logger,
             )
 
@@ -1036,6 +1189,7 @@ def process_data(loaded, cfg, logger):
             output_dir / "anomalies" / "monthly",
             logger,
             relative=anomalies_relative,
+            zscore=anomalies_zscore,
             normal_stat="mean",
         )
         _maybe_apply_style(
@@ -1047,6 +1201,12 @@ def process_data(loaded, cfg, logger):
             _maybe_apply_style(
                 monthly_anomaly_paths["relative"],
                 styles_cfg.get("anomaly_relative"),
+                logger,
+            )
+        if anomalies_zscore:
+            _maybe_apply_style(
+                monthly_anomaly_paths["zscore"],
+                styles_cfg.get("anomaly_zscore"),
                 logger,
             )
 
