@@ -258,6 +258,7 @@ _PCT_RE = re.compile(r"^p(\d{1,3})$")
 
 INT16_NODATA = np.iinfo(np.int16).max  # 32767
 
+
 def _resolve_stat_func(stat: str) -> Callable:
     """Resolve a stat name to a NaN-aware ``(array, axis) -> array`` reducer.
 
@@ -386,6 +387,7 @@ def _write_raster(arr: np.ndarray, profile: dict, out_path) -> None:
     with rasterio.open(out_path, "w", **out_profile) as dst:
         dst.write(arr.astype("float32"), 1)
 
+
 def _write_raster_int16(arr, profile, out_path, scale=100, nodata=INT16_NODATA):
     """Write a single-band Int16 raster, scaling and rounding first.
 
@@ -419,6 +421,7 @@ def _write_raster_int16(arr, profile, out_path, scale=100, nodata=INT16_NODATA):
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with rasterio.open(out_path, "w", **out_profile) as dst:
         dst.write(out, 1)
+
 
 def _apply_stat(stack: np.ndarray, func: Callable) -> np.ndarray:
     """Apply a stat reducer across axis 0 of a stack.
@@ -780,7 +783,9 @@ def compute_monthly_anomalies(
                 rel_anomaly = (anomaly / normal_arr) * 100.0
                 rel_anomaly = np.where(normal_arr == 0, np.nan, rel_anomaly)
             # in compute_monthly_anomalies, and compute_annual_anomalies, "relative" block:
-            out_path_rel = rel_dir / f"anomaly_pct_{r.year}_{r.month:02d}.tif"  # (or f"anomaly_pct_{year}.tif" for annual)
+            out_path_rel = (
+                rel_dir / f"anomaly_pct_{r.year}_{r.month:02d}.tif"
+            )  # (or f"anomaly_pct_{year}.tif" for annual)
             _write_raster_int16(rel_anomaly, profile, out_path_rel, scale=100)
             rel_paths[(r.year, r.month)] = str(out_path_rel)
 
@@ -1122,9 +1127,7 @@ def process_data(loaded, cfg, logger):
         and "std" not in normal_stats
     ):
         normal_stats.append("std")
-        logger.info(
-            "adding 'std' to normals.stats (required by anomalies.zscore)"
-        )
+        logger.info("adding 'std' to normals.stats (required by anomalies.zscore)")
 
     annual_paths = aggregate_annual(
         monthly,
