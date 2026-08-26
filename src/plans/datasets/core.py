@@ -276,9 +276,9 @@ class TimeSeries(Univar):
 
         # Epochs
         self.gapsize_field = "gap_size"
-        self.epochs_n_field = "epochs_n"
-        self.smallgaps_n_field = "small_gaps_n"
-        self.epochs_id_field = "epoch_id"
+        self.epochs_n_field = "n_epoch"
+        self.smallgaps_n_field = "n_gaps_small"
+        self.epochs_id_field = "id_epoch"
 
         # file fields
         self.file_data_dtfield_field = "file_data_datetime_field"
@@ -288,53 +288,83 @@ class TimeSeries(Univar):
 
     def _set_frequency(self):
         """
-        Guess the datetime resolution of a time series based on the consistency of
-        timestamp components (e.g., seconds, minutes).
+        Infer the datetime frequency of the time series from the spacing
+        between consecutive timestamps.
 
-        .. caution::
+        The *mode* (most common value) of consecutive timestamp deltas is
+        used to determine the frequency, rather than checking which
+        calendar components (seconds, minutes, hours, ...) vary across the
+        series. This makes detection robust to a small minority of
+        jittered or missing timestamps: as long as the majority of gaps
+        between consecutive records share the same spacing, that spacing
+        wins, even if a few records are irregular.
 
-            This method infers the datetime frequency of the time series data
-            based on the consistency of timestamp components.
+        Sets ``self.dtfreq`` to one of the supported Pandas-like frequency
+        aliases (``"1min"``, ``"20min"``, ``"h"``, ``"D"``, ``"MS"``,
+        ``"YS"``) based on which boundary the modal delta falls into, and
+        ``self.dtres`` to the corresponding resolution label (``"second"``,
+        ``"minute"``, ``"hour"``, ``"day"``, ``"month"``, ``"year"``).
 
+        For ``"MS"`` and ``"YS"`` frequencies, ``self.gapsize`` is also
+        forced to ``1``, since a single missing month or year is already a
+        meaningful gap at that resolution.
+
+        .. note::
+
+            Detection is based on the *majority* delta, not a strict
+            consistency check. If irregular spacing accounts for more than
+            half of the deltas in the series, the detected frequency will
+            reflect that majority rather than the "intended" sampling rate.
+            Always sanity-check ``self.dtfreq`` after loading unfamiliar or
+            untrusted data.
+
+        :return: None. Updates ``self.dtfreq``, ``self.dtres``, and
+            possibly ``self.gapsize`` in place.
+        :rtype: None
         """
         # Handle void data
         if self.data is None:
-            pass
+            return None
+
+        # Sort and compute consecutive timestamp deltas
+        dt = self.data[self.dtfield].sort_values()
+        deltas = dt.diff().dropna()
+
+        if len(deltas) == 0:
+            # single-row (or empty) series: fall back to a sensible default
+            self.dtfreq = "h"
+            self.dtres = "hour"
+            return None
+
+        # Use the *mode* of deltas: robust to a handful of jittered or
+        # missing timestamps, unlike checking calendar-component variety.
+        modal_delta = deltas.mode().iloc[0]
+
+        # Map the modal delta onto the nearest supported frequency alias.
+        # Boundaries are chosen so a delta comfortably fits its natural bucket.
+        seconds = modal_delta.total_seconds()
+        if seconds < 60:
+            self.dtfreq = "1min"
+            self.dtres = "second"
+        elif seconds < 30 * 60:
+            self.dtfreq = "20min"
+            self.dtres = "minute"
+        elif seconds < 20 * 3600:
+            self.dtfreq = "h"
+            self.dtres = "hour"
+        elif seconds < 20 * 86400:
+            self.dtfreq = "D"
+            self.dtres = "day"
+        elif seconds < 300 * 86400:
+            self.dtfreq = "MS"
+            self.dtres = "month"
+            # force gapsize to 1 when daily+ time scale
+            self.gapsize = 1
         else:
-            # Copy the data
-            df = self.data.copy()
-
-            # Extract components of the datetime
-            df["year"] = df[self.dtfield].dt.year
-            df["month"] = df[self.dtfield].dt.month
-            df["day"] = df[self.dtfield].dt.day
-            df["hour"] = df[self.dtfield].dt.hour
-            df["minute"] = df[self.dtfield].dt.minute
-            df["second"] = df[self.dtfield].dt.second
-
-            # Check consistency within each unit of time
-            if df["second"].nunique() > 1:
-                self.dtfreq = "1min"
-                self.dtres = "second"
-            elif df["minute"].nunique() > 1:
-                self.dtfreq = "20min"  # force to 20min
-                self.dtres = "minute"
-            elif df["hour"].nunique() > 1:
-                self.dtfreq = "h"
-                self.dtres = "hour"
-            elif df["day"].nunique() > 1:
-                self.dtfreq = "D"
-                self.dtres = "day"
-            elif df["month"].nunique() > 1:
-                self.dtfreq = "MS"
-                self.dtres = "month"
-                # force gapsize to 1 when daily+ time scale
-                self.gapsize = 1
-            else:
-                self.dtfreq = "YS"
-                self.dtres = "year"
-                # force gapsize to 1 when daily+ time scale
-                self.gapsize = 1
+            self.dtfreq = "YS"
+            self.dtres = "year"
+            # force gapsize to 1 when daily+ time scale
+            self.gapsize = 1
 
         return None
 
@@ -667,35 +697,109 @@ class TimeSeries(Univar):
 
     def standardize(self):
         """
-        Standardize the data based on regular datetime steps and the time resolution.
+        Force the time series onto a regular datetime grid at its detected frequency.
+
+        This builds a full, evenly-spaced date range spanning the series'
+        start to end (at day resolution) and left-merges the existing data
+        onto it. Any regular-grid slot that has no matching timestamp in the
+        original data becomes a row with a null value in ``varfield`` --
+        i.e. standardizing an irregular series (one with missing timestamps)
+        is what turns those missing timestamps into explicit gaps.
+
+        If multiple original records fall within the same grid slot (e.g. two
+        readings a few minutes apart, both bucketed into the same hour), they
+        are aggregated using the ``agg`` attribute (e.g. ``"mean"``) before
+        being placed in that slot.
 
         **Notes**
 
-        - Creates a full date range with the expected frequency for the standardization period.
-        - Groups the data by epochs (based on the frequency and datetime field), applies the specified aggregation function, and fills in missing values with left merges.
-        - Updates internal attributes, including ``self.isstandard`` to indicate that the data has been standardized.
+        - The target frequency is read from ``self.dtfreq``, which is set by
+          ``_set_frequency()`` (called automatically on load, based on the
+          mode of consecutive timestamp deltas -- robust to a handful of
+          jittered or missing timestamps, but not to a majority of them).
+        - Bucketing uses ``.dt.floor()`` for fixed-frequency grids
+          (``1min``, ``20min``, ``h``, ``D``) and calendar-aware period
+          flooring for calendar-variable grids (``MS``, ``YS``), so each
+          timestamp is always bucketed independently based on its own value,
+          never merged with unrelated timestamps in the same coarser unit.
+        - Sets ``self.is_standard = True`` on completion. Several other
+          methods (e.g. ``get_epochs``, ``interpolate_gaps``) check this flag
+          and call ``standardize()`` automatically if it's ``False``.
+        - Calls ``self.update()`` at the end, refreshing derived statistics
+          to reflect the new (possibly larger, possibly gap-containing) data.
 
         .. warning::
 
-            The ``standardize`` method modifies the internal data representation.
-            Ensure to review the data after standardization.
+            This method modifies ``self.data`` in place (there is no
+            ``inplace`` parameter). If you need the original, irregular data
+            preserved, keep a separate reference or a ``copy.deepcopy`` of
+            the object before calling this method.
 
+        .. warning::
+
+            Row count generally *increases* after standardizing an irregular
+            series, since missing grid slots are inserted as null rows.
+            Review ``len(self.data)`` and the null count after calling this
+            method rather than assuming they're unchanged.
+
+        :return: None. Updates ``self.data`` and ``self.is_standard`` in place.
+        :rtype: None
+
+        :Example:
+
+        >>> ts.is_standard
+        False
+        >>> len(ts.data)
+        311
+        >>> ts.standardize()
+        >>> ts.is_standard
+        True
+        >>> len(ts.data)          # now includes inserted null rows
+        361
+        >>> ts.data[ts.varfield].isna().sum()
+        50
         """
 
         def _insert_epochs(df):
-            # handle epochs
-            epochs = {
-                "1min": ["%Y-%m0-%d %H:%M", ""],
-                "20min": ["%Y-%m0-%d %H", " :20"],
-                "h": ["%Y-%m0-%d %H", ""],
-                "D": ["%Y-%m0-%d", ""],
-                "MS": ["%Y-%m0", ""],
-                "YS": ["%Y", ""],
-            }
-            df[self.dtfield + "_epoch"] = (
-                df[self.dtfield].dt.strftime(epochs[self.dtfreq][0])
-                + epochs[self.dtfreq][1]
-            )
+            """
+            Assign each row in ``df`` to its containing time bucket at the
+            series' detected frequency (``self.dtfreq``), used as a merge key
+            for aligning data onto the standardized grid.
+
+            For fixed-length frequencies (``"1min"``, ``"20min"``, ``"h"``,
+            ``"D"``), each timestamp is floored independently to its own
+            bucket boundary via ``.dt.floor()`` -- e.g. at ``"20min"``, a
+            timestamp of ``08:07`` floors to ``08:00`` and ``08:23`` floors to
+            ``08:20``, so timestamps in different buckets are never merged
+            together regardless of which other timestamps happen to be present
+            in the series.
+
+            For calendar-variable frequencies (``"MS"``, ``"YS"``), where
+            fixed-length flooring doesn't apply (months/years differ in
+            length), bucketing instead uses calendar-aware period flooring via
+            ``.dt.to_period(...).dt.to_timestamp()``.
+
+            :param df: DataFrame containing at least the datetime column
+                (``self.dtfield``) to bucket.
+            :type df: :class:`pandas.DataFrame`
+            :return: The same DataFrame with an added ``f"{self.dtfield}_epoch"``
+                column holding each row's bucket timestamp.
+            :rtype: :class:`pandas.DataFrame`
+            """
+
+            # Fixed-frequency aliases can be floored directly; calendar-variable
+            # aliases (month/year lengths differ) need calendar-aware bucketing.
+            if self.dtfreq in ("1min", "20min", "h", "D"):
+                offset = pd.tseries.frequencies.to_offset(self.dtfreq)
+                df[self.dtfield + "_epoch"] = df[self.dtfield].dt.floor(offset)
+            elif self.dtfreq == "MS":
+                df[self.dtfield + "_epoch"] = (
+                    df[self.dtfield].dt.to_period("M").dt.to_timestamp()
+                )
+            else:  # "YS"
+                df[self.dtfield + "_epoch"] = (
+                    df[self.dtfield].dt.to_period("Y").dt.to_timestamp()
+                )
             return df
 
         # the ideia is to implement regular time increments and insert null rows
@@ -809,17 +913,19 @@ class TimeSeries(Univar):
         df["Skip"] = skip_v
 
         # Set Epoch Field
-        df[self.epochs_id_field] = 0
+        epoch_v = np.zeros(len(df), dtype=int)
         # counter epochs
         counter = 1
+        skip_arr = df["Skip"].values
         for i in range(len(df) - 1):
-            if df["Skip"].values[i] == 0:
-                df[self.epochs_id_field].values[i] = counter
+            if skip_arr[i] == 0:
+                epoch_v[i] = counter
             else:
-                if df["Skip"].values[i + 1] == 0:
+                if skip_arr[i + 1] == 0:
                     counter = counter + 1
-        if df["Skip"].values[i + 1] == 0:
-            df[self.epochs_id_field].values[i] = counter
+        if skip_arr[i + 1] == 0:
+            epoch_v[i] = counter
+        df[self.epochs_id_field] = epoch_v
 
         df = df.drop(columns=["CumSum", "Skip"])
 
@@ -838,21 +944,19 @@ class TimeSeries(Univar):
         - This function updates statistics for all epochs in the time series.
         - Ensures that the data is standardized by calling the ``standardize`` method if it's not already standardized.
         - Removes epoch 0 from the statistics since it typically represents non-standardized or invalid data.
-        - Groups the data by ``Epoch_Id`` and calculates statistics such as count, start, and end timestamps for each epoch.
+        - Groups the data by and calculates statistics such as count, start, and end timestamps for each epoch.
         - Generates random colors for each epoch using the ``get_random_colors`` function with a specified colormap (`cmap`` attribute).
         - Includes the time series name in the statistics for identification.
-        - Organizes the statistics DataFrame to include relevant columns: ``Name``, ``Epoch_Id``, ``Count``, ``Start``, ``End``, and ``Color``.
-        - Updates the attribute ``epochs_n`` with the number of epochs in the statistics.
-
-        **Examples**
-
-        todo [examples]
+        - Organizes the statistics DataFrame to include relevant columns
+        - Updates the attribute with the number of epochs in the statistics.
 
         """
 
         # Ensure data is standardized
         if not self.is_standard:
             self.standardize()
+            # drop trailing
+            self.cut_edges(inplace=True)
 
         # Get epochs
         df = self.get_epochs(inplace=False)
@@ -875,7 +979,7 @@ class TimeSeries(Univar):
 
         # Get colors
         self.epochs_stats[self.field_color] = get_colors(
-            size=len(self.epochs_stats), cmap=self.cmap
+            size=len(self.epochs_stats), cmap=self.cmap, randomize=False
         )
 
         # Include name
@@ -910,7 +1014,9 @@ class TimeSeries(Univar):
         :type constant: float
         :param inplace: If True, modifies the original DataFrame in-place. Default value = False.
         :type inplace: bool
-        :return: A new ``pandas.DataFrame`` with interpolated values if inplace is False, otherwise None.
+        :return: A new ``pandas.DataFrame`` with interpolated values and an ``is_interpolation``
+            flag column (1 where the value was filled by interpolation, 0 where it was
+            already present) if inplace is False, otherwise None.
         :rtype: :class:`pandas.DataFrame` or None
 
         **Notes**
@@ -935,16 +1041,18 @@ class TimeSeries(Univar):
 
         # Get epochs for interpolation
         df = self.get_epochs(inplace=False)
-        epochs = df["Epoch_Id"].unique()
+        epochs = df[self.epochs_id_field].unique()
         list_dfs = list()
 
         for epoch in epochs:
-            df_aux1 = df.query("Epoch_Id == {}".format(epoch)).copy()
+            df_aux1 = df.query("{} == {}".format(self.epochs_id_field, epoch)).copy()
+            # flag rows that are missing *before* they get filled in
+            df_aux1["is_interpolation"] = df_aux1[self.varfield].isna().astype(int)
             if epoch == 0:
-                df_aux1["{}_interp".format(self.varfield)] = np.nan
+                df_aux1["{}_interpolation".format(self.varfield)] = np.nan
             else:
                 if method == "constant":
-                    df_aux1["{}_interp".format(self.varfield)] = np.where(
+                    df_aux1["{}_interpolation".format(self.varfield)] = np.where(
                         df_aux1[self.varfield].isna(),
                         constant,
                         df_aux1[self.varfield].values,
@@ -960,8 +1068,8 @@ class TimeSeries(Univar):
                         fill_value="extrapolate",
                     )
                     # Interpolate full values
-                    df_aux1["{}_interp".format(self.varfield)] = interpolation_func(
-                        df_aux1[self.dtfield].astype(np.int64)
+                    df_aux1["{}_interpolation".format(self.varfield)] = (
+                        interpolation_func(df_aux1[self.dtfield].astype(np.int64))
                     )
             # Append
             list_dfs.append(df_aux1)
@@ -969,7 +1077,9 @@ class TimeSeries(Univar):
         df_new = df_new.sort_values(by=self.dtfield).reset_index(drop=True)
 
         if inplace:
-            self.data[self.varfield] = df_new["{}_interp".format(self.varfield)].values
+            self.data[self.varfield] = df_new[
+                "{}_interpolation".format(self.varfield)
+            ].values
             self.update()
             return None
         else:
@@ -1090,13 +1200,44 @@ class TimeSeries(Univar):
             - ``YS`` for yearly/start frequency
             More options and details can be found in the Pandas documentation:
             https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases.
+
+            **Anchoring behavior** -- this affects where each aggregation window starts/ends:
+
+            - Plain multiples of a base unit (e.g. ``"5D"`` for a pentad, ``"10D"``) are
+              *data-start-anchored*: bins are chunked every N units starting from wherever
+              the series begins, not from a fixed calendar boundary.
+            - Calendar units (``W``, ``MS``, ``QS``, ``YS``, etc.) are *calendar-anchored*:
+              bins snap to fixed real-world boundaries regardless of where the data starts.
+            - ``W`` defaults to ``W-SUN`` (weeks ending Sunday). Anchor to any weekday with
+              a suffix, e.g. ``W-MON``, ``W-WED``, ``W-FRI``.
+            - ``YS``/``YE`` default to the calendar year (start Jan 1 / end Dec 31). Anchor
+              to any month with a suffix to define e.g. a hydrological/water year:
+              ``"YS-OCT"`` (year starting Oct 1, e.g. US water year convention) or
+              ``"YE-SEP"`` (year ending Sep 30). The suffix month plus ``YS-``/``YE-``
+              together set whether that month is the start or the end of the bin.
+
         :type freq: str
         :param bad_max: The maximum number of ``Bad`` records allowed in a time window for aggregation. Records with more ``Bad`` entries
             will be excluded from the aggregated result.
         :type bad_max: int
-        :param inplace: option for overwrite data, default True
+        :param inplace: option for overwrite data, default True. When False, returns a new
+            ``TimeSeries`` object (an exact copy of ``self``) holding the upscaled data,
+            instead of a bare DataFrame.
         :type inplace: bool
 
+        :return: ``None`` if ``inplace=True`` (data is overwritten in place), otherwise a new
+            ``TimeSeries`` instance of the same subclass as ``self``, with identical metadata
+            and the upscaled data/derived stats.
+        :rtype: None or TimeSeries
+
+        :Example:
+
+        >>> # Pentad upscale (data-start-anchored)
+        >>> ts_pentad = ts.scale_up(freq="5D", bad_max=0, inplace=False)
+        >>> # Weekly upscale, anchored to Monday-ending weeks
+        >>> ts_weekly = ts.scale_up(freq="W-MON", bad_max=0, inplace=False)
+        >>> # Hydrological year, Oct-Sep
+        >>> ts_hydro = ts.scale_up(freq="YS-OCT", bad_max=0, inplace=False)
         """
         df_upscale = self.aggregate(
             freq=freq, bad_max=bad_max, agg_funcs={self.agg: self.agg}
@@ -1118,56 +1259,266 @@ class TimeSeries(Univar):
 
             return None
         else:
-            return df_upscale
+            import copy
 
-    # todo develop -- improve methods of downscaling
-    def scale_down(self, freq):
+            ts_new = copy.deepcopy(self)
+            ts_new.data = df_upscale
+            ts_new._set_frequency()
+            ts_new.stats_df = ts_new.get_basic_stats()
+            ts_new.freq_df = ts_new.get_frequency()
+            ts_new.weibull_df = ts_new.get_cdf_weibull()
+
+            return ts_new
+
+    def scale_down(self, freq, covariate=None, align="center", inplace=False):
         """
-        Donwscale time series for smaller time steps using linear inteporlation.
+        Downscale the time series to a finer time step.
+
+        For non-flow variables (``self.agg != "sum"``), each coarse data
+        point is first repositioned in time according to ``align`` (see
+        below), then linearly interpolated onto the finer grid. Because
+        this repositioning shifts the interpolation anchors away from a
+        naive "value at period start" assumption, a single global
+        multiplicative correction is applied afterward so that the
+        downscaled series' overall mean exactly matches the original
+        series' overall mean. Note this conserves the mean of the
+        **whole series**, not each individual period -- an earlier,
+        stricter per-period mean-preserving approach was found to
+        produce unstable, oscillating results with volatile inputs and
+        was intentionally not used here.
+
+        The ``align`` parameter controls where each coarse point is
+        assumed to sit within the period it represents:
+
+        - ``"start"``: at the period's own timestamp (no shift). E.g. a
+          daily value stays anchored at ``00:00``.
+        - ``"center"`` (default): at the middle of the period. E.g. a
+          daily value is anchored at ``12:00`` of that day.
+        - ``"end"``: at the end of the period. E.g. a daily value is
+          anchored at the following day's ``00:00``.
+
+        Anchor placement leaves flat (constant) values outside the
+        earliest/latest anchor -- e.g. with ``align="center"``, there is
+        no data before the first period's midpoint, so the interpolated
+        series holds that first value flat until the midpoint is reached.
+
+        For flow/sum variables (``self.agg == "sum"``, e.g. precipitation
+        totals), each source period's total is distributed across its fine
+        sub-steps such that the sub-steps sum back to exactly that period's
+        original total -- no mass leaks across period boundaries. ``align``
+        is not used in this case (sum conservation is enforced directly at
+        the level of each time step, not via anchor placement). Two modes:
+
+        - **Uniform split** (default, ``covariate=None``): each period's
+          total is split evenly across its fine sub-steps.
+        - **Covariate-weighted** (``covariate`` given): each period's total
+          is distributed proportionally to a covariate signal's own shape
+          within that period, e.g. using a higher-resolution proxy (radar
+          or satellite precipitation) to shape how a daily gauge total is
+          spread across finer time steps. The covariate is linearly
+          interpolated onto the target grid first if it isn't already
+          sampled at ``freq``. Any period where the covariate is entirely
+          zero or missing falls back to a uniform split for that period,
+          so covariate gaps never produce ``NaN`` or divide-by-zero results.
+
+        In both branches, the fine grid is extended one full period past
+        the series' last timestamp so the final period is subdivided the
+        same way as every other period, rather than being collapsed into
+        a single fine step holding that whole period's value.
 
         :param freq: new time step frequency
         :type freq: str
-        :return: Dataframe of downscaled data
-        :rtype: :class:`pandas.DataFrame`
+        :param covariate: optional higher-resolution ``TimeSeries`` whose
+            values are used to shape the within-period distribution for
+            flow/sum variables. Ignored when ``self.agg != "sum"``.
+        :type covariate: TimeSeries or None
+        :param align: for non-sum variables, where each coarse point is
+            anchored within its period: ``"start"``, ``"center"``
+            (default), or ``"end"``. Ignored when ``self.agg == "sum"``.
+        :type align: str
+        :param inplace: option for overwrite data, default False. When
+            ``True``, overwrites ``self.data`` with the downscaled result
+            and returns ``None``. When ``False`` (default), returns a new
+            ``TimeSeries`` instance (an exact copy of ``self``) holding
+            the downscaled data, instead of a bare DataFrame.
+        :type inplace: bool
+        :return: ``None`` if ``inplace=True`` (data is overwritten in
+            place), otherwise a new ``TimeSeries`` instance of the same
+            subclass as ``self``, with identical metadata and the
+            downscaled data/derived stats.
+        :rtype: None or TimeSeries
+
+        :Example:
+
+        >>> # non-sum variable, e.g. daily-average water level -> hourly,
+        >>> # anchored at midday, overall mean preserved
+        >>> ts_level_hourly = ts_level.scale_down(freq="1h")
+        >>> # uniform split: each day's total spread evenly across hours
+        >>> ts_flat = ts_daily.scale_down(freq="1h")
+        >>> # covariate-weighted: shaped by an hourly satellite proxy
+        >>> ts_shaped = ts_daily.scale_down(freq="1h", covariate=ts_satellite)
         """
         # update
         self.update()
-        # get new index
-        dt_index = pd.date_range(start=self.start, end=self.end, freq=freq)
-        # set new dataframe
-        df_downscale = pd.DataFrame({self.dtfield: dt_index})
-        df_downscale = pd.merge(
-            left=df_downscale, right=self.data, on=self.dtfield, how="left"
-        )
 
-        # handle flow variable
-        if self.agg == "sum":
-
-            # compute downscaling factor assuming at least 2 data points
-            tdelta_source = (
-                self.data[self.dtfield].values[1] - self.data[self.dtfield].values[0]
+        if len(self.data) < 2:
+            raise ValueError(
+                "scale_down requires at least 2 data points to infer period length"
             )
-            tdelta_new = (
-                df_downscale[self.dtfield].values[1]
-                - df_downscale[self.dtfield].values[0]
+        period_delta = self.data[self.dtfield].iloc[1] - self.data[self.dtfield].iloc[0]
+
+        if self.agg != "sum":
+            # non-flow variable: linear interpolation on anchored, offset
+            # timestamps, then a global multiplicative correction to
+            # preserve the overall (whole-series) mean.
+            # the fine grid must cover the *entire* last period, not just
+            # its start timestamp -- otherwise the final period is
+            # truncated to a single fine step instead of being subdivided
+            # like every other period (same issue fixed below for sum
+            # variables, applies here too since this is still per-period
+            # subdivision of a continuous span).
+            dt_index = pd.date_range(
+                start=self.start,
+                end=self.end + period_delta,
+                freq=freq,
+                inclusive="left",
             )
-            factor_downscale = tdelta_new / tdelta_source
-            # apply factor
-            df_downscale[self.varfield] = df_downscale[self.varfield] * factor_downscale
 
-        # interpolate voids using linear method
-        df_downscale[self.varfield] = df_downscale[self.varfield].interpolate(
-            method="linear"
-        )
+            if align == "start":
+                anchor_offset = pd.Timedelta(0)
+            elif align == "center":
+                anchor_offset = period_delta / 2
+            elif align == "end":
+                anchor_offset = period_delta
+            else:
+                raise ValueError(
+                    f"Unknown align option: {align!r}. Expected 'start', 'center', or 'end'."
+                )
 
-        if self.agg == "sum":
-            # apply factor for numerical loss/gain
-            up_sum = self.data[self.varfield].sum()
-            down_sum = df_downscale[self.varfield].sum()
-            diff_factor = down_sum / up_sum
-            df_downscale[self.varfield] = df_downscale[self.varfield] / diff_factor
+            df_anchor = self.data[[self.dtfield, self.varfield]].copy()
+            df_anchor[self.dtfield] = df_anchor[self.dtfield] + anchor_offset
 
-        return df_downscale
+            s_anchor = df_anchor.set_index(self.dtfield)[self.varfield]
+            combined_index = s_anchor.index.union(dt_index)
+            s_interp = s_anchor.reindex(combined_index).interpolate(method="time")
+            # flat extrapolation outside the anchors' own range
+            s_interp = s_interp.reindex(dt_index).ffill().bfill()
+
+            df_downscale = pd.DataFrame(
+                {self.dtfield: dt_index, self.varfield: s_interp.values}
+            )
+
+            # global correction: rescale so the downscaled series' overall
+            # mean matches the original coarse series' overall mean
+            mean_original = self.data[self.varfield].mean()
+            mean_downscaled = df_downscale[self.varfield].mean()
+            if mean_downscaled != 0:
+                factor = mean_original / mean_downscaled
+                df_downscale[self.varfield] = df_downscale[self.varfield] * factor
+
+        else:
+            # sum/flow variable: the fine grid must cover the *entire* last
+            # period, not just its start timestamp -- otherwise the final
+            # period gets a single fine step holding its whole total instead
+            # of being subdivided like every other period. Extend the range
+            # by one period_delta and exclude the resulting boundary point
+            # (which would mark the start of a period with no data).
+            dt_index = pd.date_range(
+                start=self.start,
+                end=self.end + period_delta,
+                freq=freq,
+                inclusive="left",
+            )
+
+            # set new dataframe
+            df_downscale = pd.DataFrame({self.dtfield: dt_index})
+            df_downscale = pd.merge(
+                left=df_downscale, right=self.data, on=self.dtfield, how="left"
+            )
+
+            # -- flow/sum variable: distribute each source period's total across
+            # its fine sub-steps, exactly preserving each period's sum --
+
+            # tag each fine timestamp with the source period it belongs to
+            df_source = (
+                self.data[[self.dtfield, self.varfield]]
+                .rename(
+                    columns={
+                        self.dtfield: "_period_start",
+                        self.varfield: "_period_total",
+                    }
+                )
+                .sort_values("_period_start")
+            )
+            df_downscale = pd.merge_asof(
+                df_downscale.sort_values(self.dtfield),
+                df_source,
+                left_on=self.dtfield,
+                right_on="_period_start",
+                direction="backward",
+            )
+
+            n_per_period = df_downscale.groupby("_period_start")[
+                self.dtfield
+            ].transform("count")
+            uniform_weights = 1.0 / n_per_period
+
+            if covariate is None:
+                weights = uniform_weights
+            else:
+                # covariate-weighted: use the covariate's own shape within each period
+                cov_data = covariate.data[
+                    [covariate.dtfield, covariate.varfield]
+                ].rename(
+                    columns={
+                        covariate.dtfield: self.dtfield,
+                        covariate.varfield: "_cov",
+                    }
+                )
+                df_downscale = pd.merge(
+                    df_downscale, cov_data, on=self.dtfield, how="left"
+                )
+                # resample the covariate onto the target grid if it doesn't
+                # already align exactly (e.g. covariate is coarser than `freq`)
+                df_downscale["_cov"] = (
+                    df_downscale["_cov"].interpolate(method="linear").bfill().ffill()
+                )
+
+                cov_clipped = df_downscale["_cov"].clip(lower=0)
+                period_cov_sum = cov_clipped.groupby(
+                    df_downscale["_period_start"]
+                ).transform("sum")
+                # fall back to uniform weights in periods with no usable covariate signal
+                weights = np.where(
+                    period_cov_sum > 0, cov_clipped / period_cov_sum, uniform_weights
+                )
+
+            df_downscale[self.varfield] = df_downscale["_period_total"] * weights
+            df_downscale = df_downscale[[self.dtfield, self.varfield]]
+
+        # return case
+        if inplace:
+            # overwrite local data
+            self.data = df_downscale
+            #
+            self._set_frequency()
+            # update derived data
+            self.stats_df = self.get_basic_stats()
+            self.freq_df = self.get_frequency()
+            self.weibull_df = self.get_cdf_weibull()
+
+            return None
+        else:
+            import copy
+
+            ts_new = copy.deepcopy(self)
+            ts_new.data = df_downscale
+            ts_new._set_frequency()
+            ts_new.stats_df = ts_new.get_basic_stats()
+            ts_new.freq_df = ts_new.get_frequency()
+            ts_new.weibull_df = ts_new.get_cdf_weibull()
+
+            return ts_new
 
     def assess_extreme_values(self, eva_freq="YS", eva_agg="max"):
         """
@@ -1501,7 +1852,7 @@ class TimeSeries(Univar):
             self.update_epochs_stats()
 
         # --------------------- figure setup --------------------- #
-        fig = plt.figure(figsize=(specs["width"], specs["height"]))  # Width, Height
+        fig = plt.figure(figsize=(6, 4))  # Width, Height
 
         # handle min max
         if specs["xmin"] is None:
@@ -1518,21 +1869,21 @@ class TimeSeries(Univar):
         gaps_a = 0.6
         # plot loop
         for i in range(len(self.epochs_stats)):
-            start = self.epochs_stats["Start"].values[i]
-            end = self.epochs_stats["End"].values[i]
+            start = self.epochs_stats["start"].values[i]
+            end = self.epochs_stats["end"].values[i]
             df_aux = self.data.query(
                 "{} >= '{}' and {} < '{}'".format(
                     self.dtfield, start, self.dtfield, end
                 )
             )
-            epoch_c = self.epochs_stats["Color"].values[i]
-            epoch_id = self.epochs_stats["Epoch_Id"].values[i]
+            epoch_c = self.epochs_stats["color"].values[i]
+            epoch_id = self.epochs_stats[self.epochs_id_field].values[i]
             plt.plot(
                 df_aux[self.dtfield],
                 df_aux[self.varfield],
                 linestyle=specs["linestyle"],
                 color=epoch_c,
-                label=f"Epoch_{epoch_id}",
+                label=f"Epoch {epoch_id}",
             )
             # Fill the space where there are missing values
             plt.fill_between(
@@ -1676,7 +2027,65 @@ class TimeSeries(Univar):
     def view_compare_times_series(
         ts_first, ts_second, specs, show=False, return_fig=False
     ):
+        """
+        Plot two ``TimeSeries`` objects together for visual comparison.
 
+        Renders a three-panel figure -- the two series overlaid on a
+        shared time axis, a horizontal histogram, and a CDF -- using
+        ``ts_first``'s panel layout as the base and drawing ``ts_second``
+        on top of it. Both series are shown with their own colors (taken
+        from each object's ``view_specs["color"]``) and labeled with
+        their respective ``name`` attributes; each series' mean is
+        annotated on the CDF panel.
+
+        :param ts_first: The first time series to plot. Its own
+            ``view_specs`` supplies the base panel layout (axes,
+            figure size, etc.); set ``ts_first.view_specs["color"]``
+            before calling to control its plotted color.
+        :type ts_first: TimeSeries
+        :param ts_second: The second time series to plot on top of the
+            first. Likewise, set ``ts_second.view_specs["color"]`` to
+            control its color.
+        :type ts_second: TimeSeries
+        :param specs: Plot overrides applied to both series before
+            plotting (merged into each series' ``view_specs``). Must
+            include ``"title"``. If ``return_fig`` is ``False``, must
+            also include ``"folder"`` and ``"filename"`` (used to build
+            the output file path); ``"dpi"`` and ``"fig_format"`` are
+            taken from ``ts_first.view_specs`` regardless of what is
+            passed in ``specs``.
+        :type specs: dict
+        :param show: If ``return_fig`` is ``False``, whether to display
+            the figure interactively in addition to saving it. Ignored
+            if ``return_fig`` is ``True``.
+        :type show: bool
+        :param return_fig: If ``True``, return the Matplotlib
+            :class:`~matplotlib.figure.Figure` instead of saving it to
+            disk. Useful for inline display (e.g. in a notebook) or for
+            further customization before saving.
+        :type return_fig: bool
+
+        :return: The :class:`~matplotlib.figure.Figure` if
+            ``return_fig=True``, otherwise ``None`` (the figure is
+            saved to ``"{folder}/{filename}.{fig_format}"``).
+        :rtype: :class:`matplotlib.figure.Figure` or None
+
+        .. note::
+
+            Both input objects' ``view_specs`` are mutated in place by
+            this method (colors, labels, layout, and the contents of
+            ``specs`` are all written into
+            ``ts_first.view_specs``/``ts_second.view_specs``). If you
+            need the originals preserved, pass copies.
+
+        :Example:
+
+        >>> ts1.view_specs["color"] = "tab:blue"
+        >>> ts2.view_specs["color"] = "tab:orange"
+        >>> fig = TimeSeries.view_compare_times_series(
+        ...     ts1, ts2, specs={"title": "Site A vs Site B"}, return_fig=True
+        ... )
+        """
         ts1 = ts_first
         ts2 = ts_second
 
@@ -1838,7 +2247,7 @@ class TimeSeriesCollection(Collection):
     """
     A collection of time series objects with associated metadata.
 
-    The ``TimeSeriesCollection`` or simply ``TSC`` class extends the ``Collection`` class and
+    The ``TimeSeriesCollection`` class extends the ``Collection`` class and
     is designed to handle time series data. It can be miscellaneous datasets.
 
     .. note::
@@ -1859,11 +2268,11 @@ class TimeSeriesCollection(Collection):
         super().__init__(base_object=base_object, name=name)
 
         # Set up date fields and special attributes in the catalog
-        self.catalog["Start"] = pd.to_datetime(
-            self.catalog["Start"], format="%Y-%m0-%d %H:%M:%S"
+        self.catalog["start"] = pd.to_datetime(
+            self.catalog["start"], format="%Y-%m0-%d %H:%M:%S"
         )
-        self.catalog["End"] = pd.to_datetime(
-            self.catalog["End"], format="%Y-%m0-%d %H:%M:%S"
+        self.catalog["end"] = pd.to_datetime(
+            self.catalog["end"], format="%Y-%m0-%d %H:%M:%S"
         )
 
         # Set auto attributes
@@ -1880,6 +2289,32 @@ class TimeSeriesCollection(Collection):
         self.name_object = "Time Series Collection"
         self.dtfield = "datetime"
         self.overfield = "Overlapping"
+
+        # Named figure layouts (mirrors the TimeSeries/Univar pattern: a
+        # fine grid with deliberate margin bands left/right/top/bottom for
+        # labels, ticks, and the figure suptitle -- unlike a coarse grid
+        # where every row/column is claimed by a panel, leaving no room for
+        # long y-tick labels (series names) or title text).
+        self.layouts = {
+            "full": {  # gantt + overlap + prevalence
+                "ncols": 34,
+                "nrows": 16,
+                "width": viewer.FIG_SIZES["L"]["w"],
+                "height": viewer.FIG_SIZES["L"]["h"],
+            },
+            "simple": {  # gantt + overlap only
+                "ncols": 34,
+                "nrows": 16,
+                "width": viewer.FIG_SIZES["M"]["w"],
+                "height": viewer.FIG_SIZES["M"]["h"],
+            },
+            "default": {
+                "ncols": 34,
+                "nrows": 16,
+                "width": viewer.FIG_SIZES["L"]["w"],
+                "height": viewer.FIG_SIZES["L"]["h"],
+            },
+        }
 
         # load view specs
         self._set_view_specs()
@@ -1908,10 +2343,10 @@ class TimeSeriesCollection(Collection):
         # Call the update method of the parent class (Collection)
         super().update(details=details)
         # Update start, end, min, and max attributes based on catalog information
-        self.start = self.catalog["Start"].min()
-        self.end = self.catalog["End"].max()
-        self.var_min = self.catalog["Var_min"].min()
-        self.var_max = self.catalog["Var_max"].max()
+        self.start = self.catalog["start"].min()
+        self.end = self.catalog["end"].max()
+        self.var_min = self.catalog["variable_min"].min()
+        self.var_max = self.catalog["variable_max"].max()
 
     # Data methods
     # -------------------------------------------------------------------
@@ -2003,114 +2438,82 @@ class TimeSeriesCollection(Collection):
 
     def merge_data(self):
         """
-        Merge data from multiple sources into a single DataFrame.
+        Merge data from every series in the collection into one DataFrame,
+        aligned by an outer join on the datetime field.
 
-        :return: A merged DataFrame with datetime and variable fields from different sources.
+        :return: A merged DataFrame with one datetime column and one value
+            column per series (named ``"{variable_field}_{alias}"``).
         :rtype: pandas.DataFrame
 
         **Notes**
 
-        - Updates the catalog details.
-        - Merges data from different sources based on the specified datetime field and variable field.
-        - The merged DataFrame includes a date range covering the entire period.
+        This is a passive alignment: the datetime axis is the union of every
+        series' own timestamps, nothing more. It does **not** assume, pick,
+        or resample onto any single frequency -- a collection is explicitly
+        allowed to mix a daily and an hourly series, and each keeps its own
+        native timestamps here. A daily series simply has no row (NaN) at
+        the hourly series' intermediate timestamps, and vice versa; nothing
+        is invented and nothing is thrown away. This also means the result
+        is read-only with respect to the members: it is a view for
+        reporting/analysis, and is never written back into any series' own
+        ``.data`` (see :meth:`standardize`).
 
         """
         # Ensure catalog is updated with details
         self.update(details=True)
 
-        # Get start, end, and frequency from the catalog
-        start = self.start
-        end = self.end
-
-        # todo handle this issue on the first freq
-        # consider the first freq
-        freq = self.catalog["DtFreq"].values[0]
-
-        # Create a date range for the entire period
-        dt_index = pd.date_range(start=start, end=end, freq=freq)
-        df = pd.DataFrame({self.dtfield: dt_index})
-
-        # Merging loop for each catalog entry
+        df = None
         for i in range(len(self.catalog)):
             # Get attributes from the catalog
             name = self.catalog[self.field_name].values[i]
             alias = self.catalog[self.field_alias].values[i]
-            varfield = self.catalog["VarField"].values[i]
-            dtfield = self.catalog["DtField"].values[i]
-
-            # Handle datetime field and set up right DataFrame
-            b_drop = False
-            if self.dtfield == dtfield:
-                suffs = ("", "")
-                dt_right_after = dtfield
-            else:
-                suffs = ("", "_right")
-                b_drop = True
+            varfield = self.catalog["variable_field"].values[i]
+            dtfield = self.catalog["datetime_field"].values[i]
 
             df_right = self.collection[name].data[[dtfield, varfield]].copy()
             df_right = df_right.rename(
-                columns={varfield: "{}_{}".format(varfield, alias)}
+                columns={
+                    varfield: "{}_{}".format(varfield, alias),
+                    dtfield: self.dtfield,
+                }
             )
 
-            # Left join the DataFrames
-            df = pd.merge(
-                how="left",
-                left=df,
-                left_on=self.dtfield,
-                right=df_right,
-                right_on=dtfield,
-                suffixes=suffs,
-            )
+            if df is None:
+                df = df_right
+            else:
+                # Outer join: keep every timestamp from every series, and
+                # let each series be NaN wherever it has no record of its
+                # own -- no shared grid is assumed or manufactured.
+                df = pd.merge(how="outer", left=df, right=df_right, on=self.dtfield)
 
-            # Clear the right datetime column if needed
-            if b_drop:
-                df = df.drop(columns=[dt_right_after])
+        df = df.sort_values(by=self.dtfield).reset_index(drop=True)
         return df
 
     def standardize(self):
         """
-        This method standardizes all time series objects in the collection.
+        Standardize every series in the collection, independently.
 
-        **Notes**
+        :Notes:
 
-        - The method iterates through each time series in the collection and standardizes it.
-        - After standardizing individual time series, the data is merged.
-        - The merged data is then reset for each individual time series in the collection.
-        - Epoch statistics are updated for each time series after the reset.
-        - Finally, the collection catalog is updated with details.
+        This is deliberately just a batched per-series operation: each
+        member calls its own :meth:`TimeSeries.standardize` (regularize onto
+        *its own* native time step) and :meth:`TimeSeries.interpolate_gaps`
+        (close its own small gaps), and its own epoch stats are refreshed.
+
+        No cross-series merge happens here, and no series' ``.data`` is
+        touched by any other series. A collection is explicitly allowed to
+        mix frequencies (e.g. hourly temperature alongside daily rainfall),
+        so there is no single shared grid to standardize *onto* -- that
+        would mean picking one series' frequency as authoritative and
+        silently resampling everyone else onto it, corrupting their native
+        resolution. Cross-series alignment for reporting/analysis is a
+        separate, non-destructive concern: see :meth:`merge_data` and
+        :meth:`get_epochs`.
 
         """
-        # Standardize and fill gaps across all series [overwrite]
         for name in self.collection:
             self.collection[name].standardize()
             self.collection[name].interpolate_gaps(inplace=True)
-
-        # Merge data
-        df = self.merge_data()
-
-        # helper dict -- alias is the key
-        dict_names = dict()
-        for i in range(len(self.catalog)):
-            a = self.catalog["Alias"].values[i]
-            dict_names[a] = self.catalog["Name"].values[i]
-
-        # Reset data for each time series
-        for c in df.columns[1:]:
-            # filter merged dataframe
-            df_aux = df[[self.dtfield, c]].copy()
-
-            alias = c.split("_")[1]
-            name = dict_names[alias]
-            # set data
-            self.collection[name].set_data(
-                input_df=df_aux,
-                input_dtfield=self.dtfield,
-                input_varfield=c,
-                dropnan=False,
-            )
-
-        # Update epochs statistics for each time series
-        for name in self.collection:
             self.collection[name].update_epochs_stats()
 
         # Update the collection catalog with details
@@ -2192,7 +2595,7 @@ class TimeSeriesCollection(Collection):
         df_aux = df[[self.dtfield, self.overfield]].copy()
 
         # Set 0 values in the overfield column to NaN
-        df_aux[self.overfield].replace(0, np.nan, inplace=True)
+        df_aux[self.overfield] = df_aux[self.overfield].replace(0, np.nan)
 
         # Create a new TimeSeries instance for epoch calculation
         ts_aux = TimeSeries()
@@ -2205,35 +2608,280 @@ class TimeSeriesCollection(Collection):
 
         # Calculate epochs and update the original DataFrame
         ts_aux.get_epochs(inplace=True)
-        df["Epoch_Id"] = ts_aux.data["Epoch_Id"].values
+        df[ts_aux.epochs_id_field] = ts_aux.data[ts_aux.epochs_id_field].values
 
         return df
 
     # View internal methods
     # -------------------------------------------------------------------
     def _set_view_specs(self):
+        """
+        Set view specifications for the collection dashboard plot
+        (Gantt chart of per-series epochs + cross-series overlap +
+        series prevalence). Mirrors the ``TimeSeries``/``Univar`` pattern:
+        everything the plot needs lives in ``self.view_specs`` and is
+        consumed by :meth:`_get_fig_specs` / :meth:`_plot`.
+        """
         self.view_specs = {
+            # layout: "full" (gantt + overlap + prevalence) or
+            # "simple" (gantt + overlap only)
+            "layout": "full",
+            "style": "wien",
+            # titles
             "title": "{} | {}".format(self.name_object, self.name),
-            "width": 8,
-            "width_spacing": 1.5,
-            "left": 0.1,
-            "height": 5,
-            "xlabel": "Date",
-            "ylabel": "%",
             "gantt": "Gantt chart (epochs)",
-            "prev": "Series prevalence",
             "over": "Overlapping data",
-            "vmin": 0,
-            "vmax": None,
-            "ymin": 0,
-            "ymax": None,
+            "prev": "Series prevalence",
+            # axis labels
+            "xlabel": "Date",
+            "ylabel_over": "%",
+            "xlabel_prev": "%",
+            # data controls
+            "usealias": False,
+            "n_dates": 5,
+            "format_dates": "%Y-%m-%d",
+            "xtick_rotation": 0,
+            # styling
+            "color_over": "tab:blue",
+            "alpha_over": 0.4,
+            "color_prev": "tab:gray",
+            "gantt_linewidth": 6,
+            # ranges (None = auto from self.start/self.end and data)
             "xmin": None,
             "xmax": None,
+            "ymin": None,
+            "ymax": None,
+            # export
+            "folder": "./output",
+            "filename": None,
+            "suff": "",
+            "dpi": 300,
+            "fig_format": "jpg",
         }
         return None
 
+    def _get_fig_specs(self):
+        """
+        Merge ``view_specs`` with the chosen named ``layout``'s sizing and
+        with the shared grid defaults (:data:`viewer.GRID_SPECS`).
+        """
+        specs = self.view_specs.copy()
+
+        layout = specs["layout"]
+        if layout not in self.layouts:
+            layout = "default"
+        specs_aux = self.layouts[layout].copy()
+
+        specs.update(specs_aux)
+        specs.update(viewer.GRID_SPECS)
+
+        return specs
+
+    def _build_axes(self, fig, gs, specs):
+        """Add the dashboard's Axes to ``fig`` according to ``layout``."""
+        if specs["layout"] == "simple":
+            fig.add_subplot(gs[2:7, 4:32])  # gantt
+            fig.add_subplot(gs[10:15, 4:32])  # overlap
+        else:  # "full" / default
+            fig.add_subplot(gs[2:7, 4:24])  # gantt
+            fig.add_subplot(gs[10:15, 4:24])  # overlap
+            fig.add_subplot(gs[2:7, 27:33])  # prevalence
+        return fig
+
+    def _plot(self, fig, gs, specs):
+        """
+        Draw the Gantt / overlap / prevalence panels onto ``fig`` using
+        proper Axes objects (``ax.set_xlim(...)`` etc.) rather than
+        stateful ``plt.*`` calls, so this composes safely with other plots
+        and is safe to call more than once per session.
+        """
+        fig = self._build_axes(fig=fig, gs=gs, specs=specs)
+        axes = fig.get_axes()
+
+        usealias = specs["usealias"]
+        dict_alias = dict()
+        if usealias:
+            _names = self.catalog[self.field_name].values
+            _alias = self.catalog[self.field_alias].values
+            for i in range(len(self.catalog)):
+                dict_alias[_names[i]] = _alias[i]
+
+        # pre-processing: each series' TEMPORAL COVERAGE -- its valid
+        # (non-gap) record count, divided by how many of *its own*
+        # resolution's steps fit across the *collection's* full time
+        # range (self.start to self.end), not the series' own span. A
+        # series with zero gaps still reads under 100% if it only covers
+        # part of the collection's overall range (e.g. an hourly sensor
+        # running for just the first half of a year-long collection reads
+        # ~50%, not ~100%), and every series is comparable on the same
+        # 0-100% scale regardless of its own frequency.
+        local_epochs_df = self.merge_local_epochs()
+        coverage_rows = []
+        for name in self.collection:
+            ts = self.collection[name]
+            valid_n = local_epochs_df.loc[
+                local_epochs_df[self.field_name] == name, "n_epoch"
+            ].sum()
+            expected_n = len(
+                pd.date_range(start=self.start, end=self.end, freq=ts.dtfreq)
+            )
+            pct = 100 * valid_n / expected_n if expected_n > 0 else 0.0
+            coverage_rows.append({self.field_name: name, "coverage_pct": pct})
+        agg_df = (
+            pd.DataFrame(coverage_rows)
+            .sort_values(by="coverage_pct", ascending=True)
+            .reset_index(drop=True)
+        )
+        names = agg_df[self.field_name].values
+        labels = [dict_alias[name] for name in names] if usealias else names
+        preval = agg_df["coverage_pct"].values
+        heights = np.linspace(0, 1, len(names) + 1)
+        heights = heights[: len(names)] + ((heights[1] - heights[0]) / 2)
+
+        # cross-series overlap
+        epochs_df = self.get_epochs()
+
+        xmin = specs["xmin"] if specs["xmin"] is not None else self.start
+        xmax = specs["xmax"] if specs["xmax"] is not None else self.end
+
+        # Evenly-spaced ticks in *calendar time*, not by row position.
+        # `epochs_df` can mix resolutions (e.g. hourly while one series is
+        # active, daily once it ends -- see merge_data()), so picking ticks
+        # by row index would bunch them together in the fine-resolution
+        # stretch and leave a big gap across the coarse one. Building the
+        # ticks directly from xmin/xmax (mirrors TimeSeries.plot_series'
+        # ``n_dates``/``format_dates``) keeps them evenly spaced regardless.
+        n_dates = specs["n_dates"]
+        if n_dates is None:
+            ticks = None
+        elif n_dates <= 1:
+            ticks = [xmin]
+        elif n_dates == 2:
+            ticks = [xmin, xmax]
+        else:
+            ticks = pd.date_range(start=xmin, end=xmax, periods=n_dates)
+        format_dates = specs.get("format_dates", None)
+
+        # --- a. Gantt chart ---
+        ax_gantt = axes[0]
+        ax_gantt.set_title("a. {}".format(specs["gantt"]), loc="left")
+        for i in range(len(names)):
+            name = names[i]
+            df_aux = local_epochs_df.query("{} == '{}'".format(self.field_name, name))
+            for j in range(len(df_aux)):
+                x_time = [df_aux["start"].values[j], df_aux["end"].values[j]]
+                y_height = [heights[i], heights[i]]
+                ax_gantt.plot(
+                    x_time,
+                    y_height,
+                    color=df_aux["color"].values[j],
+                    linewidth=specs["gantt_linewidth"],
+                    solid_capstyle="butt",
+                )
+        ax_gantt.set_ylim(0, 1)
+        ax_gantt.set_xlim(xmin, xmax)
+        ax_gantt.set_yticks(heights, labels)
+        ax_gantt.set_xlabel(specs["xlabel"])
+        if ticks is not None:
+            ax_gantt.set_xticks(ticks)
+            if format_dates is not None:
+                ax_gantt.set_xticklabels(
+                    [pd.Timestamp(d).strftime(format_dates) for d in ticks]
+                )
+        ax_gantt.tick_params(axis="x", labelrotation=specs["xtick_rotation"])
+        ax_gantt.grid(axis="y")
+
+        # --- b. Overlapping chart ---
+        ax_over = axes[1]
+        ax_over.set_title("b. {}".format(specs["over"]), loc="left")
+        ax_over.plot(
+            epochs_df[self.dtfield],
+            100 * epochs_df[self.overfield],
+            color=specs["color_over"],
+        )
+        ax_over.fill_between(
+            epochs_df[self.dtfield],
+            100 * epochs_df[self.overfield],
+            color=specs["color_over"],
+            alpha=specs["alpha_over"],
+        )
+        ymin = specs["ymin"] if specs["ymin"] is not None else -5
+        ymax = specs["ymax"] if specs["ymax"] is not None else 105
+        ax_over.set_ylim(ymin, ymax)
+        ax_over.set_xlim(xmin, xmax)
+        ax_over.set_xlabel(specs["xlabel"])
+        if ticks is not None:
+            ax_over.set_xticks(ticks)
+            if format_dates is not None:
+                ax_over.set_xticklabels(
+                    [pd.Timestamp(d).strftime(format_dates) for d in ticks]
+                )
+        ax_over.tick_params(axis="x", labelrotation=specs["xtick_rotation"])
+        ax_over.set_ylabel(specs["ylabel_over"])
+
+        # --- c. Prevalence chart (only in the "full" layout) ---
+        if len(axes) > 2:
+            ax_prev = axes[2]
+            ax_prev.set_title("c. {}".format(specs["prev"]), loc="left")
+            ax_prev.barh(labels, preval, color=specs["color_prev"])
+            for index, value in enumerate(preval):
+                ax_prev.text(
+                    value,
+                    index,
+                    " {:.1f}%".format(value),
+                    ha="left",
+                    va="center",
+                    fontsize=8,
+                )
+            ax_prev.set_xlim(0, 100)
+            ax_prev.grid(axis="x")
+            ax_prev.set_xlabel(specs["xlabel_prev"])
+
+        fig.suptitle(specs["title"])
+        return fig
+
+    def view(self, show=True, return_fig=False):
+        """
+        Visualize the time series collection: a Gantt chart of each
+        series' own epochs, the cross-series overlap over time, and (in
+        the ``"full"`` layout) each series' data prevalence.
+
+        Every knob previously passed as a loose keyword (``folder``,
+        ``filename``, ``dpi``, ``fig_format``, ``usealias``, colors,
+        titles, axis ranges, layout choice...) now lives in
+        ``self.view_specs`` -- set it before calling, exactly like
+        :meth:`TimeSeries.view`.
+
+        :param show: option for showing instead of saving.
+        :type show: bool
+        :param return_fig: option for returning the figure object itself.
+        :type return_fig: bool
+        :return: the :class:`matplotlib.figure.Figure` if ``return_fig``
+            is True, otherwise None (the figure is shown or saved to
+            ``"{folder}/{filename or name+suff}.{fig_format}"``).
+        :rtype: :class:`matplotlib.figure.Figure` or None
+        """
+        # SPECS
+        specs = self._get_fig_specs()
+
+        # BUILD
+        fig, gs = viewer.build_fig(specs=specs)
+
+        # PLOT
+        fig = self._plot(fig=fig, gs=gs, specs=specs)
+
+        # SHIP
+        filename = specs["filename"]
+        if filename is None:
+            filename = "{}{}".format(self.name, specs["suff"])
+        file_path = "{}/{}.{}".format(specs["folder"], filename, specs["fig_format"])
+        if return_fig:
+            return fig
+        else:
+            viewer.ship_fig(fig=fig, show=show, file_output=file_path, dpi=specs["dpi"])
+
     # todo develop refactor to new view scheme (DRY)
-    def view(
+    def view_old(
         self,
         show=True,
         folder="./output",
@@ -2282,17 +2930,10 @@ class TimeSeriesCollection(Collection):
             If show is False, the plot is saved to a file.
 
 
-        **Notes**
-
-        This function generates a scatter plot with colored epochs based on the epochs' start and end times.
-        The plot includes data points within each epoch, and each epoch is labeled with its corresponding ID.
-
-        **Examples**
-
         """
         if usealias:
-            _names = self.catalog["Name"].values
-            _alias = self.catalog["Alias"].values
+            _names = self.catalog["name"].values
+            _alias = self.catalog["alias"].values
             dict_alias = dict()
             for i in range(len(self.catalog)):
                 dict_alias[_names[i]] = _alias[i]
@@ -2300,14 +2941,12 @@ class TimeSeriesCollection(Collection):
         # pre-processing
         local_epochs_df = self.merge_local_epochs()
         # Aggregate sum based on the 'Name' field
-        agg_df = local_epochs_df.groupby("Name")["Epochs_n"].sum().reset_index()
-        agg_df = agg_df.sort_values(by="Epochs_n", ascending=True).reset_index(
-            drop=True
-        )
-        names = agg_df["Name"].values
+        agg_df = local_epochs_df.groupby("name")["n_epoch"].sum().reset_index()
+        agg_df = agg_df.sort_values(by="n_epoch", ascending=True).reset_index(drop=True)
+        names = agg_df["name"].values
         if usealias:
             alias = [dict_alias[name] for name in names]
-        preval = 100 * agg_df["Epochs_n"].values / agg_df["Epochs_n"].sum()
+        preval = 100 * agg_df["n_epoch"].values / agg_df["n_epoch"].sum()
         heights = np.linspace(0, 1, len(names) + 1)
         heights = heights[: len(names)] + ((heights[1] - heights[0]) / 2)
 
@@ -2347,14 +2986,14 @@ class TimeSeriesCollection(Collection):
         plt.title("a. {}".format(specs["gantt"]), loc="left")
         for i in range(len(names)):
             name = names[i]
-            df_aux = local_epochs_df.query(f"Name == '{name}'")
+            df_aux = local_epochs_df.query(f"name == '{name}'")
             for j in range(len(df_aux)):
-                x_time = [df_aux["Start"].values[j], df_aux["End"].values[j]]
+                x_time = [df_aux["start"].values[j], df_aux["end"].values[j]]
                 y_height = [heights[i], heights[i]]
                 plt.plot(
                     x_time,
                     y_height,
-                    color=df_aux["Color"].values[j],
+                    color=df_aux["color"].values[j],
                     linewidth=6,
                     solid_capstyle="butt",
                 )
@@ -5821,6 +6460,41 @@ class RasterSeries(RasterCollection):
     A :class:`RasterCollection`` where datetime matters and all maps in collections are
     expected to be the same variable, same projection and same grid.
     """
+
+    # todo [develop] -- RasterSeries performance overhaul (see brainstorm 2026-08-21)
+    #
+    # 1. Fast/tiered loading for RasterSeries.load_folder
+    #    - Tier 1: read files straight into a raw (time, rows, cols) numpy stack
+    #      via rasterio.open() + np.stack(), no per-file Raster construction.
+    #      Use file 1 as canonical template (projection, units, cmap, range).
+    #    - Tier 2: cheap shape/CRS check per file against template; only build
+    #      full Raster objects for outputs, not for every loaded input.
+    #    - Fall back to full per-object RasterCollection path if check fails
+    #      (folder violates RasterSeries same-grid/same-variable contract).
+    #    - Parallelize Tier 1 reads (rasterio releases GIL) -- see existing
+    #      "parallel loading" todo.
+    #
+    # 2. reduce() is NOT vectorized -- currently loops per-pixel in Python
+    #    (flatten -> transpose -> for i in range(n_flat): reducer_func(...)).
+    #    For RasterSeries (grids guaranteed aligned), replace with a single
+    #    vectorized call on the stack: np.nanmean(stack, axis=0), etc.
+    #    Keep to_mean/to_min/to_max/... public API, swap implementation only
+    #    when is_same_grid() / RasterSeries context guarantees alignment.
+    #
+    # 3. Per-timestep stats (min/max/mean/nodata count) as byproduct of Tier 1
+    #    stack load -- vectorized across the whole stack, cached as a small
+    #    DataFrame on RasterSeries, instead of get_collection_stats() looping
+    #    get_stats_df() per object. Keep full per-raster get_stats() as
+    #    opt-in for single-raster inspection (percentiles, histograms).
+    #
+    # 4. MonthlyRasterSeries (RasterSeries subclass): month-only filename
+    #    suffix (e.g. _YYYY-MM) instead of full date; needs its own datetime
+    #    parser override, current logic hardcodes filename.split("_")[-1].
+    #
+    # 5. SPI/SPEI as SciRaster (single map) + SPISeries/SPEISeries
+    #    (RasterSeries subclass) -- computed on top of items 1-3: rolling
+    #    sum on raw stack -> group by end-month -> fit Gamma/log-logistic
+    #    per pixel -> equiprobability transform to standard normal.
 
     def __init__(self, name, varname, varalias, units, dtype="float32"):
         """
