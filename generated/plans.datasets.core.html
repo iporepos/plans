@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../_static/documentation_options.js?v=8d563738"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
@@ -440,7 +440,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,
 in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Hello World!"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Mauris gravida ex quam, in porttitor lacus lobortis vitae.
@@ -562,13 +562,41 @@ In a lacinia nisl.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.core.TimeSeries._set_frequency">
 <span class="sig-name descname"><span class="pre">_set_frequency</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeries._set_frequency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeries._set_frequency" title="Link to this definition">#</a></dt>
-<dd><p>Guess the datetime resolution of a time series based on the consistency of
-timestamp components (e.g., seconds, minutes).</p>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>This method infers the datetime frequency of the time series data
-based on the consistency of timestamp components.</p>
+<dd><p>Infer the datetime frequency of the time series from the spacing
+between consecutive timestamps.</p>
+<p>The <em>mode</em> (most common value) of consecutive timestamp deltas is
+used to determine the frequency, rather than checking which
+calendar components (seconds, minutes, hours, …) vary across the
+series. This makes detection robust to a small minority of
+jittered or missing timestamps: as long as the majority of gaps
+between consecutive records share the same spacing, that spacing
+wins, even if a few records are irregular.</p>
+<p>Sets <code class="docutils literal notranslate"><span class="pre">self.dtfreq</span></code> to one of the supported Pandas-like frequency
+aliases (<code class="docutils literal notranslate"><span class="pre">&quot;1min&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;20min&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;h&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;D&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;MS&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;YS&quot;</span></code>) based on which boundary the modal delta falls into, and
+<code class="docutils literal notranslate"><span class="pre">self.dtres</span></code> to the corresponding resolution label (<code class="docutils literal notranslate"><span class="pre">&quot;second&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;minute&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;hour&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;day&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;month&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;year&quot;</span></code>).</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">&quot;MS&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;YS&quot;</span></code> frequencies, <code class="docutils literal notranslate"><span class="pre">self.gapsize</span></code> is also
+forced to <code class="docutils literal notranslate"><span class="pre">1</span></code>, since a single missing month or year is already a
+meaningful gap at that resolution.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Detection is based on the <em>majority</em> delta, not a strict
+consistency check. If irregular spacing accounts for more than
+half of the deltas in the series, the detected frequency will
+reflect that majority rather than the “intended” sampling rate.
+Always sanity-check <code class="docutils literal notranslate"><span class="pre">self.dtfreq</span></code> after loading unfamiliar or
+untrusted data.</p>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None. Updates <code class="docutils literal notranslate"><span class="pre">self.dtfreq</span></code>, <code class="docutils literal notranslate"><span class="pre">self.dtres</span></code>, and
+possibly <code class="docutils literal notranslate"><span class="pre">self.gapsize</span></code> in place.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -698,17 +726,70 @@ If inplace is True, returns None, and the original data is modified in-place.</p
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.core.TimeSeries.standardize">
 <span class="sig-name descname"><span class="pre">standardize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeries.standardize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeries.standardize" title="Link to this definition">#</a></dt>
-<dd><p>Standardize the data based on regular datetime steps and the time resolution.</p>
+<dd><p>Force the time series onto a regular datetime grid at its detected frequency.</p>
+<p>This builds a full, evenly-spaced date range spanning the series’
+start to end (at day resolution) and left-merges the existing data
+onto it. Any regular-grid slot that has no matching timestamp in the
+original data becomes a row with a null value in <code class="docutils literal notranslate"><span class="pre">varfield</span></code> –
+i.e. standardizing an irregular series (one with missing timestamps)
+is what turns those missing timestamps into explicit gaps.</p>
+<p>If multiple original records fall within the same grid slot (e.g. two
+readings a few minutes apart, both bucketed into the same hour), they
+are aggregated using the <code class="docutils literal notranslate"><span class="pre">agg</span></code> attribute (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;mean&quot;</span></code>) before
+being placed in that slot.</p>
 <p><strong>Notes</strong></p>
 <ul class="simple">
-<li><p>Creates a full date range with the expected frequency for the standardization period.</p></li>
-<li><p>Groups the data by epochs (based on the frequency and datetime field), applies the specified aggregation function, and fills in missing values with left merges.</p></li>
-<li><p>Updates internal attributes, including <code class="docutils literal notranslate"><span class="pre">self.isstandard</span></code> to indicate that the data has been standardized.</p></li>
+<li><p>The target frequency is read from <code class="docutils literal notranslate"><span class="pre">self.dtfreq</span></code>, which is set by
+<code class="docutils literal notranslate"><span class="pre">_set_frequency()</span></code> (called automatically on load, based on the
+mode of consecutive timestamp deltas – robust to a handful of
+jittered or missing timestamps, but not to a majority of them).</p></li>
+<li><p>Bucketing uses <code class="docutils literal notranslate"><span class="pre">.dt.floor()</span></code> for fixed-frequency grids
+(<code class="docutils literal notranslate"><span class="pre">1min</span></code>, <code class="docutils literal notranslate"><span class="pre">20min</span></code>, <code class="docutils literal notranslate"><span class="pre">h</span></code>, <code class="docutils literal notranslate"><span class="pre">D</span></code>) and calendar-aware period
+flooring for calendar-variable grids (<code class="docutils literal notranslate"><span class="pre">MS</span></code>, <code class="docutils literal notranslate"><span class="pre">YS</span></code>), so each
+timestamp is always bucketed independently based on its own value,
+never merged with unrelated timestamps in the same coarser unit.</p></li>
+<li><p>Sets <code class="docutils literal notranslate"><span class="pre">self.is_standard</span> <span class="pre">=</span> <span class="pre">True</span></code> on completion. Several other
+methods (e.g. <code class="docutils literal notranslate"><span class="pre">get_epochs</span></code>, <code class="docutils literal notranslate"><span class="pre">interpolate_gaps</span></code>) check this flag
+and call <code class="docutils literal notranslate"><span class="pre">standardize()</span></code> automatically if it’s <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p>Calls <code class="docutils literal notranslate"><span class="pre">self.update()</span></code> at the end, refreshing derived statistics
+to reflect the new (possibly larger, possibly gap-containing) data.</p></li>
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">standardize</span></code> method modifies the internal data representation.
-Ensure to review the data after standardization.</p>
+<p>This method modifies <code class="docutils literal notranslate"><span class="pre">self.data</span></code> in place (there is no
+<code class="docutils literal notranslate"><span class="pre">inplace</span></code> parameter). If you need the original, irregular data
+preserved, keep a separate reference or a <code class="docutils literal notranslate"><span class="pre">copy.deepcopy</span></code> of
+the object before calling this method.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Row count generally <em>increases</em> after standardizing an irregular
+series, since missing grid slots are inserted as null rows.
+Review <code class="docutils literal notranslate"><span class="pre">len(self.data)</span></code> and the null count after calling this
+method rather than assuming they’re unchanged.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None. Updates <code class="docutils literal notranslate"><span class="pre">self.data</span></code> and <code class="docutils literal notranslate"><span class="pre">self.is_standard</span></code> in place.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span><span class="o">.</span><span class="n">is_standard</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">311</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span><span class="o">.</span><span class="n">standardize</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span><span class="o">.</span><span class="n">is_standard</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>          <span class="c1"># now includes inserted null rows</span>
+<span class="go">361</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="go">50</span>
+</pre></div>
 </div>
 </dd></dl>
 
@@ -755,14 +836,12 @@ representing gaps in the time series.</p>
 <li><p>This function updates statistics for all epochs in the time series.</p></li>
 <li><p>Ensures that the data is standardized by calling the <code class="docutils literal notranslate"><span class="pre">standardize</span></code> method if it’s not already standardized.</p></li>
 <li><p>Removes epoch 0 from the statistics since it typically represents non-standardized or invalid data.</p></li>
-<li><p>Groups the data by <code class="docutils literal notranslate"><span class="pre">Epoch_Id</span></code> and calculates statistics such as count, start, and end timestamps for each epoch.</p></li>
+<li><p>Groups the data by and calculates statistics such as count, start, and end timestamps for each epoch.</p></li>
 <li><p>Generates random colors for each epoch using the <code class="docutils literal notranslate"><span class="pre">get_random_colors</span></code> function with a specified colormap (<cite>cmap`</cite> attribute).</p></li>
 <li><p>Includes the time series name in the statistics for identification.</p></li>
-<li><p>Organizes the statistics DataFrame to include relevant columns: <code class="docutils literal notranslate"><span class="pre">Name</span></code>, <code class="docutils literal notranslate"><span class="pre">Epoch_Id</span></code>, <code class="docutils literal notranslate"><span class="pre">Count</span></code>, <code class="docutils literal notranslate"><span class="pre">Start</span></code>, <code class="docutils literal notranslate"><span class="pre">End</span></code>, and <code class="docutils literal notranslate"><span class="pre">Color</span></code>.</p></li>
-<li><p>Updates the attribute <code class="docutils literal notranslate"><span class="pre">epochs_n</span></code> with the number of epochs in the statistics.</p></li>
+<li><p>Organizes the statistics DataFrame to include relevant columns</p></li>
+<li><p>Updates the attribute with the number of epochs in the statistics.</p></li>
 </ul>
-<p><strong>Examples</strong></p>
-<p>todo [examples]</p>
 </dd></dl>
 
 <dl class="py method">
@@ -778,7 +857,9 @@ representing gaps in the time series.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A new <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> with interpolated values if inplace is False, otherwise None.</p>
+<dd class="field-even"><p>A new <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> with interpolated values and an <code class="docutils literal notranslate"><span class="pre">is_interpolation</span></code>
+flag column (1 where the value was filled by interpolation, 0 where it was
+already present) if inplace is False, otherwise None.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or None</p>
@@ -848,7 +929,7 @@ See the <cite>aggregate</cite> method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>freq</strong> (<em>str</em>) – Pandas-like alias frequency at which to aggregate the time series data.
+<li><p><strong>freq</strong> (<em>str</em>) – <p>Pandas-like alias frequency at which to aggregate the time series data.
 Common options include:
 - <code class="docutils literal notranslate"><span class="pre">h</span></code> for hourly frequency
 - <code class="docutils literal notranslate"><span class="pre">D</span></code> for daily frequency
@@ -857,30 +938,142 @@ Common options include:
 - <code class="docutils literal notranslate"><span class="pre">QS</span></code> for quarterly/start frequency
 - <code class="docutils literal notranslate"><span class="pre">YS</span></code> for yearly/start frequency
 More options and details can be found in the Pandas documentation:
-<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases">https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases</a>.</p></li>
+<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases">https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases</a>.</p>
+<p><strong>Anchoring behavior</strong> – this affects where each aggregation window starts/ends:</p>
+<ul>
+<li><p>Plain multiples of a base unit (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;5D&quot;</span></code> for a pentad, <code class="docutils literal notranslate"><span class="pre">&quot;10D&quot;</span></code>) are
+<em>data-start-anchored</em>: bins are chunked every N units starting from wherever
+the series begins, not from a fixed calendar boundary.</p></li>
+<li><p>Calendar units (<code class="docutils literal notranslate"><span class="pre">W</span></code>, <code class="docutils literal notranslate"><span class="pre">MS</span></code>, <code class="docutils literal notranslate"><span class="pre">QS</span></code>, <code class="docutils literal notranslate"><span class="pre">YS</span></code>, etc.) are <em>calendar-anchored</em>:
+bins snap to fixed real-world boundaries regardless of where the data starts.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">W</span></code> defaults to <code class="docutils literal notranslate"><span class="pre">W-SUN</span></code> (weeks ending Sunday). Anchor to any weekday with
+a suffix, e.g. <code class="docutils literal notranslate"><span class="pre">W-MON</span></code>, <code class="docutils literal notranslate"><span class="pre">W-WED</span></code>, <code class="docutils literal notranslate"><span class="pre">W-FRI</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">YS</span></code>/<code class="docutils literal notranslate"><span class="pre">YE</span></code> default to the calendar year (start Jan 1 / end Dec 31). Anchor
+to any month with a suffix to define e.g. a hydrological/water year:
+<code class="docutils literal notranslate"><span class="pre">&quot;YS-OCT&quot;</span></code> (year starting Oct 1, e.g. US water year convention) or
+<code class="docutils literal notranslate"><span class="pre">&quot;YE-SEP&quot;</span></code> (year ending Sep 30). The suffix month plus <code class="docutils literal notranslate"><span class="pre">YS-</span></code>/<code class="docutils literal notranslate"><span class="pre">YE-</span></code>
+together set whether that month is the start or the end of the bin.</p></li>
+</ul>
+</p></li>
 <li><p><strong>bad_max</strong> (<em>int</em>) – The maximum number of <code class="docutils literal notranslate"><span class="pre">Bad</span></code> records allowed in a time window for aggregation. Records with more <code class="docutils literal notranslate"><span class="pre">Bad</span></code> entries
 will be excluded from the aggregated result.</p></li>
-<li><p><strong>inplace</strong> (<em>bool</em>) – option for overwrite data, default True</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em>) – option for overwrite data, default True. When False, returns a new
+<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object (an exact copy of <code class="docutils literal notranslate"><span class="pre">self</span></code>) holding the upscaled data,
+instead of a bare DataFrame.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code> if <code class="docutils literal notranslate"><span class="pre">inplace=True</span></code> (data is overwritten in place), otherwise a new
+<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> instance of the same subclass as <code class="docutils literal notranslate"><span class="pre">self</span></code>, with identical metadata
+and the upscaled data/derived stats.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None or <a class="reference internal" href="#plans.datasets.core.TimeSeries" title="plans.datasets.core.TimeSeries">TimeSeries</a></p>
+</dd>
+<dt class="field-even">Example<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
 </dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Pentad upscale (data-start-anchored)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts_pentad</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">scale_up</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"5D"</span><span class="p">,</span> <span class="n">bad_max</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Weekly upscale, anchored to Monday-ending weeks</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts_weekly</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">scale_up</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"W-MON"</span><span class="p">,</span> <span class="n">bad_max</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Hydrological year, Oct-Sep</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts_hydro</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">scale_up</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"YS-OCT"</span><span class="p">,</span> <span class="n">bad_max</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.core.TimeSeries.scale_down">
-<span class="sig-name descname"><span class="pre">scale_down</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeries.scale_down"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeries.scale_down" title="Link to this definition">#</a></dt>
-<dd><p>Donwscale time series for smaller time steps using linear inteporlation.</p>
+<span class="sig-name descname"><span class="pre">scale_down</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">covariate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'center'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeries.scale_down"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeries.scale_down" title="Link to this definition">#</a></dt>
+<dd><p>Downscale the time series to a finer time step.</p>
+<p>For non-flow variables (<code class="docutils literal notranslate"><span class="pre">self.agg</span> <span class="pre">!=</span> <span class="pre">&quot;sum&quot;</span></code>), each coarse data
+point is first repositioned in time according to <code class="docutils literal notranslate"><span class="pre">align</span></code> (see
+below), then linearly interpolated onto the finer grid. Because
+this repositioning shifts the interpolation anchors away from a
+naive “value at period start” assumption, a single global
+multiplicative correction is applied afterward so that the
+downscaled series’ overall mean exactly matches the original
+series’ overall mean. Note this conserves the mean of the
+<strong>whole series</strong>, not each individual period – an earlier,
+stricter per-period mean-preserving approach was found to
+produce unstable, oscillating results with volatile inputs and
+was intentionally not used here.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">align</span></code> parameter controls where each coarse point is
+assumed to sit within the period it represents:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;start&quot;</span></code>: at the period’s own timestamp (no shift). E.g. a
+daily value stays anchored at <code class="docutils literal notranslate"><span class="pre">00:00</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;center&quot;</span></code> (default): at the middle of the period. E.g. a
+daily value is anchored at <code class="docutils literal notranslate"><span class="pre">12:00</span></code> of that day.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;end&quot;</span></code>: at the end of the period. E.g. a daily value is
+anchored at the following day’s <code class="docutils literal notranslate"><span class="pre">00:00</span></code>.</p></li>
+</ul>
+<p>Anchor placement leaves flat (constant) values outside the
+earliest/latest anchor – e.g. with <code class="docutils literal notranslate"><span class="pre">align=&quot;center&quot;</span></code>, there is
+no data before the first period’s midpoint, so the interpolated
+series holds that first value flat until the midpoint is reached.</p>
+<p>For flow/sum variables (<code class="docutils literal notranslate"><span class="pre">self.agg</span> <span class="pre">==</span> <span class="pre">&quot;sum&quot;</span></code>, e.g. precipitation
+totals), each source period’s total is distributed across its fine
+sub-steps such that the sub-steps sum back to exactly that period’s
+original total – no mass leaks across period boundaries. <code class="docutils literal notranslate"><span class="pre">align</span></code>
+is not used in this case (sum conservation is enforced directly at
+the level of each time step, not via anchor placement). Two modes:</p>
+<ul class="simple">
+<li><p><strong>Uniform split</strong> (default, <code class="docutils literal notranslate"><span class="pre">covariate=None</span></code>): each period’s
+total is split evenly across its fine sub-steps.</p></li>
+<li><p><strong>Covariate-weighted</strong> (<code class="docutils literal notranslate"><span class="pre">covariate</span></code> given): each period’s total
+is distributed proportionally to a covariate signal’s own shape
+within that period, e.g. using a higher-resolution proxy (radar
+or satellite precipitation) to shape how a daily gauge total is
+spread across finer time steps. The covariate is linearly
+interpolated onto the target grid first if it isn’t already
+sampled at <code class="docutils literal notranslate"><span class="pre">freq</span></code>. Any period where the covariate is entirely
+zero or missing falls back to a uniform split for that period,
+so covariate gaps never produce <code class="docutils literal notranslate"><span class="pre">NaN</span></code> or divide-by-zero results.</p></li>
+</ul>
+<p>In both branches, the fine grid is extended one full period past
+the series’ last timestamp so the final period is subdivided the
+same way as every other period, rather than being collapsed into
+a single fine step holding that whole period’s value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>freq</strong> (<em>str</em>) – new time step frequency</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>str</em>) – new time step frequency</p></li>
+<li><p><strong>covariate</strong> (<a class="reference internal" href="#plans.datasets.core.TimeSeries" title="plans.datasets.core.TimeSeries"><em>TimeSeries</em></a><em> or </em><em>None</em>) – optional higher-resolution <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> whose
+values are used to shape the within-period distribution for
+flow/sum variables. Ignored when <code class="docutils literal notranslate"><span class="pre">self.agg</span> <span class="pre">!=</span> <span class="pre">&quot;sum&quot;</span></code>.</p></li>
+<li><p><strong>align</strong> (<em>str</em>) – for non-sum variables, where each coarse point is
+anchored within its period: <code class="docutils literal notranslate"><span class="pre">&quot;start&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;center&quot;</span></code>
+(default), or <code class="docutils literal notranslate"><span class="pre">&quot;end&quot;</span></code>. Ignored when <code class="docutils literal notranslate"><span class="pre">self.agg</span> <span class="pre">==</span> <span class="pre">&quot;sum&quot;</span></code>.</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em>) – option for overwrite data, default False. When
+<code class="docutils literal notranslate"><span class="pre">True</span></code>, overwrites <code class="docutils literal notranslate"><span class="pre">self.data</span></code> with the downscaled result
+and returns <code class="docutils literal notranslate"><span class="pre">None</span></code>. When <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), returns a new
+<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> instance (an exact copy of <code class="docutils literal notranslate"><span class="pre">self</span></code>) holding
+the downscaled data, instead of a bare DataFrame.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Dataframe of downscaled data</p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code> if <code class="docutils literal notranslate"><span class="pre">inplace=True</span></code> (data is overwritten in
+place), otherwise a new <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> instance of the same
+subclass as <code class="docutils literal notranslate"><span class="pre">self</span></code>, with identical metadata and the
+downscaled data/derived stats.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></p>
+<dd class="field-odd"><p>None or <a class="reference internal" href="#plans.datasets.core.TimeSeries" title="plans.datasets.core.TimeSeries">TimeSeries</a></p>
 </dd>
+<dt class="field-even">Example<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
 </dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># non-sum variable, e.g. daily-average water level -&gt; hourly,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># anchored at midday, overall mean preserved</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts_level_hourly</span> <span class="o">=</span> <span class="n">ts_level</span><span class="o">.</span><span class="n">scale_down</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"1h"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># uniform split: each day's total spread evenly across hours</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts_flat</span> <span class="o">=</span> <span class="n">ts_daily</span><span class="o">.</span><span class="n">scale_down</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"1h"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># covariate-weighted: shaped by an hourly satellite proxy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts_shaped</span> <span class="o">=</span> <span class="n">ts_daily</span><span class="o">.</span><span class="n">scale_down</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"1h"</span><span class="p">,</span> <span class="n">covariate</span><span class="o">=</span><span class="n">ts_satellite</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -960,7 +1153,69 @@ Expected to overwrite superior methods.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.core.TimeSeries.view_compare_times_series">
 <span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">view_compare_times_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts_first</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts_second</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeries.view_compare_times_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeries.view_compare_times_series" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Plot two <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> objects together for visual comparison.</p>
+<p>Renders a three-panel figure – the two series overlaid on a
+shared time axis, a horizontal histogram, and a CDF – using
+<code class="docutils literal notranslate"><span class="pre">ts_first</span></code>’s panel layout as the base and drawing <code class="docutils literal notranslate"><span class="pre">ts_second</span></code>
+on top of it. Both series are shown with their own colors (taken
+from each object’s <code class="docutils literal notranslate"><span class="pre">view_specs[&quot;color&quot;]</span></code>) and labeled with
+their respective <code class="docutils literal notranslate"><span class="pre">name</span></code> attributes; each series’ mean is
+annotated on the CDF panel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ts_first</strong> (<a class="reference internal" href="#plans.datasets.core.TimeSeries" title="plans.datasets.core.TimeSeries"><em>TimeSeries</em></a>) – The first time series to plot. Its own
+<code class="docutils literal notranslate"><span class="pre">view_specs</span></code> supplies the base panel layout (axes,
+figure size, etc.); set <code class="docutils literal notranslate"><span class="pre">ts_first.view_specs[&quot;color&quot;]</span></code>
+before calling to control its plotted color.</p></li>
+<li><p><strong>ts_second</strong> (<a class="reference internal" href="#plans.datasets.core.TimeSeries" title="plans.datasets.core.TimeSeries"><em>TimeSeries</em></a>) – The second time series to plot on top of the
+first. Likewise, set <code class="docutils literal notranslate"><span class="pre">ts_second.view_specs[&quot;color&quot;]</span></code> to
+control its color.</p></li>
+<li><p><strong>specs</strong> (<em>dict</em>) – Plot overrides applied to both series before
+plotting (merged into each series’ <code class="docutils literal notranslate"><span class="pre">view_specs</span></code>). Must
+include <code class="docutils literal notranslate"><span class="pre">&quot;title&quot;</span></code>. If <code class="docutils literal notranslate"><span class="pre">return_fig</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, must
+also include <code class="docutils literal notranslate"><span class="pre">&quot;folder&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;filename&quot;</span></code> (used to build
+the output file path); <code class="docutils literal notranslate"><span class="pre">&quot;dpi&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;fig_format&quot;</span></code> are
+taken from <code class="docutils literal notranslate"><span class="pre">ts_first.view_specs</span></code> regardless of what is
+passed in <code class="docutils literal notranslate"><span class="pre">specs</span></code>.</p></li>
+<li><p><strong>show</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">return_fig</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, whether to display
+the figure interactively in addition to saving it. Ignored
+if <code class="docutils literal notranslate"><span class="pre">return_fig</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>return_fig</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, return the Matplotlib
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Figure</span></code> instead of saving it to
+disk. Useful for inline display (e.g. in a notebook) or for
+further customization before saving.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Figure</span></code> if
+<code class="docutils literal notranslate"><span class="pre">return_fig=True</span></code>, otherwise <code class="docutils literal notranslate"><span class="pre">None</span></code> (the figure is
+saved to <code class="docutils literal notranslate"><span class="pre">&quot;{folder}/{filename}.{fig_format}&quot;</span></code>).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code> or None</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Both input objects’ <code class="docutils literal notranslate"><span class="pre">view_specs</span></code> are mutated in place by
+this method (colors, labels, layout, and the contents of
+<code class="docutils literal notranslate"><span class="pre">specs</span></code> are all written into
+<code class="docutils literal notranslate"><span class="pre">ts_first.view_specs</span></code>/<code class="docutils literal notranslate"><span class="pre">ts_second.view_specs</span></code>). If you
+need the originals preserved, pass copies.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"color"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"tab:blue"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"color"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"tab:orange"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">view_compare_times_series</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">ts1</span><span class="p">,</span> <span class="n">ts2</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="p">{</span><span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Site A vs Site B"</span><span class="p">},</span> <span class="n">return_fig</span><span class="o">=</span><span class="kc">True</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.core.TimeSeries.make_synthetic_tsn">
@@ -998,7 +1253,7 @@ Expected to overwrite superior methods.</p>
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">plans.datasets.core.</span></span><span class="sig-name descname"><span class="pre">TimeSeriesCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'myTSCollection'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_object</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeriesCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeriesCollection" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="plans.root.html#plans.root.Collection" title="plans.root.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></a></p>
 <p>A collection of time series objects with associated metadata.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection</span></code> or simply <code class="docutils literal notranslate"><span class="pre">TSC</span></code> class extends the <code class="docutils literal notranslate"><span class="pre">Collection</span></code> class and
+<p>The <code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection</span></code> class extends the <code class="docutils literal notranslate"><span class="pre">Collection</span></code> class and
 is designed to handle time series data. It can be miscellaneous datasets.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1074,35 +1329,51 @@ Default is False.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.core.TimeSeriesCollection.merge_data">
 <span class="sig-name descname"><span class="pre">merge_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeriesCollection.merge_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeriesCollection.merge_data" title="Link to this definition">#</a></dt>
-<dd><p>Merge data from multiple sources into a single DataFrame.</p>
+<dd><p>Merge data from every series in the collection into one DataFrame,
+aligned by an outer join on the datetime field.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A merged DataFrame with datetime and variable fields from different sources.</p>
+<dd class="field-odd"><p>A merged DataFrame with one datetime column and one value
+column per series (named <code class="docutils literal notranslate"><span class="pre">&quot;{variable_field}_{alias}&quot;</span></code>).</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>pandas.DataFrame</p>
 </dd>
 </dl>
 <p><strong>Notes</strong></p>
-<ul class="simple">
-<li><p>Updates the catalog details.</p></li>
-<li><p>Merges data from different sources based on the specified datetime field and variable field.</p></li>
-<li><p>The merged DataFrame includes a date range covering the entire period.</p></li>
-</ul>
+<p>This is a passive alignment: the datetime axis is the union of every
+series’ own timestamps, nothing more. It does <strong>not</strong> assume, pick,
+or resample onto any single frequency – a collection is explicitly
+allowed to mix a daily and an hourly series, and each keeps its own
+native timestamps here. A daily series simply has no row (NaN) at
+the hourly series’ intermediate timestamps, and vice versa; nothing
+is invented and nothing is thrown away. This also means the result
+is read-only with respect to the members: it is a view for
+reporting/analysis, and is never written back into any series’ own
+<code class="docutils literal notranslate"><span class="pre">.data</span></code> (see <a class="reference internal" href="#plans.datasets.core.TimeSeriesCollection.standardize" title="plans.datasets.core.TimeSeriesCollection.standardize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">standardize()</span></code></a>).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.core.TimeSeriesCollection.standardize">
 <span class="sig-name descname"><span class="pre">standardize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeriesCollection.standardize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeriesCollection.standardize" title="Link to this definition">#</a></dt>
-<dd><p>This method standardizes all time series objects in the collection.</p>
-<p><strong>Notes</strong></p>
-<ul class="simple">
-<li><p>The method iterates through each time series in the collection and standardizes it.</p></li>
-<li><p>After standardizing individual time series, the data is merged.</p></li>
-<li><p>The merged data is then reset for each individual time series in the collection.</p></li>
-<li><p>Epoch statistics are updated for each time series after the reset.</p></li>
-<li><p>Finally, the collection catalog is updated with details.</p></li>
-</ul>
+<dd><p>Standardize every series in the collection, independently.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Notes<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<p>This is deliberately just a batched per-series operation: each
+member calls its own <a class="reference internal" href="#plans.datasets.core.TimeSeries.standardize" title="plans.datasets.core.TimeSeries.standardize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TimeSeries.standardize()</span></code></a> (regularize onto
+<em>its own</em> native time step) and <a class="reference internal" href="#plans.datasets.core.TimeSeries.interpolate_gaps" title="plans.datasets.core.TimeSeries.interpolate_gaps"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TimeSeries.interpolate_gaps()</span></code></a>
+(close its own small gaps), and its own epoch stats are refreshed.</p>
+<p>No cross-series merge happens here, and no series’ <code class="docutils literal notranslate"><span class="pre">.data</span></code> is
+touched by any other series. A collection is explicitly allowed to
+mix frequencies (e.g. hourly temperature alongside daily rainfall),
+so there is no single shared grid to standardize <em>onto</em> – that
+would mean picking one series’ frequency as authoritative and
+silently resampling everyone else onto it, corrupting their native
+resolution. Cross-series alignment for reporting/analysis is a
+separate, non-destructive concern: see <a class="reference internal" href="#plans.datasets.core.TimeSeriesCollection.merge_data" title="plans.datasets.core.TimeSeriesCollection.merge_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">merge_data()</span></code></a> and
+<a class="reference internal" href="#plans.datasets.core.TimeSeriesCollection.get_epochs" title="plans.datasets.core.TimeSeriesCollection.get_epochs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_epochs()</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1156,11 +1427,67 @@ Default is False.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.core.TimeSeriesCollection._set_view_specs">
 <span class="sig-name descname"><span class="pre">_set_view_specs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeriesCollection._set_view_specs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeriesCollection._set_view_specs" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Set view specifications for the collection dashboard plot
+(Gantt chart of per-series epochs + cross-series overlap +
+series prevalence). Mirrors the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>/<code class="docutils literal notranslate"><span class="pre">Univar</span></code> pattern:
+everything the plot needs lives in <code class="docutils literal notranslate"><span class="pre">self.view_specs</span></code> and is
+consumed by <a class="reference internal" href="#plans.datasets.core.TimeSeriesCollection._get_fig_specs" title="plans.datasets.core.TimeSeriesCollection._get_fig_specs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_fig_specs()</span></code></a> / <a class="reference internal" href="#plans.datasets.core.TimeSeriesCollection._plot" title="plans.datasets.core.TimeSeriesCollection._plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_plot()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.core.TimeSeriesCollection._get_fig_specs">
+<span class="sig-name descname"><span class="pre">_get_fig_specs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeriesCollection._get_fig_specs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeriesCollection._get_fig_specs" title="Link to this definition">#</a></dt>
+<dd><p>Merge <code class="docutils literal notranslate"><span class="pre">view_specs</span></code> with the chosen named <code class="docutils literal notranslate"><span class="pre">layout</span></code>’s sizing and
+with the shared grid defaults (<code class="xref py py-data docutils literal notranslate"><span class="pre">viewer.GRID_SPECS</span></code>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.core.TimeSeriesCollection._build_axes">
+<span class="sig-name descname"><span class="pre">_build_axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeriesCollection._build_axes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeriesCollection._build_axes" title="Link to this definition">#</a></dt>
+<dd><p>Add the dashboard’s Axes to <code class="docutils literal notranslate"><span class="pre">fig</span></code> according to <code class="docutils literal notranslate"><span class="pre">layout</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.core.TimeSeriesCollection._plot">
+<span class="sig-name descname"><span class="pre">_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeriesCollection._plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeriesCollection._plot" title="Link to this definition">#</a></dt>
+<dd><p>Draw the Gantt / overlap / prevalence panels onto <code class="docutils literal notranslate"><span class="pre">fig</span></code> using
+proper Axes objects (<code class="docutils literal notranslate"><span class="pre">ax.set_xlim(...)</span></code> etc.) rather than
+stateful <code class="docutils literal notranslate"><span class="pre">plt.*</span></code> calls, so this composes safely with other plots
+and is safe to call more than once per session.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.core.TimeSeriesCollection.view">
-<span class="sig-name descname"><span class="pre">view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./output'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'jpg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usealias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeriesCollection.view"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeriesCollection.view" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeriesCollection.view"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeriesCollection.view" title="Link to this definition">#</a></dt>
+<dd><p>Visualize the time series collection: a Gantt chart of each
+series’ own epochs, the cross-series overlap over time, and (in
+the <code class="docutils literal notranslate"><span class="pre">&quot;full&quot;</span></code> layout) each series’ data prevalence.</p>
+<p>Every knob previously passed as a loose keyword (<code class="docutils literal notranslate"><span class="pre">folder</span></code>,
+<code class="docutils literal notranslate"><span class="pre">filename</span></code>, <code class="docutils literal notranslate"><span class="pre">dpi</span></code>, <code class="docutils literal notranslate"><span class="pre">fig_format</span></code>, <code class="docutils literal notranslate"><span class="pre">usealias</span></code>, colors,
+titles, axis ranges, layout choice…) now lives in
+<code class="docutils literal notranslate"><span class="pre">self.view_specs</span></code> – set it before calling, exactly like
+<a class="reference internal" href="#plans.datasets.core.TimeSeries.view" title="plans.datasets.core.TimeSeries.view"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TimeSeries.view()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>show</strong> (<em>bool</em>) – option for showing instead of saving.</p></li>
+<li><p><strong>return_fig</strong> (<em>bool</em>) – option for returning the figure object itself.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code> if <code class="docutils literal notranslate"><span class="pre">return_fig</span></code>
+is True, otherwise None (the figure is shown or saved to
+<code class="docutils literal notranslate"><span class="pre">&quot;{folder}/{filename</span> <span class="pre">or</span> <span class="pre">name+suff}.{fig_format}&quot;</span></code>).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code> or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.core.TimeSeriesCollection.view_old">
+<span class="sig-name descname"><span class="pre">view_old</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./output'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'jpg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usealias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeriesCollection.view_old"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeriesCollection.view_old" title="Link to this definition">#</a></dt>
 <dd><p>Visualize the time series collection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1187,10 +1514,6 @@ Default is False.</p></li>
 </ul>
 </dd>
 </dl>
-<p><strong>Notes</strong></p>
-<p>This function generates a scatter plot with colored epochs based on the epochs’ start and end times.
-The plot includes data points within each epoch, and each epoch is labeled with its corresponding ID.</p>
-<p><strong>Examples</strong></p>
 </dd></dl>
 
 <dl class="py method">
@@ -3291,7 +3614,11 @@ returns a dictionary with metadata keys and values.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeriesCollection.merge_local_epochs"><code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection.merge_local_epochs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeriesCollection.get_epochs"><code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection.get_epochs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeriesCollection._set_view_specs"><code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection._set_view_specs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeriesCollection._get_fig_specs"><code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection._get_fig_specs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeriesCollection._build_axes"><code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection._build_axes()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeriesCollection._plot"><code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection._plot()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeriesCollection.view"><code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection.view()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeriesCollection.view_old"><code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection.view_old()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeriesCollection.export_views"><code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection.export_views()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeriesCollection.export_data"><code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection.export_data()</span></code></a></li>
 </ul>
@@ -3488,8 +3815,8 @@ returns a dictionary with metadata keys and values.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -3523,7 +3850,7 @@ returns a dictionary with metadata keys and values.</p>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

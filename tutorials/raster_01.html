@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../_static/documentation_options.js?v=8d563738"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
@@ -375,7 +375,13 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="project_01.html">Projects - basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="univar_01.html">Univariate data - the basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time series data - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time Series - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_05_compare.html">Time Series - Comparing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_02_upscale.html">Time Series - Upscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_06_downscale.html">Time Series - Downscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_03_gaps.html">Time Series - Gaps and epochs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_04_standardize.html">Time Series - Standardizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_07_collection.html">Time Series - Collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - the basics</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Raster data - the basics</a></li>
 </ul>
@@ -461,19 +467,19 @@
 <span class="c1"># Install `plans` in `google.colab`.</span>
 <span class="c1"># Use `pip install plans` for other environments.</span>
 
-<span class="k">if</span> <span class="s2">&quot;google.colab&quot;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+<span class="k">if</span> <span class="s2">"google.colab"</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="si">}</span><span class="s2"> -m pip install -q plans&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="si">}</span><span class="s2"> -m pip install -q plans"</span><span class="p">)</span>
 
 <span class="c1"># This avoids warnings related to uninstalled fonts</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="c1"># Set the matplotlib font manager logger to only show errors (hides warnings)</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;matplotlib.font_manager&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">'matplotlib.font_manager'</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 
 <span class="c1"># define output folder</span>
-<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;outputs/raster&quot;</span><span class="p">)</span>
+<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"outputs/raster"</span><span class="p">)</span>
 <span class="n">OUTPUT_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Outputs will be saved to: ./</span><span class="si">{</span><span class="n">OUTPUT_DIR</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Outputs will be saved to: ./</span><span class="si">{</span><span class="n">OUTPUT_DIR</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -498,7 +504,7 @@
 <p>Create an instance of the <code class="docutils literal notranslate"><span class="pre">Raster</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rs</span> <span class="o">=</span> <span class="n">Raster</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Testing&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;tst&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rs</span> <span class="o">=</span> <span class="n">Raster</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Testing"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"tst"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -511,7 +517,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;plans.datasets.core.Raster&#39;&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class 'plans.datasets.core.Raster'&gt;
 </pre></div>
 </div>
 </div>
@@ -519,14 +525,14 @@
 <p>Edit and inspect attributes:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rs</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;cm&quot;</span>
-<span class="n">rs</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Just a tutorial&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rs</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">"cm"</span>
+<span class="n">rs</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">"Just a tutorial"</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">rs</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Object: &lt;class &#39;plans.datasets.core.Raster&#39;&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Object: &lt;class 'plans.datasets.core.Raster'&gt;
 Metadata:
 	name: Testing
 	alias: tst
@@ -572,7 +578,7 @@ Metadata:
 <p>Let’s now get the slope map from the <code class="docutils literal notranslate"><span class="pre">topo</span></code> folder:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">raster_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_topo</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;slope.tif&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">raster_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_topo</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"slope.tif"</span>
 </pre></div>
 </div>
 </div>
@@ -596,14 +602,14 @@ Metadata:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;ncols&#39;: 92,
- &#39;nrows&#39;: 98,
- &#39;xllcorner&#39;: 5680993.86496,
- &#39;yllcorner&#39;: 8230146.277,
- &#39;cellsize&#39;: 30.0,
- &#39;NODATA_value&#39;: -99999.0,
- &#39;crs&#39;: CRS.from_wkt(&#39;PROJCS[&quot;SIRGAS 2000 / Brazil Polyconic&quot;,GEOGCS[&quot;SIRGAS 2000&quot;,DATUM[&quot;Sistema_de_Referencia_Geocentrico_para_las_AmericaS_2000&quot;,SPHEROID[&quot;GRS 1980&quot;,6378137,298.257222101,AUTHORITY[&quot;EPSG&quot;,&quot;7019&quot;]],AUTHORITY[&quot;EPSG&quot;,&quot;6674&quot;]],PRIMEM[&quot;Greenwich&quot;,0,AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]],UNIT[&quot;degree&quot;,0.0174532925199433,AUTHORITY[&quot;EPSG&quot;,&quot;9122&quot;]],AUTHORITY[&quot;EPSG&quot;,&quot;4674&quot;]],PROJECTION[&quot;Polyconic&quot;],PARAMETER[&quot;latitude_of_origin&quot;,0],PARAMETER[&quot;central_meridian&quot;,-54],PARAMETER[&quot;false_easting&quot;,5000000],PARAMETER[&quot;false_northing&quot;,10000000],UNIT[&quot;metre&quot;,1,AUTHORITY[&quot;EPSG&quot;,&quot;9001&quot;]],AXIS[&quot;Easting&quot;,EAST],AXIS[&quot;Northing&quot;,NORTH],AUTHORITY[&quot;EPSG&quot;,&quot;5880&quot;]]&#39;),
- &#39;transform&#39;: Affine(30.0, 0.0, 5680993.86496,
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'ncols': 92,
+ 'nrows': 98,
+ 'xllcorner': 5680993.86496,
+ 'yllcorner': 8230146.277,
+ 'cellsize': 30.0,
+ 'NODATA_value': -99999.0,
+ 'crs': CRS.from_wkt('PROJCS["SIRGAS 2000 / Brazil Polyconic",GEOGCS["SIRGAS 2000",DATUM["Sistema_de_Referencia_Geocentrico_para_las_AmericaS_2000",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],AUTHORITY["EPSG","6674"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4674"]],PROJECTION["Polyconic"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",-54],PARAMETER["false_easting",5000000],PARAMETER["false_northing",10000000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","5880"]]'),
+ 'transform': Affine(30.0, 0.0, 5680993.86496,
        0.0, -30.0, 8233086.277)}
 </pre></div>
 </div>
@@ -637,25 +643,25 @@ Metadata:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;count&#39;: 9016.0,
- &#39;sum&#39;: 67032.2890625,
- &#39;mean&#39;: 7.434814453125,
- &#39;sd&#39;: 6.424027919769287,
- &#39;min&#39;: 0.03058564104139805,
- &#39;p01&#39;: 0.1082386001944542,
- &#39;p05&#39;: 0.3892689347267151,
- &#39;p10&#39;: 0.8747305870056152,
- &#39;p20&#39;: 1.5102627277374268,
- &#39;p25&#39;: 1.8075969219207764,
- &#39;p40&#39;: 3.5482723712921143,
- &#39;p50&#39;: 5.570770263671875,
- &#39;p60&#39;: 7.9957275390625,
- &#39;p75&#39;: 12.0378999710083,
- &#39;p80&#39;: 13.618303298950195,
- &#39;p90&#39;: 17.239530563354492,
- &#39;p95&#39;: 19.720626831054688,
- &#39;p99&#39;: 23.914939880371094,
- &#39;max&#39;: 29.092971801757812}
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'count': 9016.0,
+ 'sum': 67032.2890625,
+ 'mean': 7.434814453125,
+ 'sd': 6.424027919769287,
+ 'min': 0.03058564104139805,
+ 'p01': 0.1082386001944542,
+ 'p05': 0.3892689347267151,
+ 'p10': 0.8747305870056152,
+ 'p20': 1.5102627277374268,
+ 'p25': 1.8075969219207764,
+ 'p40': 3.5482723712921143,
+ 'p50': 5.570770263671875,
+ 'p60': 7.9957275390625,
+ 'p75': 12.0378999710083,
+ 'p80': 13.618303298950195,
+ 'p90': 17.239530563354492,
+ 'p95': 19.720626831054688,
+ 'p99': 23.914939880371094,
+ 'max': 29.092971801757812}
 </pre></div>
 </div>
 </div>
@@ -680,7 +686,7 @@ Metadata:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;plans.analyst.Univar&#39;&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class 'plans.analyst.Univar'&gt;
 </pre></div>
 </div>
 </div>
@@ -702,9 +708,9 @@ Metadata:
 <p>Tif format is exported by default.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fo</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;slope_example&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fo</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">"slope_example"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">fo</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File was created: </span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">fo</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"File was created: </span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">fo</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -728,7 +734,7 @@ File was created: True
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;numpy.ndarray&#39;&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class 'numpy.ndarray'&gt;
 </pre></div>
 </div>
 </div>
@@ -754,17 +760,17 @@ File was created: True
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c9c341084db649106e200950ba65060c69fb8a0b701ca31b729d5102b499293d.png" src="../_images/c9c341084db649106e200950ba65060c69fb8a0b701ca31b729d5102b499293d.png" />
+<img alt="../_images/db9538af05441e10d67dc22419fa7e780f42f6a151376e6c7b243e1d389f2060.png" src="../_images/db9538af05441e10d67dc22419fa7e780f42f6a151376e6c7b243e1d389f2060.png" />
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rs_new</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;new_data&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rs_new</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">"new_data"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;outputs/raster/new_data.tif&#39;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>'outputs/raster/new_data.tif'
 </pre></div>
 </div>
 </div>
@@ -789,8 +795,8 @@ File was created: True
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sciraster</span> <span class="o">=</span> <span class="n">SciRaster</span><span class="p">()</span>
 <span class="n">sciraster</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_data</span><span class="o">=</span><span class="n">raster_file</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data type: </span><span class="si">{</span><span class="n">sciraster</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No-data value: </span><span class="si">{</span><span class="n">sciraster</span><span class="o">.</span><span class="n">raster_metadata</span><span class="p">[</span><span class="s1">&#39;NODATA_value&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Data type: </span><span class="si">{</span><span class="n">sciraster</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No-data value: </span><span class="si">{</span><span class="n">sciraster</span><span class="o">.</span><span class="n">raster_metadata</span><span class="p">[</span><span class="s1">'NODATA_value'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -826,8 +832,8 @@ No-data value: -99999
 <p>Define new files (raster and table):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">quali_raster_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_lulc</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;observed/lulc_2020-01-01.tif&quot;</span>
-<span class="n">quali_raster_table</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_lulc</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;observed/lulc_attributes.csv&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">quali_raster_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_lulc</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"observed/lulc_2020-01-01.tif"</span>
+<span class="n">quali_raster_table</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_lulc</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"observed/lulc_attributes.csv"</span>
 </pre></div>
 </div>
 </div>
@@ -839,8 +845,8 @@ No-data value: -99999
     <span class="n">file_data</span><span class="o">=</span><span class="n">quali_raster_file</span><span class="p">,</span>
     <span class="n">file_table</span><span class="o">=</span><span class="n">quali_raster_table</span>
 <span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data type: </span><span class="si">{</span><span class="n">qualiraster</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No-data value: </span><span class="si">{</span><span class="n">qualiraster</span><span class="o">.</span><span class="n">raster_metadata</span><span class="p">[</span><span class="s1">&#39;NODATA_value&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Data type: </span><span class="si">{</span><span class="n">qualiraster</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No-data value: </span><span class="si">{</span><span class="n">qualiraster</span><span class="o">.</span><span class="n">raster_metadata</span><span class="p">[</span><span class="s1">'NODATA_value'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1476,10 +1482,10 @@ No-data value: 255
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.spatial</span><span class="w"> </span><span class="kn">import</span> <span class="n">Elevation</span>
-<span class="n">dem_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_topo</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;dem.tif&quot;</span>
+<span class="n">dem_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_topo</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"dem.tif"</span>
 <span class="n">dem_raster</span> <span class="o">=</span> <span class="n">Elevation</span><span class="p">()</span>
 <span class="n">dem_raster</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_data</span><span class="o">=</span><span class="n">dem_file</span><span class="p">)</span>
-<span class="n">dem_raster</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">800</span><span class="p">,</span> <span class="mi">1200</span><span class="p">]</span>
+<span class="n">dem_raster</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">800</span><span class="p">,</span> <span class="mi">1200</span><span class="p">]</span>
 <span class="n">dem_raster</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1494,7 +1500,7 @@ No-data value: 255
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.spatial</span><span class="w"> </span><span class="kn">import</span> <span class="n">Slope</span>
-<span class="n">slope_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_topo</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;slope.tif&quot;</span>
+<span class="n">slope_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_topo</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"slope.tif"</span>
 <span class="n">slope_raster</span> <span class="o">=</span> <span class="n">Slope</span><span class="p">()</span>
 <span class="n">slope_raster</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_data</span><span class="o">=</span><span class="n">slope_file</span><span class="p">)</span>
 <span class="n">slope_raster</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
@@ -1511,7 +1517,7 @@ No-data value: 255
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.spatial</span><span class="w"> </span><span class="kn">import</span> <span class="n">HAND</span>
-<span class="n">hand_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_topo</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;hand.tif&quot;</span>
+<span class="n">hand_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_topo</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"hand.tif"</span>
 <span class="n">hand_raster</span> <span class="o">=</span> <span class="n">HAND</span><span class="p">()</span>
 <span class="n">hand_raster</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_data</span><span class="o">=</span><span class="n">hand_file</span><span class="p">)</span>
 <span class="n">hand_raster</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
@@ -1528,7 +1534,7 @@ No-data value: 255
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.spatial</span><span class="w"> </span><span class="kn">import</span> <span class="n">TWI</span>
-<span class="n">twi_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_topo</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;twi.tif&quot;</span>
+<span class="n">twi_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_topo</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"twi.tif"</span>
 <span class="n">twi_raster</span> <span class="o">=</span> <span class="n">TWI</span><span class="p">()</span>
 <span class="n">twi_raster</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_data</span><span class="o">=</span><span class="n">twi_file</span><span class="p">)</span>
 <span class="n">twi_raster</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
@@ -1547,7 +1553,7 @@ No-data value: 255
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.spatial</span><span class="w"> </span><span class="kn">import</span> <span class="n">LDD</span>
 
-<span class="n">ldd_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_topo</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;ldd.tif&quot;</span>
+<span class="n">ldd_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_topo</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"ldd.tif"</span>
 <span class="n">ldd_raster</span> <span class="o">=</span> <span class="n">LDD</span><span class="p">()</span>
 <span class="n">ldd_raster</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_data</span><span class="o">=</span><span class="n">ldd_file</span><span class="p">)</span>
 <span class="n">ldd_raster</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
@@ -1566,9 +1572,9 @@ No-data value: 255
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.spatial</span><span class="w"> </span><span class="kn">import</span> <span class="n">Soils</span>
 <span class="c1"># define file</span>
-<span class="n">soils_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_soils</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;soils.tif&quot;</span>
+<span class="n">soils_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_soils</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"soils.tif"</span>
 <span class="c1"># define table</span>
-<span class="n">soils_table</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_soils</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;soils_attributes.csv&quot;</span>
+<span class="n">soils_table</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_soils</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"soils_attributes.csv"</span>
 <span class="c1"># define raster</span>
 <span class="n">soils_raster</span> <span class="o">=</span> <span class="n">Soils</span><span class="p">()</span>
 <span class="n">soils_raster</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_data</span><span class="o">=</span><span class="n">soils_file</span><span class="p">,</span> <span class="n">file_table</span><span class="o">=</span><span class="n">soils_table</span><span class="p">)</span>
@@ -1588,13 +1594,13 @@ No-data value: 255
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.spatial</span><span class="w"> </span><span class="kn">import</span> <span class="n">LULC</span>
 <span class="c1"># define file</span>
-<span class="n">lulc_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_lulc</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;observed/lulc_2020-01-01.tif&quot;</span>
+<span class="n">lulc_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_lulc</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"observed/lulc_2020-01-01.tif"</span>
 <span class="c1"># define table</span>
-<span class="n">lulc_table</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_lulc</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;observed/lulc_attributes.csv&quot;</span>
+<span class="n">lulc_table</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_lulc</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"observed/lulc_attributes.csv"</span>
 <span class="c1"># define name and datetime</span>
-<span class="n">lulc_raster</span> <span class="o">=</span> <span class="n">LULC</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;LULC&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">=</span><span class="s2">&quot;2020-01-01&quot;</span><span class="p">)</span>
+<span class="n">lulc_raster</span> <span class="o">=</span> <span class="n">LULC</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"LULC"</span><span class="p">,</span> <span class="n">datetime</span><span class="o">=</span><span class="s2">"2020-01-01"</span><span class="p">)</span>
 <span class="n">lulc_raster</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_data</span><span class="o">=</span><span class="n">lulc_file</span><span class="p">,</span> <span class="n">file_table</span><span class="o">=</span><span class="n">lulc_table</span><span class="p">)</span>
-<span class="n">lulc_raster</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Land Use in 2020&quot;</span>
+<span class="n">lulc_raster</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Land Use in 2020"</span>
 <span class="n">lulc_raster</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1613,7 +1619,7 @@ No-data value: 255
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">AOI</span>
 <span class="n">aoi</span> <span class="o">=</span> <span class="n">AOI</span><span class="p">()</span>
 <span class="c1"># define basin raster for the AOI</span>
-<span class="n">aoi_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_basins</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;main/basin.tif&quot;</span>
+<span class="n">aoi_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pj</span><span class="o">.</span><span class="n">folder_basins</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"main/basin.tif"</span>
 <span class="n">aoi</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">file_data</span><span class="o">=</span><span class="n">aoi_file</span><span class="p">)</span>
 <span class="n">aoi</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
 </pre></div>
@@ -1634,7 +1640,7 @@ No-data value: 255
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># use the data from the aoi map</span>
 <span class="n">slope_raster</span><span class="o">.</span><span class="n">apply_aoi_mask</span><span class="p">(</span><span class="n">grid_aoi</span><span class="o">=</span><span class="n">aoi</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-<span class="n">slope_raster</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Slope map for the basin&quot;</span>
+<span class="n">slope_raster</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Slope map for the basin"</span>
 <span class="n">slope_raster</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1647,7 +1653,7 @@ No-data value: 255
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">slope_raster</span><span class="o">.</span><span class="n">release_aoi_mask</span><span class="p">()</span>
-<span class="n">slope_raster</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Slope map for the full extension&quot;</span>
+<span class="n">slope_raster</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Slope map for the full extension"</span>
 <span class="n">slope_raster</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1660,7 +1666,7 @@ No-data value: 255
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lulc_raster</span><span class="o">.</span><span class="n">apply_aoi_mask</span><span class="p">(</span><span class="n">grid_aoi</span><span class="o">=</span><span class="n">aoi</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-<span class="n">lulc_raster</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Land Use of the basin in 2020&quot;</span>
+<span class="n">lulc_raster</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Land Use of the basin in 2020"</span>
 <span class="n">lulc_raster</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1771,8 +1777,8 @@ No-data value: 255
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1806,7 +1812,7 @@ No-data value: 255
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

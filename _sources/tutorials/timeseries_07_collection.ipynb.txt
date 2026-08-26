@@ -1,0 +1,396 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "8a389c63",
+   "metadata": {},
+   "source": "# Time Series - Collections"
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4af6e9cc",
+   "metadata": {},
+   "source": [
+    "This tutorial builds a minimal `TimeSeriesCollection` for one (synthetic) catchment with five sensors that deliberately differ along every axis `TimeSeriesCollection` has to manage:\n",
+    "\n",
+    "| Series              | Frequency | Range | Gaps |\n",
+    "|---------------------|---|---|---|\n",
+    "| `P` (rainfall)      | daily | full year | 1 small (3d) + 1 large (20d) |\n",
+    "| `Q1` (streamflow)   | daily | Mar–Nov (shorter) | 1 small (2d) |\n",
+    "| `Q2` (streamflow)   | daily | Mar–Nov (shorter) | 1 small (2d) |\n",
+    "| `T` (air temp.)     | **hourly** | Jan–Jun (shorter, different unit of time) | 1 small (5h) + 1 large (72h) |\n",
+    "| `ET` (evapotransp.) | daily | full year | 2 separate medium gaps (10d, 15d) |\n",
+    "\n",
+    "Covered here:\n",
+    "\n",
+    "- Building the four series with `TimeSeries.make_synthetic_tsn()`\n",
+    "- Loading them into one `TimeSeriesCollection`\n",
+    "- `standardize()` and what it does to each series\n",
+    "- Cross-series overlap via `get_epochs()`\n",
+    "- Per-series gap/epoch structure via `merge_local_epochs()`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "82fcae15",
+   "metadata": {},
+   "source": [
+    "## Notebook setup\n",
+    "\n",
+    "For users running this tutorial as a Jupyter Notebook, this cell must be executed first:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "id": "9ede7228",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-25T23:04:02.347866Z",
+     "iopub.status.busy": "2026-08-25T23:04:02.347714Z",
+     "iopub.status.idle": "2026-08-25T23:04:03.182359Z",
+     "shell.execute_reply": "2026-08-25T23:04:03.181222Z"
+    }
+   },
+   "source": [
+    "import sys\n",
+    "from pathlib import Path\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import matplotlib.pyplot as plt\n",
+    "\n",
+    "# Install `plans` in `google.colab`.\n",
+    "# Use `pip install plans` for other environments.\n",
+    "\n",
+    "if \"google.colab\" in sys.modules:\n",
+    "    import os\n",
+    "    os.system(f\"{sys.executable} -m pip install -q plans\")\n",
+    "\n",
+    "from plans.datasets.core import TimeSeries, TimeSeriesCollection\n",
+    "\n",
+    "# This avoids warnings related to uninstalled fonts\n",
+    "import logging\n",
+    "logging.getLogger('matplotlib.font_manager').setLevel(logging.ERROR)\n",
+    "\n",
+    "OUTPUT_DIR = Path(\"outputs/time-series-collection\")\n",
+    "OUTPUT_DIR.mkdir(parents=True, exist_ok=True)\n",
+    "print(f\"Outputs will be saved to: ./{OUTPUT_DIR}\")\n",
+    "\n",
+    "RNG_SEED = 1\n",
+    "np.random.seed(RNG_SEED)"
+   ],
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b9c244a2",
+   "metadata": {},
+   "source": "## Build synthetic series"
+  },
+  {
+   "cell_type": "code",
+   "id": "683d6f7f",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-25T23:04:03.184564Z",
+     "iopub.status.busy": "2026-08-25T23:04:03.183832Z",
+     "iopub.status.idle": "2026-08-25T23:04:03.224572Z",
+     "shell.execute_reply": "2026-08-25T23:04:03.223701Z"
+    }
+   },
+   "source": [
+    "df_p = TimeSeries.make_synthetic_tsn(\n",
+    "    start=\"2019-01-01\", end=\"2019-12-31\", base=3, trend=0.0,\n",
+    "    amplitude=2, noise_sd=2.5, freq=\"D\",\n",
+    "    seasonal_period=\"YS\", minor_seasonal_period=\"D\", minor_amplitude=0,\n",
+    "    variable=\"P\",\n",
+    ")\n",
+    "df_p[\"P\"] = df_p[\"P\"].clip(lower=0)\n",
+    "df_p.loc[20:22, \"P\"] = np.nan     # small gap (3d) -> interpolate_gaps should close this\n",
+    "df_p.loc[150:169, \"P\"] = np.nan   # large gap (20d) -> a real Epoch 0 gap\n",
+    "\n",
+    "df_q = TimeSeries.make_synthetic_tsn(\n",
+    "    start=\"2019-03-01\", end=\"2019-11-30\", base=15, trend=0.01,\n",
+    "    amplitude=5, noise_sd=0.3, freq=\"D\",\n",
+    "    seasonal_period=\"YS\", minor_seasonal_period=\"D\", minor_amplitude=0,\n",
+    "    variable=\"Q\",\n",
+    ")\n",
+    "df_q.loc[40:41, \"Q\"] = np.nan     # small gap (2d)\n",
+    "\n",
+    "df_q2 = TimeSeries.make_synthetic_tsn(\n",
+    "    start=\"2019-03-20\", end=\"2019-11-30\", base=15, trend=0.01,\n",
+    "    amplitude=5, noise_sd=0.4, freq=\"D\",\n",
+    "    seasonal_period=\"YS\", minor_seasonal_period=\"D\", minor_amplitude=0,\n",
+    "    variable=\"Q\",\n",
+    ")\n",
+    "df_q2.loc[46:50, \"Q\"] = np.nan     # small gap (2d)\n",
+    "\n",
+    "df_t = TimeSeries.make_synthetic_tsn(\n",
+    "    start=\"2019-01-01\", end=\"2019-06-30\", base=22, trend=0.0,\n",
+    "    amplitude=4, noise_sd=1.5, freq=\"h\",\n",
+    "    seasonal_period=\"YS\", minor_seasonal_period=\"D\", minor_amplitude=3,\n",
+    "    variable=\"T\",\n",
+    ")\n",
+    "df_t.loc[100:104, \"T\"] = np.nan     # small gap (5h)\n",
+    "df_t.loc[2000:2071, \"T\"] = np.nan   # large gap (72h)\n",
+    "\n",
+    "df_et = TimeSeries.make_synthetic_tsn(\n",
+    "    start=\"2019-01-01\", end=\"2019-12-31\", base=4, trend=0.0,\n",
+    "    amplitude=1.5, noise_sd=0.5, freq=\"D\",\n",
+    "    seasonal_period=\"YS\", minor_seasonal_period=\"D\", minor_amplitude=0,\n",
+    "    variable=\"ET\",\n",
+    ")\n",
+    "df_et[\"ET\"] = df_et[\"ET\"].clip(lower=0)\n",
+    "df_et.loc[60:69, \"ET\"] = np.nan     # medium gap (10d)\n",
+    "df_et.loc[300:314, \"ET\"] = np.nan   # medium gap (15d), separate from the first\n",
+    "\n",
+    "for df, fname in [(df_p, \"rain.csv\"), (df_q, \"flow.csv\"), (df_q2, \"flow2.csv\"), (df_t, \"temp.csv\"), (df_et, \"et.csv\")]:\n",
+    "    df.to_csv(OUTPUT_DIR / fname, index=False, sep=\";\")\n",
+    "\n",
+    "print(\"5 series written to\", OUTPUT_DIR)"
+   ],
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "cell_type": "markdown",
+   "id": "926c1b90",
+   "metadata": {},
+   "source": [
+    "## Load into a Time Series Collection\n",
+    "\n",
+    "`TimeSeriesCollection` reads one info table describing every series (name, alias, file, variable/datetime columns, units, coordinates):"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "id": "b85f73b5",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-25T23:04:03.226505Z",
+     "iopub.status.busy": "2026-08-25T23:04:03.225941Z",
+     "iopub.status.idle": "2026-08-25T23:04:03.305735Z",
+     "shell.execute_reply": "2026-08-25T23:04:03.304564Z"
+    }
+   },
+   "source": [
+    "info = pd.DataFrame({\n",
+    "    \"Name\": [\"Rain\", \"Flow\", \"Flow2\", \"AirTemp\", \"ET\"],\n",
+    "    \"Alias\": [\"P1\", \"Q1\", \"Q2\", \"T1\", \"ET1\"],\n",
+    "    \"File\": [str(OUTPUT_DIR / f) for f in [\"rain.csv\", \"flow.csv\", \"flow2.csv\", \"temp.csv\", \"et.csv\"]],\n",
+    "    \"VarField\": [\"P\", \"Q\", \"Q\", \"T\", \"ET\"],\n",
+    "    \"DtField\": [\"datetime\"] * 5,\n",
+    "    \"Units\": [\"mm\", \"m3/s\", \"m3/s\", \"C\", \"mm\"],\n",
+    "    \"X\": [0, 0, 0, 0, 0],\n",
+    "    \"Y\": [0, 0, 0, 0, 0],\n",
+    "    \"Code\": [\"P001\", \"Q001\", \"Q002\", \"T001\", \"ET001\"],\n",
+    "    \"Source\": [\"synthetic\"] * 5,\n",
+    "    \"Description\": [\n",
+    "        \"daily rainfall\",\n",
+    "        \"daily streamflow\", \"daily streamflow\",\n",
+    "        \"hourly air temperature\",\n",
+    "        \"daily evapotranspiration\"\n",
+    "    ],\n",
+    "    \"Color\": [\"tab:blue\", \"tab:purple\", \"tab:purple\", \"tab:red\", \"tab:orange\"],\n",
+    "})\n",
+    "info_file = OUTPUT_DIR / \"info.csv\"\n",
+    "info.to_csv(info_file, index=False, sep=\";\")\n",
+    "\n",
+    "tsc = TimeSeriesCollection(name=\"MultiSensorCatchment\")\n",
+    "tsc.load_data(table_file=str(info_file))\n",
+    "tsc.catalog"
+   ],
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b15ac05a",
+   "metadata": {},
+   "source": "## Raw series at a glance"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Visualize individual TimeSeries accessing by the name",
+   "id": "b792d47db590a2e2"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "tsc.collection[\"Flow\"].view()\n",
+    "tsc.collection[\"Flow2\"].view()"
+   ],
+   "id": "6abc032522b8f6e8",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "tsc.collection[\"Rain\"].view()\n",
+    "tsc.collection[\"AirTemp\"].view()\n",
+    "tsc.collection[\"ET\"].view()"
+   ],
+   "id": "dae8baba4804a05d",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "## Learn about the epochs",
+   "id": "6098e7c12ba210e4"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Visualize epochs per Time Series",
+   "id": "9a755598e1990c6f"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "tsc.collection[\"ET\"].view_epochs()",
+   "id": "facf80f581269a7e",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "tsc.collection[\"Rain\"].view_epochs()",
+   "id": "8961282e5e194fc1",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Learn collection-wise epochs",
+   "id": "b3736b83e93eb39"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "df_local_epochs = tsc.merge_local_epochs()\n",
+    "df_local_epochs"
+   ],
+   "id": "23b3620d5f44c367",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Visualize collection-wise epochs",
+   "id": "3cf5417f22a8a0b7"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "tsc.view()",
+   "id": "6b4cc7aa53944c58",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Get merged data epochs",
+   "id": "12b2bb5662c6bbd2"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "tsc.get_epochs()",
+   "id": "83d19eca0e781bf6",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "## Standardize collection\n",
+    "\n",
+    "Regularizes each series onto its own regular time step and closes small gaps (`interpolate_gaps`), then merges all series onto one shared table:"
+   ],
+   "id": "43706b5e"
+  },
+  {
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-25T23:04:03.929098Z",
+     "iopub.status.busy": "2026-08-25T23:04:03.928916Z",
+     "iopub.status.idle": "2026-08-25T23:04:04.684279Z",
+     "shell.execute_reply": "2026-08-25T23:04:04.682973Z"
+    }
+   },
+   "cell_type": "code",
+   "source": [
+    "tsc.standardize()\n",
+    "\n",
+    "for name in tsc.collection:\n",
+    "    d = tsc.collection[name]\n",
+    "    print(f\"{name:>10}: n={len(d.data):5d}  nan={d.data['v'].isna().sum():5d}  \"\n",
+    "          f\"freq={d.dtfreq:>3}  start={d.start.date()}  end={d.end.date()}\")"
+   ],
+   "id": "4f91af73",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "## Merge data\n",
+    "\n",
+    "The `.merge_data()` is a helper method that makes an outer join for the available time series, returning a dataframe with all the data."
+   ],
+   "id": "c8365e2dff535a9b"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "df_merged = tsc.merge_data()\n",
+    "df_merged"
+   ],
+   "id": "e147669b1da68ec0",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3c481b34",
+   "metadata": {},
+   "source": [
+    "## Recap\n",
+    "\n",
+    "- Built 5 synthetic series with independently varied range, gap structure, and time step.\n",
+    "- `TimeSeriesCollection.load_data()` reads them all from one info table into a shared catalog.\n",
+    "- `get_epochs()` / `merge_local_epochs()` give the cross-series and per-series gap/epoch pictures respectively."
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

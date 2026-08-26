@@ -1,0 +1,1466 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Time Series - Collections &#8212; plans 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/timeseries_07_collection';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Visualizations - the basics" href="visuals_01.html" />
+    <link rel="prev" title="Time Series - Standardizing" href="timeseries_04_standardize.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-light" alt=""/>
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">plans</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../files.html">Files</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../files.html">Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_structures.html">Data Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../files_index.html">Files Index</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Projects</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="project_01.html">Projects - basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="univar_01.html">Univariate data - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time Series - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_05_compare.html">Time Series - Comparing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_02_upscale.html">Time Series - Upscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_06_downscale.html">Time Series - Downscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_03_gaps.html">Time Series - Gaps and epochs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_04_standardize.html">Time Series - Standardizing</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Time Series - Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="raster_01.html">Raster data - the basics</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../userguide.html" class="nav-link">User Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../examples.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Time Series - Collections</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="time-series-collections">
+<h1>Time Series - Collections<a class="headerlink" href="#time-series-collections" title="Link to this heading">#</a></h1>
+<p>This tutorial builds a minimal <code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection</span></code> for one (synthetic) catchment with five sensors that deliberately differ along every axis <code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection</span></code> has to manage:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Series</p></th>
+<th class="head"><p>Frequency</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Gaps</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">P</span></code> (rainfall)</p></td>
+<td><p>daily</p></td>
+<td><p>full year</p></td>
+<td><p>1 small (3d) + 1 large (20d)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Q1</span></code> (streamflow)</p></td>
+<td><p>daily</p></td>
+<td><p>Mar–Nov (shorter)</p></td>
+<td><p>1 small (2d)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Q2</span></code> (streamflow)</p></td>
+<td><p>daily</p></td>
+<td><p>Mar–Nov (shorter)</p></td>
+<td><p>1 small (2d)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">T</span></code> (air temp.)</p></td>
+<td><p><strong>hourly</strong></p></td>
+<td><p>Jan–Jun (shorter, different unit of time)</p></td>
+<td><p>1 small (5h) + 1 large (72h)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ET</span></code> (evapotransp.)</p></td>
+<td><p>daily</p></td>
+<td><p>full year</p></td>
+<td><p>2 separate medium gaps (10d, 15d)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Covered here:</p>
+<ul class="simple">
+<li><p>Building the four series with <code class="docutils literal notranslate"><span class="pre">TimeSeries.make_synthetic_tsn()</span></code></p></li>
+<li><p>Loading them into one <code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">standardize()</span></code> and what it does to each series</p></li>
+<li><p>Cross-series overlap via <code class="docutils literal notranslate"><span class="pre">get_epochs()</span></code></p></li>
+<li><p>Per-series gap/epoch structure via <code class="docutils literal notranslate"><span class="pre">merge_local_epochs()</span></code></p></li>
+</ul>
+<section id="notebook-setup">
+<h2>Notebook setup<a class="headerlink" href="#notebook-setup" title="Link to this heading">#</a></h2>
+<p>For users running this tutorial as a Jupyter Notebook, this cell must be executed first:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># Install `plans` in `google.colab`.</span>
+<span class="c1"># Use `pip install plans` for other environments.</span>
+
+<span class="k">if</span> <span class="s2">"google.colab"</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="si">}</span><span class="s2"> -m pip install -q plans"</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesCollection</span>
+
+<span class="c1"># This avoids warnings related to uninstalled fonts</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">'matplotlib.font_manager'</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+
+<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"outputs/time-series-collection"</span><span class="p">)</span>
+<span class="n">OUTPUT_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Outputs will be saved to: ./</span><span class="si">{</span><span class="n">OUTPUT_DIR</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="n">RNG_SEED</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">RNG_SEED</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Outputs will be saved to: ./outputs/time-series-collection
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="build-synthetic-series">
+<h2>Build synthetic series<a class="headerlink" href="#build-synthetic-series" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_p</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">make_synthetic_tsn</span><span class="p">(</span>
+    <span class="n">start</span><span class="o">=</span><span class="s2">"2019-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2019-12-31"</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">noise_sd</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span>
+    <span class="n">seasonal_period</span><span class="o">=</span><span class="s2">"YS"</span><span class="p">,</span> <span class="n">minor_seasonal_period</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">minor_amplitude</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">variable</span><span class="o">=</span><span class="s2">"P"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">df_p</span><span class="p">[</span><span class="s2">"P"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_p</span><span class="p">[</span><span class="s2">"P"</span><span class="p">]</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">df_p</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">20</span><span class="p">:</span><span class="mi">22</span><span class="p">,</span> <span class="s2">"P"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>     <span class="c1"># small gap (3d) -&gt; interpolate_gaps should close this</span>
+<span class="n">df_p</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">150</span><span class="p">:</span><span class="mi">169</span><span class="p">,</span> <span class="s2">"P"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>   <span class="c1"># large gap (20d) -&gt; a real Epoch 0 gap</span>
+
+<span class="n">df_q</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">make_synthetic_tsn</span><span class="p">(</span>
+    <span class="n">start</span><span class="o">=</span><span class="s2">"2019-03-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2019-11-30"</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">noise_sd</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span>
+    <span class="n">seasonal_period</span><span class="o">=</span><span class="s2">"YS"</span><span class="p">,</span> <span class="n">minor_seasonal_period</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">minor_amplitude</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">variable</span><span class="o">=</span><span class="s2">"Q"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">df_q</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">40</span><span class="p">:</span><span class="mi">41</span><span class="p">,</span> <span class="s2">"Q"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>     <span class="c1"># small gap (2d)</span>
+
+<span class="n">df_q2</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">make_synthetic_tsn</span><span class="p">(</span>
+    <span class="n">start</span><span class="o">=</span><span class="s2">"2019-03-20"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2019-11-30"</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">noise_sd</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span>
+    <span class="n">seasonal_period</span><span class="o">=</span><span class="s2">"YS"</span><span class="p">,</span> <span class="n">minor_seasonal_period</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">minor_amplitude</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">variable</span><span class="o">=</span><span class="s2">"Q"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">df_q2</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">46</span><span class="p">:</span><span class="mi">50</span><span class="p">,</span> <span class="s2">"Q"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>     <span class="c1"># small gap (2d)</span>
+
+<span class="n">df_t</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">make_synthetic_tsn</span><span class="p">(</span>
+    <span class="n">start</span><span class="o">=</span><span class="s2">"2019-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2019-06-30"</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">noise_sd</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"h"</span><span class="p">,</span>
+    <span class="n">seasonal_period</span><span class="o">=</span><span class="s2">"YS"</span><span class="p">,</span> <span class="n">minor_seasonal_period</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">minor_amplitude</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">variable</span><span class="o">=</span><span class="s2">"T"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">df_t</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">100</span><span class="p">:</span><span class="mi">104</span><span class="p">,</span> <span class="s2">"T"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>     <span class="c1"># small gap (5h)</span>
+<span class="n">df_t</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">2000</span><span class="p">:</span><span class="mi">2071</span><span class="p">,</span> <span class="s2">"T"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>   <span class="c1"># large gap (72h)</span>
+
+<span class="n">df_et</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">make_synthetic_tsn</span><span class="p">(</span>
+    <span class="n">start</span><span class="o">=</span><span class="s2">"2019-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2019-12-31"</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">noise_sd</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span>
+    <span class="n">seasonal_period</span><span class="o">=</span><span class="s2">"YS"</span><span class="p">,</span> <span class="n">minor_seasonal_period</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">minor_amplitude</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">variable</span><span class="o">=</span><span class="s2">"ET"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">df_et</span><span class="p">[</span><span class="s2">"ET"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_et</span><span class="p">[</span><span class="s2">"ET"</span><span class="p">]</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">df_et</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">60</span><span class="p">:</span><span class="mi">69</span><span class="p">,</span> <span class="s2">"ET"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>     <span class="c1"># medium gap (10d)</span>
+<span class="n">df_et</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">300</span><span class="p">:</span><span class="mi">314</span><span class="p">,</span> <span class="s2">"ET"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>   <span class="c1"># medium gap (15d), separate from the first</span>
+
+<span class="k">for</span> <span class="n">df</span><span class="p">,</span> <span class="n">fname</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">df_p</span><span class="p">,</span> <span class="s2">"rain.csv"</span><span class="p">),</span> <span class="p">(</span><span class="n">df_q</span><span class="p">,</span> <span class="s2">"flow.csv"</span><span class="p">),</span> <span class="p">(</span><span class="n">df_q2</span><span class="p">,</span> <span class="s2">"flow2.csv"</span><span class="p">),</span> <span class="p">(</span><span class="n">df_t</span><span class="p">,</span> <span class="s2">"temp.csv"</span><span class="p">),</span> <span class="p">(</span><span class="n">df_et</span><span class="p">,</span> <span class="s2">"et.csv"</span><span class="p">)]:</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="n">fname</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"5 series written to"</span><span class="p">,</span> <span class="n">OUTPUT_DIR</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>5 series written to outputs/time-series-collection
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="load-into-a-time-series-collection">
+<h2>Load into a Time Series Collection<a class="headerlink" href="#load-into-a-time-series-collection" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection</span></code> reads one info table describing every series (name, alias, file, variable/datetime columns, units, coordinates):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">info</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">"Name"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Rain"</span><span class="p">,</span> <span class="s2">"Flow"</span><span class="p">,</span> <span class="s2">"Flow2"</span><span class="p">,</span> <span class="s2">"AirTemp"</span><span class="p">,</span> <span class="s2">"ET"</span><span class="p">],</span>
+    <span class="s2">"Alias"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"P1"</span><span class="p">,</span> <span class="s2">"Q1"</span><span class="p">,</span> <span class="s2">"Q2"</span><span class="p">,</span> <span class="s2">"T1"</span><span class="p">,</span> <span class="s2">"ET1"</span><span class="p">],</span>
+    <span class="s2">"File"</span><span class="p">:</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"rain.csv"</span><span class="p">,</span> <span class="s2">"flow.csv"</span><span class="p">,</span> <span class="s2">"flow2.csv"</span><span class="p">,</span> <span class="s2">"temp.csv"</span><span class="p">,</span> <span class="s2">"et.csv"</span><span class="p">]],</span>
+    <span class="s2">"VarField"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"P"</span><span class="p">,</span> <span class="s2">"Q"</span><span class="p">,</span> <span class="s2">"Q"</span><span class="p">,</span> <span class="s2">"T"</span><span class="p">,</span> <span class="s2">"ET"</span><span class="p">],</span>
+    <span class="s2">"DtField"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"datetime"</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">"Units"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"mm"</span><span class="p">,</span> <span class="s2">"m3/s"</span><span class="p">,</span> <span class="s2">"m3/s"</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">,</span> <span class="s2">"mm"</span><span class="p">],</span>
+    <span class="s2">"X"</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="s2">"Y"</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="s2">"Code"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"P001"</span><span class="p">,</span> <span class="s2">"Q001"</span><span class="p">,</span> <span class="s2">"Q002"</span><span class="p">,</span> <span class="s2">"T001"</span><span class="p">,</span> <span class="s2">"ET001"</span><span class="p">],</span>
+    <span class="s2">"Source"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"synthetic"</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">"Description"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">"daily rainfall"</span><span class="p">,</span>
+        <span class="s2">"daily streamflow"</span><span class="p">,</span> <span class="s2">"daily streamflow"</span><span class="p">,</span>
+        <span class="s2">"hourly air temperature"</span><span class="p">,</span>
+        <span class="s2">"daily evapotranspiration"</span>
+    <span class="p">],</span>
+    <span class="s2">"Color"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"tab:blue"</span><span class="p">,</span> <span class="s2">"tab:purple"</span><span class="p">,</span> <span class="s2">"tab:purple"</span><span class="p">,</span> <span class="s2">"tab:red"</span><span class="p">,</span> <span class="s2">"tab:orange"</span><span class="p">],</span>
+<span class="p">})</span>
+<span class="n">info_file</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"info.csv"</span>
+<span class="n">info</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">info_file</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">)</span>
+
+<span class="n">tsc</span> <span class="o">=</span> <span class="n">TimeSeriesCollection</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"MultiSensorCatchment"</span><span class="p">)</span>
+<span class="n">tsc</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">table_file</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">info_file</span><span class="p">))</span>
+<span class="n">tsc</span><span class="o">.</span><span class="n">catalog</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>alias</th>
+      <th>size</th>
+      <th>color</th>
+      <th>source</th>
+      <th>description</th>
+      <th>units</th>
+      <th>code</th>
+      <th>x</th>
+      <th>y</th>
+      <th>...</th>
+      <th>datetime_res</th>
+      <th>start</th>
+      <th>end</th>
+      <th>is_standard</th>
+      <th>gap_size</th>
+      <th>n_epoch</th>
+      <th>n_gaps_small</th>
+      <th>file_data_datetime_field</th>
+      <th>file_data_variable_field</th>
+      <th>file_data</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>AirTemp</td>
+      <td>T1</td>
+      <td>4321</td>
+      <td>tab:red</td>
+      <td>synthetic</td>
+      <td>hourly air temperature</td>
+      <td>C</td>
+      <td>T001</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>hour</td>
+      <td>2019-01-01</td>
+      <td>2019-06-30</td>
+      <td>False</td>
+      <td>6</td>
+      <td>None</td>
+      <td>None</td>
+      <td>datetime</td>
+      <td>T</td>
+      <td>/home/runner/work/plans/plans/docs/tutorials/o...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>ET</td>
+      <td>ET1</td>
+      <td>365</td>
+      <td>tab:orange</td>
+      <td>synthetic</td>
+      <td>daily evapotranspiration</td>
+      <td>mm</td>
+      <td>ET001</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>day</td>
+      <td>2019-01-01</td>
+      <td>2019-12-31</td>
+      <td>False</td>
+      <td>6</td>
+      <td>None</td>
+      <td>None</td>
+      <td>datetime</td>
+      <td>ET</td>
+      <td>/home/runner/work/plans/plans/docs/tutorials/o...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Flow</td>
+      <td>Q1</td>
+      <td>275</td>
+      <td>tab:purple</td>
+      <td>synthetic</td>
+      <td>daily streamflow</td>
+      <td>m3/s</td>
+      <td>Q001</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>day</td>
+      <td>2019-03-01</td>
+      <td>2019-11-30</td>
+      <td>False</td>
+      <td>6</td>
+      <td>None</td>
+      <td>None</td>
+      <td>datetime</td>
+      <td>Q</td>
+      <td>/home/runner/work/plans/plans/docs/tutorials/o...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Flow2</td>
+      <td>Q2</td>
+      <td>256</td>
+      <td>tab:purple</td>
+      <td>synthetic</td>
+      <td>daily streamflow</td>
+      <td>m3/s</td>
+      <td>Q002</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>day</td>
+      <td>2019-03-20</td>
+      <td>2019-11-30</td>
+      <td>False</td>
+      <td>6</td>
+      <td>None</td>
+      <td>None</td>
+      <td>datetime</td>
+      <td>Q</td>
+      <td>/home/runner/work/plans/plans/docs/tutorials/o...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Rain</td>
+      <td>P1</td>
+      <td>365</td>
+      <td>tab:blue</td>
+      <td>synthetic</td>
+      <td>daily rainfall</td>
+      <td>mm</td>
+      <td>P001</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>day</td>
+      <td>2019-01-01</td>
+      <td>2019-12-31</td>
+      <td>False</td>
+      <td>6</td>
+      <td>None</td>
+      <td>None</td>
+      <td>datetime</td>
+      <td>P</td>
+      <td>/home/runner/work/plans/plans/docs/tutorials/o...</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 29 columns</p>
+</div></div></div>
+</div>
+</section>
+<section id="raw-series-at-a-glance">
+<h2>Raw series at a glance<a class="headerlink" href="#raw-series-at-a-glance" title="Link to this heading">#</a></h2>
+<p>Visualize individual TimeSeries accessing by the name</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tsc</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="s2">"Flow"</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+<span class="n">tsc</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="s2">"Flow2"</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/f8363f6ea84c0ebdd93479eb46c1d16af2521d599fd42c39acb5b6ac9039cde8.png" src="../_images/f8363f6ea84c0ebdd93479eb46c1d16af2521d599fd42c39acb5b6ac9039cde8.png" />
+<img alt="../_images/f6fd46d297fb1725bc349db4d96989cf3568354668002b75b1b7233a116e0814.png" src="../_images/f6fd46d297fb1725bc349db4d96989cf3568354668002b75b1b7233a116e0814.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tsc</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="s2">"Rain"</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+<span class="n">tsc</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="s2">"AirTemp"</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+<span class="n">tsc</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="s2">"ET"</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/f7df40a3f76ebd025693112acb3fce2f0b1eedd625e12fdb4c08e41d4f0e6e61.png" src="../_images/f7df40a3f76ebd025693112acb3fce2f0b1eedd625e12fdb4c08e41d4f0e6e61.png" />
+<img alt="../_images/a9fef6fe8a54c46e3c039ea0feef14c241cb034785700b05dbe8631a3c77494e.png" src="../_images/a9fef6fe8a54c46e3c039ea0feef14c241cb034785700b05dbe8631a3c77494e.png" />
+<img alt="../_images/0ca5d09e04be963e7f989a9cdf4a380a4b1420545a6836ea56f6a890f1649c7d.png" src="../_images/0ca5d09e04be963e7f989a9cdf4a380a4b1420545a6836ea56f6a890f1649c7d.png" />
+</div>
+</div>
+</section>
+<section id="learn-about-the-epochs">
+<h2>Learn about the epochs<a class="headerlink" href="#learn-about-the-epochs" title="Link to this heading">#</a></h2>
+<p>Visualize epochs per Time Series</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tsc</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="s2">"ET"</span><span class="p">]</span><span class="o">.</span><span class="n">view_epochs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/e40abf71519ac2c8f0a60baa4db136d97c0f9d6f99b3f5d42c9d0011b27fa847.png" src="../_images/e40abf71519ac2c8f0a60baa4db136d97c0f9d6f99b3f5d42c9d0011b27fa847.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tsc</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="s2">"Rain"</span><span class="p">]</span><span class="o">.</span><span class="n">view_epochs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/8bf3eb72473b0dac31d0ca47dea0a001be55cce67abbe6ed6908f8d2d86f0fe5.png" src="../_images/8bf3eb72473b0dac31d0ca47dea0a001be55cce67abbe6ed6908f8d2d86f0fe5.png" />
+</div>
+</div>
+<p>Learn collection-wise epochs</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_local_epochs</span> <span class="o">=</span> <span class="n">tsc</span><span class="o">.</span><span class="n">merge_local_epochs</span><span class="p">()</span>
+<span class="n">df_local_epochs</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>id_epoch</th>
+      <th>n_epoch</th>
+      <th>n_gaps_small</th>
+      <th>start</th>
+      <th>end</th>
+      <th>color</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Rain</td>
+      <td>1</td>
+      <td>150</td>
+      <td>3</td>
+      <td>2019-01-01 00:00:00</td>
+      <td>2019-05-30 00:00:00</td>
+      <td>#1b9e77</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Rain</td>
+      <td>2</td>
+      <td>194</td>
+      <td>0</td>
+      <td>2019-06-20 00:00:00</td>
+      <td>2019-12-30 00:00:00</td>
+      <td>#666666</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Flow</td>
+      <td>1</td>
+      <td>274</td>
+      <td>2</td>
+      <td>2019-03-01 00:00:00</td>
+      <td>2019-11-29 00:00:00</td>
+      <td>#1b9e77</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Flow2</td>
+      <td>1</td>
+      <td>255</td>
+      <td>5</td>
+      <td>2019-03-20 00:00:00</td>
+      <td>2019-11-29 00:00:00</td>
+      <td>#1b9e77</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>AirTemp</td>
+      <td>1</td>
+      <td>2000</td>
+      <td>5</td>
+      <td>2019-01-01 00:00:00</td>
+      <td>2019-03-25 07:00:00</td>
+      <td>#1b9e77</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>AirTemp</td>
+      <td>2</td>
+      <td>2248</td>
+      <td>0</td>
+      <td>2019-03-28 08:00:00</td>
+      <td>2019-06-29 23:00:00</td>
+      <td>#666666</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>ET</td>
+      <td>1</td>
+      <td>60</td>
+      <td>0</td>
+      <td>2019-01-01 00:00:00</td>
+      <td>2019-03-01 00:00:00</td>
+      <td>#1b9e77</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>ET</td>
+      <td>2</td>
+      <td>230</td>
+      <td>0</td>
+      <td>2019-03-12 00:00:00</td>
+      <td>2019-10-27 00:00:00</td>
+      <td>#66a61e</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>ET</td>
+      <td>3</td>
+      <td>49</td>
+      <td>0</td>
+      <td>2019-11-12 00:00:00</td>
+      <td>2019-12-30 00:00:00</td>
+      <td>#666666</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Visualize collection-wise epochs</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tsc</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/70a579571fd79073d60546fd7a174900356f4e890fdf02d0ec1cb42a738911c7.png" src="../_images/70a579571fd79073d60546fd7a174900356f4e890fdf02d0ec1cb42a738911c7.png" />
+</div>
+</div>
+<p>Get merged data epochs</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tsc</span><span class="o">.</span><span class="n">get_epochs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>datetime</th>
+      <th>v_T1</th>
+      <th>v_ET1</th>
+      <th>v_Q1</th>
+      <th>v_Q2</th>
+      <th>v_P1</th>
+      <th>Overlapping</th>
+      <th>id_epoch</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2019-01-01 00:00:00</td>
+      <td>20.558105</td>
+      <td>3.278440</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>7.060863</td>
+      <td>0.6</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2019-01-01 01:00:00</td>
+      <td>20.591839</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2019-01-01 02:00:00</td>
+      <td>24.247251</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2019-01-01 03:00:00</td>
+      <td>21.888637</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2019-01-01 04:00:00</td>
+      <td>23.939504</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>4500</th>
+      <td>2019-12-27 00:00:00</td>
+      <td>NaN</td>
+      <td>3.721585</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1.434334</td>
+      <td>0.4</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>4501</th>
+      <td>2019-12-28 00:00:00</td>
+      <td>NaN</td>
+      <td>4.716271</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5.210317</td>
+      <td>0.4</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>4502</th>
+      <td>2019-12-29 00:00:00</td>
+      <td>NaN</td>
+      <td>4.225181</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.000000</td>
+      <td>0.4</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>4503</th>
+      <td>2019-12-30 00:00:00</td>
+      <td>NaN</td>
+      <td>4.009106</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>3.812393</td>
+      <td>0.4</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>4504</th>
+      <td>2019-12-31 00:00:00</td>
+      <td>NaN</td>
+      <td>4.192162</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.374481</td>
+      <td>0.4</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>4505 rows × 8 columns</p>
+</div></div></div>
+</div>
+</section>
+<section id="standardize-collection">
+<h2>Standardize collection<a class="headerlink" href="#standardize-collection" title="Link to this heading">#</a></h2>
+<p>Regularizes each series onto its own regular time step and closes small gaps (<code class="docutils literal notranslate"><span class="pre">interpolate_gaps</span></code>), then merges all series onto one shared table:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tsc</span><span class="o">.</span><span class="n">standardize</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">tsc</span><span class="o">.</span><span class="n">collection</span><span class="p">:</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">tsc</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2">: n=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2">  nan=</span><span class="si">{</span><span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">'v'</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2">  "</span>
+          <span class="sa">f</span><span class="s2">"freq=</span><span class="si">{</span><span class="n">d</span><span class="o">.</span><span class="n">dtfreq</span><span class="si">:</span><span class="s2">&gt;3</span><span class="si">}</span><span class="s2">  start=</span><span class="si">{</span><span class="n">d</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">date</span><span class="p">()</span><span class="si">}</span><span class="s2">  end=</span><span class="si">{</span><span class="n">d</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">date</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      Rain: n=  367  nan=   21  freq=  D  start=2019-01-01  end=2020-01-02
+      Flow: n=  277  nan=    1  freq=  D  start=2019-03-01  end=2019-12-02
+     Flow2: n=  258  nan=    1  freq=  D  start=2019-03-20  end=2019-12-02
+   AirTemp: n= 4369  nan=   73  freq=  h  start=2019-01-01  end=2019-07-02
+        ET: n=  367  nan=   26  freq=  D  start=2019-01-01  end=2020-01-02
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="merge-data">
+<h2>Merge data<a class="headerlink" href="#merge-data" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">.merge_data()</span></code> is a helper method that makes an outer join for the available time series, returning a dataframe with all the data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_merged</span> <span class="o">=</span> <span class="n">tsc</span><span class="o">.</span><span class="n">merge_data</span><span class="p">()</span>
+<span class="n">df_merged</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>datetime</th>
+      <th>v_T1</th>
+      <th>v_ET1</th>
+      <th>v_Q1</th>
+      <th>v_Q2</th>
+      <th>v_P1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2019-01-01 00:00:00</td>
+      <td>20.558105</td>
+      <td>3.278440</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>7.060863</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2019-01-01 01:00:00</td>
+      <td>20.591839</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2019-01-01 02:00:00</td>
+      <td>24.247251</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2019-01-01 03:00:00</td>
+      <td>21.888637</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2019-01-01 04:00:00</td>
+      <td>23.939504</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>4548</th>
+      <td>2019-12-29 00:00:00</td>
+      <td>NaN</td>
+      <td>4.225181</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>4549</th>
+      <td>2019-12-30 00:00:00</td>
+      <td>NaN</td>
+      <td>4.009106</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>3.812393</td>
+    </tr>
+    <tr>
+      <th>4550</th>
+      <td>2019-12-31 00:00:00</td>
+      <td>NaN</td>
+      <td>4.192162</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.374481</td>
+    </tr>
+    <tr>
+      <th>4551</th>
+      <td>2020-01-01 00:00:00</td>
+      <td>NaN</td>
+      <td>4.375219</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.936569</td>
+    </tr>
+    <tr>
+      <th>4552</th>
+      <td>2020-01-02 00:00:00</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>4553 rows × 6 columns</p>
+</div></div></div>
+</div>
+</section>
+<section id="recap">
+<h2>Recap<a class="headerlink" href="#recap" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Built 5 synthetic series with independently varied range, gap structure, and time step.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection.load_data()</span></code> reads them all from one info table into a shared catalog.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_epochs()</span></code> / <code class="docutils literal notranslate"><span class="pre">merge_local_epochs()</span></code> give the cross-series and per-series gap/epoch pictures respectively.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="timeseries_04_standardize.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Time Series - Standardizing</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="visuals_01.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Visualizations - the basics</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notebook-setup">Notebook setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-synthetic-series">Build synthetic series</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-into-a-time-series-collection">Load into a Time Series Collection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#raw-series-at-a-glance">Raw series at a glance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#learn-about-the-epochs">Learn about the epochs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#standardize-collection">Standardize collection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#merge-data">Merge data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#recap">Recap</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/tutorials/timeseries_07_collection.ipynb.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Iporã Possantti.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

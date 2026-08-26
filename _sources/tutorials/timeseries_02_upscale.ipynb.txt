@@ -1,0 +1,519 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "8c281cd5b38713c6",
+   "metadata": {},
+   "source": "# Time Series - Upscaling"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "This tutorial focuses on working with upscaling time series data management and analysis using `plans`.",
+   "id": "3536ad34a268ba66"
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bf7d86c6e4cdd29b",
+   "metadata": {},
+   "source": [
+    "## Notebook setup\n",
+    "\n",
+    "For users running this tutorial as a Jupyter Notebook, this cell must be executed first:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "id": "initial_id",
+   "metadata": {},
+   "source": [
+    "import sys\n",
+    "from pathlib import Path\n",
+    "import pprint\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import matplotlib.pyplot as plt\n",
+    "\n",
+    "# Install `plans` in `google.colab`.\n",
+    "# Use `pip install plans` for other environments.\n",
+    "\n",
+    "if \"google.colab\" in sys.modules:\n",
+    "    import os\n",
+    "    os.system(f\"{sys.executable} -m pip install -q plans\")\n",
+    "\n",
+    "# This avoids warnings related to uninstalled fonts\n",
+    "import logging\n",
+    "# Set the matplotlib font manager logger to only show errors (hides warnings)\n",
+    "logging.getLogger('matplotlib.font_manager').setLevel(logging.ERROR)\n",
+    "\n",
+    "# define output folder\n",
+    "OUTPUT_DIR = Path(\"outputs/time-series\")\n",
+    "OUTPUT_DIR.mkdir(parents=True, exist_ok=True)\n",
+    "print(f\"Outputs will be saved to: ./{OUTPUT_DIR}\")"
+   ],
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "## The `TimeSeries` object\n",
+    "\n",
+    "The `TimeSeries` object is a very primitive class that lives under `plans.datasets` module.\n",
+    "This object is a child from the `Univar` object that lives in `plans.analyst` module. The `TimeSeries` stores all core methods for working with time series, incluing standardization."
+   ],
+   "id": "4f68d69935fd52c2"
+  },
+  {
+   "cell_type": "code",
+   "id": "313c51eb1ab99942",
+   "metadata": {},
+   "source": "from plans.datasets import TimeSeries",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "## Create and load tutorial data\n",
+    "\n",
+    "Lets first make a perfect time series using `.make_synthetic_tsn()` method and save it to a CSV file.\n",
+    "This method makes a Trend-Seasonality-Noise archetype time-series:"
+   ],
+   "id": "121250c4864af17d"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "# make synthetic TSN (Trend-Seasonality-Noise) time-series\n",
+    "df = TimeSeries.make_synthetic_tsn(\n",
+    "    start=\"2020-01-01\",\n",
+    "    end=\"2026-01-01\",\n",
+    "    base=100,\n",
+    "    freq=\"1h\",\n",
+    "    trend=0.001,\n",
+    "    noise_sd=4.0,\n",
+    "    amplitude=50,\n",
+    "    seasonal_period=\"YS\",\n",
+    "    minor_amplitude=20,\n",
+    "    minor_seasonal_period=\"D\"\n",
+    ")\n",
+    "# Export CSV file\n",
+    "file_csv = OUTPUT_DIR / \"time_series.csv\"\n",
+    "df.to_csv(file_csv, sep=\";\", index=\"False\")\n",
+    "print(f\"Saved to: {file_csv}\")"
+   ],
+   "id": "d9b3bfe3f0592b3d",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Call the `.load_data()` method for loading from CSV file:",
+   "id": "e9a09516beed41e0"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "ts = TimeSeries(name=\"Testing\", alias=\"tst\")\n",
+    "ts.load_data(\n",
+    "    file_data=file_csv,  # file path\n",
+    "    input_dtfield=\"datetime\", # name of datetime field\n",
+    "    input_varfield=\"level\",  # name of variable\n",
+    "    in_sep=\";\",  # input separator\n",
+    "    filter_dates=[\"2020-01-01\", \"2026-01-01\"]  # filter dates\n",
+    ")"
+   ],
+   "id": "380bd091b6e68a7",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Finally, view the loaded data:",
+   "id": "370bff55a182fa02"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "ts.view_specs[\"n_dates\"] = 5\n",
+    "ts.view()"
+   ],
+   "id": "41c6e535bd868aae",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "## Upscaling time series data\n",
+    "\n",
+    "Upscaling, also known as aggregation, is the process of changing data from a finer resolution to a coarser resolution.\n",
+    "\n",
+    "The core of this process is the **upscaling function**, which can be any arbitrary statistic or function applied to the finer scale.\n",
+    "\n",
+    "In the `TimeSeries` object, the upscaling function is encoded by the `.agg` attribute, which holds pre-defined typical aggregation methods."
+   ],
+   "id": "3c270d46facc2542"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Check what is the `.agg` attribute:",
+   "id": "902d2c97c020f868"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "ts.agg",
+   "id": "3e6ddbdd36ebe62",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "### The `.scale_up()` method\n",
+    "\n",
+    "The `.scale_up()` method allows the upscaling to other time resolutions, using the `freq` parameter flag, a Pandas-like string.\n",
+    "\n",
+    "Common options include:\n",
+    "\n",
+    "- ``h`` for hourly frequency\n",
+    "- ``D`` for daily frequency\n",
+    "- ``W`` for weekly frequency\n",
+    "- ``MS`` for monthly/start frequency\n",
+    "- ``QS`` for quarterly/start frequency\n",
+    "- ``YS`` for yearly/start frequency\n",
+    "\n",
+    "More options and details can be found in the [Pandas documentation on offset aliases](https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases).\n",
+    "\n",
+    "The full signature is:\n",
+    "\n",
+    "```python\n",
+    "scale_up(self, freq, bad_max, inplace=True)\n",
+    "```\n",
+    "\n",
+    "- **`freq`**: the target Pandas-like frequency alias (explored in detail below).\n",
+    "- **`bad_max`**: the maximum number of ``Bad`` (null) records tolerated inside a single aggregation window. Windows exceeding this threshold are dropped from the result.\n",
+    "- **`inplace`**: controls what the method returns (see next section)."
+   ],
+   "id": "66d13afdf46827f4"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "### `inplace=True` vs `inplace=False`\n",
+    "\n",
+    "- ``inplace=True`` (default): overwrites `self.data` and all derived statistics (`stats_df`, `freq_df`, `weibull_df`) directly on the current object. The method returns `None`.\n",
+    "- ``inplace=False``: leaves the original object untouched and instead returns a **brand-new `TimeSeries` object** — an exact copy of the parent (same `name`, `alias`, `code`, units, `agg`, etc.) but holding the upscaled data. This is the recommended mode for tutorials and exploratory analysis, since it lets you keep the original series around for comparison.\n",
+    "\n",
+    "This tutorial uses `inplace=False` throughout, so `ts` (native hourly resolution) stays available for comparison at every step."
+   ],
+   "id": "3f8a1b2c9d0e1f2a"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "### Anchoring: a key detail of `freq`\n",
+    "\n",
+    "Not all `freq` aliases behave the same way regarding *where* each aggregation window starts and ends:\n",
+    "\n",
+    "- **Data-start-anchored** frequencies are plain multiples of a base unit, e.g. ``\"5D\"``. Bins are chunked every N units starting from wherever the series begins — **not** from a fixed calendar boundary.\n",
+    "- **Calendar-anchored** frequencies (``W``, ``MS``, ``QS``, ``YS``, etc.) snap to fixed real-world boundaries, regardless of where the data starts.\n",
+    "\n",
+    "This distinction matters a lot in practice and is demonstrated in the examples below."
+   ],
+   "id": "4a5b6c7d8e9f0a1b"
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Upscale from native to daily resolution.\n\nThe `bad_max` parameter tells how many null values in native resolution is allowed to be ignored.",
+   "id": "a6d75ad872ac315d"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "ts_daily = ts.scale_up(freq=\"D\", bad_max=6, inplace=False)",
+   "id": "b160c7c04642b7c4",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "ts_daily.view()",
+   "id": "c210bac1e3d32166",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "### Pentad upscale (data-start-anchored)\n",
+    "\n",
+    "A pentad is a 5-day period. Since ``\"5D\"`` is a plain multiple of the base ``D`` unit, it is **data-start-anchored**: the first bin starts exactly at the first timestamp of the series, and every following bin is chunked every 5 days from there — not from a fixed calendar boundary like the 1st, 6th, 11th, etc. of the month.\n",
+    "\n",
+    "This is fine when the series happens to start on day 1 (as in this synthetic, \"perfect data\" example), but keep in mind that a series starting on, say, the 3rd of the month will produce pentads offset from the classic meteorological convention."
+   ],
+   "id": "5b6c7d8e9f0a1b2c"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "ts_pentad = ts.scale_up(freq=\"5D\", bad_max=6, inplace=False)\n",
+    "ts_pentad.view()"
+   ],
+   "id": "6c7d8e9f0a1b2c3d",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "### Weekly upscale (calendar-anchored)\n",
+    "\n",
+    "Unlike ``\"5D\"``, the ``\"W\"`` alias is **calendar-anchored**: it always snaps to fixed weekly boundaries, regardless of where the series starts.\n",
+    "\n",
+    "By default, ``\"W\"`` means ``\"W-SUN\"`` — weeks ending on Sunday. You can anchor to any weekday with a suffix: ``W-MON``, ``W-TUE``, ``W-WED``, ``W-THU``, ``W-FRI``, ``W-SAT``, ``W-SUN``."
+   ],
+   "id": "7d8e9f0a1b2c3d4e"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "# default weekly (weeks ending Sunday)\n",
+    "ts_weekly = ts.scale_up(freq=\"W\", bad_max=6, inplace=False)\n",
+    "ts_weekly.view()"
+   ],
+   "id": "8e9f0a1b2c3d4e5f",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "# weekly anchored to Monday-ending weeks instead\n",
+    "ts_weekly_mon = ts.scale_up(freq=\"W-MON\", bad_max=6, inplace=False)\n",
+    "ts_weekly_mon.view()"
+   ],
+   "id": "9f0a1b2c3d4e5f6a",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Upscale to monthly resolution",
+   "id": "15691079cc68a3eb"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "ts_monthly = ts.scale_up(freq=\"MS\", bad_max=6, inplace=False)\n",
+    "ts_monthly.view()"
+   ],
+   "id": "ba75de32b6b1c698",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Upscale to yearly resolution",
+   "id": "d94873fffdafe8c1"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "ts_yearly = ts.scale_up(freq=\"YS\", bad_max=2, inplace=False)\n",
+    "ts_yearly.view()"
+   ],
+   "id": "75cefd2391932e59",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "### Hydrological year upscale\n",
+    "\n",
+    "Just like weekly, the yearly alias is calendar-anchored, but the anchor month is also configurable. Plain ``\"YS\"``/``\"YE\"`` default to the calendar year (start Jan 1 / end Dec 31), but appending a month suffix defines a custom year boundary — exactly what's needed for a **hydrological (water) year**.\n",
+    "\n",
+    "For example:\n",
+    "\n",
+    "- ``\"YS-OCT\"`` → year starting October 1 (the common US water-year convention: Oct 1 – Sep 30)\n",
+    "- ``\"YE-SEP\"`` → year ending September 30 (equivalent boundary, expressed as an end date)\n",
+    "\n",
+    "The suffix month, combined with the ``YS-``/``YE-`` prefix, determines whether that month is the start or the end of the bin. Hydrological year conventions vary by country and basin (e.g. Oct–Sep, Sep–Aug), so pick the suffix that matches your region."
+   ],
+   "id": "0a1b2c3d4e5f6a7b"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": [
+    "# hydrological year, Oct-Sep (e.g. US water-year convention)\n",
+    "ts_hydro_year = ts.scale_up(freq=\"YS-OCT\", bad_max=2, inplace=False)\n",
+    "ts_hydro_year.view()"
+   ],
+   "id": "1b2c3d4e5f6a7b8c",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Because the `agg` attribute is the 'mean', the mean across all scales is preserved",
+   "id": "4bc1d533ef9fc456"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "ts.stats_df.head(4).iloc[2]",
+   "id": "49d134820b25a566",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "ts_daily.stats_df.head(4).iloc[2]",
+   "id": "673c4db880dc529c",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "ts_pentad.stats_df.head(4).iloc[2]",
+   "id": "2c3d4e5f6a7b8c9d",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "ts_weekly.stats_df.head(4).iloc[2]",
+   "id": "3d4e5f6a7b8c9d0e",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "ts_monthly.stats_df.head(4).iloc[2]",
+   "id": "a0702dc4d11ed175",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "ts_yearly.stats_df.head(4).iloc[2]",
+   "id": "3b6e4230935865e4",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "ts_hydro_year.stats_df.head(4).iloc[2]",
+   "id": "4e5f6a7b8c9d0e1f",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Changing the `agg` to represent other upscaling function",
+   "id": "e0fe86bc141cb92"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "ts.agg = 'sum'",
+   "id": "43cc974fe9c3ffea",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "ts_daily_new = ts.scale_up(freq=\"D\", bad_max=6, inplace=False)",
+   "id": "d62427c07cc96d67",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "Check the new upscaling function results",
+   "id": "df78b7f20a188287"
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "ts_daily_new.view()",
+   "id": "7803b1902322ffc1",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "source": "ts_daily_new.stats_df.head(4).iloc[2]",
+   "id": "7776a937585b2f20",
+   "outputs": [],
+   "execution_count": null
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": [
+    "### Recap: `freq` anchoring cheat sheet\n",
+    "\n",
+    "| `freq` | Meaning | Anchoring |\n",
+    "|---|---|---|\n",
+    "| `\"D\"` | daily | data-start-anchored |\n",
+    "| `\"5D\"` | pentad (5-day) | data-start-anchored |\n",
+    "| `\"W\"` / `\"W-SUN\"` | weekly, ending Sunday | calendar-anchored |\n",
+    "| `\"W-MON\"` | weekly, ending Monday | calendar-anchored |\n",
+    "| `\"MS\"` | monthly, start | calendar-anchored |\n",
+    "| `\"QS\"` | quarterly, start | calendar-anchored |\n",
+    "| `\"YS\"` | yearly, calendar (Jan–Dec) | calendar-anchored |\n",
+    "| `\"YS-OCT\"` | hydrological year (Oct–Sep) | calendar-anchored |\n",
+    "\n",
+    "As a rule of thumb: plain multiples of a base unit (`\"5D\"`, `\"10D\"`, ...) chunk relative to the data; named calendar units (`W`, `MS`, `QS`, `YS`, ...) snap to fixed real-world boundaries and can be further anchored with a weekday or month suffix."
+   ],
+   "id": "5f6a7b8c9d0e1f2a"
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../_static/documentation_options.js?v=8d563738"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
@@ -440,7 +440,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,
 in porttitor lacus lobortis vitae. In a lacinia nisl.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Hello World!"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Mauris gravida ex quam, in porttitor lacus lobortis vitae.
@@ -529,7 +529,9 @@ In a lacinia nisl.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A new <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> with interpolated values if inplace is False, otherwise None.</p>
+<dd class="field-even"><p>A new <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> with interpolated values and an <code class="docutils literal notranslate"><span class="pre">is_interpolation</span></code>
+flag column (1 where the value was filled by interpolation, 0 where it was
+already present) if inplace is False, otherwise None.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or None</p>
@@ -554,13 +556,41 @@ The process is applied to each unique epoch within the series.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.chrono.RainSeries._set_frequency">
 <span class="sig-name descname"><span class="pre">_set_frequency</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/chrono.html#RainSeries._set_frequency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.chrono.RainSeries._set_frequency" title="Link to this definition">#</a></dt>
-<dd><p>Guess the datetime resolution of a time series based on the consistency of
-timestamp components (e.g., seconds, minutes).</p>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>This method infers the datetime frequency of the time series data
-based on the consistency of timestamp components.</p>
+<dd><p>Infer the datetime frequency of the time series from the spacing
+between consecutive timestamps.</p>
+<p>The <em>mode</em> (most common value) of consecutive timestamp deltas is
+used to determine the frequency, rather than checking which
+calendar components (seconds, minutes, hours, …) vary across the
+series. This makes detection robust to a small minority of
+jittered or missing timestamps: as long as the majority of gaps
+between consecutive records share the same spacing, that spacing
+wins, even if a few records are irregular.</p>
+<p>Sets <code class="docutils literal notranslate"><span class="pre">self.dtfreq</span></code> to one of the supported Pandas-like frequency
+aliases (<code class="docutils literal notranslate"><span class="pre">&quot;1min&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;20min&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;h&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;D&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;MS&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;YS&quot;</span></code>) based on which boundary the modal delta falls into, and
+<code class="docutils literal notranslate"><span class="pre">self.dtres</span></code> to the corresponding resolution label (<code class="docutils literal notranslate"><span class="pre">&quot;second&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;minute&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;hour&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;day&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;month&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;year&quot;</span></code>).</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">&quot;MS&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;YS&quot;</span></code> frequencies, <code class="docutils literal notranslate"><span class="pre">self.gapsize</span></code> is also
+forced to <code class="docutils literal notranslate"><span class="pre">1</span></code>, since a single missing month or year is already a
+meaningful gap at that resolution.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Detection is based on the <em>majority</em> delta, not a strict
+consistency check. If irregular spacing accounts for more than
+half of the deltas in the series, the detected frequency will
+reflect that majority rather than the “intended” sampling rate.
+Always sanity-check <code class="docutils literal notranslate"><span class="pre">self.dtfreq</span></code> after loading unfamiliar or
+untrusted data.</p>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None. Updates <code class="docutils literal notranslate"><span class="pre">self.dtfreq</span></code>, <code class="docutils literal notranslate"><span class="pre">self.dtres</span></code>, and
+possibly <code class="docutils literal notranslate"><span class="pre">self.gapsize</span></code> in place.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -908,8 +938,8 @@ Expected to increment superior methods.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -943,7 +973,7 @@ Expected to increment superior methods.</p>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

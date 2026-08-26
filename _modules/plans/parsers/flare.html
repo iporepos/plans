@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -35,10 +35,10 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../../_static/documentation_options.js?v=8d563738"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -407,7 +407,7 @@
 <span class="c1"># Copyright (C) 2025 The Project Authors</span>
 <span class="c1"># See pyproject.toml for authors/maintainers.</span>
 <span class="c1"># See LICENSE for license details.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Routines for handling file name formatting</span>
 
 <span class="sd">Overview</span>
@@ -426,7 +426,7 @@
 <span class="sd">Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,</span>
 <span class="sd">in porttitor lacus lobortis vitae. In a lacinia nisl.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
@@ -434,7 +434,7 @@
 <div class="viewcode-block" id="encode_number">
 <a class="viewcode-back" href="../../../generated/plans.parsers.flare.html#plans.parsers.flare.encode_number">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">encode_number</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">len_min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">is_latitude</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Encodes a given number (latitude or longitude) into a specific string format.</span>
 
 <span class="sd">    :param number: The number to encode (latitude or longitude).</span>
@@ -447,7 +447,7 @@
 <span class="sd">    :type is_latitude: bool</span>
 <span class="sd">    :return: The encoded number string.</span>
 <span class="sd">    :rtype: str</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">fill_integer_part</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">len_min</span><span class="p">):</span>
         <span class="n">n_len_part</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
@@ -457,25 +457,25 @@
             <span class="k">return</span> <span class="n">part</span>
 
     <span class="c1"># Determine the sign flag based on number and coordinate type</span>
-    <span class="k">if</span> <span class="n">is_latitude</span><span class="p">:</span>  <span class="c1"># Latitude: &#39;s&#39; for south (negative), &#39;n&#39; for north (positive)</span>
+    <span class="k">if</span> <span class="n">is_latitude</span><span class="p">:</span>  <span class="c1"># Latitude: 's' for south (negative), 'n' for north (positive)</span>
         <span class="k">if</span> <span class="n">number</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">sign_flag</span> <span class="o">=</span> <span class="s2">&quot;s&quot;</span>
+            <span class="n">sign_flag</span> <span class="o">=</span> <span class="s2">"s"</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">sign_flag</span> <span class="o">=</span> <span class="s2">&quot;n&quot;</span>
-    <span class="k">else</span><span class="p">:</span>  <span class="c1"># Longitude: &#39;w&#39; for west (negative), &#39;e&#39; for east (positive)</span>
+            <span class="n">sign_flag</span> <span class="o">=</span> <span class="s2">"n"</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># Longitude: 'w' for west (negative), 'e' for east (positive)</span>
         <span class="k">if</span> <span class="n">number</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">sign_flag</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span>
+            <span class="n">sign_flag</span> <span class="o">=</span> <span class="s2">"w"</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">sign_flag</span> <span class="o">=</span> <span class="s2">&quot;e&quot;</span>
+            <span class="n">sign_flag</span> <span class="o">=</span> <span class="s2">"e"</span>
 
     <span class="c1"># Work with the absolute value for number representation</span>
     <span class="n">abs_number</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
 
-    <span class="n">encoded_number_part</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">encoded_number_part</span> <span class="o">=</span> <span class="s2">""</span>
 
     <span class="c1"># Handle decimals based on tolerance</span>
     <span class="k">if</span> <span class="n">decimals</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="c1"># If tolerance is zero, encode as an integer (no &#39;p&#39;)</span>
+        <span class="c1"># If tolerance is zero, encode as an integer (no 'p')</span>
         <span class="c1"># Round the number to the nearest integer before converting to string</span>
         <span class="n">integer_part_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">abs_number</span><span class="p">)))</span>
         <span class="c1"># Apply zfill to the integer part if zfill_amount is greater than its length</span>
@@ -483,18 +483,18 @@
         <span class="n">encoded_number_part</span> <span class="o">=</span> <span class="n">integer_part_str</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Format the number to the specified decimal places</span>
-        <span class="n">formatted_num_str</span> <span class="o">=</span> <span class="s2">&quot;{:.</span><span class="si">{}</span><span class="s2">f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">abs_number</span><span class="p">,</span> <span class="n">decimals</span><span class="p">)</span>
+        <span class="n">formatted_num_str</span> <span class="o">=</span> <span class="s2">"{:.</span><span class="si">{}</span><span class="s2">f}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">abs_number</span><span class="p">,</span> <span class="n">decimals</span><span class="p">)</span>
 
         <span class="c1"># Split into integer and fractional parts</span>
-        <span class="n">parts</span> <span class="o">=</span> <span class="n">formatted_num_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">formatted_num_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span>
         <span class="n">integer_part_str</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">fractional_part_str</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="c1"># Apply zfill to the integer part if zfill_amount is greater than its length</span>
         <span class="n">integer_part_str</span> <span class="o">=</span> <span class="n">fill_integer_part</span><span class="p">(</span><span class="n">part</span><span class="o">=</span><span class="n">integer_part_str</span><span class="p">,</span> <span class="n">len_min</span><span class="o">=</span><span class="n">len_min</span><span class="p">)</span>
 
-        <span class="c1"># Reconstruct the number part with &#39;p&#39;</span>
-        <span class="n">encoded_number_part</span> <span class="o">=</span> <span class="n">integer_part_str</span> <span class="o">+</span> <span class="s2">&quot;p&quot;</span> <span class="o">+</span> <span class="n">fractional_part_str</span>
+        <span class="c1"># Reconstruct the number part with 'p'</span>
+        <span class="n">encoded_number_part</span> <span class="o">=</span> <span class="n">integer_part_str</span> <span class="o">+</span> <span class="s2">"p"</span> <span class="o">+</span> <span class="n">fractional_part_str</span>
 
     <span class="c1"># Combine sign flag and the encoded number part, ensure lowercase output</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">sign_flag</span> <span class="o">+</span> <span class="n">encoded_number_part</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
@@ -504,36 +504,36 @@
 <div class="viewcode-block" id="decode_number">
 <a class="viewcode-back" href="../../../generated/plans.parsers.flare.html#plans.parsers.flare.decode_number">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">decode_number</span><span class="p">(</span><span class="n">encoded_number</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Decodes an encoded number string (latitude or longitude) back into a float.</span>
 
 <span class="sd">    :param encoded_number: The encoded number string.</span>
 <span class="sd">    :type encoded_number: str</span>
 <span class="sd">    :return: The decoded number.</span>
 <span class="sd">    :rtype: float</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Convert the input to lowercase</span>
     <span class="n">encoded_number_lower</span> <span class="o">=</span> <span class="n">encoded_number</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
     <span class="c1"># Assume positive by default</span>
     <span class="n">sign</span> <span class="o">=</span> <span class="mi">1</span>
 
     <span class="c1"># Check for negative signal flags</span>
-    <span class="k">if</span> <span class="n">encoded_number_lower</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="n">encoded_number_lower</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">"w"</span><span class="p">,</span> <span class="s2">"s"</span><span class="p">)):</span>
         <span class="n">sign</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="c1"># Remove the sign flag</span>
         <span class="n">encoded_number_lower</span> <span class="o">=</span> <span class="n">encoded_number_lower</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
     <span class="c1"># Check for positive signal flags</span>
-    <span class="k">elif</span> <span class="n">encoded_number_lower</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">)):</span>
+    <span class="k">elif</span> <span class="n">encoded_number_lower</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">"e"</span><span class="p">,</span> <span class="s2">"n"</span><span class="p">)):</span>
         <span class="c1"># Remove the sign flag for number processing (sign remains positive)</span>
         <span class="n">encoded_number_lower</span> <span class="o">=</span> <span class="n">encoded_number_lower</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
 
-    <span class="c1"># Check &#39;p&#39; (decimal separator)</span>
-    <span class="k">if</span> <span class="s2">&quot;p&quot;</span> <span class="ow">in</span> <span class="n">encoded_number_lower</span><span class="p">:</span>
-        <span class="c1"># Replace &#39;p&#39; with &#39;.&#39; for standard float conversion</span>
-        <span class="n">_ls</span> <span class="o">=</span> <span class="n">encoded_number_lower</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">)</span>
+    <span class="c1"># Check 'p' (decimal separator)</span>
+    <span class="k">if</span> <span class="s2">"p"</span> <span class="ow">in</span> <span class="n">encoded_number_lower</span><span class="p">:</span>
+        <span class="c1"># Replace 'p' with '.' for standard float conversion</span>
+        <span class="n">_ls</span> <span class="o">=</span> <span class="n">encoded_number_lower</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"p"</span><span class="p">)</span>
         <span class="n">integer_part</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">decode_number</span><span class="p">(</span><span class="n">encoded_number</span><span class="o">=</span><span class="n">_ls</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
         <span class="n">rational_part</span> <span class="o">=</span> <span class="n">_ls</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">encoded_number_lower</span> <span class="o">=</span> <span class="n">integer_part</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">rational_part</span>
+        <span class="n">encoded_number_lower</span> <span class="o">=</span> <span class="n">integer_part</span> <span class="o">+</span> <span class="s2">"."</span> <span class="o">+</span> <span class="n">rational_part</span>
 
     <span class="c1"># return as float</span>
     <span class="k">return</span> <span class="n">sign</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">encoded_number_lower</span><span class="p">)</span></div>
@@ -543,7 +543,7 @@
 <div class="viewcode-block" id="encode_extent">
 <a class="viewcode-back" href="../../../generated/plans.parsers.flare.html#plans.parsers.flare.encode_extent">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">encode_extent</span><span class="p">(</span><span class="n">extent_dc</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">len_min</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">human</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Encodes an extent dictionary into a string format.</span>
 
 <span class="sd">    :param extent_dc: A dictionary containing the xmin, xmax, ymin, and ymax values of the extent.</span>
@@ -556,12 +556,12 @@
 <span class="sd">    :type human: bool</span>
 <span class="sd">    :return: The encoded extent string.</span>
 <span class="sd">    :rtype: str</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># retrieve values</span>
-    <span class="n">xmin</span> <span class="o">=</span> <span class="n">extent_dc</span><span class="p">[</span><span class="s2">&quot;xmin&quot;</span><span class="p">]</span>
-    <span class="n">xmax</span> <span class="o">=</span> <span class="n">extent_dc</span><span class="p">[</span><span class="s2">&quot;xmax&quot;</span><span class="p">]</span>
-    <span class="n">ymin</span> <span class="o">=</span> <span class="n">extent_dc</span><span class="p">[</span><span class="s2">&quot;ymin&quot;</span><span class="p">]</span>
-    <span class="n">ymax</span> <span class="o">=</span> <span class="n">extent_dc</span><span class="p">[</span><span class="s2">&quot;ymax&quot;</span><span class="p">]</span>
+    <span class="n">xmin</span> <span class="o">=</span> <span class="n">extent_dc</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span>
+    <span class="n">xmax</span> <span class="o">=</span> <span class="n">extent_dc</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">]</span>
+    <span class="n">ymin</span> <span class="o">=</span> <span class="n">extent_dc</span><span class="p">[</span><span class="s2">"ymin"</span><span class="p">]</span>
+    <span class="n">ymax</span> <span class="o">=</span> <span class="n">extent_dc</span><span class="p">[</span><span class="s2">"ymax"</span><span class="p">]</span>
 
     <span class="c1"># Encode xmin (longitude, so is_latitude=False)</span>
     <span class="n">encoded_xmin</span> <span class="o">=</span> <span class="n">encode_number</span><span class="p">(</span>
@@ -584,10 +584,10 @@
     <span class="n">encoded_extent_str</span> <span class="o">=</span> <span class="n">encoded_xmin</span> <span class="o">+</span> <span class="n">encoded_xmax</span> <span class="o">+</span> <span class="n">encoded_ymin</span> <span class="o">+</span> <span class="n">encoded_ymax</span>
     <span class="c1"># handle human style</span>
     <span class="k">if</span> <span class="n">human</span><span class="p">:</span>
-        <span class="n">ss</span> <span class="o">=</span> <span class="s2">&quot;wesn&quot;</span>
+        <span class="n">ss</span> <span class="o">=</span> <span class="s2">"wesn"</span>
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ss</span><span class="p">:</span>
-            <span class="n">encoded_extent_str</span> <span class="o">=</span> <span class="n">encoded_extent_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;-</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">encoded_extent_str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+            <span class="n">encoded_extent_str</span> <span class="o">=</span> <span class="n">encoded_extent_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"-</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">encoded_extent_str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"-"</span><span class="p">:</span>
             <span class="n">encoded_extent_str</span> <span class="o">=</span> <span class="n">encoded_extent_str</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
     <span class="k">return</span> <span class="n">encoded_extent_str</span></div>
 
@@ -596,19 +596,19 @@
 <div class="viewcode-block" id="decode_extent">
 <a class="viewcode-back" href="../../../generated/plans.parsers.flare.html#plans.parsers.flare.decode_extent">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">decode_extent</span><span class="p">(</span><span class="n">encoded_extent</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Decodes an encoded extent string back into an extent dictionary.</span>
 
 <span class="sd">    :param encoded_extent: The encoded extent string.</span>
 <span class="sd">    :type encoded_extent: str</span>
 <span class="sd">    :return: A dictionary containing the xmin, xmax, ymin, and ymax values of the decoded extent.</span>
 <span class="sd">    :rtype: dict</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># handle human style</span>
-    <span class="n">encoded_extent</span> <span class="o">=</span> <span class="n">encoded_extent</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">encoded_extent</span> <span class="o">=</span> <span class="n">encoded_extent</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"-"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
     <span class="c1"># Regex to capture the four parts: [signal][number_part]</span>
     <span class="c1"># (x[N]) where x is a signal and N is the number</span>
-    <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;([wesn])(\d+p?\d*)&quot;</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"([wesn])(\d+p?\d*)"</span>
     <span class="n">matches</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">encoded_extent</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
 
     <span class="n">coordinates</span> <span class="o">=</span> <span class="p">{}</span>
@@ -634,10 +634,10 @@
     <span class="n">ymax_value_str</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">ymax</span> <span class="o">=</span> <span class="n">decode_number</span><span class="p">(</span><span class="n">ymax_flag</span> <span class="o">+</span> <span class="n">ymax_value_str</span><span class="p">)</span>
 
-    <span class="n">coordinates</span><span class="p">[</span><span class="s2">&quot;xmin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmin</span>
-    <span class="n">coordinates</span><span class="p">[</span><span class="s2">&quot;xmax&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmax</span>
-    <span class="n">coordinates</span><span class="p">[</span><span class="s2">&quot;ymin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ymin</span>
-    <span class="n">coordinates</span><span class="p">[</span><span class="s2">&quot;ymax&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ymax</span>
+    <span class="n">coordinates</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmin</span>
+    <span class="n">coordinates</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmax</span>
+    <span class="n">coordinates</span><span class="p">[</span><span class="s2">"ymin"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ymin</span>
+    <span class="n">coordinates</span><span class="p">[</span><span class="s2">"ymax"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ymax</span>
 
     <span class="k">return</span> <span class="n">coordinates</span></div>
 
@@ -646,11 +646,11 @@
 <div class="viewcode-block" id="decode_epoch">
 <a class="viewcode-back" href="../../../generated/plans.parsers.flare.html#plans.parsers.flare.decode_epoch">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">decode_epoch</span><span class="p">(</span><span class="n">epoch</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Decodes an epoch string into a dictionary representing the time information.</span>
 
 <span class="sd">    This function supports various epoch formats including:</span>
-<span class="sd">        - Time range (e.g., &#39;rs2023f2024&#39;)</span>
+<span class="sd">        - Time range (e.g., 'rs2023f2024')</span>
 <span class="sd">        - Daily human-readable timestamp (YYYY-MM-DD)</span>
 <span class="sd">        - Daily timestamp (YYYYMMDD)</span>
 <span class="sd">        - Monthly human-readable timestamp (YYYY-MM)</span>
@@ -665,10 +665,10 @@
 <span class="sd">    :type epoch: str</span>
 <span class="sd">    :return: A dictionary containing the decoded time information, including its type and alias.</span>
 <span class="sd">    :rtype: dict</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Check for time range pattern first</span>
-    <span class="k">if</span> <span class="s2">&quot;f&quot;</span> <span class="ow">in</span> <span class="n">epoch</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-        <span class="n">parts</span> <span class="o">=</span> <span class="n">epoch</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;f&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">"f"</span> <span class="ow">in</span> <span class="n">epoch</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">epoch</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"f"</span><span class="p">)</span>
         <span class="n">start_label</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">end_label</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
@@ -677,87 +677,87 @@
         <span class="n">decoded_end</span> <span class="o">=</span> <span class="n">decode_epoch</span><span class="p">(</span><span class="n">end_label</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;time range&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;TR&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">decoded_start</span><span class="p">,</span>
-            <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="n">decoded_end</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"time range"</span><span class="p">,</span>
+            <span class="s2">"alias"</span><span class="p">:</span> <span class="s2">"TR"</span><span class="p">,</span>
+            <span class="s2">"start"</span><span class="p">:</span> <span class="n">decoded_start</span><span class="p">,</span>
+            <span class="s2">"end"</span><span class="p">:</span> <span class="n">decoded_end</span><span class="p">,</span>
         <span class="p">}</span>
 
     <span class="c1"># Check for human-readable daily timestamp (YYYY-MM-DD)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span> <span class="o">==</span> <span class="mi">10</span> <span class="ow">and</span> <span class="n">epoch</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span> <span class="ow">and</span> <span class="n">epoch</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span> <span class="o">==</span> <span class="mi">10</span> <span class="ow">and</span> <span class="n">epoch</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"-"</span> <span class="ow">and</span> <span class="n">epoch</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"-"</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;daily human-readable timestamp&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;TSDH&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]),</span>
-            <span class="s2">&quot;month&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">7</span><span class="p">]),</span>
-            <span class="s2">&quot;day&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">10</span><span class="p">]),</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"daily human-readable timestamp"</span><span class="p">,</span>
+            <span class="s2">"alias"</span><span class="p">:</span> <span class="s2">"TSDH"</span><span class="p">,</span>
+            <span class="s2">"year"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]),</span>
+            <span class="s2">"month"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">7</span><span class="p">]),</span>
+            <span class="s2">"day"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">10</span><span class="p">]),</span>
         <span class="p">}</span>
 
     <span class="c1"># Check for daily timestamp (YYYYMMDD)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span> <span class="o">==</span> <span class="mi">8</span> <span class="ow">and</span> <span class="n">epoch</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;daily timestamp&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;TSD&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]),</span>
-            <span class="s2">&quot;month&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]),</span>
-            <span class="s2">&quot;day&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">]),</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"daily timestamp"</span><span class="p">,</span>
+            <span class="s2">"alias"</span><span class="p">:</span> <span class="s2">"TSD"</span><span class="p">,</span>
+            <span class="s2">"year"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]),</span>
+            <span class="s2">"month"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]),</span>
+            <span class="s2">"day"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">]),</span>
         <span class="p">}</span>
 
     <span class="c1"># Check for human-readable monthly timestamp (YYYY-MM)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span> <span class="o">==</span> <span class="mi">7</span> <span class="ow">and</span> <span class="n">epoch</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span> <span class="o">==</span> <span class="mi">7</span> <span class="ow">and</span> <span class="n">epoch</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"-"</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;monthly human-readable timestamp&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;TSMH&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]),</span>
-            <span class="s2">&quot;month&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">7</span><span class="p">]),</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"monthly human-readable timestamp"</span><span class="p">,</span>
+            <span class="s2">"alias"</span><span class="p">:</span> <span class="s2">"TSMH"</span><span class="p">,</span>
+            <span class="s2">"year"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]),</span>
+            <span class="s2">"month"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">7</span><span class="p">]),</span>
         <span class="p">}</span>
 
     <span class="c1"># Check for monthly timestamp (YYYYMM)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span> <span class="o">==</span> <span class="mi">6</span> <span class="ow">and</span> <span class="n">epoch</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;monthly timestamp&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;TSM&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]),</span>
-            <span class="s2">&quot;month&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]),</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"monthly timestamp"</span><span class="p">,</span>
+            <span class="s2">"alias"</span><span class="p">:</span> <span class="s2">"TSM"</span><span class="p">,</span>
+            <span class="s2">"year"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]),</span>
+            <span class="s2">"month"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]),</span>
         <span class="p">}</span>
 
     <span class="c1"># Check for yearly timestamp (YYYY)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span> <span class="ow">and</span> <span class="n">epoch</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;yearly timestamp&quot;</span><span class="p">,</span> <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;TSY&quot;</span><span class="p">,</span> <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"type"</span><span class="p">:</span> <span class="s2">"yearly timestamp"</span><span class="p">,</span> <span class="s2">"alias"</span><span class="p">:</span> <span class="s2">"TSY"</span><span class="p">,</span> <span class="s2">"year"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epoch</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])}</span>
 
     <span class="c1"># Check for un-zoned human-readable timestamp (YYYY-MM-DD-thhmmss)</span>
-    <span class="k">if</span> <span class="s2">&quot;-t&quot;</span> <span class="ow">in</span> <span class="n">epoch</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">18</span><span class="p">:</span>
-        <span class="n">parts</span> <span class="o">=</span> <span class="n">epoch</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-t&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">"-t"</span> <span class="ow">in</span> <span class="n">epoch</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">18</span><span class="p">:</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">epoch</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"-t"</span><span class="p">)</span>
         <span class="n">date_part</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">time_part</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">dc</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Un-zoned human-readable timestamp&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;TSUH&quot;</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"Un-zoned human-readable timestamp"</span><span class="p">,</span>
+            <span class="s2">"alias"</span><span class="p">:</span> <span class="s2">"TSUH"</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">dc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">decode_date_part</span><span class="p">(</span><span class="n">date_part</span><span class="p">))</span>
         <span class="n">dc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">decode_time_part</span><span class="p">(</span><span class="n">time_part</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">dc</span>
 
     <span class="c1"># Check for un-zoned timestamp (YYYYMMDDthhmmss)</span>
-    <span class="k">if</span> <span class="s2">&quot;t&quot;</span> <span class="ow">in</span> <span class="n">epoch</span> <span class="ow">and</span> <span class="s2">&quot;z&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">epoch</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">15</span><span class="p">:</span>
-        <span class="n">parts</span> <span class="o">=</span> <span class="n">epoch</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">"t"</span> <span class="ow">in</span> <span class="n">epoch</span> <span class="ow">and</span> <span class="s2">"z"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">epoch</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">15</span><span class="p">:</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">epoch</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"t"</span><span class="p">)</span>
         <span class="n">date_part</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">time_part</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">dc</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Un-zoned timestamp&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;TSU&quot;</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"Un-zoned timestamp"</span><span class="p">,</span>
+            <span class="s2">"alias"</span><span class="p">:</span> <span class="s2">"TSU"</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">dc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">decode_date_part</span><span class="p">(</span><span class="n">date_part</span><span class="p">))</span>
         <span class="n">dc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">decode_time_part</span><span class="p">(</span><span class="n">time_part</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">dc</span>
 
     <span class="c1"># Check for full human-readable timestamp (YYYY-MM-DD-thhmmss-zshhmm)</span>
-    <span class="k">if</span> <span class="s2">&quot;-t&quot;</span> <span class="ow">in</span> <span class="n">epoch</span> <span class="ow">and</span> <span class="s2">&quot;-z&quot;</span> <span class="ow">in</span> <span class="n">epoch</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">25</span><span class="p">:</span>
-        <span class="n">date_time_part</span><span class="p">,</span> <span class="n">tz_part</span> <span class="o">=</span> <span class="n">epoch</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-z&quot;</span><span class="p">)</span>
-        <span class="n">date_part</span><span class="p">,</span> <span class="n">time_part</span> <span class="o">=</span> <span class="n">date_time_part</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-t&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">"-t"</span> <span class="ow">in</span> <span class="n">epoch</span> <span class="ow">and</span> <span class="s2">"-z"</span> <span class="ow">in</span> <span class="n">epoch</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">25</span><span class="p">:</span>
+        <span class="n">date_time_part</span><span class="p">,</span> <span class="n">tz_part</span> <span class="o">=</span> <span class="n">epoch</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"-z"</span><span class="p">)</span>
+        <span class="n">date_part</span><span class="p">,</span> <span class="n">time_part</span> <span class="o">=</span> <span class="n">date_time_part</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"-t"</span><span class="p">)</span>
         <span class="n">dc</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;full human-readable timestamp&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;TSH&quot;</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"full human-readable timestamp"</span><span class="p">,</span>
+            <span class="s2">"alias"</span><span class="p">:</span> <span class="s2">"TSH"</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">dc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">decode_date_part</span><span class="p">(</span><span class="n">date_part</span><span class="p">))</span>
         <span class="n">dc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">decode_time_part</span><span class="p">(</span><span class="n">time_part</span><span class="p">))</span>
@@ -765,19 +765,19 @@
         <span class="k">return</span> <span class="n">dc</span>
 
     <span class="c1"># Check for full timestamp (YYYYMMDDthhmmsszshhmm)</span>
-    <span class="k">if</span> <span class="s2">&quot;t&quot;</span> <span class="ow">in</span> <span class="n">epoch</span> <span class="ow">and</span> <span class="s2">&quot;z&quot;</span> <span class="ow">in</span> <span class="n">epoch</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">21</span><span class="p">:</span>
-        <span class="n">date_time_part</span><span class="p">,</span> <span class="n">tz_part</span> <span class="o">=</span> <span class="n">epoch</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;z&quot;</span><span class="p">)</span>
-        <span class="n">date_part</span><span class="p">,</span> <span class="n">time_part</span> <span class="o">=</span> <span class="n">date_time_part</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">"t"</span> <span class="ow">in</span> <span class="n">epoch</span> <span class="ow">and</span> <span class="s2">"z"</span> <span class="ow">in</span> <span class="n">epoch</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">21</span><span class="p">:</span>
+        <span class="n">date_time_part</span><span class="p">,</span> <span class="n">tz_part</span> <span class="o">=</span> <span class="n">epoch</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"z"</span><span class="p">)</span>
+        <span class="n">date_part</span><span class="p">,</span> <span class="n">time_part</span> <span class="o">=</span> <span class="n">date_time_part</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"t"</span><span class="p">)</span>
         <span class="n">dc</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;full timestamp&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;TS&quot;</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"full timestamp"</span><span class="p">,</span>
+            <span class="s2">"alias"</span><span class="p">:</span> <span class="s2">"TS"</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">dc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">decode_date_part</span><span class="p">(</span><span class="n">date_part</span><span class="p">))</span>
         <span class="n">dc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">decode_time_part</span><span class="p">(</span><span class="n">time_part</span><span class="p">))</span>
         <span class="n">dc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">decode_tz_part</span><span class="p">(</span><span class="n">tz_part</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">dc</span>
 
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Unknown&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">epoch</span><span class="p">}</span></div>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"type"</span><span class="p">:</span> <span class="s2">"Unknown"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="n">epoch</span><span class="p">}</span></div>
 
 
 
@@ -785,9 +785,9 @@
 <a class="viewcode-back" href="../../../generated/plans.parsers.flare.html#plans.parsers.flare.decode_date_part">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">decode_date_part</span><span class="p">(</span><span class="n">date_part</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">date_part</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]),</span>
-        <span class="s2">&quot;month&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">date_part</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]),</span>
-        <span class="s2">&quot;day&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">date_part</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">]),</span>
+        <span class="s2">"year"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">date_part</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]),</span>
+        <span class="s2">"month"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">date_part</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]),</span>
+        <span class="s2">"day"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">date_part</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">]),</span>
     <span class="p">}</span></div>
 
 
@@ -796,9 +796,9 @@
 <a class="viewcode-back" href="../../../generated/plans.parsers.flare.html#plans.parsers.flare.decode_time_part">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">decode_time_part</span><span class="p">(</span><span class="n">time_part</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;hour&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time_part</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]),</span>
-        <span class="s2">&quot;minute&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time_part</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]),</span>
-        <span class="s2">&quot;second&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">decode_number</span><span class="p">(</span><span class="n">time_part</span><span class="p">[</span><span class="mi">4</span><span class="p">:])),</span>
+        <span class="s2">"hour"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time_part</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]),</span>
+        <span class="s2">"minute"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time_part</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]),</span>
+        <span class="s2">"second"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">decode_number</span><span class="p">(</span><span class="n">time_part</span><span class="p">[</span><span class="mi">4</span><span class="p">:])),</span>
     <span class="p">}</span></div>
 
 
@@ -806,11 +806,11 @@
 <div class="viewcode-block" id="decode_tz_part">
 <a class="viewcode-back" href="../../../generated/plans.parsers.flare.html#plans.parsers.flare.decode_tz_part">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">decode_tz_part</span><span class="p">(</span><span class="n">tz_part</span><span class="p">):</span>
-    <span class="n">tz_sign</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">tz_part</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;e&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># &#39;e&#39; for positive, &#39;w&#39; for negative</span>
+    <span class="n">tz_sign</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">tz_part</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"e"</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># 'e' for positive, 'w' for negative</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;tz_sign&quot;</span><span class="p">:</span> <span class="n">tz_sign</span><span class="p">,</span>
-        <span class="s2">&quot;tz_offset_hours&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">tz_part</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]),</span>
-        <span class="s2">&quot;tz_offset_minutes&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">tz_part</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">5</span><span class="p">]),</span>
+        <span class="s2">"tz_sign"</span><span class="p">:</span> <span class="n">tz_sign</span><span class="p">,</span>
+        <span class="s2">"tz_offset_hours"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">tz_part</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]),</span>
+        <span class="s2">"tz_offset_minutes"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">tz_part</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">5</span><span class="p">]),</span>
     <span class="p">}</span></div>
 
 
@@ -818,53 +818,53 @@
 <div class="viewcode-block" id="encode_epoch">
 <a class="viewcode-back" href="../../../generated/plans.parsers.flare.html#plans.parsers.flare.encode_epoch">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">encode_epoch</span><span class="p">(</span><span class="n">epoch_dc</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Encodes an epoch dictionary into a string format.</span>
 
 <span class="sd">    :param epoch_dc: A dictionary containing the epoch information.</span>
 <span class="sd">    :type epoch_dc: dict</span>
 <span class="sd">    :return: The encoded epoch string.</span>
 <span class="sd">    :rtype: str</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">epoch_dc</span><span class="p">[</span><span class="s2">&quot;alias&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;TR&quot;</span><span class="p">:</span>
-        <span class="n">start_label</span> <span class="o">=</span> <span class="n">encode_epoch</span><span class="p">(</span><span class="n">epoch_dc</span><span class="o">=</span><span class="n">epoch_dc</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">])</span>  <span class="c1"># Remove &#39;rs&#39;</span>
-        <span class="n">end_label</span> <span class="o">=</span> <span class="n">encode_epoch</span><span class="p">(</span><span class="n">epoch_dc</span><span class="o">=</span><span class="n">epoch_dc</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">])</span>
-        <span class="n">flare_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">start_label</span><span class="si">}</span><span class="s2">f</span><span class="si">{</span><span class="n">end_label</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">epoch_dc</span><span class="p">[</span><span class="s2">"alias"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"TR"</span><span class="p">:</span>
+        <span class="n">start_label</span> <span class="o">=</span> <span class="n">encode_epoch</span><span class="p">(</span><span class="n">epoch_dc</span><span class="o">=</span><span class="n">epoch_dc</span><span class="p">[</span><span class="s2">"start"</span><span class="p">])</span>  <span class="c1"># Remove 'rs'</span>
+        <span class="n">end_label</span> <span class="o">=</span> <span class="n">encode_epoch</span><span class="p">(</span><span class="n">epoch_dc</span><span class="o">=</span><span class="n">epoch_dc</span><span class="p">[</span><span class="s2">"end"</span><span class="p">])</span>
+        <span class="n">flare_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">start_label</span><span class="si">}</span><span class="s2">f</span><span class="si">{</span><span class="n">end_label</span><span class="si">}</span><span class="s2">"</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">year</span> <span class="o">=</span> <span class="n">epoch_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
-        <span class="n">month</span> <span class="o">=</span> <span class="n">epoch_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">day</span> <span class="o">=</span> <span class="n">epoch_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="n">epoch_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"year"</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+        <span class="n">month</span> <span class="o">=</span> <span class="n">epoch_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"month"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">day</span> <span class="o">=</span> <span class="n">epoch_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"day"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-        <span class="n">hour</span> <span class="o">=</span> <span class="n">epoch_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hour&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">minute</span> <span class="o">=</span> <span class="n">epoch_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;minute&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">hour</span> <span class="o">=</span> <span class="n">epoch_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hour"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">minute</span> <span class="o">=</span> <span class="n">epoch_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"minute"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="n">second</span> <span class="o">=</span> <span class="n">epoch_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="s2">&quot;second&quot;</span><span class="p">,</span> <span class="mf">0.0</span>
+            <span class="s2">"second"</span><span class="p">,</span> <span class="mf">0.0</span>
         <span class="p">)</span>  <span class="c1"># Default to 0.0 for potential milliseconds</span>
 
-        <span class="n">tz_sign</span> <span class="o">=</span> <span class="n">epoch_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tz_sign&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Default to +</span>
-        <span class="n">tz_offset_hours</span> <span class="o">=</span> <span class="n">epoch_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tz_offset_hours&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">tz_offset_minutes</span> <span class="o">=</span> <span class="n">epoch_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tz_offset_minutes&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">epoch_dc</span><span class="p">[</span><span class="s2">&quot;alias&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;H&quot;</span><span class="p">:</span>
-            <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span>
+        <span class="n">tz_sign</span> <span class="o">=</span> <span class="n">epoch_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tz_sign"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Default to +</span>
+        <span class="n">tz_offset_hours</span> <span class="o">=</span> <span class="n">epoch_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tz_offset_hours"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">tz_offset_minutes</span> <span class="o">=</span> <span class="n">epoch_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tz_offset_minutes"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">sep</span> <span class="o">=</span> <span class="s2">""</span>
+        <span class="k">if</span> <span class="n">epoch_dc</span><span class="p">[</span><span class="s2">"alias"</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"H"</span><span class="p">:</span>
+            <span class="n">sep</span> <span class="o">=</span> <span class="s2">"-"</span>
         <span class="c1"># Format date and time parts with zero-filling</span>
-        <span class="n">date_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">year</span><span class="si">:</span><span class="s2">04d</span><span class="si">}{</span><span class="n">sep</span><span class="si">}{</span><span class="n">month</span><span class="si">:</span><span class="s2">02d</span><span class="si">}{</span><span class="n">sep</span><span class="si">}{</span><span class="n">day</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">date_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">year</span><span class="si">:</span><span class="s2">04d</span><span class="si">}{</span><span class="n">sep</span><span class="si">}{</span><span class="n">month</span><span class="si">:</span><span class="s2">02d</span><span class="si">}{</span><span class="n">sep</span><span class="si">}{</span><span class="n">day</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">"</span>
 
         <span class="c1"># Handle seconds with decimal part</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">second</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
             <span class="c1"># Split integer and fractional parts of seconds</span>
             <span class="n">seconds_int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">second</span><span class="p">)</span>
             <span class="n">seconds_frac</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">second</span> <span class="o">-</span> <span class="n">seconds_int</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>  <span class="c1"># Get milliseconds</span>
-            <span class="n">time_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">hour</span><span class="si">:</span><span class="s2">02d</span><span class="si">}{</span><span class="n">minute</span><span class="si">:</span><span class="s2">02d</span><span class="si">}{</span><span class="n">seconds_int</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">p</span><span class="si">{</span><span class="n">seconds_frac</span><span class="si">:</span><span class="s2">03d</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">time_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">hour</span><span class="si">:</span><span class="s2">02d</span><span class="si">}{</span><span class="n">minute</span><span class="si">:</span><span class="s2">02d</span><span class="si">}{</span><span class="n">seconds_int</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">p</span><span class="si">{</span><span class="n">seconds_frac</span><span class="si">:</span><span class="s2">03d</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">time_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">hour</span><span class="si">:</span><span class="s2">02d</span><span class="si">}{</span><span class="n">minute</span><span class="si">:</span><span class="s2">02d</span><span class="si">}{</span><span class="n">second</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">time_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">hour</span><span class="si">:</span><span class="s2">02d</span><span class="si">}{</span><span class="n">minute</span><span class="si">:</span><span class="s2">02d</span><span class="si">}{</span><span class="n">second</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">"</span>
 
         <span class="c1"># Format timezone offset</span>
-        <span class="n">tz_sign_char</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span> <span class="k">if</span> <span class="n">tz_sign</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;e&quot;</span>
-        <span class="n">tz_offset_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tz_sign_char</span><span class="si">}{</span><span class="n">tz_offset_hours</span><span class="si">:</span><span class="s2">02d</span><span class="si">}{</span><span class="n">tz_offset_minutes</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">tz_sign_char</span> <span class="o">=</span> <span class="s2">"w"</span> <span class="k">if</span> <span class="n">tz_sign</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="s2">"e"</span>
+        <span class="n">tz_offset_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tz_sign_char</span><span class="si">}{</span><span class="n">tz_offset_hours</span><span class="si">:</span><span class="s2">02d</span><span class="si">}{</span><span class="n">tz_offset_minutes</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">"</span>
 
         <span class="c1"># Combine all parts to form ISO 8601 string</span>
-        <span class="n">flare_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">date_part</span><span class="si">}</span><span class="s2">t</span><span class="si">{</span><span class="n">time_part</span><span class="si">}</span><span class="s2">z</span><span class="si">{</span><span class="n">tz_offset_part</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">flare_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">date_part</span><span class="si">}</span><span class="s2">t</span><span class="si">{</span><span class="n">time_part</span><span class="si">}</span><span class="s2">z</span><span class="si">{</span><span class="n">tz_offset_part</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="k">return</span> <span class="n">flare_str</span></div>
 
@@ -873,46 +873,46 @@
 <div class="viewcode-block" id="encode_iso8601">
 <a class="viewcode-back" href="../../../generated/plans.parsers.flare.html#plans.parsers.flare.encode_iso8601">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">encode_iso8601</span><span class="p">(</span><span class="n">datetime_dc</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Encodes a dictionary containing datetime components into an ISO 8601 formatted string.</span>
 
-<span class="sd">    :param datetime_dc: A dictionary with datetime components. Expected keys include &#39;year&#39;, &#39;month&#39;, &#39;day&#39;, &#39;hour&#39;, &#39;minute&#39;, &#39;second&#39; (can be float for milliseconds), &#39;tz_sign&#39; (-1 for west, 1 for east), &#39;tz_offset_hours&#39;, and &#39;tz_offset_minutes&#39;. Missing keys will be filled with default values (e.g., 2000-01-01T00:00:00.000+00:00).</span>
+<span class="sd">    :param datetime_dc: A dictionary with datetime components. Expected keys include 'year', 'month', 'day', 'hour', 'minute', 'second' (can be float for milliseconds), 'tz_sign' (-1 for west, 1 for east), 'tz_offset_hours', and 'tz_offset_minutes'. Missing keys will be filled with default values (e.g., 2000-01-01T00:00:00.000+00:00).</span>
 <span class="sd">    :type datetime_dc: dict</span>
 <span class="sd">    :return: An ISO 8601 formatted string.</span>
 <span class="sd">    :rtype: str</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Extract components from the dictionary</span>
     <span class="c1"># Default values for all components to ensure a full timestamp</span>
-    <span class="n">year</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
-    <span class="n">month</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">day</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">year</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"year"</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+    <span class="n">month</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"month"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">day</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"day"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-    <span class="n">hour</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hour&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">minute</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;minute&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">second</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;second&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>  <span class="c1"># Default to 0.0 for potential milliseconds</span>
+    <span class="n">hour</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hour"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">minute</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"minute"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">second</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"second"</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>  <span class="c1"># Default to 0.0 for potential milliseconds</span>
 
-    <span class="n">tz_sign</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tz_sign&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Default to +</span>
-    <span class="n">tz_offset_hours</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tz_offset_hours&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">tz_offset_minutes</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tz_offset_minutes&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">tz_sign</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tz_sign"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Default to +</span>
+    <span class="n">tz_offset_hours</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tz_offset_hours"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">tz_offset_minutes</span> <span class="o">=</span> <span class="n">datetime_dc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tz_offset_minutes"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
     <span class="c1"># Format date and time parts with zero-filling</span>
-    <span class="n">date_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">year</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">month</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">day</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">date_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">year</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">month</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">day</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="c1"># Handle seconds with decimal part</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">second</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
         <span class="c1"># Split integer and fractional parts of seconds</span>
         <span class="n">seconds_int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">second</span><span class="p">)</span>
         <span class="n">seconds_frac</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">second</span> <span class="o">-</span> <span class="n">seconds_int</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>  <span class="c1"># Get milliseconds</span>
-        <span class="n">time_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">hour</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">minute</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">seconds_int</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">seconds_frac</span><span class="si">:</span><span class="s2">03d</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">time_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">hour</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">minute</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">seconds_int</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">seconds_frac</span><span class="si">:</span><span class="s2">03d</span><span class="si">}</span><span class="s2">"</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">time_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">hour</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">minute</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">second</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">time_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">hour</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">minute</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">second</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="c1"># Format timezone offset</span>
-    <span class="n">tz_sign_char</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="n">tz_sign</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;+&quot;</span>
-    <span class="n">tz_offset_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tz_sign_char</span><span class="si">}{</span><span class="n">tz_offset_hours</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">tz_offset_minutes</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">tz_sign_char</span> <span class="o">=</span> <span class="s2">"-"</span> <span class="k">if</span> <span class="n">tz_sign</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="s2">"+"</span>
+    <span class="n">tz_offset_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tz_sign_char</span><span class="si">}{</span><span class="n">tz_offset_hours</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">tz_offset_minutes</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="c1"># Combine all parts to form ISO 8601 string</span>
-    <span class="n">iso_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">date_part</span><span class="si">}</span><span class="s2">T</span><span class="si">{</span><span class="n">time_part</span><span class="si">}{</span><span class="n">tz_offset_part</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">iso_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">date_part</span><span class="si">}</span><span class="s2">T</span><span class="si">{</span><span class="n">time_part</span><span class="si">}{</span><span class="n">tz_offset_part</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="k">return</span> <span class="n">iso_string</span></div>
 
@@ -945,8 +945,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -980,7 +980,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

@@ -1,0 +1,1051 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Time Series - Upscaling &#8212; plans 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/timeseries_02_upscale';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Time Series - Downscaling" href="timeseries_06_downscale.html" />
+    <link rel="prev" title="Time Series - Comparing" href="timeseries_05_compare.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-light" alt=""/>
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">plans</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../files.html">Files</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../files.html">Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_structures.html">Data Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../files_index.html">Files Index</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Projects</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="project_01.html">Projects - basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="univar_01.html">Univariate data - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time Series - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_05_compare.html">Time Series - Comparing</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Time Series - Upscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_06_downscale.html">Time Series - Downscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_03_gaps.html">Time Series - Gaps and epochs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_04_standardize.html">Time Series - Standardizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_07_collection.html">Time Series - Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="raster_01.html">Raster data - the basics</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../userguide.html" class="nav-link">User Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../examples.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Time Series - Upscaling</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="time-series-upscaling">
+<h1>Time Series - Upscaling<a class="headerlink" href="#time-series-upscaling" title="Link to this heading">#</a></h1>
+<p>This tutorial focuses on working with upscaling time series data management and analysis using <code class="docutils literal notranslate"><span class="pre">plans</span></code>.</p>
+<section id="notebook-setup">
+<h2>Notebook setup<a class="headerlink" href="#notebook-setup" title="Link to this heading">#</a></h2>
+<p>For users running this tutorial as a Jupyter Notebook, this cell must be executed first:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pprint</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># Install `plans` in `google.colab`.</span>
+<span class="c1"># Use `pip install plans` for other environments.</span>
+
+<span class="k">if</span> <span class="s2">"google.colab"</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="si">}</span><span class="s2"> -m pip install -q plans"</span><span class="p">)</span>
+
+<span class="c1"># This avoids warnings related to uninstalled fonts</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="c1"># Set the matplotlib font manager logger to only show errors (hides warnings)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">'matplotlib.font_manager'</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+
+<span class="c1"># define output folder</span>
+<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"outputs/time-series"</span><span class="p">)</span>
+<span class="n">OUTPUT_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Outputs will be saved to: ./</span><span class="si">{</span><span class="n">OUTPUT_DIR</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Outputs will be saved to: ./outputs/time-series
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-timeseries-object">
+<h2>The <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object<a class="headerlink" href="#the-timeseries-object" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object is a very primitive class that lives under <code class="docutils literal notranslate"><span class="pre">plans.datasets</span></code> module.
+This object is a child from the <code class="docutils literal notranslate"><span class="pre">Univar</span></code> object that lives in <code class="docutils literal notranslate"><span class="pre">plans.analyst</span></code> module. The <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> stores all core methods for working with time series, incluing standardization.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="create-and-load-tutorial-data">
+<h2>Create and load tutorial data<a class="headerlink" href="#create-and-load-tutorial-data" title="Link to this heading">#</a></h2>
+<p>Lets first make a perfect time series using <code class="docutils literal notranslate"><span class="pre">.make_synthetic_tsn()</span></code> method and save it to a CSV file.
+This method makes a Trend-Seasonality-Noise archetype time-series:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make synthetic TSN (Trend-Seasonality-Noise) time-series</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">make_synthetic_tsn</span><span class="p">(</span>
+    <span class="n">start</span><span class="o">=</span><span class="s2">"2020-01-01"</span><span class="p">,</span>
+    <span class="n">end</span><span class="o">=</span><span class="s2">"2026-01-01"</span><span class="p">,</span>
+    <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">freq</span><span class="o">=</span><span class="s2">"1h"</span><span class="p">,</span>
+    <span class="n">trend</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+    <span class="n">noise_sd</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">seasonal_period</span><span class="o">=</span><span class="s2">"YS"</span><span class="p">,</span>
+    <span class="n">minor_amplitude</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">minor_seasonal_period</span><span class="o">=</span><span class="s2">"D"</span>
+<span class="p">)</span>
+<span class="c1"># Export CSV file</span>
+<span class="n">file_csv</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"time_series.csv"</span>
+<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_csv</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s2">"False"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Saved to: </span><span class="si">{</span><span class="n">file_csv</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Saved to: outputs/time-series/time_series.csv
+</pre></div>
+</div>
+</div>
+</div>
+<p>Call the <code class="docutils literal notranslate"><span class="pre">.load_data()</span></code> method for loading from CSV file:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Testing"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"tst"</span><span class="p">)</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
+    <span class="n">file_data</span><span class="o">=</span><span class="n">file_csv</span><span class="p">,</span>  <span class="c1"># file path</span>
+    <span class="n">input_dtfield</span><span class="o">=</span><span class="s2">"datetime"</span><span class="p">,</span> <span class="c1"># name of datetime field</span>
+    <span class="n">input_varfield</span><span class="o">=</span><span class="s2">"level"</span><span class="p">,</span>  <span class="c1"># name of variable</span>
+    <span class="n">in_sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span>  <span class="c1"># input separator</span>
+    <span class="n">filter_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">"2020-01-01"</span><span class="p">,</span> <span class="s2">"2026-01-01"</span><span class="p">]</span>  <span class="c1"># filter dates</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally, view the loaded data:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"n_dates"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c5a19bbdfc9817b433e59ac24f3d31c4447244714cba2980a48323de104d03a1.png" src="../_images/c5a19bbdfc9817b433e59ac24f3d31c4447244714cba2980a48323de104d03a1.png" />
+</div>
+</div>
+</section>
+<section id="upscaling-time-series-data">
+<h2>Upscaling time series data<a class="headerlink" href="#upscaling-time-series-data" title="Link to this heading">#</a></h2>
+<p>Upscaling, also known as aggregation, is the process of changing data from a finer resolution to a coarser resolution.</p>
+<p>The core of this process is the <strong>upscaling function</strong>, which can be any arbitrary statistic or function applied to the finer scale.</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object, the upscaling function is encoded by the <code class="docutils literal notranslate"><span class="pre">.agg</span></code> attribute, which holds pre-defined typical aggregation methods.</p>
+<p>Check what is the <code class="docutils literal notranslate"><span class="pre">.agg</span></code> attribute:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span><span class="o">.</span><span class="n">agg</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>'mean'
+</pre></div>
+</div>
+</div>
+</div>
+<section id="the-scale-up-method">
+<h3>The <code class="docutils literal notranslate"><span class="pre">.scale_up()</span></code> method<a class="headerlink" href="#the-scale-up-method" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">.scale_up()</span></code> method allows the upscaling to other time resolutions, using the <code class="docutils literal notranslate"><span class="pre">freq</span></code> parameter flag, a Pandas-like string.</p>
+<p>Common options include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">h</span></code> for hourly frequency</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">D</span></code> for daily frequency</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">W</span></code> for weekly frequency</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MS</span></code> for monthly/start frequency</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">QS</span></code> for quarterly/start frequency</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">YS</span></code> for yearly/start frequency</p></li>
+</ul>
+<p>More options and details can be found in the <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases">Pandas documentation on offset aliases</a>.</p>
+<p>The full signature is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scale_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">bad_max</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">freq</span></code></strong>: the target Pandas-like frequency alias (explored in detail below).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">bad_max</span></code></strong>: the maximum number of <code class="docutils literal notranslate"><span class="pre">Bad</span></code> (null) records tolerated inside a single aggregation window. Windows exceeding this threshold are dropped from the result.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">inplace</span></code></strong>: controls what the method returns (see next section).</p></li>
+</ul>
+</section>
+<section id="inplace-true-vs-inplace-false">
+<h3><code class="docutils literal notranslate"><span class="pre">inplace=True</span></code> vs <code class="docutils literal notranslate"><span class="pre">inplace=False</span></code><a class="headerlink" href="#inplace-true-vs-inplace-false" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">inplace=True</span></code> (default): overwrites <code class="docutils literal notranslate"><span class="pre">self.data</span></code> and all derived statistics (<code class="docutils literal notranslate"><span class="pre">stats_df</span></code>, <code class="docutils literal notranslate"><span class="pre">freq_df</span></code>, <code class="docutils literal notranslate"><span class="pre">weibull_df</span></code>) directly on the current object. The method returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inplace=False</span></code>: leaves the original object untouched and instead returns a <strong>brand-new <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object</strong> — an exact copy of the parent (same <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">alias</span></code>, <code class="docutils literal notranslate"><span class="pre">code</span></code>, units, <code class="docutils literal notranslate"><span class="pre">agg</span></code>, etc.) but holding the upscaled data. This is the recommended mode for tutorials and exploratory analysis, since it lets you keep the original series around for comparison.</p></li>
+</ul>
+<p>This tutorial uses <code class="docutils literal notranslate"><span class="pre">inplace=False</span></code> throughout, so <code class="docutils literal notranslate"><span class="pre">ts</span></code> (native hourly resolution) stays available for comparison at every step.</p>
+</section>
+<section id="anchoring-a-key-detail-of-freq">
+<h3>Anchoring: a key detail of <code class="docutils literal notranslate"><span class="pre">freq</span></code><a class="headerlink" href="#anchoring-a-key-detail-of-freq" title="Link to this heading">#</a></h3>
+<p>Not all <code class="docutils literal notranslate"><span class="pre">freq</span></code> aliases behave the same way regarding <em>where</em> each aggregation window starts and ends:</p>
+<ul class="simple">
+<li><p><strong>Data-start-anchored</strong> frequencies are plain multiples of a base unit, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;5D&quot;</span></code>. Bins are chunked every N units starting from wherever the series begins — <strong>not</strong> from a fixed calendar boundary.</p></li>
+<li><p><strong>Calendar-anchored</strong> frequencies (<code class="docutils literal notranslate"><span class="pre">W</span></code>, <code class="docutils literal notranslate"><span class="pre">MS</span></code>, <code class="docutils literal notranslate"><span class="pre">QS</span></code>, <code class="docutils literal notranslate"><span class="pre">YS</span></code>, etc.) snap to fixed real-world boundaries, regardless of where the data starts.</p></li>
+</ul>
+<p>This distinction matters a lot in practice and is demonstrated in the examples below.</p>
+<p>Upscale from native to daily resolution.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">bad_max</span></code> parameter tells how many null values in native resolution is allowed to be ignored.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_daily</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">scale_up</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">bad_max</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_daily</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/0edae33f6bf15af1dcc73066ac28d6529724b56a174fc28f589f36f06c96ead6.png" src="../_images/0edae33f6bf15af1dcc73066ac28d6529724b56a174fc28f589f36f06c96ead6.png" />
+</div>
+</div>
+</section>
+<section id="pentad-upscale-data-start-anchored">
+<h3>Pentad upscale (data-start-anchored)<a class="headerlink" href="#pentad-upscale-data-start-anchored" title="Link to this heading">#</a></h3>
+<p>A pentad is a 5-day period. Since <code class="docutils literal notranslate"><span class="pre">&quot;5D&quot;</span></code> is a plain multiple of the base <code class="docutils literal notranslate"><span class="pre">D</span></code> unit, it is <strong>data-start-anchored</strong>: the first bin starts exactly at the first timestamp of the series, and every following bin is chunked every 5 days from there — not from a fixed calendar boundary like the 1st, 6th, 11th, etc. of the month.</p>
+<p>This is fine when the series happens to start on day 1 (as in this synthetic, “perfect data” example), but keep in mind that a series starting on, say, the 3rd of the month will produce pentads offset from the classic meteorological convention.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_pentad</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">scale_up</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"5D"</span><span class="p">,</span> <span class="n">bad_max</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ts_pentad</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/4febc775379c1cf9c191189b7644e9441725da4c50a52b5d41ce66612f3c4f3f.png" src="../_images/4febc775379c1cf9c191189b7644e9441725da4c50a52b5d41ce66612f3c4f3f.png" />
+</div>
+</div>
+</section>
+<section id="weekly-upscale-calendar-anchored">
+<h3>Weekly upscale (calendar-anchored)<a class="headerlink" href="#weekly-upscale-calendar-anchored" title="Link to this heading">#</a></h3>
+<p>Unlike <code class="docutils literal notranslate"><span class="pre">&quot;5D&quot;</span></code>, the <code class="docutils literal notranslate"><span class="pre">&quot;W&quot;</span></code> alias is <strong>calendar-anchored</strong>: it always snaps to fixed weekly boundaries, regardless of where the series starts.</p>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">&quot;W&quot;</span></code> means <code class="docutils literal notranslate"><span class="pre">&quot;W-SUN&quot;</span></code> — weeks ending on Sunday. You can anchor to any weekday with a suffix: <code class="docutils literal notranslate"><span class="pre">W-MON</span></code>, <code class="docutils literal notranslate"><span class="pre">W-TUE</span></code>, <code class="docutils literal notranslate"><span class="pre">W-WED</span></code>, <code class="docutils literal notranslate"><span class="pre">W-THU</span></code>, <code class="docutils literal notranslate"><span class="pre">W-FRI</span></code>, <code class="docutils literal notranslate"><span class="pre">W-SAT</span></code>, <code class="docutils literal notranslate"><span class="pre">W-SUN</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># default weekly (weeks ending Sunday)</span>
+<span class="n">ts_weekly</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">scale_up</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"W"</span><span class="p">,</span> <span class="n">bad_max</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ts_weekly</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/03f36a58e890daa04a403383ed77ed6402f706386fc77a9d0db5cf31d2831724.png" src="../_images/03f36a58e890daa04a403383ed77ed6402f706386fc77a9d0db5cf31d2831724.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># weekly anchored to Monday-ending weeks instead</span>
+<span class="n">ts_weekly_mon</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">scale_up</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"W-MON"</span><span class="p">,</span> <span class="n">bad_max</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ts_weekly_mon</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/122fee538b86aeba41497a66965ac72b9c355cf7b819058e0e0042bde721fbc7.png" src="../_images/122fee538b86aeba41497a66965ac72b9c355cf7b819058e0e0042bde721fbc7.png" />
+</div>
+</div>
+<p>Upscale to monthly resolution</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_monthly</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">scale_up</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"MS"</span><span class="p">,</span> <span class="n">bad_max</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ts_monthly</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/5e82da43c4c322fa600195fbff2f22f540518db1405e87ed6896d1ea873122b7.png" src="../_images/5e82da43c4c322fa600195fbff2f22f540518db1405e87ed6896d1ea873122b7.png" />
+</div>
+</div>
+<p>Upscale to yearly resolution</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_yearly</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">scale_up</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"YS"</span><span class="p">,</span> <span class="n">bad_max</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ts_yearly</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/1203402a46aee3427d1adf1614e3a4770e7397eaef7a99dcb5fd767964bd7957.png" src="../_images/1203402a46aee3427d1adf1614e3a4770e7397eaef7a99dcb5fd767964bd7957.png" />
+</div>
+</div>
+</section>
+<section id="hydrological-year-upscale">
+<h3>Hydrological year upscale<a class="headerlink" href="#hydrological-year-upscale" title="Link to this heading">#</a></h3>
+<p>Just like weekly, the yearly alias is calendar-anchored, but the anchor month is also configurable. Plain <code class="docutils literal notranslate"><span class="pre">&quot;YS&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;YE&quot;</span></code> default to the calendar year (start Jan 1 / end Dec 31), but appending a month suffix defines a custom year boundary — exactly what’s needed for a <strong>hydrological (water) year</strong>.</p>
+<p>For example:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;YS-OCT&quot;</span></code> → year starting October 1 (the common US water-year convention: Oct 1 – Sep 30)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;YE-SEP&quot;</span></code> → year ending September 30 (equivalent boundary, expressed as an end date)</p></li>
+</ul>
+<p>The suffix month, combined with the <code class="docutils literal notranslate"><span class="pre">YS-</span></code>/<code class="docutils literal notranslate"><span class="pre">YE-</span></code> prefix, determines whether that month is the start or the end of the bin. Hydrological year conventions vary by country and basin (e.g. Oct–Sep, Sep–Aug), so pick the suffix that matches your region.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># hydrological year, Oct-Sep (e.g. US water-year convention)</span>
+<span class="n">ts_hydro_year</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">scale_up</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"YS-OCT"</span><span class="p">,</span> <span class="n">bad_max</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ts_hydro_year</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/dec667d2cf77f87d13d8cc2ad87674ebc98fc9068f08623b954f5d556212d909.png" src="../_images/dec667d2cf77f87d13d8cc2ad87674ebc98fc9068f08623b954f5d556212d909.png" />
+</div>
+</div>
+<p>Because the <code class="docutils literal notranslate"><span class="pre">agg</span></code> attribute is the ‘mean’, the mean across all scales is preserved</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span><span class="o">.</span><span class="n">stats_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic         mean
+value        126.30478
+Name: 2, dtype: object
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_daily</span><span class="o">.</span><span class="n">stats_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic         mean
+value        126.30478
+Name: 2, dtype: object
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_pentad</span><span class="o">.</span><span class="n">stats_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic          mean
+value        126.334163
+Name: 2, dtype: object
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_weekly</span><span class="o">.</span><span class="n">stats_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic          mean
+value        126.319958
+Name: 2, dtype: object
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_monthly</span><span class="o">.</span><span class="n">stats_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic          mean
+value        126.480365
+Name: 2, dtype: object
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_yearly</span><span class="o">.</span><span class="n">stats_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic          mean
+value        126.308781
+Name: 2, dtype: object
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_hydro_year</span><span class="o">.</span><span class="n">stats_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic          mean
+value        124.910471
+Name: 2, dtype: object
+</pre></div>
+</div>
+</div>
+</div>
+<p>Changing the <code class="docutils literal notranslate"><span class="pre">agg</span></code> to represent other upscaling function</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span><span class="o">.</span><span class="n">agg</span> <span class="o">=</span> <span class="s1">'sum'</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_daily_new</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">scale_up</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">bad_max</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Check the new upscaling function results</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_daily_new</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/86e9100edbc100db8f1a694824d04342766fc4879502109796f6c3b35cee259f.png" src="../_images/86e9100edbc100db8f1a694824d04342766fc4879502109796f6c3b35cee259f.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_daily_new</span><span class="o">.</span><span class="n">stats_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic           mean
+value        3031.314712
+Name: 2, dtype: object
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="recap-freq-anchoring-cheat-sheet">
+<h3>Recap: <code class="docutils literal notranslate"><span class="pre">freq</span></code> anchoring cheat sheet<a class="headerlink" href="#recap-freq-anchoring-cheat-sheet" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">freq</span></code></p></th>
+<th class="head"><p>Meaning</p></th>
+<th class="head"><p>Anchoring</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;D&quot;</span></code></p></td>
+<td><p>daily</p></td>
+<td><p>data-start-anchored</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;5D&quot;</span></code></p></td>
+<td><p>pentad (5-day)</p></td>
+<td><p>data-start-anchored</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;W&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">&quot;W-SUN&quot;</span></code></p></td>
+<td><p>weekly, ending Sunday</p></td>
+<td><p>calendar-anchored</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;W-MON&quot;</span></code></p></td>
+<td><p>weekly, ending Monday</p></td>
+<td><p>calendar-anchored</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;MS&quot;</span></code></p></td>
+<td><p>monthly, start</p></td>
+<td><p>calendar-anchored</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;QS&quot;</span></code></p></td>
+<td><p>quarterly, start</p></td>
+<td><p>calendar-anchored</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;YS&quot;</span></code></p></td>
+<td><p>yearly, calendar (Jan–Dec)</p></td>
+<td><p>calendar-anchored</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;YS-OCT&quot;</span></code></p></td>
+<td><p>hydrological year (Oct–Sep)</p></td>
+<td><p>calendar-anchored</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>As a rule of thumb: plain multiples of a base unit (<code class="docutils literal notranslate"><span class="pre">&quot;5D&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;10D&quot;</span></code>, …) chunk relative to the data; named calendar units (<code class="docutils literal notranslate"><span class="pre">W</span></code>, <code class="docutils literal notranslate"><span class="pre">MS</span></code>, <code class="docutils literal notranslate"><span class="pre">QS</span></code>, <code class="docutils literal notranslate"><span class="pre">YS</span></code>, …) snap to fixed real-world boundaries and can be further anchored with a weekday or month suffix.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="timeseries_05_compare.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Time Series - Comparing</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="timeseries_06_downscale.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Time Series - Downscaling</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notebook-setup">Notebook setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-timeseries-object">The <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-and-load-tutorial-data">Create and load tutorial data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#upscaling-time-series-data">Upscaling time series data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-scale-up-method">The <code class="docutils literal notranslate"><span class="pre">.scale_up()</span></code> method</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inplace-true-vs-inplace-false"><code class="docutils literal notranslate"><span class="pre">inplace=True</span></code> vs <code class="docutils literal notranslate"><span class="pre">inplace=False</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#anchoring-a-key-detail-of-freq">Anchoring: a key detail of <code class="docutils literal notranslate"><span class="pre">freq</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pentad-upscale-data-start-anchored">Pentad upscale (data-start-anchored)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#weekly-upscale-calendar-anchored">Weekly upscale (calendar-anchored)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hydrological-year-upscale">Hydrological year upscale</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#recap-freq-anchoring-cheat-sheet">Recap: <code class="docutils literal notranslate"><span class="pre">freq</span></code> anchoring cheat sheet</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/tutorials/timeseries_02_upscale.ipynb.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Iporã Possantti.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

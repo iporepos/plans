@@ -1,0 +1,1354 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Time Series - Downscaling &#8212; plans 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/timeseries_06_downscale';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Time Series - Gaps and epochs" href="timeseries_03_gaps.html" />
+    <link rel="prev" title="Time Series - Upscaling" href="timeseries_02_upscale.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-light" alt=""/>
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">plans</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../files.html">Files</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../files.html">Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_structures.html">Data Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../files_index.html">Files Index</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Projects</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="project_01.html">Projects - basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="univar_01.html">Univariate data - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time Series - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_05_compare.html">Time Series - Comparing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_02_upscale.html">Time Series - Upscaling</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Time Series - Downscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_03_gaps.html">Time Series - Gaps and epochs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_04_standardize.html">Time Series - Standardizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_07_collection.html">Time Series - Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="raster_01.html">Raster data - the basics</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../userguide.html" class="nav-link">User Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../examples.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Time Series - Downscaling</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="time-series-downscaling">
+<h1>Time Series - Downscaling<a class="headerlink" href="#time-series-downscaling" title="Link to this heading">#</a></h1>
+<p>Downscaling is the opposite of upscaling: going from a coarser time step to a finer one. <code class="docutils literal notranslate"><span class="pre">.scale_down()</span></code> handles this differently depending on the series’ <code class="docutils literal notranslate"><span class="pre">agg</span></code> attribute:</p>
+<ul class="simple">
+<li><p>For <strong>non-sum</strong> variables (<code class="docutils literal notranslate"><span class="pre">agg</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;mean&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;min&quot;</span></code>, …), it’s plain linear interpolation between the original points.</p></li>
+<li><p>For <strong>sum</strong> variables (<code class="docutils literal notranslate"><span class="pre">agg</span> <span class="pre">==</span> <span class="pre">&quot;sum&quot;</span></code>, e.g. daily precipitation totals), each source period’s total must be <em>conserved</em>: the finer sub-steps within a day have to add back up to exactly that day’s original total. Naive linear interpolation doesn’t guarantee this – it can blend values across day boundaries.</p></li>
+</ul>
+<p>This tutorial covers the <code class="docutils literal notranslate"><span class="pre">&quot;sum&quot;</span></code> case specifically, since it’s the more interesting one:</p>
+<ul class="simple">
+<li><p><strong>Uniform split</strong> (the default): each day’s total spread evenly across its sub-daily steps.</p></li>
+<li><p><strong>Covariate-weighted</strong>: each day’s total shaped by a higher-resolution proxy signal (e.g. hourly satellite precipitation estimates), so the sub-daily <em>pattern</em> comes from the covariate while the sub-daily <em>total</em> still matches the original daily gauge value exactly.</p></li>
+</ul>
+<p>Both are visualized with markers so the sub-daily steps are clearly distinguishable from the original daily values.</p>
+<p>Like <code class="docutils literal notranslate"><span class="pre">.scale_up()</span></code>, <code class="docutils literal notranslate"><span class="pre">.scale_down()</span></code> takes an <code class="docutils literal notranslate"><span class="pre">inplace</span></code> parameter (default <code class="docutils literal notranslate"><span class="pre">False</span></code>): with <code class="docutils literal notranslate"><span class="pre">inplace=False</span></code> it returns a <strong>new <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object</strong> – an exact copy of the parent holding the downscaled data – rather than a bare DataFrame; with <code class="docutils literal notranslate"><span class="pre">inplace=True</span></code> it overwrites the current object’s data and returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<section id="notebook-setup">
+<h2>Notebook setup<a class="headerlink" href="#notebook-setup" title="Link to this heading">#</a></h2>
+<p>For users running this tutorial as a Jupyter Notebook, this cell must be executed first:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># Install `plans` in `google.colab`.</span>
+<span class="c1"># Use `pip install plans` for other environments.</span>
+
+<span class="k">if</span> <span class="s2">"google.colab"</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="si">}</span><span class="s2"> -m pip install -q plans"</span><span class="p">)</span>
+
+<span class="c1"># This avoids warnings related to uninstalled fonts</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">'matplotlib.font_manager'</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+
+<span class="c1"># Ensure figures render inline</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="c1"># define output folder</span>
+<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"outputs/time-series"</span><span class="p">)</span>
+<span class="n">OUTPUT_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Outputs will be saved to: ./</span><span class="si">{</span><span class="n">OUTPUT_DIR</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="n">RNG_SEED</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">RNG_SEED</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Outputs will be saved to: ./outputs/time-series
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="create-a-small-daily-precipitation-series">
+<h2>Create a small daily precipitation series<a class="headerlink" href="#create-a-small-daily-precipitation-series" title="Link to this heading">#</a></h2>
+<p>A tiny, deliberately small dataset (5 days) so every individual downscaled point is easy to see on a plot.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="s2">"2020-01-01"</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">)</span>
+<span class="n">daily_totals</span> <span class="o">=</span> <span class="p">[</span><span class="mf">3.6</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">1.9</span><span class="p">]</span>
+
+<span class="n">df_daily</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"datetime"</span><span class="p">:</span> <span class="n">dates</span><span class="p">,</span> <span class="s2">"precip"</span><span class="p">:</span> <span class="n">daily_totals</span><span class="p">})</span>
+<span class="n">file_daily</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"precip_daily.csv"</span>
+<span class="n">df_daily</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_daily</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">ts_daily</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Daily gauge"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"gauge"</span><span class="p">)</span>
+<span class="n">ts_daily</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
+    <span class="n">file_data</span><span class="o">=</span><span class="n">file_daily</span><span class="p">,</span>
+    <span class="n">input_dtfield</span><span class="o">=</span><span class="s2">"datetime"</span><span class="p">,</span>
+    <span class="n">input_varfield</span><span class="o">=</span><span class="s2">"precip"</span><span class="p">,</span>
+    <span class="n">in_sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="c1"># precipitation is a flow/sum variable -- totals must be conserved on downscale</span>
+<span class="n">ts_daily</span><span class="o">.</span><span class="n">agg</span> <span class="o">=</span> <span class="s2">"sum"</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Daily totals: </span><span class="si">{</span><span class="n">daily_totals</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Sum of all days: </span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="n">daily_totals</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="n">ts_daily</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Daily totals: [3.6, 4.8, 0.8, 2.4, 1.9]
+Sum of all days: 13.500000000000002
+</pre></div>
+</div>
+<img alt="../_images/f70a2ac5a523a29f4af4c4a0120c4592cce62fb2b2d2aac3ab87b274a98b72eb.png" src="../_images/f70a2ac5a523a29f4af4c4a0120c4592cce62fb2b2d2aac3ab87b274a98b72eb.png" />
+</div>
+</div>
+</section>
+<section id="downscale-with-uniform-split-default">
+<h2>Downscale with uniform split (default)<a class="headerlink" href="#downscale-with-uniform-split-default" title="Link to this heading">#</a></h2>
+<p>With no <code class="docutils literal notranslate"><span class="pre">covariate</span></code> argument, <code class="docutils literal notranslate"><span class="pre">.scale_down()</span></code> splits each day’s total evenly across its sub-daily steps.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">=</span> <span class="n">ts_daily</span><span class="o">.</span><span class="n">varfield</span>
+<span class="n">ts_uniform</span> <span class="o">=</span> <span class="n">ts_daily</span><span class="o">.</span><span class="n">scale_down</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"3h"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ts_uniform</span><span class="p">))</span>
+<span class="n">ts_uniform</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class 'plans.datasets.core.TimeSeries'&gt;
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>datetime</th>
+      <th>v</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2020-01-01 00:00:00</td>
+      <td>0.45</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2020-01-01 03:00:00</td>
+      <td>0.45</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2020-01-01 06:00:00</td>
+      <td>0.45</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2020-01-01 09:00:00</td>
+      <td>0.45</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2020-01-01 12:00:00</td>
+      <td>0.45</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2020-01-01 15:00:00</td>
+      <td>0.45</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2020-01-01 18:00:00</td>
+      <td>0.45</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>2020-01-01 21:00:00</td>
+      <td>0.45</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>2020-01-02 00:00:00</td>
+      <td>0.60</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>2020-01-02 03:00:00</td>
+      <td>0.60</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Confirm each day’s downscaled sub-steps still add up to that day’s original total:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_uniform</span> <span class="o">=</span> <span class="n">ts_uniform</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">df_uniform</span><span class="p">[</span><span class="s2">"day"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_uniform</span><span class="p">[</span><span class="n">ts_uniform</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span>
+<span class="n">check</span> <span class="o">=</span> <span class="n">df_uniform</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"day"</span><span class="p">)[</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">check</span><span class="p">[</span><span class="s2">"original"</span><span class="p">]</span> <span class="o">=</span> <span class="n">daily_totals</span>
+<span class="n">check</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>day</th>
+      <th>v</th>
+      <th>original</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2020-01-01</td>
+      <td>3.6</td>
+      <td>3.6</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2020-01-02</td>
+      <td>4.8</td>
+      <td>4.8</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2020-01-03</td>
+      <td>0.8</td>
+      <td>0.8</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2020-01-04</td>
+      <td>2.4</td>
+      <td>2.4</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2020-01-05</td>
+      <td>1.9</td>
+      <td>1.9</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Visualizing: original daily totals as large markers, downscaled 3-hourly sub-steps as small markers on a connecting line. <strong>The daily-total marker is placed at the end of the day it represents</strong>, not the start – a day’s rainfall total is only fully known once the day is over, so plotting it at midnight (the day’s start timestamp used internally) would visually suggest the rain fell <em>before</em> it was recorded. Note the black squares sit <em>above</em> the blue line – they represent each day’s <strong>total</strong>, while the blue points are each day’s total divided into 8 equal 3-hourly shares, so individually they’re much smaller than the day’s total. Each day’s flat segment visually confirms the uniform split, and vertical guide lines mark the day boundaries:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">df_uniform</span><span class="p">[</span><span class="s2">"datetime"</span><span class="p">],</span> <span class="n">df_uniform</span><span class="p">[</span><span class="n">v</span><span class="p">],</span>
+    <span class="n">marker</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"tab:blue"</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">"3h downscaled (uniform)"</span>
+<span class="p">)</span>
+<span class="c1"># plot the daily-total marker at the END of the day it represents,</span>
+<span class="c1"># not its internal start-of-day timestamp -- purely a plotting choice,</span>
+<span class="c1"># the underlying ts_daily.data timestamps are unchanged</span>
+<span class="n">one_day</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">ts_daily</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts_daily</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span> <span class="o">+</span> <span class="n">one_day</span><span class="p">,</span> <span class="n">ts_daily</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">v</span><span class="p">],</span>
+    <span class="n">marker</span><span class="o">=</span><span class="s2">"s"</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"None"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">"Original daily total (plotted at day's end)"</span>
+<span class="p">)</span>
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ts_daily</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts_daily</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"gray"</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">":"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Uniform-split downscale: daily -&gt; 3-hourly"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"datetime"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"precip"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ceb19c96120597dde9ff954138eb2c56eaf486bdc2dd03269d4c23633107fbf4.png" src="../_images/ceb19c96120597dde9ff954138eb2c56eaf486bdc2dd03269d4c23633107fbf4.png" />
+</div>
+</div>
+<p>Note the discontinuity at each day boundary – the uniform split has no information about <em>when</em> within a day the rain actually fell, so it produces a flat, physically implausible step function. This is where a covariate helps.</p>
+</section>
+<section id="downscale-with-a-covariate">
+<h2>Downscale with a covariate<a class="headerlink" href="#downscale-with-a-covariate" title="Link to this heading">#</a></h2>
+<p>Now suppose we have a higher-resolution proxy signal – e.g. hourly satellite-derived precipitation intensity. It’s <em>not</em> a direct measurement (its own units and totals don’t need to match the gauge), but its <strong>shape</strong> over time tells us when, within each day, precipitation was more or less intense. For this example, each day has a single, brief rain pulse at a different hour – a simple, clearly visible case for seeing how the shape carries through to the downscaled output.</p>
+<p><code class="docutils literal notranslate"><span class="pre">.scale_down(freq=...,</span> <span class="pre">covariate=ts_satellite)</span></code> uses exactly that shape: within each day, sub-steps get a share of the day’s total proportional to the covariate’s value at that sub-step, so the sub-daily <em>pattern</em> comes from the covariate while the sub-daily <em>total</em> still matches the gauge exactly.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># synthetic hourly satellite-like signal: a single narrow rain pulse</span>
+<span class="c1"># per day, at a randomized (but reproducible) hour, near-zero elsewhere</span>
+<span class="n">hourly_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="s2">"2020-01-01"</span><span class="p">,</span> <span class="s2">"2020-01-06"</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"1h"</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">"left"</span><span class="p">)</span>
+<span class="n">n_days</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">daily_totals</span><span class="p">)</span>
+<span class="n">pulse_hours</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">n_days</span><span class="p">)</span>  <span class="c1"># each day's pulse falls between 06:00-20:00</span>
+<span class="n">pulse_width</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># hours -- narrower means a sharper, more concentrated pulse</span>
+
+<span class="n">hours_of_day</span> <span class="o">=</span> <span class="p">(</span><span class="n">hourly_idx</span><span class="o">.</span><span class="n">hour</span> <span class="o">+</span> <span class="n">hourly_idx</span><span class="o">.</span><span class="n">minute</span> <span class="o">/</span> <span class="mi">60</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+<span class="n">day_of</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">t</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span> <span class="o">-</span> <span class="n">hourly_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">normalize</span><span class="p">())</span><span class="o">.</span><span class="n">days</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">hourly_idx</span><span class="p">])</span>
+
+<span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hourly_idx</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_days</span><span class="p">):</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">day_of</span> <span class="o">==</span> <span class="n">d</span>
+    <span class="n">signal</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">((</span><span class="n">hours_of_day</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">-</span> <span class="n">pulse_hours</span><span class="p">[</span><span class="n">d</span><span class="p">])</span> <span class="o">/</span> <span class="n">pulse_width</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="n">df_satellite</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"datetime"</span><span class="p">:</span> <span class="n">hourly_idx</span><span class="p">,</span> <span class="s2">"intensity"</span><span class="p">:</span> <span class="n">signal</span><span class="p">})</span>
+<span class="n">file_satellite</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"precip_satellite.csv"</span>
+<span class="n">df_satellite</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_satellite</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">ts_satellite</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Satellite proxy"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"sat"</span><span class="p">)</span>
+<span class="n">ts_satellite</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
+    <span class="n">file_data</span><span class="o">=</span><span class="n">file_satellite</span><span class="p">,</span>
+    <span class="n">input_dtfield</span><span class="o">=</span><span class="s2">"datetime"</span><span class="p">,</span>
+    <span class="n">input_varfield</span><span class="o">=</span><span class="s2">"intensity"</span><span class="p">,</span>
+    <span class="n">in_sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Covariate rows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_satellite</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">, detected frequency: </span><span class="si">{</span><span class="n">ts_satellite</span><span class="o">.</span><span class="n">dtfreq</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Pulse hour per day: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">pulse_hours</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="n">ts_satellite</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Covariate rows: 120, detected frequency: h
+Pulse hour per day: [12.1, 6.4, 13.7, 12.1, 11.9]
+</pre></div>
+</div>
+<img alt="../_images/279d5e41f51b8775704c816811a0b22a62a837b7ef9d344c8e5fc5fac3e5d461.png" src="../_images/279d5e41f51b8775704c816811a0b22a62a837b7ef9d344c8e5fc5fac3e5d461.png" />
+</div>
+</div>
+<p>The gauge target is <code class="docutils literal notranslate"><span class="pre">3h</span></code>, finer than the covariate’s own <code class="docutils literal notranslate"><span class="pre">1h</span></code>; <code class="docutils literal notranslate"><span class="pre">.scale_down()</span></code> linearly interpolates the covariate onto the target grid internally before using it as weights – no separate resampling step is needed on the user’s side.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_covariate</span> <span class="o">=</span> <span class="n">ts_daily</span><span class="o">.</span><span class="n">scale_down</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"3h"</span><span class="p">,</span> <span class="n">covariate</span><span class="o">=</span><span class="n">ts_satellite</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ts_covariate</span><span class="p">))</span>
+<span class="n">ts_covariate</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class 'plans.datasets.core.TimeSeries'&gt;
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>datetime</th>
+      <th>v</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2020-01-01 00:00:00</td>
+      <td>5.438341e-32</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2020-01-01 03:00:00</td>
+      <td>3.557537e-18</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2020-01-01 06:00:00</td>
+      <td>2.871985e-08</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2020-01-01 09:00:00</td>
+      <td>2.861308e-02</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2020-01-01 12:00:00</td>
+      <td>3.518007e+00</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2020-01-01 15:00:00</td>
+      <td>5.337998e-02</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2020-01-01 18:00:00</td>
+      <td>9.995621e-08</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>2020-01-01 21:00:00</td>
+      <td>2.309888e-17</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>2020-01-02 00:00:00</td>
+      <td>7.988420e-09</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>2020-01-02 03:00:00</td>
+      <td>1.731173e-02</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Same conservation check as before – covariate-weighting still preserves each day’s original total exactly:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_covariate</span> <span class="o">=</span> <span class="n">ts_covariate</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">df_covariate</span><span class="p">[</span><span class="s2">"day"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_covariate</span><span class="p">[</span><span class="n">ts_covariate</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span>
+<span class="n">check_cov</span> <span class="o">=</span> <span class="n">df_covariate</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"day"</span><span class="p">)[</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">check_cov</span><span class="p">[</span><span class="s2">"original"</span><span class="p">]</span> <span class="o">=</span> <span class="n">daily_totals</span>
+<span class="n">check_cov</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>day</th>
+      <th>v</th>
+      <th>original</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2020-01-01</td>
+      <td>3.6</td>
+      <td>3.6</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2020-01-02</td>
+      <td>4.8</td>
+      <td>4.8</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2020-01-03</td>
+      <td>0.8</td>
+      <td>0.8</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2020-01-04</td>
+      <td>2.4</td>
+      <td>2.4</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2020-01-05</td>
+      <td>1.9</td>
+      <td>1.9</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="a-note-on-the-return-type-inplace">
+<h2>A note on the return type: <code class="docutils literal notranslate"><span class="pre">inplace</span></code><a class="headerlink" href="#a-note-on-the-return-type-inplace" title="Link to this heading">#</a></h2>
+<p>Every call above used the default <code class="docutils literal notranslate"><span class="pre">inplace=False</span></code>, which is why <code class="docutils literal notranslate"><span class="pre">ts_uniform</span></code> and <code class="docutils literal notranslate"><span class="pre">ts_covariate</span></code> are full <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> objects (not DataFrames) – notice <code class="docutils literal notranslate"><span class="pre">.data</span></code> was needed to get at the underlying table. Setting <code class="docutils literal notranslate"><span class="pre">inplace=True</span></code> instead overwrites the object’s own data and returns <code class="docutils literal notranslate"><span class="pre">None</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_demo</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Demo"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"demo"</span><span class="p">)</span>
+<span class="n">ts_demo</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
+    <span class="n">file_data</span><span class="o">=</span><span class="n">file_daily</span><span class="p">,</span>
+    <span class="n">input_dtfield</span><span class="o">=</span><span class="s2">"datetime"</span><span class="p">,</span>
+    <span class="n">input_varfield</span><span class="o">=</span><span class="s2">"precip"</span><span class="p">,</span>
+    <span class="n">in_sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ts_demo</span><span class="o">.</span><span class="n">agg</span> <span class="o">=</span> <span class="s2">"sum"</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Rows before: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_demo</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="n">return_value</span> <span class="o">=</span> <span class="n">ts_demo</span><span class="o">.</span><span class="n">scale_down</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"3h"</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Return value: </span><span class="si">{</span><span class="n">return_value</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Rows after (same object, overwritten): </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_demo</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Rows before: 5
+Return value: None
+Rows after (same object, overwritten): 40
+</pre></div>
+</div>
+</div>
+</div>
+<p>Visualizing all three together: original daily totals, the uniform-split downscale, and the covariate-weighted downscale – note how the covariate version now has a plausible, physically-informed within-day shape instead of flat steps, while still returning to the same daily totals as the uniform version:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">df_uniform</span><span class="p">[</span><span class="s2">"datetime"</span><span class="p">],</span> <span class="n">df_uniform</span><span class="p">[</span><span class="n">v</span><span class="p">],</span>
+    <span class="n">marker</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"tab:blue"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">"Uniform split"</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">df_covariate</span><span class="p">[</span><span class="s2">"datetime"</span><span class="p">],</span> <span class="n">df_covariate</span><span class="p">[</span><span class="n">v</span><span class="p">],</span>
+    <span class="n">marker</span><span class="o">=</span><span class="s2">"^"</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"tab:green"</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">"Covariate-weighted"</span>
+<span class="p">)</span>
+<span class="n">one_day</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">ts_daily</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts_daily</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span> <span class="o">+</span> <span class="n">one_day</span><span class="p">,</span> <span class="n">ts_daily</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">v</span><span class="p">],</span>
+    <span class="n">marker</span><span class="o">=</span><span class="s2">"s"</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"None"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">"Original daily total (plotted at day's end)"</span>
+<span class="p">)</span>
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ts_daily</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts_daily</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"gray"</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">":"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Downscaling daily precipitation: uniform vs. covariate-weighted"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"datetime"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"precip"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/7b4b061bf333bf6a6aed9169295c3280d519910e4892aee98a6a73c2a0dc9a36.png" src="../_images/7b4b061bf333bf6a6aed9169295c3280d519910e4892aee98a6a73c2a0dc9a36.png" />
+</div>
+</div>
+</section>
+<section id="downscaling-a-non-sum-variable-water-level">
+<h2>Downscaling a non-sum variable: water level<a class="headerlink" href="#downscaling-a-non-sum-variable-water-level" title="Link to this heading">#</a></h2>
+<p>Precipitation is a flow variable – its totals must be conserved. Something like a daily-average water level is different: it’s not additive, so there’s no “total” to preserve. For this case, <code class="docutils literal notranslate"><span class="pre">.scale_down()</span></code> takes a different approach:</p>
+<ol class="arabic simple">
+<li><p>Each coarse data point is repositioned in time according to the <code class="docutils literal notranslate"><span class="pre">align</span></code> parameter – <code class="docutils literal notranslate"><span class="pre">&quot;start&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;center&quot;</span></code> (default), or <code class="docutils literal notranslate"><span class="pre">&quot;end&quot;</span></code> – reflecting where that value is assumed to sit within the period it represents. A daily average, for instance, is more representative of <em>midday</em> than midnight, so <code class="docutils literal notranslate"><span class="pre">&quot;center&quot;</span></code> anchors it at <code class="docutils literal notranslate"><span class="pre">12:00</span></code>.</p></li>
+<li><p>The repositioned points are linearly interpolated onto the fine grid.</p></li>
+<li><p>A single global multiplicative correction is applied so the <strong>downscaled series’ overall mean</strong> matches the <strong>original series’ overall mean</strong> – not each individual day’s mean, just the series as a whole. (An earlier design that tried to preserve <em>each day’s</em> mean exactly was tested and rejected – it produced wild oscillations with volatile data. See the aside below.)</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dates_level</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="s2">"2020-01-01"</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">)</span>
+<span class="n">daily_means</span> <span class="o">=</span> <span class="p">[</span><span class="mf">15.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">11.0</span><span class="p">,</span> <span class="mf">9.0</span><span class="p">,</span> <span class="mf">8.5</span><span class="p">,</span> <span class="mf">9.5</span><span class="p">,</span> <span class="mf">7.2</span><span class="p">,</span> <span class="mf">6.4</span><span class="p">]</span>
+
+<span class="n">df_level</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"datetime"</span><span class="p">:</span> <span class="n">dates_level</span><span class="p">,</span> <span class="s2">"level"</span><span class="p">:</span> <span class="n">daily_means</span><span class="p">})</span>
+<span class="n">file_level</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"level_daily.csv"</span>
+<span class="n">df_level</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_level</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">ts_level</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Reservoir level"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"lvl"</span><span class="p">)</span>
+<span class="n">ts_level</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
+    <span class="n">file_data</span><span class="o">=</span><span class="n">file_level</span><span class="p">,</span>
+    <span class="n">input_dtfield</span><span class="o">=</span><span class="s2">"datetime"</span><span class="p">,</span>
+    <span class="n">input_varfield</span><span class="o">=</span><span class="s2">"level"</span><span class="p">,</span>
+    <span class="n">in_sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"agg (default): </span><span class="si">{</span><span class="n">ts_level</span><span class="o">.</span><span class="n">agg</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>  <span class="c1"># "mean" -- not "sum", so align/correction path applies</span>
+
+<span class="n">vl</span> <span class="o">=</span> <span class="n">ts_level</span><span class="o">.</span><span class="n">varfield</span>
+<span class="n">ts_center</span> <span class="o">=</span> <span class="n">ts_level</span><span class="o">.</span><span class="n">scale_down</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"3h"</span><span class="p">)</span>  <span class="c1"># align="center" is the default</span>
+<span class="n">ts_start</span> <span class="o">=</span> <span class="n">ts_level</span><span class="o">.</span><span class="n">scale_down</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"3h"</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">"start"</span><span class="p">)</span>
+<span class="n">ts_end</span> <span class="o">=</span> <span class="n">ts_level</span><span class="o">.</span><span class="n">scale_down</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"3h"</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">"end"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">out</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">"center (default)"</span><span class="p">,</span> <span class="n">ts_center</span><span class="p">),</span> <span class="p">(</span><span class="s2">"start"</span><span class="p">,</span> <span class="n">ts_start</span><span class="p">),</span> <span class="p">(</span><span class="s2">"end"</span><span class="p">,</span> <span class="n">ts_end</span><span class="p">)):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"align=</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">&lt;17</span><span class="si">}</span><span class="s2"> overall mean: </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">vl</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">  "</span>
+          <span class="sa">f</span><span class="s2">"(original: </span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="n">daily_means</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">daily_means</span><span class="p">)</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>agg (default): 'mean'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>align=center (default)  overall mean: 11.360000  (original: 11.360000)
+align=start             overall mean: 11.360000  (original: 11.360000)
+align=end               overall mean: 11.360000  (original: 11.360000)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Visualizing all three <code class="docutils literal notranslate"><span class="pre">align</span></code> options together, with the original daily-mean markers placed at the timestamp each <code class="docutils literal notranslate"><span class="pre">align</span></code> option anchors them to – <code class="docutils literal notranslate"><span class="pre">&quot;start&quot;</span></code> at midnight, <code class="docutils literal notranslate"><span class="pre">&quot;center&quot;</span></code> at midday, <code class="docutils literal notranslate"><span class="pre">&quot;end&quot;</span></code> at the next midnight. Notice how each curve passes closer to its own markers, since those are exactly the points it interpolates through:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_start</span> <span class="o">=</span> <span class="n">ts_start</span><span class="o">.</span><span class="n">data</span>
+<span class="n">df_center</span> <span class="o">=</span> <span class="n">ts_center</span><span class="o">.</span><span class="n">data</span>
+<span class="n">df_end</span> <span class="o">=</span> <span class="n">ts_end</span><span class="o">.</span><span class="n">data</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_start</span><span class="p">[</span><span class="s2">"datetime"</span><span class="p">],</span> <span class="n">df_start</span><span class="p">[</span><span class="n">vl</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"tab:blue"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"align='start'"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_center</span><span class="p">[</span><span class="s2">"datetime"</span><span class="p">],</span> <span class="n">df_center</span><span class="p">[</span><span class="n">vl</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">"^"</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"tab:purple"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"align='center' (default)"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_end</span><span class="p">[</span><span class="s2">"datetime"</span><span class="p">],</span> <span class="n">df_end</span><span class="p">[</span><span class="n">vl</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">"v"</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"tab:red"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"align='end'"</span><span class="p">)</span>
+
+<span class="n">half_day</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">one_day</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts_level</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts_level</span><span class="o">.</span><span class="n">dtfield</span><span class="p">],</span> <span class="n">ts_level</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">vl</span><span class="p">],</span>
+        <span class="n">marker</span><span class="o">=</span><span class="s2">"s"</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"None"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"tab:blue"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"daily mean (start anchor)"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts_level</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts_level</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span> <span class="o">+</span> <span class="n">half_day</span><span class="p">,</span> <span class="n">ts_level</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">vl</span><span class="p">],</span>
+        <span class="n">marker</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"None"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"tab:purple"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"daily mean (center anchor)"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts_level</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts_level</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span> <span class="o">+</span> <span class="n">one_day</span><span class="p">,</span> <span class="n">ts_level</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">vl</span><span class="p">],</span>
+        <span class="n">marker</span><span class="o">=</span><span class="s2">"P"</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"None"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"tab:red"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"daily mean (end anchor)"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ts_level</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts_level</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"gray"</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">":"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Downscaling a non-sum (mean) variable: effect of `align`"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"datetime"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"level"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/628927ba84ce2ec48d4e268fd6a6f5b6022a39c6388b7db04ed4a91cd93982d5.png" src="../_images/628927ba84ce2ec48d4e268fd6a6f5b6022a39c6388b7db04ed4a91cd93982d5.png" />
+</div>
+</div>
+<section id="aside-why-not-preserve-each-day-s-mean-exactly">
+<h3>Aside: why not preserve each day’s mean exactly?<a class="headerlink" href="#aside-why-not-preserve-each-day-s-mean-exactly" title="Link to this heading">#</a></h3>
+<p>It’s tempting to want a stricter guarantee – that each individual day’s sub-daily average, not just the whole series’, matches its reported daily mean. There’s a simple technique for this: place unknown boundary values $S_i$ between periods such that $(S_i + S_{i+1})/2$ equals each period’s mean exactly, then linearly interpolate between the $S_i$. This <em>can</em> be solved exactly (it’s a linear recurrence), but it’s dangerously unstable – a volatile sequence of daily means can force boundary values far outside the plausible range of the variable:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">volatile_means</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">35.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">])</span>
+<span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">volatile_means</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">S</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">volatile_means</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">volatile_means</span><span class="p">):</span>
+    <span class="n">S</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">m</span> <span class="o">-</span> <span class="n">S</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Daily means:     </span><span class="si">{</span><span class="n">volatile_means</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Boundary values: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">S</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Note the boundary values swing far outside the range of the original "</span>
+      <span class="s2">"data (even negative) -- this is why `.scale_down()` uses the simpler, "</span>
+      <span class="s2">"more stable whole-series mean correction instead."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Daily means:     [10.0, 40.0, 8.0, 35.0, 12.0]
+Boundary values: [10.0, 10.0, 70.0, -54.0, 124.0, -100.0]
+Note the boundary values swing far outside the range of the original data (even negative) -- this is why `.scale_down()` uses the simpler, more stable whole-series mean correction instead.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="any-agg-other-than-sum-follows-the-same-path">
+<h3>Any <code class="docutils literal notranslate"><span class="pre">agg</span></code> other than <code class="docutils literal notranslate"><span class="pre">&quot;sum&quot;</span></code> follows the same path<a class="headerlink" href="#any-agg-other-than-sum-follows-the-same-path" title="Link to this heading">#</a></h3>
+<p>The align/correction behavior isn’t specific to <code class="docutils literal notranslate"><span class="pre">&quot;mean&quot;</span></code> – it applies to any <code class="docutils literal notranslate"><span class="pre">agg</span></code> value that isn’t <code class="docutils literal notranslate"><span class="pre">&quot;sum&quot;</span></code>, since the branch check is simply <code class="docutils literal notranslate"><span class="pre">self.agg</span> <span class="pre">!=</span> <span class="pre">&quot;sum&quot;</span></code>. Setting <code class="docutils literal notranslate"><span class="pre">agg</span></code> to something like <code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code> still runs without error, though it’s worth noting the correction always targets the <strong>mean</strong> regardless of what <code class="docutils literal notranslate"><span class="pre">agg</span></code> conceptually represents – there’s no attempt to conserve a maximum, since a maximum isn’t additive and can’t be redistributed the way a sum can:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_level</span><span class="o">.</span><span class="n">agg</span> <span class="o">=</span> <span class="s2">"max"</span>  <span class="c1"># arbitrary non-sum agg</span>
+<span class="n">ts_max_down</span> <span class="o">=</span> <span class="n">ts_level</span><span class="o">.</span><span class="n">scale_down</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"6h"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ts_max_down</span><span class="p">))</span>
+<span class="n">ts_max_down</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class 'plans.datasets.core.TimeSeries'&gt;
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>datetime</th>
+      <th>v</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2020-01-01 00:00:00</td>
+      <td>14.859385</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2020-01-01 06:00:00</td>
+      <td>14.859385</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2020-01-01 12:00:00</td>
+      <td>14.859385</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2020-01-01 18:00:00</td>
+      <td>16.097667</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2020-01-02 00:00:00</td>
+      <td>17.335949</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2020-01-02 06:00:00</td>
+      <td>18.574232</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+</section>
+<section id="recap">
+<h2>Recap<a class="headerlink" href="#recap" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.scale_down(freq)</span></code> returns a new <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object by default (<code class="docutils literal notranslate"><span class="pre">inplace=False</span></code>); pass <code class="docutils literal notranslate"><span class="pre">inplace=True</span></code> to overwrite the current object’s data instead and get <code class="docutils literal notranslate"><span class="pre">None</span></code> back.</p></li>
+<li><p>For a <code class="docutils literal notranslate"><span class="pre">&quot;sum&quot;</span></code>-aggregated series, <code class="docutils literal notranslate"><span class="pre">.scale_down(freq)</span></code> uses <strong>uniform split</strong> by default: each source period’s total is spread evenly across its finer sub-steps, exactly preserving that period’s total.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.scale_down(freq,</span> <span class="pre">covariate=ts_other)</span></code> shapes that distribution using a higher-resolution proxy series instead of splitting evenly – the covariate is auto-interpolated onto the target frequency if needed, and falls back to uniform weighting in any period where the covariate is entirely zero or missing.</p></li>
+<li><p>Both <code class="docutils literal notranslate"><span class="pre">&quot;sum&quot;</span></code> modes exactly conserve each source period’s original total – verified directly by grouping the downscaled output back to the source resolution.</p></li>
+<li><p>For any <code class="docutils literal notranslate"><span class="pre">agg</span></code> other than <code class="docutils literal notranslate"><span class="pre">&quot;sum&quot;</span></code> (<code class="docutils literal notranslate"><span class="pre">&quot;mean&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;min&quot;</span></code>, …), <code class="docutils literal notranslate"><span class="pre">.scale_down(freq,</span> <span class="pre">align=...)</span></code> repositions each coarse point per <code class="docutils literal notranslate"><span class="pre">align</span></code> (<code class="docutils literal notranslate"><span class="pre">&quot;start&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;center&quot;</span></code> default, or <code class="docutils literal notranslate"><span class="pre">&quot;end&quot;</span></code>), linearly interpolates, then applies a single global correction so the downscaled series’ <strong>overall</strong> mean matches the original – not each individual period’s mean, which turned out to be an unstable guarantee to chase exactly.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="timeseries_02_upscale.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Time Series - Upscaling</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="timeseries_03_gaps.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Time Series - Gaps and epochs</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notebook-setup">Notebook setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-small-daily-precipitation-series">Create a small daily precipitation series</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#downscale-with-uniform-split-default">Downscale with uniform split (default)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#downscale-with-a-covariate">Downscale with a covariate</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-note-on-the-return-type-inplace">A note on the return type: <code class="docutils literal notranslate"><span class="pre">inplace</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#downscaling-a-non-sum-variable-water-level">Downscaling a non-sum variable: water level</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#aside-why-not-preserve-each-day-s-mean-exactly">Aside: why not preserve each day’s mean exactly?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#any-agg-other-than-sum-follows-the-same-path">Any <code class="docutils literal notranslate"><span class="pre">agg</span></code> other than <code class="docutils literal notranslate"><span class="pre">"sum"</span></code> follows the same path</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#recap">Recap</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/tutorials/timeseries_06_downscale.ipynb.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Iporã Possantti.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

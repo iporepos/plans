@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../_static/documentation_options.js?v=8d563738"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
@@ -52,7 +52,7 @@
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Time series data - the basics" href="timeseries_01.html" />
+    <link rel="next" title="Time Series - the basics" href="timeseries_01.html" />
     <link rel="prev" title="Projects - basics" href="project_01.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -375,7 +375,13 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="project_01.html">Projects - basics</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Univariate data - the basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time series data - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time Series - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_05_compare.html">Time Series - Comparing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_02_upscale.html">Time Series - Upscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_06_downscale.html">Time Series - Downscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_03_gaps.html">Time Series - Gaps and epochs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_04_standardize.html">Time Series - Standardizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_07_collection.html">Time Series - Collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - the basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="raster_01.html">Raster data - the basics</a></li>
 </ul>
@@ -461,19 +467,19 @@
 <span class="c1"># Install `plans` in `google.colab`.</span>
 <span class="c1"># Use `pip install plans` for other environments.</span>
 
-<span class="k">if</span> <span class="s2">&quot;google.colab&quot;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+<span class="k">if</span> <span class="s2">"google.colab"</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="si">}</span><span class="s2"> -m pip install -q plans&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="si">}</span><span class="s2"> -m pip install -q plans"</span><span class="p">)</span>
 
 <span class="c1"># This avoids warnings related to uninstalled fonts</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="c1"># Set the matplotlib font manager logger to only show errors (hides warnings)</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;matplotlib.font_manager&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">'matplotlib.font_manager'</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 
 <span class="c1"># define output folder</span>
-<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;outputs/univariate&quot;</span><span class="p">)</span>
+<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"outputs/univariate"</span><span class="p">)</span>
 <span class="n">OUTPUT_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Outputs will be saved to: ./</span><span class="si">{</span><span class="n">OUTPUT_DIR</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Outputs will be saved to: ./</span><span class="si">{</span><span class="n">OUTPUT_DIR</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -500,7 +506,7 @@ This object is a child from the <code class="docutils literal notranslate"><span
 <p>Create an instance of the <code class="docutils literal notranslate"><span class="pre">Univar</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span> <span class="o">=</span> <span class="n">Univar</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Testing Univar&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;uni-tst&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span> <span class="o">=</span> <span class="n">Univar</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Testing Univar"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"uni-tst"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -513,7 +519,7 @@ This object is a child from the <code class="docutils literal notranslate"><span
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;plans.analyst.Univar&#39;&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class 'plans.analyst.Univar'&gt;
 </pre></div>
 </div>
 </div>
@@ -530,7 +536,7 @@ This object is a child from the <code class="docutils literal notranslate"><span
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Testing Univar (uni-tst)]
-Univar (DS):	&lt;class &#39;plans.analyst.Univar&#39;&gt;
+Univar (DS):	&lt;class 'plans.analyst.Univar'&gt;
       field          value
        name Testing Univar
       alias        uni-tst
@@ -549,15 +555,15 @@ None
 <p>Edit attributes directly and inspect again</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;A testing univariate for a tutorial&quot;</span>
-<span class="n">unv</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;cm&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">"A testing univariate for a tutorial"</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">"cm"</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">unv</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Testing Univar (uni-tst)]
-Univar (DS):	&lt;class &#39;plans.analyst.Univar&#39;&gt;
+Univar (DS):	&lt;class 'plans.analyst.Univar'&gt;
       field                               value
        name                      Testing Univar
       alias                             uni-tst
@@ -584,12 +590,12 @@ None
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make synthetic gaussian data</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="c1"># ensure reproducibility</span>
 <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;variable&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"variable"</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span>
 
 <span class="c1"># Export CSV file</span>
-<span class="n">file_csv</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">&quot;univariate_gauss.csv&quot;</span>
-<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_csv</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s2">&quot;False&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved to: </span><span class="si">{</span><span class="n">file_csv</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">file_csv</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"univariate_gauss.csv"</span>
+<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_csv</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s2">"False"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Saved to: </span><span class="si">{</span><span class="n">file_csv</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -603,7 +609,7 @@ None
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get simple visualization</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s1">'variable'</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -620,12 +626,12 @@ None
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># reset the uv variable</span>
-<span class="n">unv</span> <span class="o">=</span> <span class="n">Univar</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Testing Univar&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;uni-tst&quot;</span><span class="p">)</span>
+<span class="n">unv</span> <span class="o">=</span> <span class="n">Univar</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Testing Univar"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"uni-tst"</span><span class="p">)</span>
 
 <span class="n">unv</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
     <span class="n">file_data</span><span class="o">=</span><span class="n">file_csv</span><span class="p">,</span>  <span class="c1"># file path</span>
-    <span class="n">input_varfield</span><span class="o">=</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span>  <span class="c1"># name of column/field</span>
-    <span class="n">in_sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span>  <span class="c1"># input separator</span>
+    <span class="n">input_varfield</span><span class="o">=</span><span class="s2">"variable"</span><span class="p">,</span>  <span class="c1"># name of column/field</span>
+    <span class="n">in_sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span>  <span class="c1"># input separator</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1103,16 +1109,16 @@ None
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Y axis range</span>
-<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">]</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">]</span>
 <span class="c1"># Scatter</span>
-<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;scatter_factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># occupy more space</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"scatter_factor"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># occupy more space</span>
 <span class="c1"># Color</span>
-<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span>
-<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;color_hist&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;green&quot;</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"color"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"blue"</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"color_hist"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"green"</span>
 <span class="c1"># Decorations</span>
-<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;plot_mean&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;plot_mean_data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Hello! This is a tutorial!&quot;</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"plot_mean"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"plot_mean_data"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Hello! This is a tutorial!"</span>
 <span class="c1"># call view again</span>
 <span class="n">unv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
 </pre></div>
@@ -1133,14 +1139,14 @@ None
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>dict_keys([&#39;full&#39;, &#39;mini&#39;, &#39;simple&#39;, &#39;simple-shallow&#39;, &#39;default&#39;])
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>dict_keys(['full', 'mini', 'simple', 'simple-shallow', 'default'])
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mini&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"mini"</span>
 <span class="n">unv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1151,7 +1157,7 @@ None
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;simple&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"simple"</span>
 <span class="n">unv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1162,8 +1168,8 @@ None
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;layout&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;simple-shallow&quot;</span>
-<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"simple-shallow"</span>
+<span class="n">unv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">unv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1365,7 +1371,7 @@ None
 <p>View model results:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">dc_gumbel</span><span class="p">[</span><span class="s2">&quot;Metadata&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">dc_gumbel</span><span class="p">[</span><span class="s2">"Metadata"</span><span class="p">]</span>
 <span class="n">df</span>
 </pre></div>
 </div>
@@ -1446,7 +1452,7 @@ None
 <p>View data:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">dc_gumbel</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">dc_gumbel</span><span class="p">[</span><span class="s2">"Data"</span><span class="p">]</span>
 <span class="n">df</span>
 </pre></div>
 </div>
@@ -1646,7 +1652,7 @@ None
 <p>View return periods T(X):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span><span class="n">dc_gumbel</span><span class="p">[</span><span class="s2">&quot;Data_T(X)&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span><span class="n">dc_gumbel</span><span class="p">[</span><span class="s2">"Data_T(X)"</span><span class="p">]</span>
 <span class="n">df</span>
 </pre></div>
 </div>
@@ -1811,7 +1817,7 @@ None
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Time series data - the basics</p>
+        <p class="prev-next-title">Time Series - the basics</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1880,8 +1886,8 @@ None
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1915,7 +1921,7 @@ None
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>
