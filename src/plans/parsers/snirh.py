@@ -4,32 +4,7 @@
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
 """
-Parse data from ``SNIRH`` Hidroweb files (Brazillian offical hydrological database)
-
-Overview
---------
-
-# todo [major docstring improvement] -- overview
-Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl. Pellentesque habitant morbi tristique senectus
-et netus et malesuada fames ac turpis egestas.
-
-Example
--------
-
-# todo [major docstring improvement] -- examples
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,
-in porttitor lacus lobortis vitae. In a lacinia nisl.
-
-.. code-block:: python
-
-    import numpy as np
-    print("Hello World!)
-
-Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl.
+Parser for SNIRH Hidroweb files (Brazilian national hydrological database).
 """
 
 import pandas as pd

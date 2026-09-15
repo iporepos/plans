@@ -4,35 +4,7 @@
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
 """
-{Short package description (1-3 sentences)}
-todo docstring
-
-Features
---------
-todo docstring
-
-* ``core`` module provides Lorem ipsum dolor sit amet.
-* ``chrono`` module provides Lorem ipsum dolor sit amet.
-* ``spatial`` module provides Lorem ipsum dolor sit amet.
-
-Overview
---------
-todo docstring
-{Overview description}
-
-Examples
---------
-todo docstring
-{Examples in rST}
-
-Print a message
-
-.. code-block:: python
-
-    # print message
-    print("Hello world!")
-    # [Output] >> 'Hello world!'
-
+Dataset subpackage providing primitives, time series, and spatial map classes.
 """
 # EXPOSE MODULES FROM PACKAGE
 # ***********************************************************************

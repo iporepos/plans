@@ -4,28 +4,7 @@
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
 """
-Core tool objects for the PLANS toolset.
-
-This module provides the base building blocks shared by PLANS
-command-line tools:
-
-* :class:`ToolParser` -- a thin wrapper around :class:`argparse.ArgumentParser`
-  that registers the arguments common to every PLANS tool and offers
-  convenience methods to add tool-specific arguments.
-* :class:`Tool` -- a base pipeline class implementing a generic
-  ``load -> process -> export`` workflow, with per-step logging,
-  elapsed-time tracking and a plain-text run report.
-* :func:`parse_spatial_parameters` and :func:`export_parameters` -- helper
-  functions to assemble and export spatialized parameter sets.
-
-Features
---------
-
-* Standardized CLI argument parsing shared across PLANS tools.
-* A base tool pipeline handling logging, step timing and report generation.
-* Helpers to parse spatial parameter tables and export parameter rasters,
-  catalogs and figures.
-
+Base pipeline class, argument parser, and spatial parameter helpers shared by all PLANS tools.
 """
 
 

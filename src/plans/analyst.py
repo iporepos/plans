@@ -4,41 +4,7 @@
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
 """
-Classes designed to handle statistical analysis.
-
-Overview
---------
-
-# todo [major docstring improvement] -- overview
-Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl. Pellentesque habitant morbi tristique senectus
-et netus et malesuada fames ac turpis egestas.
-
-Example
--------
-
-# todo [major docstring improvement] -- examples
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,
-in porttitor lacus lobortis vitae. In a lacinia nisl.
-
-.. code-block:: python
-
-    import numpy as np
-    from plans import analyst
-
-    # get data to a vector
-    data_vector = np.random.rand(1000)
-
-    # instantiate the Univar object
-    uni = analyst.Univar(sample=data_vector, name="my_data")
-
-    # view sample
-    uni.view()
-
-Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl.
-
+Classes for statistical analysis of environmental and hydrological data.
 """
 
 # IMPORTS

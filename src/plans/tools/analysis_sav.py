@@ -18,9 +18,6 @@ Self-contained apart from the ``plans.datasets`` raster classes
 :class:`~plans.datasets.Depth`) -- no dependency on ``plans.tools.core``.
 All parameters are passed through a single JSON config file.
 
-Usage
------
-
 .. code-block:: bash
 
     python analysis_sav.py --config config.json

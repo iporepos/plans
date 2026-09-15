@@ -22,3 +22,8 @@
    :toctree: generated
 
    plans.project
+
+.. autosummary::
+   :toctree: generated
+
+   plans.databases

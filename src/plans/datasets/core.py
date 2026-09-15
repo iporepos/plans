@@ -5,32 +5,6 @@
 # See LICENSE for license details.
 """
 Primitive classes for handling datasets.
-
-Overview
---------
-
-# todo [docstring] -- overview
-Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl. Pellentesque habitant morbi tristique senectus
-et netus et malesuada fames ac turpis egestas.
-
-Example
--------
-
-# todo [docstring] -- examples
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla mollis tincidunt erat eget iaculis. Mauris gravida ex quam,
-in porttitor lacus lobortis vitae. In a lacinia nisl.
-
-.. code-block:: python
-
-    import numpy as np
-    print("Hello World!")
-
-Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl. Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl.
-
 """
 # IMPORTS
 # ***********************************************************************
@@ -158,7 +132,12 @@ def get_colors(size=10, cmap="tab20", randomize=True):
 
 
 class TimeSeries(Univar):
-    # todo docstring
+    """
+    A time series dataset with a datetime-indexed variable.
+
+    Extends :class:`~plans.analyst.Univar` with temporal structure:
+    frequency detection, standardization, gap analysis, and scaling.
+    """
 
     # Dunder methods
     # -------------------------------------------------------------------
@@ -199,7 +178,7 @@ class TimeSeries(Univar):
         self.eva = None
 
         # incoming data
-        self.file_input = None  # todo rename to file_data??
+        self.file_data = None
         self.file_data_dtfield = self.dtfield
         self.file_data_varfield = self.varfield
 
@@ -424,7 +403,12 @@ class TimeSeries(Univar):
         return dc_meta
 
     def get_range_datetime(self):
-        # todo docstring
+        """
+        Return the [start, end] datetime extent of the loaded data.
+
+        :return: Two-element list of [min, max] Timestamps.
+        :rtype: list
+        """
         ls = [self.data[self.dtfield].min(), self.data[self.dtfield].max()]
         return ls[:]
 
@@ -1583,8 +1567,9 @@ class TimeSeries(Univar):
     # -------------------------------------------------------------------
 
     def _build_axes(self, fig, gs, specs):
-        # todo [docstring]
-
+        """
+        Add subplots to the figure grid according to the active layout.
+        """
         # ------------ setup axes ------------
         if specs["layout"] == "full":
             fig.add_subplot(gs[2:10, 2:21])
@@ -1926,8 +1911,16 @@ class TimeSeries(Univar):
 
     @staticmethod
     def plot_series(data, ax, specs):
-        # todo docstring
+        """
+        Draw a time series line (and optional fill) onto an existing axes.
 
+        :param data: DataFrame containing the series to plot.
+        :type data: :class:`pandas.DataFrame`
+        :param ax: Target Matplotlib axes.
+        :type ax: :class:`matplotlib.axes.Axes`
+        :param specs: Plot specification dictionary (from ``view_specs``).
+        :type specs: dict
+        """
         if specs["fill"]:
             if specs["color_fill"] is None:
                 specs["color_fill"] = specs["color"]
@@ -2019,7 +2012,18 @@ class TimeSeries(Univar):
 
     @staticmethod
     def add_hour(df, hour=12, dt_field="datetime"):
-        # todo docstring
+        """
+        Set the time component of a date-only datetime column to a fixed hour.
+
+        :param df: DataFrame with a datetime column to modify.
+        :type df: :class:`pandas.DataFrame`
+        :param hour: Hour to set. Default is 12 (noon).
+        :type hour: int
+        :param dt_field: Name of the datetime column. Default is ``"datetime"``.
+        :type dt_field: str
+        :return: DataFrame with the datetime column updated.
+        :rtype: :class:`pandas.DataFrame`
+        """
         df[dt_field] = df[dt_field].dt.normalize() + pd.to_timedelta(hour, unit="h")
         return df
 
@@ -2162,6 +2166,33 @@ class TimeSeries(Univar):
             )
             viewer.ship_fig(fig=fig, show=show, file_output=file_path, dpi=specs["dpi"])
 
+    # todo develop method
+    """
+    # def generate(self, specs=None, seed=None, inplace=True)
+    
+    This method is intented to generate a synthetic time series data based on 
+    the specs object. This specs can be a dict or a path (string or Path)
+    directing to a json file.
+    
+    The class must hold a 'generator_specs' attribute for using as default.
+    
+    The 'seed' parameter is intended to override the default seed.
+    This method always saves data in place unless inplace=False.
+    In this case, the method returns a copy of the object (unlinked copy).
+    
+    the base TimeSeries(), this method generates a time series based on the
+    make_synthetic_tsn() static method.
+    
+    This method can be overwritten downstream. Example: precipitation
+    time series generation at daily or hourly scales can be very different.
+    
+    This method allows further montecarlo analysis features, like fitting the 
+    specs parameters based on the current data.
+    Even then a generate_ensamble() method -> TimeSeriesCluster()
+    
+        
+    """
+
     @staticmethod
     def make_synthetic_tsn(
         start,
@@ -2176,8 +2207,12 @@ class TimeSeries(Univar):
         minor_amplitude=0,
         variable="level",
     ):
+        # todo new feature
+        #  add a 'seed' parameters for reproducible runs
+
         """
-        Generates a synthetic time series `pandas.DataFrame` incorporating trend, dual seasonality, and Gaussian noise.
+        Generates a synthetic time series `pandas.DataFrame`
+        incorporating trend, dual seasonality, and Gaussian noise.
 
         :param start: The starting date for the time series.
         :type start: str or :class:`pandas.Timestamp`
@@ -3107,8 +3142,18 @@ class TimeSeriesCollection(Collection):
             self.collection[name].view(show=False)
         return None
 
-    # todo docstring
     def export_data(self, folder, filename=None, merged=True):
+        """
+        Export collection data as CSV files in the given folder.
+
+        :param folder: Output folder path.
+        :type folder: str
+        :param filename: Base filename; defaults to ``self.name`` when ``None``.
+        :type filename: str or None
+        :param merged: If ``True``, exports a merged data CSV and an epochs
+            summary CSV. If ``False``, exports each series individually.
+        :type merged: bool
+        """
         if filename is None:
             filename = self.name
         if merged:
@@ -3141,28 +3186,30 @@ class TimeSeriesCluster(TimeSeriesCollection):
 
 
 class TimeSeriesSamples(TimeSeriesCluster):
-    # todo improve docstring
     """
-    The ``TimeSeriesSamples`` instance is desgined for holding a collection
-    of same variable time series arising from the same underlying process.
-    This means that all elements in the collection are statistical data.
-
-    .. note::
-
-        This instance allows for the ``reducer()`` method.
-
+    Collection of same-variable time series from the same underlying process,
+    treated as statistical samples. Supports ensemble reduction via :meth:`reducer`.
     """
 
     def __init__(self, name="myTimeSeriesSamples", base_object=None):
-        # todo [docstring]
         # initialize parent
         super().__init__(name=name, base_object=base_object)
         # Overwrite parent attributes
         self.name_object = "Time Series Samples"
 
     def reducer(self, reducer_funcs=None, stepwise=False):
-        # todo [docstring]
+        """
+        Apply row-wise reducer functions across all merged sample data.
 
+        :param reducer_funcs: Mapping of output column name to a dict with
+            ``"Func"`` (callable) and ``"Args"`` (extra scalar argument or None).
+        :type reducer_funcs: dict
+        :param stepwise: If True, apply each function row-by-row rather than
+            vectorized along axis 1. Default is False.
+        :type stepwise: bool
+        :return: DataFrame with datetime and one column per reducer function.
+        :rtype: :class:`pandas.DataFrame`
+        """
         df_merged = self.merge_data()
 
         # set up output dict
@@ -3197,37 +3244,52 @@ class TimeSeriesSamples(TimeSeriesCluster):
         return df
 
     def mean(self):
-        # todo [docstring]
+        """Return the time-step-wise mean across all samples."""
         df = self.reducer(reducer_funcs={"mean": {"Func": np.mean, "Args": None}})
         return df
 
     def rng(self):
-        # todo [docstring]
+        """Return the time-step-wise range across all samples."""
+        # todo [revise] -- np.r is an array concatenator, not a range function.
+        #  Intended behaviour is likely max - min per row; replace with
+        #  lambda x, axis=None: np.max(x, axis=axis) - np.min(x, axis=axis)
+        #  Note: np.ptp (peak-to-peak) is deprecated since NumPy 1.25.
         df = self.reducer(reducer_funcs={"rng": {"Func": np.r, "Args": None}})
         return df
 
     def std(self):
-        # todo [docstring]
+        """Return the time-step-wise standard deviation across all samples."""
         df = self.reducer(reducer_funcs={"std": {"Func": np.std, "Args": None}})
         return df
 
     def min(self):
-        # todo [docstring]
+        """Return the time-step-wise minimum across all samples."""
         df = self.reducer(reducer_funcs={"min": {"Func": np.min, "Args": None}})
         return df
 
     def max(self):
-        # todo [docstring]
+        """Return the time-step-wise maximum across all samples."""
         df = self.reducer(reducer_funcs={"max": {"Func": np.max, "Args": None}})
         return df
 
     def percentile(self, p=90):
-        # todo [docstring]
+        """
+        Return the time-step-wise p-th percentile across all samples.
+
+        :param p: Percentile value (0–100). Default is 90.
+        :type p: int
+        """
         df = self.reducer(reducer_funcs={"max": {"Func": np.percentile, "Args": p}})
         return df
 
     def percentiles(self, values=None):
-        # todo [docstring]
+        """
+        Return time-step-wise percentiles across all samples.
+
+        :param values: List of percentile values to compute. Default is
+            ``[1, 5, 10, 25, 50, 75, 90, 95, 99]``.
+        :type values: list or None
+        """
         if values is None:
             values = [1, 5, 10, 25, 50, 75, 90, 95, 99]
         dict_funcs = {}
@@ -3241,7 +3303,12 @@ class TimeSeriesSamples(TimeSeriesCluster):
         return df
 
     def stats(self, basic=False):
-        # todo [docstring]
+        """
+        Return a combined DataFrame of common statistics and percentiles across all samples.
+
+        :param basic: If True, compute only quartile percentiles (25, 50, 75).
+        :type basic: bool
+        """
         df_stats = self.reducer(
             reducer_funcs={
                 "sum": {"Func": np.sum, "Args": None},
@@ -3262,27 +3329,29 @@ class TimeSeriesSamples(TimeSeriesCluster):
 
 
 class TimeSeriesSpatialSamples(TimeSeriesSamples):
-    # todo improve docstring
     """
-    The ``TimeSeriesSpatialSamples`` instance is desgined for holding a collection
-    of same variable time series arising from the same underlying process in space.
-    This means that all elements in the collection are statistical data in space.
-
-    .. note::
-
-        This instance allows for the ``regionalize()`` method.
-
+    Spatial extension of :class:`TimeSeriesSamples` for geolocated station data.
+    Supports spatial interpolation via :meth:`regionalize` and distance-based weighting.
     """
 
     def __init__(self, name="myTimeSeriesSpatialSample", base_object=None):
-        # todo [docstring]
         # initialize parent
         super().__init__(name=name, base_object=base_object)
         # Overwrite parent attributes
         self.name_object = "Time Series Spatial"
 
     def get_weights_by_name(self, name, method="average"):
-        # todo [docstring]
+        """
+        Compute interpolation weights for all stations relative to a named station.
+
+        :param name: Name of the target station (excluded from the weight set).
+        :type name: str
+        :param method: Weighting scheme: ``"average"`` (uniform) or ``"idw"``
+            (inverse-distance). Default is ``"average"``.
+        :type method: str
+        :return: Weight array for the remaining stations.
+        :rtype: :class:`numpy.ndarray`
+        """
         # remaining names
         df_remain = self.catalog.query("Name != '{}'".format(name))
         list_names = list(df_remain["Name"].values)
@@ -4458,7 +4527,9 @@ class Raster(DataSet):
         return fig
 
     def _get_fig_specs(self):
-        # todo [docstring]
+        """
+        Assemble the figure specification dictionary for the current layout.
+        """
         # handle specs
         specs = self.view_specs.copy()
 
@@ -4820,7 +4891,9 @@ class Raster(DataSet):
 
 
 class SciRaster(Raster):
-    # todo [major docstring improvements]
+    """
+    Scientific (float32) raster dataset with a configurable nodata value and display range.
+    """
 
     def __init__(self, name="MySciRaster", alias=None):
         # add new
@@ -5551,7 +5624,6 @@ class QualiRaster(Raster):
 class QualiHard(QualiRaster):
     """
     A Quali-Hard is a hard-coded qualitative map (that is, the table is pre-set)
-    todo [docstring] -- examples
     """
 
     def __init__(self, name="qualihard"):
@@ -5607,7 +5679,6 @@ class Zones(QualiRaster):
     """
     Zones map dataset is a QualiRaster designed to handle large volume of
     positive integer numbers (ids of zones)
-    todo [docstring] -- examples
     """
 
     def __init__(self, name="ZonesMap"):

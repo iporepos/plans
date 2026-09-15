@@ -4,10 +4,7 @@
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
 """
-{Short module description (1-3 sentences)}
-todo docstring
-
-
+Design storm distributions and synthetic hydrograph generation (NRCS/SCS method).
 """
 # IMPORTS
 # ***********************************************************************

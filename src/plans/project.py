@@ -5,17 +5,7 @@
 # See LICENSE for license details.
 
 """
-Project-related classes and routines
-
-Overview
---------
-
-# todo [major docstring improvement] -- overview
-Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl. Pellentesque habitant morbi tristique senectus
-et netus et malesuada fames ac turpis egestas.
-
-
+Classes and routines for managing PLANS projects on disk.
 """
 # IMPORTS
 # ***********************************************************************

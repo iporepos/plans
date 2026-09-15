@@ -4,19 +4,7 @@
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
 """
-Parse data from ``INMET`` files (Brazillian Meteorological Office)
-
-Overview
---------
-
-# todo [major docstring improvement] -- overview
-Mauris gravida ex quam, in porttitor lacus lobortis vitae.
-In a lacinia nisl. Pellentesque habitant morbi tristique senectus
-et netus et malesuada fames ac turpis egestas.
-
-Example
--------
-
+Parser for INMET files (Brazilian Meteorological Office).
 """
 
 import pandas as pd
