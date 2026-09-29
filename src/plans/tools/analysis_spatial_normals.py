@@ -46,6 +46,7 @@ copy and paste:
 
       "pattern": "*.tif",
       "verbose": true,
+      "low_memory": false,
       "annual": {
         "stats": ["mean", "sum", "max", "p90"],
         "min_months": 12
@@ -82,6 +83,14 @@ Optional fields
 ~~~~~~~~~~~~~~~~
 * ``pattern`` (str, default ``"*.tif"``) -- glob pattern for input files.
 * ``verbose`` (bool, default ``false``) -- echo logs to console.
+* ``low_memory`` (bool, default ``false``) -- when ``true``, process
+  rasters one at a time using incremental (online) accumulators instead
+  of stacking the entire series in RAM. Trades speed for memory: the
+  footprint drops from O(N × pixels) to O(pixels) for mean, sum, min,
+  max, and std. Percentile/median stats use a temporary memory-mapped
+  file on disk and are computed in spatial chunks, so they are slower but
+  still bounded. Enable this when the uncompressed time series does not
+  fit in available RAM.
 * ``annual`` (dict, default ``{}``) -- see :func:`aggregate_annual`; keys
   ``stats`` (list[str], default ``["mean"]``) and ``min_months`` (int,
   default ``12``).
@@ -118,8 +127,10 @@ by :func:`process_data`.
 import argparse
 import json
 import logging
+import os
 import re
 import shutil
+import tempfile
 import time
 import warnings
 from dataclasses import dataclass
@@ -142,6 +153,7 @@ REQUIRED = {
 OPTIONAL = {
     "pattern": (str, "*.tif"),
     "verbose": (bool, False),
+    "low_memory": (bool, False),
     "annual": (dict, None),
     "normals": (dict, None),
     "anomalies": (dict, None),
@@ -284,6 +296,17 @@ def _resolve_stat_func(stat: str) -> Callable:
     )
 
 
+def _is_percentile_stat(stat: str) -> bool:
+    """Return True if ``stat`` requires the full temporal stack (median or pN).
+
+    :param stat: Statistic name.
+    :type stat: str
+    :returns: True for ``"median"`` and ``"pN"`` stats.
+    :rtype: bool
+    """
+    return stat == "median" or bool(_PCT_RE.match(stat))
+
+
 # DISCOVERY / PARSING
 # ***********************************************************************
 
@@ -413,7 +436,7 @@ def _write_raster_int16(arr, profile, out_path, scale=100, nodata=INT16_NODATA):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=RuntimeWarning)
         scaled = np.round(arr * scale)
-    out = np.where(np.isfinite(scaled), scaled, nodata).astype(np.int16)
+        out = np.where(np.isfinite(scaled), scaled, nodata).astype(np.int16)
 
     out_profile = profile.copy()
     out_profile.update(dtype="int16", count=1, nodata=nodata)
@@ -460,6 +483,255 @@ def _read_stack(records: list[MonthlyRaster]) -> tuple[np.ndarray, dict]:
     return np.stack(arrays, axis=0), profile
 
 
+# ONLINE (LOW-MEMORY) REDUCTION
+# ***********************************************************************
+#
+# Replaces the ``_read_stack`` + ``_apply_stat`` pattern with one-at-a-time
+# incremental accumulators. Memory footprint drops from O(N × pixels) to
+# O(pixels) for mean, sum, min, max, and std. Percentile/median stats fall
+# back to a disk-backed ``np.memmap`` processed in spatial chunks.
+
+_ONLINE_CHUNK_ROWS = 512  # rows per chunk when computing percentiles
+
+
+class _OnlineReducer:
+    """Incremental pixel-wise reducer -- feeds one raster at a time.
+
+    Maintains only the accumulators needed by the requested ``stats``:
+
+    * ``mean``, ``sum``, ``std`` -- running sum, sum-of-squares, and
+      per-pixel valid-count. ``std`` uses the textbook
+      ``sqrt(E[x²] - E[x]²)`` formula (ddof=0, matching ``np.nanstd``);
+      numerically safe for typical geophysical value ranges.
+    * ``min``, ``max`` -- running extrema via ``np.fmin`` / ``np.fmax``
+      (NaN-skipping).
+    * ``median``, ``pN`` -- require the full stack, so they are stored in
+      a temporary ``np.memmap`` file and computed in spatial chunks at
+      :meth:`result` time.
+
+    :param stats: statistic names requested.
+    :type stats: list[str]
+    :param n_layers: total number of rasters that will be fed (needed to
+        pre-allocate the memmap for percentile stats).
+    :type n_layers: int
+    :param tmpdir: directory for the memmap temp file; defaults to the
+        system temp directory.
+    :type tmpdir: str or pathlib.Path or None
+    """
+
+    def __init__(self, stats: list[str], n_layers: int, tmpdir=None):
+        self._stats = list(stats)
+        self._n_layers = n_layers
+        self._fed = 0
+        self._shape = None  # set on first feed
+        self._tmpdir = tmpdir
+
+        # Classify which accumulators we need
+        self._need_sum = False
+        self._need_sum_sq = False
+        self._need_min = False
+        self._need_max = False
+        self._pct_stats: list[str] = []
+
+        for s in stats:
+            if s in ("mean", "sum"):
+                self._need_sum = True
+            elif s == "std":
+                self._need_sum = True
+                self._need_sum_sq = True
+            elif s == "min":
+                self._need_min = True
+            elif s == "max":
+                self._need_max = True
+            elif _is_percentile_stat(s):
+                self._pct_stats.append(s)
+            else:
+                # Will raise later via _resolve_stat_func if truly unknown
+                raise ValueError(f"Unknown stat '{s}' for online reducer")
+
+        # Lazy-initialized arrays
+        self._count: Optional[np.ndarray] = None
+        self._sum: Optional[np.ndarray] = None
+        self._sum_sq: Optional[np.ndarray] = None
+        self._min_arr: Optional[np.ndarray] = None
+        self._max_arr: Optional[np.ndarray] = None
+
+        # Memmap for percentile stats
+        self._mm_path: Optional[str] = None
+        self._mm: Optional[np.ndarray] = None
+
+    def _init_arrays(self, shape):
+        """Allocate accumulators once the raster shape is known."""
+        self._shape = shape
+        self._count = np.zeros(shape, dtype="int32")
+        if self._need_sum:
+            self._sum = np.zeros(shape, dtype="float64")
+        if self._need_sum_sq:
+            self._sum_sq = np.zeros(shape, dtype="float64")
+        if self._need_min:
+            self._min_arr = np.full(shape, np.nan, dtype="float64")
+        if self._need_max:
+            self._max_arr = np.full(shape, np.nan, dtype="float64")
+        if self._pct_stats:
+            fd, path = tempfile.mkstemp(
+                suffix=".mmap", dir=self._tmpdir, prefix="plans_pct_"
+            )
+            os.close(fd)
+            self._mm_path = path
+            self._mm = np.memmap(
+                path,
+                dtype="float32",
+                mode="w+",
+                shape=(self._n_layers, *shape),
+            )
+
+    def feed(self, arr: np.ndarray) -> None:
+        """Incorporate one raster layer into the running accumulators.
+
+        :param arr: 2-D pixel array (float64, NaN = nodata).
+        :type arr: numpy.ndarray
+        """
+        if self._shape is None:
+            self._init_arrays(arr.shape)
+
+        valid = np.isfinite(arr)
+        self._count += valid
+
+        if self._sum is not None:
+            self._sum += np.where(valid, arr, 0.0)
+        if self._sum_sq is not None:
+            self._sum_sq += np.where(valid, arr * arr, 0.0)
+        if self._min_arr is not None:
+            self._min_arr = np.fmin(self._min_arr, arr)
+        if self._max_arr is not None:
+            self._max_arr = np.fmax(self._max_arr, arr)
+        if self._mm is not None:
+            self._mm[self._fed] = arr.astype("float32")
+
+        self._fed += 1
+
+    def result(self, stat: str) -> np.ndarray:
+        """Compute the final result for one requested statistic.
+
+        :param stat: statistic name (must be one passed to ``__init__``).
+        :type stat: str
+        :returns: 2-D result array (float64, NaN where no valid data).
+        :rtype: numpy.ndarray
+        """
+        no_data = self._count == 0
+
+        if stat == "mean":
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", category=RuntimeWarning)
+                out = self._sum / self._count
+            out[no_data] = np.nan
+            return out
+
+        if stat == "sum":
+            out = self._sum.copy()
+            out[no_data] = np.nan
+            return out
+
+        if stat == "std":
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", category=RuntimeWarning)
+                mean = self._sum / self._count
+                var = self._sum_sq / self._count - mean * mean
+                out = np.sqrt(np.maximum(var, 0.0))
+            out[no_data] = np.nan
+            return out
+
+        if stat == "min":
+            return self._min_arr.copy()
+
+        if stat == "max":
+            return self._max_arr.copy()
+
+        if stat == "median":
+            return self._percentile_chunked(50)
+
+        m = _PCT_RE.match(stat)
+        if m:
+            return self._percentile_chunked(int(m.group(1)))
+
+        raise ValueError(f"Unknown stat '{stat}'")
+
+    def _percentile_chunked(self, q: int) -> np.ndarray:
+        """Compute nanpercentile from the memmap in spatial row-chunks.
+
+        :param q: percentile (0-100).
+        :type q: int
+        :returns: 2-D result array.
+        :rtype: numpy.ndarray
+        """
+        H, W = self._shape
+        result = np.full((H, W), np.nan, dtype="float64")
+        for r0 in range(0, H, _ONLINE_CHUNK_ROWS):
+            r1 = min(r0 + _ONLINE_CHUNK_ROWS, H)
+            # Load only this row-chunk from the memmap into RAM
+            chunk = np.array(
+                self._mm[: self._fed, r0:r1, :], dtype="float64"
+            )
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", category=RuntimeWarning)
+                result[r0:r1, :] = np.nanpercentile(chunk, q, axis=0)
+        return result
+
+    def cleanup(self) -> None:
+        """Delete the temporary memmap file, if any."""
+        if self._mm is not None:
+            del self._mm
+            self._mm = None
+        if self._mm_path and os.path.exists(self._mm_path):
+            os.unlink(self._mm_path)
+            self._mm_path = None
+
+
+def _reduce_rasters(
+    records: list[MonthlyRaster],
+    stats: list[str],
+    low_memory: bool = False,
+    tmpdir=None,
+) -> tuple[dict[str, np.ndarray], dict]:
+    """Reduce a list of rasters to per-stat result arrays.
+
+    Central dispatch: when ``low_memory`` is False, uses the original
+    stack-in-RAM approach (``_read_stack`` + ``_apply_stat``); when True,
+    uses the incremental ``_OnlineReducer``.
+
+    :param records: rasters to reduce, in order.
+    :type records: list[MonthlyRaster]
+    :param stats: statistic names to compute.
+    :type stats: list[str]
+    :param low_memory: use incremental one-at-a-time reduction.
+    :type low_memory: bool
+    :param tmpdir: temp directory for memmap files (low_memory + percentile
+        stats only).
+    :type tmpdir: str or pathlib.Path or None
+    :returns: ``({stat: result_array}, rasterio_profile)``.
+    :rtype: tuple[dict[str, numpy.ndarray], dict]
+    """
+    if not low_memory:
+        stack, profile = _read_stack(records)
+        results = {}
+        for stat in stats:
+            func = _resolve_stat_func(stat)
+            results[stat] = _apply_stat(stack, func)
+        return results, profile
+
+    # -- low-memory path --
+    reducer = _OnlineReducer(stats, n_layers=len(records), tmpdir=tmpdir)
+    profile = None
+    for r in records:
+        arr, prof = _read_as_float(r.path)
+        if profile is None:
+            profile = prof
+        reducer.feed(arr)
+    results = {stat: reducer.result(stat) for stat in stats}
+    reducer.cleanup()
+    return results, profile
+
+
 # PIPELINE STEPS -- annual aggregation, normals, anomalies
 # ***********************************************************************
 
@@ -471,6 +743,7 @@ def aggregate_annual(
     stats: list[str] = ("mean",),
     min_months: int = 12,
     file_prefix: str = "annual",
+    low_memory: bool = False,
 ) -> dict[str, dict[int, str]]:
     """Aggregate monthly rasters into one raster per year, per requested stat.
 
@@ -490,6 +763,8 @@ def aggregate_annual(
     :type min_months: int
     :param file_prefix: Output filename prefix.
     :type file_prefix: str
+    :param low_memory: Use incremental reduction instead of stacking.
+    :type low_memory: bool
     :returns: Mapping of ``{stat: {year: output_path}}``.
     :rtype: dict[str, dict[int, str]]
     """
@@ -507,13 +782,13 @@ def aggregate_annual(
             continue
 
         recs_sorted = sorted(recs, key=lambda x: x.month)
-        stack, profile = _read_stack(recs_sorted)
+        results, profile = _reduce_rasters(
+            recs_sorted, stats, low_memory=low_memory, tmpdir=str(output_dir)
+        )
 
         for stat in stats:
-            func = _resolve_stat_func(stat)
-            result = _apply_stat(stack, func)
             out_path = output_dir / f"{file_prefix}_{stat}_{year}.tif"
-            _write_raster(result, profile, out_path)
+            _write_raster(results[stat], profile, out_path)
             output_paths[stat][year] = str(out_path)
 
         logger.info(f"annual {year}: stats={list(stats)} (n={len(recs)} months)")
@@ -529,6 +804,7 @@ def compute_annual_normals(
     stats: list[str] = ("mean",),
     horizon: Optional[tuple[int, int]] = None,
     file_prefix: str = "annual_normal",
+    low_memory: bool = False,
 ) -> dict[str, str]:
     """Compute annual normals from a per-year annual series.
 
@@ -554,6 +830,8 @@ def compute_annual_normals(
     :type horizon: tuple[int, int] or None
     :param file_prefix: Output filename prefix.
     :type file_prefix: str
+    :param low_memory: Use incremental reduction instead of stacking.
+    :type low_memory: bool
     :returns: Mapping of ``{stat: output_path}``.
     :rtype: dict[str, str]
     :raises ValueError: If ``base_stat`` was not computed in
@@ -579,14 +857,14 @@ def compute_annual_normals(
         raise ValueError(msg)
 
     recs = [MonthlyRaster(year=y, month=0, path=series[y]) for y in years]
-    stack, profile = _read_stack(recs)
+    results, profile = _reduce_rasters(
+        recs, stats, low_memory=low_memory, tmpdir=str(output_dir)
+    )
 
     output_paths = {}
     for stat in stats:
-        func = _resolve_stat_func(stat)
-        result = _apply_stat(stack, func)
         out_path = output_dir / f"{file_prefix}_{stat}.tif"
-        _write_raster(result, profile, out_path)
+        _write_raster(results[stat], profile, out_path)
         output_paths[stat] = str(out_path)
 
     logger.info(
@@ -603,6 +881,7 @@ def compute_monthly_normals(
     stats: list[str] = ("mean",),
     horizon: Optional[tuple[int, int]] = None,
     file_prefix: str = "normal_month",
+    low_memory: bool = False,
 ) -> dict[str, dict[int, str]]:
     """Compute monthly (calendar-month) climatological normals.
 
@@ -626,6 +905,8 @@ def compute_monthly_normals(
     :type horizon: tuple[int, int] or None
     :param file_prefix: Output filename prefix.
     :type file_prefix: str
+    :param low_memory: Use incremental reduction instead of stacking.
+    :type low_memory: bool
     :returns: Mapping of ``{stat: {month: output_path}}``.
     :rtype: dict[str, dict[int, str]]
     """
@@ -646,13 +927,13 @@ def compute_monthly_normals(
             logger.warning(f"month {month:02d}: no data in horizon, skipped")
             continue
 
-        stack, profile = _read_stack(month_recs)
+        results, profile = _reduce_rasters(
+            month_recs, stats, low_memory=low_memory, tmpdir=str(output_dir)
+        )
 
         for stat in stats:
-            func = _resolve_stat_func(stat)
-            result = _apply_stat(stack, func)
             out_path = output_dir / f"{file_prefix}_{month:02d}_{stat}.tif"
-            _write_raster(result, profile, out_path)
+            _write_raster(results[stat], profile, out_path)
             output_paths[stat][month] = str(out_path)
 
         logger.info(
@@ -738,17 +1019,13 @@ def compute_monthly_anomalies(
         raise ValueError(msg)
 
     normal_by_month = monthly_normal_paths_by_stat[normal_stat]
-    normal_arrays: dict[int, np.ndarray] = {}
-    for month, path in normal_by_month.items():
-        arr, _ = _read_as_float(path)
-        normal_arrays[month] = arr
+    std_by_month = monthly_normal_paths_by_stat.get(std_stat, {}) if zscore else {}
 
-    std_arrays: dict[int, np.ndarray] = {}
-    if zscore:
-        std_by_month = monthly_normal_paths_by_stat[std_stat]
-        for month, path in std_by_month.items():
-            arr, _ = _read_as_float(path)
-            std_arrays[month] = arr
+    # Group input rasters by calendar month so we load only one month's
+    # normals at a time (2 arrays: mean + std) instead of all 24.
+    by_month: dict[int, list[MonthlyRaster]] = {}
+    for r in monthly_rasters:
+        by_month.setdefault(r.month, []).append(r)
 
     abs_dir = output_dir / "absolute"
     rel_dir = output_dir / "relative"
@@ -758,45 +1035,51 @@ def compute_monthly_anomalies(
     rel_paths: dict[tuple[int, int], str] = {}
     z_paths: dict[tuple[int, int], str] = {}
 
-    for r in monthly_rasters:
-        normal_arr = normal_arrays.get(r.month)
-        if normal_arr is None:
-            logger.warning(
-                f"no '{normal_stat}' normal for month {r.month:02d}, "
-                f"skipping anomaly for {r.year}-{r.month:02d}"
-            )
+    for month in range(1, 13):
+        month_recs = by_month.get(month, [])
+        if not month_recs:
             continue
 
-        arr, profile = _read_as_float(r.path)
+        # Load only this calendar month's normals
+        if month not in normal_by_month:
+            logger.warning(
+                f"no '{normal_stat}' normal for month {month:02d}, "
+                f"skipping anomalies for all {month:02d} rasters"
+            )
+            continue
+        normal_arr, _ = _read_as_float(normal_by_month[month])
 
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", category=RuntimeWarning)
-            anomaly = arr - normal_arr
+        std_arr = None
+        if zscore:
+            if month in std_by_month:
+                std_arr, _ = _read_as_float(std_by_month[month])
+            else:
+                logger.warning(
+                    f"no '{std_stat}' normal for month {month:02d}, "
+                    f"skipping zscore anomalies for all {month:02d} rasters"
+                )
 
-        out_path = abs_dir / f"anomaly_{r.year}_{r.month:02d}.tif"
-        _write_raster(anomaly, profile, out_path)
-        abs_paths[(r.year, r.month)] = str(out_path)
+        for r in month_recs:
+            arr, profile = _read_as_float(r.path)
 
-        if relative:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", category=RuntimeWarning)
-                rel_anomaly = (anomaly / normal_arr) * 100.0
-                rel_anomaly = np.where(normal_arr == 0, np.nan, rel_anomaly)
-            # in compute_monthly_anomalies, and compute_annual_anomalies, "relative" block:
-            out_path_rel = (
-                rel_dir / f"anomaly_pct_{r.year}_{r.month:02d}.tif"
-            )  # (or f"anomaly_pct_{year}.tif" for annual)
-            _write_raster_int16(rel_anomaly, profile, out_path_rel, scale=100)
-            rel_paths[(r.year, r.month)] = str(out_path_rel)
+                anomaly = arr - normal_arr
 
-        if zscore:
-            std_arr = std_arrays.get(r.month)
-            if std_arr is None:
-                logger.warning(
-                    f"no '{std_stat}' normal for month {r.month:02d}, "
-                    f"skipping zscore anomaly for {r.year}-{r.month:02d}"
-                )
-            else:
+            out_path = abs_dir / f"anomaly_{r.year}_{r.month:02d}.tif"
+            _write_raster(anomaly, profile, out_path)
+            abs_paths[(r.year, r.month)] = str(out_path)
+
+            if relative:
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore", category=RuntimeWarning)
+                    rel_anomaly = (anomaly / normal_arr) * 100.0
+                    rel_anomaly = np.where(normal_arr == 0, np.nan, rel_anomaly)
+                out_path_rel = rel_dir / f"anomaly_pct_{r.year}_{r.month:02d}.tif"
+                _write_raster_int16(rel_anomaly, profile, out_path_rel, scale=100)
+                rel_paths[(r.year, r.month)] = str(out_path_rel)
+
+            if zscore and std_arr is not None:
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore", category=RuntimeWarning)
                     z_anomaly = anomaly / std_arr
@@ -804,6 +1087,14 @@ def compute_monthly_anomalies(
                 out_path_z = z_dir / f"anomaly_z_{r.year}_{r.month:02d}.tif"
                 _write_raster_int16(z_anomaly, profile, out_path_z, scale=100)
                 z_paths[(r.year, r.month)] = str(out_path_z)
+
+            del arr, anomaly  # release before next raster
+
+        logger.info(
+            f"month {month:02d} anomalies: {len(month_recs)} raster(s) "
+            f"(relative={'yes' if relative else 'no'}, zscore={'yes' if zscore else 'no'})"
+        )
+        del normal_arr, std_arr  # release before next month
 
     logger.info(
         f"anomalies computed for {len(abs_paths)} monthly raster(s) "
@@ -1086,6 +1377,10 @@ def process_data(loaded, cfg, logger):
     """
     monthly = loaded
     output_dir = Path(cfg["output"])
+    low_memory = cfg.get("low_memory", False)
+
+    if low_memory:
+        logger.info("low_memory mode enabled -- using incremental reduction")
 
     annual_cfg = cfg.get("annual") or {}
     annual_stats = list(annual_cfg.get("stats", ["mean"]))
@@ -1127,7 +1422,9 @@ def process_data(loaded, cfg, logger):
         and "std" not in normal_stats
     ):
         normal_stats.append("std")
-        logger.info("adding 'std' to normals.stats (required by anomalies.zscore)")
+        logger.info(
+            "adding 'std' to normals.stats (required by anomalies.zscore)"
+        )
 
     annual_paths = aggregate_annual(
         monthly,
@@ -1135,6 +1432,7 @@ def process_data(loaded, cfg, logger):
         logger,
         stats=annual_stats,
         min_months=min_months,
+        low_memory=low_memory,
     )
     _maybe_apply_style(annual_paths, styles_cfg.get("annual"), logger)
 
@@ -1145,6 +1443,7 @@ def process_data(loaded, cfg, logger):
         base_stat=annual_base_stat,
         stats=normal_stats,
         horizon=annual_horizon,
+        low_memory=low_memory,
     )
     _maybe_apply_style(annual_normal_paths, styles_cfg.get("annual_normal"), logger)
 
@@ -1181,6 +1480,7 @@ def process_data(loaded, cfg, logger):
         logger,
         stats=normal_stats,
         horizon=monthly_horizon,
+        low_memory=low_memory,
     )
     _maybe_apply_style(monthly_normal_paths, styles_cfg.get("monthly_normal"), logger)
 
