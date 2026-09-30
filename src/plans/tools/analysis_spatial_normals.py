@@ -669,9 +669,7 @@ class _OnlineReducer:
         for r0 in range(0, H, _ONLINE_CHUNK_ROWS):
             r1 = min(r0 + _ONLINE_CHUNK_ROWS, H)
             # Load only this row-chunk from the memmap into RAM
-            chunk = np.array(
-                self._mm[: self._fed, r0:r1, :], dtype="float64"
-            )
+            chunk = np.array(self._mm[: self._fed, r0:r1, :], dtype="float64")
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", category=RuntimeWarning)
                 result[r0:r1, :] = np.nanpercentile(chunk, q, axis=0)
@@ -1422,9 +1420,7 @@ def process_data(loaded, cfg, logger):
         and "std" not in normal_stats
     ):
         normal_stats.append("std")
-        logger.info(
-            "adding 'std' to normals.stats (required by anomalies.zscore)"
-        )
+        logger.info("adding 'std' to normals.stats (required by anomalies.zscore)")
 
     annual_paths = aggregate_annual(
         monthly,
