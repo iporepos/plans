@@ -1,5 +1,11 @@
 # Memory Log
 
+## 2026-10-30 — Added `testing/analyst_Bivar_views.py` view script
+User asked for it under `scripts/`, which is off-limits by CLAUDE.md hard rules; placed in `testing/` next to `analyst_Univar_views.py` instead.
+
+## 2026-10-30 — Refactored `analyst.Bivar` as a `DataSet` child (breaking)
+Mirrors `Univar`: `Bivar(name, alias)` + `load_data`/`set_data(x, y)`, `update()`, `_set_fields`/`get_metadata` (xunits/yunits), and the `view_specs`/`layouts`/`_get_fig_specs`/`_build_axes`/`_plot`/`view(show, return_fig)` pipeline. `view_model` folded into `view_specs["layout"] = "model"` + `view_specs["model_type"]`. Renamed `updata_model_data` → `_update_model_data`, `correlation` → `get_correlation`, `assess_error_normality` → `get_error_normality`. Model parameter names now `c0, c1, ...` to match function args, so models are evaluated with explicit kwargs. Fixed RMSE (was squared MSE). Removed broken `prediction_bands` (todo kept). Static metrics `bias/rmse/mae/rsq` unchanged (used by `hydrology/upscaled.py`). Added `tests/unit/test_analyst_Bivar.py` (9 tests, one temp CSV, figures not written to disk).
+
 ## 2026-09-15 — Added `query_sql(sql, params=None)` to `DataBase`
 Accepts SQL text or `.sql` file path; returns a `pandas.DataFrame` via `pd.read_sql`. Complements `execute_sql` (write-only) with a read path for arbitrary SELECT queries. No epoch conversion applied — callers handle datetime via SQLite native functions (e.g. `datetime(col, 'unixepoch')`).
 

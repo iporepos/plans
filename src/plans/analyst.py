@@ -1978,35 +1978,61 @@ class GeoUnivar(Univar):
         return None
 
 
-# todo [upgrade] make it a child of Dataset()
-class Bivar:
-    # todo [docstring]
+class Bivar(DataSet):
     """
-    The Bivariate analyst object
+    The Bivariate object.
 
-    # [major docstring]
+    Holds a paired ``x``/``y`` sample in a :class:`pandas.DataFrame`
+    (sorted by ``x``) and supports fitting simple regression models
+    (see ``models`` attribute) and assessing their errors.
+
+    **Examples**
+
+    .. code-block:: python
+
+        from plans.analyst import Bivar
+
+        bv = Bivar(name="StageDischarge", alias="SD")
+        bv.set_data(x=vct_h, y=vct_q)
+        bv.fit(model_type="Power")
+
+        # scatter with marginal histograms
+        bv.view(show=True)
+
+        # model panel
+        bv.view_specs["layout"] = "model"
+        bv.view_specs["model_type"] = "Power"
+        bv.view(show=True)
 
     """
 
-    def __init__(self, df_data, x_name="x", y_name="y", name="myvars"):
+    def __init__(self, name="MyBivar", alias="Bv0"):
+        # ------------ set defaults ----------- #
+        self.xfield = "x"
+        self.yfield = "y"
+        self.xname = "X"
+        self.yname = "Y"
+        self.xunits = "units"
+        self.yunits = "units"
 
-        # set inputs attributes
-        self.xname = x_name
-        self.yname = y_name
-        self.name = name
+        # ------------ call super ----------- #
+        super().__init__(name=name, alias=alias)
 
-        # set sorted data and reset index
-        df_data = df_data[[x_name, y_name]]
-        df_data = df_data.dropna()
-        self.data = df_data.sort_values(by=self.xname).reset_index(drop=True)
+        # attributes
+        self.x_min = None
+        self.x_max = None
+        self.y_min = None
+        self.y_max = None
+        self.corr = None
 
         # models setup
+        # note: "Parameters" must match the function argument names
         self.models = {
             "Linear": {
                 "Function": linear,
                 "Formula": "f(x) = c0 + c1 * x",
                 "Setup": pd.DataFrame(
-                    {"Parameters": ["c_0", "c_1"], "Mean": [0, 1], "SD": [0.1, 0.1]}
+                    {"Parameters": ["c0", "c1"], "Mean": [0.0, 1.0], "SD": [0.1, 0.1]}
                 ),
                 "Data": None,
                 "RMSE": None,
@@ -2016,8 +2042,8 @@ class Bivar:
                 "Formula": "f(x) =  c2 * ((x + c0)^c1)",
                 "Setup": pd.DataFrame(
                     {
-                        "Parameters": ["c_0", "c_1", "c_2"],
-                        "Mean": [0, 1, 1],
+                        "Parameters": ["c0", "c1", "c2"],
+                        "Mean": [0.0, 1.0, 1.0],
                         "SD": [0.1, 0.1, 0.1],
                     }
                 ),
@@ -2028,30 +2054,169 @@ class Bivar:
                 "Function": power_zero,
                 "Formula": "f(x) =  c1 * (x^c0)",
                 "Setup": pd.DataFrame(
-                    {"Parameters": ["c_0", "c_1"], "Mean": [1, 1], "SD": [0.1, 0.1]}
+                    {"Parameters": ["c0", "c1"], "Mean": [1.0, 1.0], "SD": [0.1, 0.1]}
                 ),
                 "Data": None,
                 "RMSE": None,
             },
         }
+        # todo [dev] Gumbel model: f(x) = exp(-exp(-((x-a)/b)))
 
-    """
-    "Gumbel": {
-    "Function": gumbel,
-    "Formula": "f(x) =  exp(-exp(-((x-a)/b)))",
-    "Setup": pd.DataFrame(
-        {"Parameters": ["a", "b"], "Mean": [1, 1], "SD": [0.1, 0.1]}
-    ),
-    "Data": None,
-    "RMSE": None,
-    },  
-    """
+        self.layouts = {
+            "full": {
+                "ncols": 24,
+                "nrows": 24,
+                "width": viewer.FIG_SIZES["S"]["w"],
+                "height": viewer.FIG_SIZES["S"]["h"],
+            },
+            "model": {
+                "ncols": 24,
+                "nrows": 24,
+                "width": viewer.FIG_SIZES["M"]["w"],
+                "height": viewer.FIG_SIZES["M"]["h"],
+            },
+            "default": {
+                "ncols": 24,
+                "nrows": 24,
+                "width": viewer.FIG_SIZES["S"]["w"],
+                "height": viewer.FIG_SIZES["S"]["h"],
+            },
+        }
+
+    def _set_fields(self):
+        """
+        Set catalog fields names. Expected to increment superior methods.
+        """
+        # call super
+        # ----------------------------------------------------------------
+        super()._set_fields()
+
+        # Bivar fields
+        self.field_xunits = "xunits"
+        self.field_yunits = "yunits"
+
+    def get_metadata(self):
+        """
+        Get a dictionary with object metadata.
+        Expected to increment superior methods.
+
+        :return: dictionary with all metadata
+        :rtype: dict
+        """
+        # call super
+        dc_meta = super().get_metadata()
+
+        # customize local metadata
+        dc_meta_local = {
+            self.field_xunits: self.xunits,
+            self.field_yunits: self.yunits,
+        }
+        # update
+        dc_meta.update(dc_meta_local)
+        # move file_data to the end
+        dc_meta.pop(self.field_file_data)
+        dc_meta[self.field_file_data] = self.file_data
+        return dc_meta
+
+    def load_data(self, file_data, input_xfield=None, input_yfield=None, in_sep=";"):
+        """
+        Load data from file. Expected to overwrite superior methods.
+
+        :param file_data: file path to data.
+        :type file_data: str
+        :param input_xfield: [optional] name of the x column in file. Default uses ``xfield``
+        :type input_xfield: str
+        :param input_yfield: [optional] name of the y column in file. Default uses ``yfield``
+        :type input_yfield: str
+        :param in_sep: column separator of file
+        :type in_sep: str
+        :return: None
+        :rtype: None
+        """
+        # -------------- overwrite relative path inputs -------------- #
+        self.file_data = os.path.abspath(file_data)
+
+        # -------------- implement loading logic -------------- #
+        s_xkey = self.xfield if input_xfield is None else input_xfield
+        s_ykey = self.yfield if input_yfield is None else input_yfield
+
+        default_columns = {
+            s_xkey: float,
+            s_ykey: float,
+        }
+
+        # -------------- call loading function -------------- #
+        df = pd.read_csv(
+            self.file_data,
+            sep=in_sep,
+            dtype=default_columns,
+            usecols=list(default_columns.keys()),
+        )
+
+        # -------------- post-loading logic -------------- #
+        df = df.rename(columns={s_xkey: self.xfield, s_ykey: self.yfield})
+        self.data = self._clean_data(df=df)
+
+        # -------------- update other mutables -------------- #
+        self.update()
+
+        return None
+
+    def set_data(self, x, y):
+        """
+        Set paired arrays to data.
+
+        :param x: array of x values
+        :type x: :class:`numpy.ndarray`
+        :param y: array of y values
+        :type y: :class:`numpy.ndarray`
+        :return: None
+        :rtype: None
+        """
+        df = pd.DataFrame({self.xfield: x, self.yfield: y})
+        self.data = self._clean_data(df=df)
+        self.update()
+        return None
+
+    def _clean_data(self, df):
+        """
+        Drop missing pairs, sort by x and reset index.
+        """
+        df = df[[self.xfield, self.yfield]].dropna()
+        return df.sort_values(by=self.xfield).reset_index(drop=True)
+
+    def update(self):
+        """
+        Refresh mutable attributes based on data. Expected to increment superior methods.
+
+        :return: None
+        :rtype: None
+        """
+        # ------------ call super ----------- #
+        super().update()
+
+        # update stats
+        if self.data is not None:
+            self.x_min = self.data[self.xfield].min()
+            self.x_max = self.data[self.xfield].max()
+            self.y_min = self.data[self.yfield].min()
+            self.y_max = self.data[self.yfield].max()
+            self.corr = self.get_correlation()
+
+            # view specs
+            self.view_specs["range_x"] = [self.x_min, self.x_max]
+            self.view_specs["range"] = [self.y_min, self.y_max]
+
+        return None
+
+    # MODEL METHODS
+    # ===================================================================
 
     def fit(self, model_type="Linear"):
         """
-        Fit model to bivariate object
+        Fit model to data using least squares.
 
-        :param model_type: model type. options: Linear, Power, Power_zero
+        :param model_type: model type. Options: Linear, Power, Power_zero
         :type model_type: str
         :return: None
         :rtype: None
@@ -2060,8 +2225,8 @@ class Bivar:
 
         popt, pcov = curve_fit(
             f=self.models[model_type]["Function"],
-            xdata=self.data[self.xname],
-            ydata=self.data[self.yname],
+            xdata=self.data[self.xfield].values,
+            ydata=self.data[self.yfield].values,
             p0=self.models[model_type]["Setup"]["Mean"].values,
         )
         pstd = np.sqrt(np.diag(pcov))
@@ -2070,517 +2235,421 @@ class Bivar:
         return None
 
     def update_model(self, params_mean, params_sd=None, model_type="Linear"):
-        """Update model based on parameters
+        """
+        Update model based on parameters.
 
-        :param params_mean: list of mean of parameters
+        :param params_mean: mean of parameters
         :type params_mean: list
-        :param params_sd: list of standard deviation of parameters
+        :param params_sd: [optional] standard deviation of parameters
         :type params_sd: list
-        :param model_type: model type. options: Linear, Power, Power_zero
+        :param model_type: model type. Options: Linear, Power, Power_zero
         :type model_type: str
         :return: None
         :rtype: None
         """
         # Setup
         self.models[model_type]["Setup"]["Mean"] = params_mean
-        if params_sd is None:
-            pass
-        else:
+        if params_sd is not None:
             self.models[model_type]["Setup"]["SD"] = params_sd
         # update sample
-        self.updata_model_data(model_type=model_type)
+        self._update_model_data(model_type=model_type)
         # update model metrics
-        vct_e = self.models[model_type]["Data"]["e_Mean"].values
-        self.models[model_type]["RMSE"] = np.square(np.mean(np.square(vct_e)))
+        df = self.models[model_type]["Data"]
+        self.models[model_type]["RMSE"] = Bivar.rmse(
+            pred=df[f"{self.yfield}_Mean"].values, obs=df[self.yfield].values
+        )
         return None
 
-    def updata_model_data(self, model_type="Linear"):
-        """Update only model data output
-
-        :param model_type: model type. options: Linear, Power, Power_zero
-        :type model_type: str
-        :return: None
-        :rtype: None
+    def _update_model_data(self, model_type="Linear"):
         """
-        popt = self.models[model_type]["Setup"]["Mean"].values
-        _df = self.data.copy()
-        s_ymodel = "{}_Mean".format(self.yname)
-        # compute model on sample:
-        _df[s_ymodel] = self.models[model_type]["Function"](
-            self.data[self.xname], *popt
+        Update model predictions and errors (model minus observed) on data.
+        """
+        df_setup = self.models[model_type]["Setup"]
+        dc_params = dict(zip(df_setup["Parameters"], df_setup["Mean"].values))
+        df = self.data.copy()
+        s_ymodel = f"{self.yfield}_Mean"
+        # compute model on sample
+        df[s_ymodel] = self.models[model_type]["Function"](
+            x=df[self.xfield].values, **dc_params
         )
         # compute error
-        _df["e_Mean".format(model_type)] = _df[s_ymodel] - _df[self.yname]
+        df["e_Mean"] = df[s_ymodel] - df[self.yfield]
         # set attribute
-        self.models[model_type]["Data"] = _df.copy()
-        del _df
+        self.models[model_type]["Data"] = df
         return None
 
-    def view(
-        self,
-        show=True,
-        folder="C:/sample",
-        filename="view",
-        specs=None,
-        fig_format="jpg",
-        dpi=300,
-    ):
-        """Plot basic view of Bivar base_object
+    # todo [dev] prediction bands via Monte Carlo simulation of fitted models
 
-        :param show: Boolean to show instead of saving
-        :type show: bool
-        :param folder: output folder
-        :type folder: str
-        :param filename: image file name
-        :type filename: str
-        :param specs: specification dictionary
-        :type specs: dict
-        :param dpi: image resolution (default = 300)
-        :type dpi: int
-        :param fig_format: image fig_format (ex: png or jpg). Default jpg
-        :type fig_format: str
-        :return: None
-        :rtype: None
+    # GET METHODS
+    # ===================================================================
+
+    def get_correlation(self):
         """
-
-        # get specs
-        default_specs = {
-            "color": "tab:grey",
-            "color_scatter": "tab:blue",
-            "title": "View of {}".format(self.name),
-            "width": 6,
-            "height": 6,
-            "range_x": [self.data[self.xname].min(), self.data[self.xname].max()],
-            "range": [self.data[self.yname].min(), self.data[self.yname].max()],
-            "xlabel": self.xname,
-            "ylabel": self.yname,
-        }
-        # handle inputs specs
-        if specs is None:
-            pass
-        else:  # override default
-            for k in specs:
-                default_specs[k] = specs[k]
-        specs = default_specs
-
-        # start plot
-        fig = plt.figure(figsize=(specs["width"], specs["height"]))  # Width, Height
-
-        plt.suptitle(specs["title"])
-
-        # grid
-        gs = mpl.gridspec.GridSpec(
-            3, 3, wspace=0.3, hspace=0.3, left=0.12, bottom=0.1, top=0.90, right=0.95
-        )  # nrows, ncols
-
-        # scatter plot
-        ax = fig.add_subplot(gs[1:, :2])
-        plt.scatter(
-            self.data[self.xname],
-            self.data[self.yname],
-            marker=".",
-            color=specs["color_scatter"],
-        )
-        plt.xlabel(specs["xlabel"])
-        plt.ylabel(specs["ylabel"])
-        plt.xlim(specs["range_x"])
-        plt.ylim(specs["range"])
-
-        # x hist
-        ax_histx = fig.add_subplot(gs[0, :2], sharex=ax)
-        plt.ylabel("p({})".format(self.xname))
-        xuni = Univar()
-        xuni.data = self.data[self.xname].values
-        plt.hist(
-            self.data[self.xname],
-            bins=xuni.get_nbins_fd(data=xuni.data),
-            color=specs["color"],
-            alpha=1,
-            weights=np.ones(len(self.data)) / len(self.data),
-        )
-        plt.xlim(specs["range_x"])
-
-        # y hist
-        ay_histy = fig.add_subplot(gs[1:, 2], sharey=ax)
-        plt.xlabel("p({})".format(self.yname))
-        yuni = Univar()
-        yuni.data = self.data[self.yname].values
-        plt.hist(
-            yuni.data,
-            bins=yuni.get_nbins_fd(data=yuni.data),
-            color=specs["color"],
-            alpha=1,
-            orientation="horizontal",
-            weights=np.ones(len(self.data)) / len(self.data),
-        )
-        plt.ylim(specs["range"])
-
-        # show or save
-        if show:
-            plt.show()
-        else:
-            if filename is None:
-                filename = self.name
-            plt.savefig("{}/{}.{}".format(folder, filename, fig_format), dpi=dpi)
-        plt.close(fig)
-
-    def view_model(
-        self,
-        model_type="Power",
-        show=True,
-        folder="C:/sample",
-        filename=None,
-        specs=None,
-        dpi=300,
-        fig_format="jpg",
-    ):
-        """Plot pannel for model analysis
-
-        :param show: Boolean to show instead of saving
-        :type show: bool
-        :param folder: output folder
-        :type folder: str
-        :param filename: image file name
-        :type filename: str
-        :param specs: specification dictionary
-        :type specs: dict
-        :param dpi: image resolution (default = 300)
-        :type dpi: int
-        :param fig_format: image fig_format (ex: png or jpg). Default jpg
-        :type fig_format: str
-        :return: None
-        :rtype: None
-        """
-
-        # ensure data is update
-        self.updata_model_data(model_type=model_type)
-
-        # get specs
-        default_specs = {
-            "color": "tab:grey",
-            "color_scatter": "tab:blue",
-            "color_model": "black",
-            "color_variance": "darkred",
-            "title": "View of {} {} Model".format(self.name, model_type),
-            "width": 8,
-            "height": 8,
-            "range_x": [self.data[self.xname].min(), self.data[self.xname].max()],
-            "range": [self.data[self.yname].min(), self.data[self.yname].max()],
-            "elim": [
-                -1.5 * self.models[model_type]["Data"]["e_Mean"].max(),
-                1.5 * self.models[model_type]["Data"]["e_Mean"].max(),
-            ],
-            "alpha_xy": 0.75,
-            "alpha_e": 0.75,
-        }
-        # handle inputs specs
-        if specs is None:
-            pass
-        else:  # override default
-            for k in specs:
-                default_specs[k] = specs[k]
-        specs = default_specs
-
-        # get some ranges
-        e_range = specs["elim"][1] - specs["elim"][0]
-        e_range_10 = e_range / 20
-        x_range = specs["range_x"][1] - specs["range_x"][0]
-        x_range_10 = x_range / 10
-
-        # -------------- start plot
-        fig = plt.figure(figsize=(specs["width"], specs["height"]))  # Width, Height
-        plt.suptitle(specs["title"])
-        # grid
-        gs = mpl.gridspec.GridSpec(
-            4, 4, wspace=0.3, hspace=0.45, left=0.12, bottom=0.1, top=0.90, right=0.95
-        )  # nrows, ncols
-
-        # ----------------- XY plot -----------------
-        ax = fig.add_subplot(gs[:2, :2])
-
-        plt.scatter(
-            self.data[self.xname],
-            self.data[self.yname],
-            marker=".",
-            color=specs["color_scatter"],
-            alpha=specs["alpha_xy"],
-            zorder=1,
-        )
-        plt.plot(
-            self.models[model_type]["Data"][self.xname],
-            self.models[model_type]["Data"]["{}_Mean".format(self.yname)],
-            color=specs["color_model"],
-            zorder=2,
-            linestyle="--",
-        )
-        plt.xlabel(self.xname)
-        plt.ylabel(self.yname)
-        plt.xlim(specs["range_x"])
-        plt.ylim(specs["range"])
-
-        # ----------------- error -----------------
-        e_uni = Univar(data=self.models[model_type]["Data"]["e_Mean"].values)
-        # get mean
-        e_mean = np.mean(e_uni.data)
-
-        ax = fig.add_subplot(gs[2, :2])
-        plt.scatter(
-            self.models[model_type]["Data"][self.xname],
-            self.models[model_type]["Data"]["e_Mean"].values,
-            marker=".",
-            alpha=specs["alpha_e"],
-            color=specs["color"],
-        )
-        # mean line
-        plt.hlines(
-            y=e_mean,
-            xmin=specs["range_x"][0],
-            xmax=specs["range_x"][1],
-            color="tab:red",
-            alpha=0.4,
-        )
-        plt.text(
-            y=e_mean + e_range_10,
-            x=specs["range_x"][1] - (3 * x_range_10),
-            s=r"$\mu$: " + str(round(e_mean, 2)),
-            color="tab:red",
-        )
-        plt.xlabel(self.xname)
-        plt.ylabel(r"$\epsilon$")
-        plt.xlim(specs["range_x"])
-        plt.ylim(specs["elim"])
-
-        # ----------------- error hist -----------------
-        ax = fig.add_subplot(gs[2, 2])
-        plt.hist(
-            e_uni.data,
-            bins=e_uni.get_nbins_fd(),
-            color=specs["color"],
-            alpha=1,
-            orientation="horizontal",
-            weights=np.ones(len(self.data)) / len(self.data),
-        )
-        # mean line
-        plt.hlines(y=e_mean, xmin=0, xmax=0.15, color="tab:red", alpha=0.4)
-        plt.ylim(specs["elim"])
-        plt.xlabel(r"p($\epsilon$)")
-
-        # ----------------- qq plot error -----------------
-        df_qq = e_uni.qqplot()
-        ax = fig.add_subplot(gs[2, 3])
-        plt.scatter(
-            x=df_qq["T-Quantiles"],
-            y=df_qq["Data"],
-            marker=".",
-            alpha=specs["alpha_e"],
-            color=specs["color"],
-        )
-        # mean line
-        plt.hlines(
-            y=e_mean,
-            xmin=df_qq["T-Quantiles"].min(),
-            xmax=df_qq["T-Quantiles"].max(),
-            color="tab:red",
-            alpha=0.4,
-        )
-        plt.ylim(specs["elim"])
-        plt.xlabel("normal quantiles")
-
-        # ----------------- variance tracing -----------------
-        ax = fig.add_subplot(gs[3, :2])
-        vct_var = e_uni.trace_variance()
-        plt.plot(
-            self.models[model_type]["Data"][self.xname],
-            vct_var,
-            color=specs["color_variance"],
-        )
-
-        plt.xlabel(self.xname)
-        plt.ylabel(r"$\sigma^2$")
-        plt.xlim(specs["range_x"])
-        plt.ylim([0, 1.5 * np.max(vct_var)])
-
-        # show or save
-        if show:
-            plt.show()
-        else:
-            if filename is None:
-                filename = self.name
-            plt.savefig("{}/{}.{}".format(folder, filename, fig_format), dpi=dpi)
-        plt.close(fig)
-        return None
-
-    def correlation(self):
-        """Compute the R correlation coefficient of the base_object
+        Get the Pearson correlation coefficient between x and y.
 
         :return: R correlation coefficient
         :rtype: float
         """
-        corr_df = self.data.corr().loc[self.xname, self.yname]
-        return corr_df
+        return self.data[self.xfield].corr(self.data[self.yfield])
 
-    def prediction_bands(
-        self, lst_bounds=None, n_sim=100, n_grid=100, n_seed=None, p0=None
-    ):
-        """Run Monte Carlo Simulation to get prediciton bands
-
-        :param lst_bounds: list of prediction bounds [min, max], if None, 3x the date range is used
-        :type lst_bounds: list
-        :param n_sim: number of simulation runs
-        :type n_sim: int
-        :param n_grid: number of prediction intervals
-        :type n_grid: int
-        :param n_seed: number of random seed for reproducibility. Default = None
-        :type n_seed: int
-        :param p0: list of initial values to search. Default: None
-        :type p0: list
-        :return: base_object with result dataframes
-        :rtype: dict
+    def get_error_normality(self, model_type="Linear", clevel=0.95):
         """
-        from scipy.optimize import curve_fit
+        Get normality analysis of model errors using standard tests.
 
-        # todo this seems to be deprecated
-        # handle None bounds
-        if lst_bounds is None:
-            _min = self.data[self.xname].min()
-            _max = self.data[self.xname].max()
-            # extrapolation zone 2x the interpolation zone
-            lst_bounds = [_min, _max + (2 * _min)]
-        # handle None seed
-        if n_seed is None:
-            from datetime import datetime
+        :param model_type: model type. Options: Linear, Power, Power_zero
+        :type model_type: str
+        :param clevel: confidence level
+        :type clevel: float
+        :return: dataframe of assessment results
+        :rtype: :class:`pandas.DataFrame`
+        """
+        self._update_model_data(model_type=model_type)
+        uv = Univar(name=self.name)
+        uv.set_array(array=self.models[model_type]["Data"]["e_Mean"].values)
+        return uv.get_normality(clevel=clevel)
 
-            _seed = int(datetime.now().timestamp())
-            n_seed = np.random.seed(_seed)
+    # PLOT METHODS
+    # ===================================================================
 
-        # --- set dataframes
-        # scale of simulations
-        n_scale = int(np.log10(n_sim)) + 1
+    def _set_view_specs(self):
+        """
+        Set view specifications. Expected to overwrite superior methods.
 
-        # simulation labels
-        lst_mcsim = ["MC{}".format(str(i).zfill(n_scale)) for i in range(n_sim + 1)]
-        s_refsim = lst_mcsim[0]
+        :return: None
+        :rtype: None
+        """
+        super()._set_view_specs()
+        self.view_specs.update(
+            {
+                # layout
+                "style": "wien",
+                "layout": "full",
+                "model_type": "Linear",
+                # titles
+                "subtitle_data": None,
+                "subtitle_model": "Model",
+                "subtitle_error": "Error",
+                "subtitle_variance": "Error variance",
+                "subtitle_qq": "Q-Q",
+                # axis labels
+                "xlabel": f"{self.xname} ({self.xunits})",
+                "ylabel": f"{self.yname} ({self.yunits})",
+                # colors
+                "color": "tab:grey",
+                "color_hist": "tab:grey",
+                "color_model": "black",
+                "color_error": "tab:grey",
+                "color_variance": "darkred",
+                "color_mean": "red",
+                "color_mean_text": None,
+                # alphas
+                "alpha": 0.8,
+                "alpha_hist": 1,
+                "alpha_error": 0.8,
+                # ranges
+                "range": None,
+                "range_x": None,
+                "range_e": None,
+                # mean
+                "plot_mean": True,
+                "linestyle_mean": "solid",
+                "pad_mean": 1,
+                "plot_mean_label": True,
+                # histogram -- None bins uses Freedman-Diaconis rule
+                "bins": None,
+                "bins_density": False,
+                # zorder
+                "zorder_data": 1,
+                "zorder_model": 2,
+                "zorder_histh": 1,
+            }
+        )
 
-        # parameter labels
-        _lst_params = list(self.linear_model["Parameter"].values)
-        _labels = ["Mean", "Std"]
-        lst_params = list()
-        for i in range(len(_labels)):
-            _label = _labels[i]
-            for j in range(len(_lst_params)):
-                _param = _lst_params[j]
-                lst_params.append("{}_{}".format(_param, _label))
+        del self.view_specs["width"]
+        del self.view_specs["height"]
 
-        # models dataframe
-        _cols = lst_params.copy()
-        _cols.insert(0, "Model")
-        _data = np.zeros(shape=(n_sim + 1, len(_cols)))
-        df_models = pd.DataFrame(data=_data, columns=_cols)
-        df_models["Model"] = lst_mcsim
+        return None
 
-        # prediction dataframe
-        _cols = ["{}_{}".format(self.yname, s) for s in lst_mcsim]
-        _cols.insert(0, self.xname)
-        _data = np.zeros(shape=(n_grid, len(_cols)))
-        df_preds = pd.DataFrame(data=_data, columns=_cols)
-        _min = np.min(lst_bounds)
-        _max = np.max(lst_bounds)
-        df_preds[self.xname] = np.linspace(_min, _max, n_grid)
+    def _get_fig_specs(self):
+        """
+        Get figure specs by merging view specs, layout sizes and grid specs.
+        """
+        specs = self.view_specs.copy()
 
-        # bands dataframe
-        _cols = ["Min", "Max", "Mean", "p01", "p05", "p25", "p50", "p75", "p95", "p99"]
-        _cols.insert(0, self.xname)
-        _data = np.zeros(shape=(n_grid, len(_cols)))
-        df_bands = pd.DataFrame(data=_data, columns=_cols)
-        df_bands[self.xname] = df_preds[self.xname].values
+        # handle layout
+        layout = specs["layout"]
+        if layout not in list(self.layouts.keys()):
+            layout = "default"
+            specs["layout"] = layout
 
-        # set reference simulation parameters
-        _lst = ["Mean", "Std"]
-        for s in _lst:
-            for i in range(len(self.linear_model)):
-                _s_par = self.linear_model["Parameter"].values[i]
-                _s_key = "{}_{}".format(_s_par, s)
-                _value = self.linear_model["Fit_{}".format(s)].values[i]
-                df_models[_s_key].values[0] = _value
+        # update sizes
+        specs.update(self.layouts[layout].copy())
 
-        # set reference simulation prediction
-        _x = df_preds[self.xname].values
-        _params = self.linear_model["Fit_Mean"].values
-        df_preds["y_{}".format(s_refsim)] = linear(_x, *_params)
+        # update gridspecs
+        specs.update(viewer.GRID_SPECS)
 
-        # get standard deviation from fit sample
-        n_std_e = self.linear_model_data["e"].std()
-        vct_yfit = self.linear_model_data["{}_fit".format(self.yname)].values
+        return specs
 
-        # simulation loop:
-        for n in range(1, n_sim + 1):
-            _sim = lst_mcsim[n]
+    def _build_axes(self, fig, gs, specs):
+        """
+        Add subplots to figure based on layout.
+        """
+        if specs["layout"] == "model":
+            fig.add_subplot(gs[3:11, 3:13])  # 0: model
+            fig.add_subplot(gs[3:11, 16:23])  # 1: error variance
+            fig.add_subplot(gs[15:21, 3:13])  # 2: error
+            fig.add_subplot(gs[15:21, 14:17])  # 3: error hist
+            fig.add_subplot(gs[15:21, 19:23])  # 4: error qq
+        else:
+            fig.add_subplot(gs[8:21, 4:18])  # 0: scatter
+            fig.add_subplot(gs[2:7, 4:18])  # 1: x hist
+            fig.add_subplot(gs[8:21, 20:])  # 2: y hist
+        return fig
 
-            # get new error
-            vct_e = np.random.normal(0.0, n_std_e, len(self.linear_model_data))
-            # get new y obs
-            vct_yobs = vct_yfit + vct_e
+    def _plot(self, fig, gs, specs):
+        """
+        Plot on figure based on layout.
+        """
+        # TITLE
+        # -------------------------------------------------------------------
+        if specs["title"] is not None:
+            plt.suptitle(specs["title"], fontsize=9)
 
-            # fit new model
-            if p0 is None:
-                popt, pcov = curve_fit(
-                    f=linear, xdata=self.linear_model_data[self.xname], ydata=vct_yobs
-                )
-            else:
-                popt, pcov = curve_fit(
-                    f=linear,
-                    xdata=self.linear_model_data[self.xname],
-                    ydata=vct_yobs,
-                    p0=p0,
-                )
-            pstd = np.sqrt(np.diag(pcov))
+        # AXES
+        # -------------------------------------------------------------------
+        fig = self._build_axes(fig=fig, gs=gs, specs=specs)
 
-            # store model values
-            _dct = {"Mean": popt, "Std": pstd}
-            for s in _dct:
-                for i in range(len(self.linear_model)):
-                    _s_par = self.linear_model["Parameter"].values[i]
-                    _s_key = "{}_{}".format(_s_par, s)
-                    _value = _dct[s][i]
-                    df_models[_s_key].values[n] = _value
+        # PLOT
+        # -------------------------------------------------------------------
+        if specs["layout"] == "model":
+            self._plot_model(fig=fig, specs=specs)
+        else:
+            self._plot_full(fig=fig, specs=specs)
 
-            # store prediction values
-            _x = df_preds[self.xname].values
-            df_preds["y_{}".format(_sim)] = linear(_x, *popt)
+        return fig
 
-        # get bands
-        for i in range(len(df_preds)):
-            _values = df_preds.values[i, 1:]
-            df_bands["Min"].values[i] = np.min(_values)
-            df_bands["Max"].values[i] = np.max(_values)
-            df_bands["Mean"].values[i] = np.mean(_values)
-            df_bands["p01"].values[i] = np.quantile(_values, 0.01)
-            df_bands["p05"].values[i] = np.quantile(_values, 0.05)
-            df_bands["p25"].values[i] = np.quantile(_values, 0.25)
-            df_bands["p50"].values[i] = np.quantile(_values, 0.5)
-            df_bands["p75"].values[i] = np.quantile(_values, 0.75)
-            df_bands["p95"].values[i] = np.quantile(_values, 0.95)
-            df_bands["p99"].values[i] = np.quantile(_values, 0.99)
+    def _plot_full(self, fig, specs):
+        """
+        Plot scatter with marginal histograms.
+        """
+        ax_data, ax_histx, ax_histy = fig.get_axes()
+        vct_x = self.data[self.xfield].values
+        vct_y = self.data[self.yfield].values
 
-        # return base_object
-        return {"Models": df_models, "Predictions": df_preds, "Bands": df_bands}
+        # PLOT SCATTER
+        # -------------------------------------------------------------------
+        ax_data.scatter(
+            vct_x,
+            vct_y,
+            marker=".",
+            color=specs["color"],
+            alpha=specs["alpha"],
+            s=0.8 * viewer.MM_TO_PT,
+            zorder=specs["zorder_data"],
+        )
+        if specs["subtitle_data"] is not None:
+            ax_data.set_title(specs["subtitle_data"], loc="left")
+        ax_data.set_xlim(specs["range_x"])
+        ax_data.set_ylim(specs["range"])
+        ax_data.set_xlabel(specs["xlabel"])
+        ax_data.set_ylabel(specs["ylabel"])
 
-    def assess_error_normality(self, model_type="Linear", clevel=0.95):
-        self.updata_model_data(model_type=model_type)
-        vct_e = self.models[model_type]["Data"]["e_Mean"].values
-        uni = Univar(data=vct_e, name=self.name)
-        df = uni.get_normality(clevel=clevel)
-        return df
+        # PLOT X HIST
+        # -------------------------------------------------------------------
+        bins_x = specs["bins"]
+        if bins_x is None:
+            bins_x = Univar.get_nbins_fd(data=vct_x)
+        ax_histx.hist(
+            vct_x,
+            bins=bins_x,
+            color=specs["color_hist"],
+            alpha=specs["alpha_hist"],
+            weights=np.ones(len(vct_x)) / len(vct_x),
+        )
+        ax_histx.yaxis.set_major_formatter(mticker.PercentFormatter(1))
+        ax_histx.set_xlim(specs["range_x"])
+        ax_histx.tick_params(labelbottom=False)
+
+        # PLOT Y HIST
+        # -------------------------------------------------------------------
+        Univar.plot_histh(
+            data=vct_y,
+            ax=ax_histy,
+            specs=self._get_histh_specs(specs=specs, data=vct_y),
+        )
+        ax_histy.tick_params(labelleft=False)
+
+        return None
+
+    def _plot_model(self, fig, specs):
+        """
+        Plot model panel: fit, error, error histogram, Q-Q and variance tracing.
+        """
+        ax_model, ax_var, ax_error, ax_ehist, ax_qq = fig.get_axes()
+
+        # MODEL DATA
+        # -------------------------------------------------------------------
+        model_type = specs["model_type"]
+        self._update_model_data(model_type=model_type)
+        df_model = self.models[model_type]["Data"]
+        vct_x = df_model[self.xfield].values
+        vct_e = df_model["e_Mean"].values
+        e_mean = np.mean(vct_e)
+
+        # handle error range
+        if specs["range_e"] is None:
+            e_max = 1.5 * np.max(np.abs(vct_e))
+            specs["range_e"] = [-e_max, e_max]
+
+        # PLOT MODEL
+        # -------------------------------------------------------------------
+        ax_model.scatter(
+            vct_x,
+            df_model[self.yfield].values,
+            marker=".",
+            color=specs["color"],
+            alpha=specs["alpha"],
+            s=0.8 * viewer.MM_TO_PT,
+            zorder=specs["zorder_data"],
+        )
+        ax_model.plot(
+            vct_x,
+            df_model[f"{self.yfield}_Mean"].values,
+            color=specs["color_model"],
+            linestyle="--",
+            zorder=specs["zorder_model"],
+        )
+        if specs["subtitle_model"] is not None:
+            ax_model.set_title(
+                "{} ({})".format(specs["subtitle_model"], model_type), loc="left"
+            )
+        ax_model.set_xlim(specs["range_x"])
+        ax_model.set_ylim(specs["range"])
+        ax_model.set_ylabel(specs["ylabel"])
+        ax_model.tick_params(labelbottom=False)
+
+        # PLOT VARIANCE TRACING
+        # -------------------------------------------------------------------
+        vct_var = Univar.trace_variance(data=vct_e)["Variance"].values
+        ax_var.plot(vct_x, vct_var, color=specs["color_variance"])
+        if specs["subtitle_variance"] is not None:
+            ax_var.set_title(specs["subtitle_variance"], loc="left")
+        ax_var.set_xlim(specs["range_x"])
+        ax_var.set_ylim([0, 1.5 * np.max(vct_var)])
+        ax_var.set_xlabel(specs["xlabel"])
+        ax_var.set_ylabel(r"$\sigma^2$")
+
+        # PLOT ERROR
+        # -------------------------------------------------------------------
+        ax_error.scatter(
+            vct_x,
+            vct_e,
+            marker=".",
+            color=specs["color_error"],
+            alpha=specs["alpha_error"],
+            s=0.8 * viewer.MM_TO_PT,
+            zorder=specs["zorder_data"],
+        )
+        if specs["subtitle_error"] is not None:
+            ax_error.set_title(specs["subtitle_error"], loc="left")
+        ax_error.set_xlim(specs["range_x"])
+        ax_error.set_ylim(specs["range_e"])
+        ax_error.set_xlabel(specs["xlabel"])
+        ax_error.set_ylabel(r"$\epsilon$")
+        if specs["plot_mean"]:
+            Univar.plot_mean(
+                ax=ax_error,
+                y_mu=e_mean,
+                xmin=specs["range_x"][0],
+                xmax=specs["range_x"][1],
+                specs=specs,
+            )
+
+        # PLOT ERROR HIST
+        # -------------------------------------------------------------------
+        specs_ehist = self._get_histh_specs(specs=specs, data=vct_e)
+        specs_ehist["range"] = specs["range_e"]
+        specs_ehist["plot_mean_label"] = False
+        Univar.plot_histh(data=vct_e, ax=ax_ehist, specs=specs_ehist)
+        ax_ehist.tick_params(labelleft=False)
+
+        # PLOT ERROR QQ
+        # -------------------------------------------------------------------
+        df_qq = Univar.qqplot(data=vct_e)
+        ax_qq.scatter(
+            df_qq["T-Quantiles"],
+            df_qq["Data"],
+            marker=".",
+            color=specs["color_error"],
+            alpha=specs["alpha_error"],
+            s=0.8 * viewer.MM_TO_PT,
+        )
+        if specs["subtitle_qq"] is not None:
+            ax_qq.set_title(specs["subtitle_qq"], loc="left")
+        ax_qq.set_ylim(specs["range_e"])
+        ax_qq.set_xlabel("Normal quantiles")
+        ax_qq.tick_params(labelleft=False)
+
+        return None
+
+    @staticmethod
+    def _get_histh_specs(specs, data):
+        """
+        Get a specs copy suited for marginal ``Univar.plot_histh`` calls.
+        """
+        specs_h = specs.copy()
+        specs_h["subtitle_hist"] = None
+        specs_h["ylabel"] = None
+        specs_h["plot_mean_label"] = False
+        if specs_h["bins"] is None:
+            specs_h["bins"] = Univar.get_nbins_fd(data=data)
+        return specs_h
+
+    def view(self, show=True, return_fig=False):
+        """
+        Get the visualization. Layout is set by ``view_specs["layout"]``
+        (``full`` or ``model``).
+
+        :param show: option for showing instead of saving
+        :type show: bool
+        :param return_fig: option for returning the figure object
+        :type return_fig: bool
+        :return: figure object if ``return_fig`` is True, else None
+        :rtype: :class:`matplotlib.figure.Figure` | None
+        """
+        # SPECS
+        # -------------------------------------------------------------------
+        specs = self._get_fig_specs()
+
+        # BUILD
+        # -------------------------------------------------------------------
+        fig, gs = viewer.build_fig(specs=specs)
+
+        # PLOT
+        # -------------------------------------------------------------------
+        fig = self._plot(fig=fig, gs=gs, specs=specs)
+
+        # SHIP
+        # -------------------------------------------------------------------
+        file_path = "{}/{}.{}".format(
+            specs["folder"], specs["filename"], specs["fig_format"]
+        )
+        if return_fig:
+            return fig
+        else:
+            viewer.ship_fig(fig=fig, show=show, file_output=file_path, dpi=specs["dpi"])
+
+    # STATIC METHODS
+    # ===================================================================
 
     @staticmethod
     def bias(pred, obs):
-        """Compute the Bias between predicted and observated sample
+        """
+        Compute the Bias (%) between predicted and observed sample.
 
-        :param pred: :class:`numpy.ndarray`
-            vector of prediction vales
+        :param pred: vector of predicted values
         :type pred: :class:`numpy.ndarray`
-        :param obs: :class:`numpy.ndarray`
-            vector of observed values
+        :param obs: vector of observed values
         :type obs: :class:`numpy.ndarray`
         :return: Bias value
         :rtype: float
@@ -2589,13 +2658,12 @@ class Bivar:
 
     @staticmethod
     def rmse(pred, obs):
-        """Compute the RMSE metric between predicted and observated sample
+        """
+        Compute the Root Mean Squared Error (RMSE) between predicted and observed sample.
 
-        :param pred: :class:`numpy.ndarray`
-            vector of prediction vales
+        :param pred: vector of predicted values
         :type pred: :class:`numpy.ndarray`
-        :param obs: :class:`numpy.ndarray`
-            vector of observed values
+        :param obs: vector of observed values
         :type obs: :class:`numpy.ndarray`
         :return: RMSE value
         :rtype: float
@@ -2604,13 +2672,12 @@ class Bivar:
 
     @staticmethod
     def mae(pred, obs):
-        """Compute the Mean Absolute Error (MAE) between predicted and observated sample
+        """
+        Compute the Mean Absolute Error (MAE) between predicted and observed sample.
 
-        :param pred: :class:`numpy.ndarray`
-            vector of prediction vales
+        :param pred: vector of predicted values
         :type pred: :class:`numpy.ndarray`
-        :param obs: :class:`numpy.ndarray`
-            vector of observed values
+        :param obs: vector of observed values
         :type obs: :class:`numpy.ndarray`
         :return: MAE value
         :rtype: float
@@ -2619,13 +2686,12 @@ class Bivar:
 
     @staticmethod
     def rsq(pred, obs):
-        """Compute the R-square between predicted and observated sample
+        """
+        Compute the R-square between predicted and observed sample.
 
-        :param pred: :class:`numpy.ndarray`
-            vector of prediction vales
+        :param pred: vector of predicted values
         :type pred: :class:`numpy.ndarray`
-        :param obs: :class:`numpy.ndarray`
-            vector of observed values
+        :param obs: vector of observed values
         :type obs: :class:`numpy.ndarray`
         :return: R-square value
         :rtype: float
