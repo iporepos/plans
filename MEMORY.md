@@ -1,5 +1,8 @@
 # Memory Log
 
+## 2026-10-30 — Added `docs/tutorials/bivar_01.ipynb` tutorial
+Basics of the refactored `Bivar`: attributes/labels, `load_data`, computed attributes, `full` and `model` layouts, fitting and comparing models, `update_model`, error normality and static metrics. Mirrors `univar_01` structure; executed with outputs stored. Listed in `docs/examples.rst` right after `univar_01`.
+
 ## 2026-10-30 — Added `testing/analyst_Bivar_views.py` view script
 User asked for it under `scripts/`, which is off-limits by CLAUDE.md hard rules; placed in `testing/` next to `analyst_Univar_views.py` instead.
 
