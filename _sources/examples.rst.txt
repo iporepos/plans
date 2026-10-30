@@ -24,6 +24,7 @@ Available tutorials
 
    tutorials/project_01
    tutorials/univar_01
+   tutorials/bivar_01
    tutorials/timeseries_01
    tutorials/timeseries_05_compare
    tutorials/timeseries_02_upscale
