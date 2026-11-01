@@ -467,25 +467,27 @@ class DischargeSeries(TimeSeries):
 # ------------- TIME SERIES COLLECTIONS -------------  #
 
 
-class RainSeriesSamples(TimeSeriesSpatialSamples):
-    # todo docstring
+class RainSeriesCluster(TimeSeriesCluster):
+    """
+    Cluster of rainfall series from different sites (e.g., a rain gauge network).
+    """
 
-    def __init__(self, name="MyRSColection"):
-        # todo docstring
+    def __init__(self, name="MyRSCluster"):
         super().__init__(name=name, base_object=RainSeries)
         # overwrite parent attributes
-        self.name_object = "Rainfall Series Samples"
+        self.name_object = "Rainfall Series Cluster"
         self._set_view_specs()
 
 
-class TemperatureSeriesSamples(TimeSeriesSpatialSamples):
-    # todo docstring
+class TemperatureSeriesCluster(TimeSeriesCluster):
+    """
+    Cluster of temperature series from different sites (e.g., a weather station network).
+    """
 
-    def __init__(self, name="MyTempSColection"):
-        # todo docstring
+    def __init__(self, name="MyTSCluster"):
         super().__init__(name=name, base_object=TemperatureSeries)
         # overwrite parent attributes
-        self.name_object = "Temperature Series Sample"
+        self.name_object = "Temperature Series Cluster"
         self._set_view_specs()
 
 

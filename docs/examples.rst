@@ -24,7 +24,9 @@ Available tutorials
 
    tutorials/project_01
    tutorials/univar_01
+   tutorials/univar_02_plots
    tutorials/bivar_01
+   tutorials/bivar_02_models
    tutorials/timeseries_01
    tutorials/timeseries_05_compare
    tutorials/timeseries_02_upscale
@@ -32,6 +34,9 @@ Available tutorials
    tutorials/timeseries_03_gaps
    tutorials/timeseries_04_standardize
    tutorials/timeseries_07_collection
+   tutorials/timeseries_08_cluster
+   tutorials/timeseries_09_cluster_large
+   tutorials/timeseries_10_ensemble
    tutorials/visuals_01
    tutorials/raster_01
 

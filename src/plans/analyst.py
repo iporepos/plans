@@ -256,8 +256,9 @@ class Univar(DataSet):
             self.freq_df = self.get_frequency()
             self.weibull_df = self.get_cdf_weibull()
 
-            # view specs
-            self.view_specs["range"] = [self.var_min, self.var_max]
+            # view specs -- 5% margin keeps extremes off the panel edges
+            margin = 0.05 * (self.var_max - self.var_min)
+            self.view_specs["range"] = [self.var_min - margin, self.var_max + margin]
 
         # ... continues in downstream objects ... #
         return None
@@ -676,12 +677,20 @@ class Univar(DataSet):
 
         # PLOT DATA
         # -------------------------------------------------------------------
-        Univar.plot_scatter(
-            data=data,
-            ax=ax_data,
-            specs=specs,
-            formatter=formatter,
-        )
+        if specs["data_plot"] == "boxplot":
+            Univar.plot_boxplot(
+                data=data,
+                ax=ax_data,
+                specs=specs,
+                formatter=formatter,
+            )
+        else:
+            Univar.plot_scatter(
+                data=data,
+                ax=ax_data,
+                specs=specs,
+                formatter=formatter,
+            )
 
         # PLOT HIST
         # -------------------------------------------------------------------
@@ -780,8 +789,11 @@ class Univar(DataSet):
                 # layout
                 "style": "wien",
                 "layout": "full",
+                # data plot: "scatter" or "boxplot"
+                "data_plot": "scatter",
                 # titles
                 "subtitle_data": "Data Points",
+                "subtitle_box": "Boxplot",
                 "subtitle_hist": "Histogram",
                 "subtitle_cdf": "CDF",
                 # fields
@@ -836,6 +848,9 @@ class Univar(DataSet):
                 # scatter
                 "scatter_factor": 4,
                 "colorize_scatter": False,
+                # boxplot
+                "box_width": 0.4,
+                "box_showfliers": True,
             }
         )
 
@@ -984,6 +999,62 @@ class Univar(DataSet):
         return (x_low, x_hi)
 
     @staticmethod
+    def plot_boxplot(data, ax, specs, formatter=None):
+        """
+        Plot a vertical boxplot of the data, sharing the y range of the other panels.
+
+        :param data: vector of data without nan values
+        :type data: :class:`numpy.ndarray`
+        :param ax: target axes. If False, nothing is plotted.
+        :type ax: :class:`matplotlib.axes.Axes`
+        :param specs: plot specification dictionary (from ``view_specs``)
+        :type specs: dict
+        :param formatter: [optional] y axis tick formatter
+        :type formatter: :class:`matplotlib.ticker.Formatter`
+        :return: None
+        :rtype: None
+        """
+        if not ax:
+            return None
+
+        # box at x = 0, whiskers at 1.5 IQR
+        ax.boxplot(
+            data,
+            positions=[0],
+            widths=specs["box_width"],
+            showfliers=specs["box_showfliers"],
+            patch_artist=True,
+            boxprops={"facecolor": specs["color"], "alpha": specs["alpha"]},
+            medianprops={"color": "black"},
+            flierprops={
+                "marker": ".",
+                "markersize": 3,
+                "markerfacecolor": specs["color"],
+                "markeredgecolor": "none",
+            },
+            zorder=specs["zorder_data"],
+        )
+
+        if specs["subtitle_box"] is not None:
+            ax.set_title(specs["subtitle_box"], loc="left")
+
+        ax.set_ylim(specs["range"])
+        ax.set_xlim(-1, 1)
+        ax.set_xticks([])
+        ax.set_xlabel(specs["xlabel"])
+        ax.set_ylabel(specs["ylabel"])
+        ax.grid(axis="x", visible=False)
+
+        if formatter is not None:
+            ax.yaxis.set_major_formatter(formatter)
+
+        # mean line
+        if specs["plot_mean_data"]:
+            Univar.plot_mean(ax=ax, y_mu=np.nanmean(data), xmin=-1, xmax=1, specs=specs)
+
+        return None
+
+    @staticmethod
     def plot_histh(data, ax, specs, formatter=None):
         # todo [docstring]
         # todo dry --- evaluate to remove the range_data parameter
@@ -1024,6 +1095,7 @@ class Univar(DataSet):
             bins=n_bins,
             color=specs["color_hist"],
             alpha=specs["alpha_hist"],
+            histtype=specs.get("histtype", "bar"),
             orientation="horizontal",
             weights=np.ones(len(data)) / len(data),
             zorder=specs["zorder_histh"],
@@ -2023,7 +2095,6 @@ class Bivar(DataSet):
         self.x_max = None
         self.y_min = None
         self.y_max = None
-        self.corr = None
 
         # models setup
         # note: "Parameters" must match the function argument names
@@ -2035,7 +2106,7 @@ class Bivar(DataSet):
                     {"Parameters": ["c0", "c1"], "Mean": [0.0, 1.0], "SD": [0.1, 0.1]}
                 ),
                 "Data": None,
-                "RMSE": None,
+                "Metrics": None,
             },
             "Power": {
                 "Function": power,
@@ -2048,7 +2119,7 @@ class Bivar(DataSet):
                     }
                 ),
                 "Data": None,
-                "RMSE": None,
+                "Metrics": None,
             },
             "Power_zero": {
                 "Function": power_zero,
@@ -2057,7 +2128,7 @@ class Bivar(DataSet):
                     {"Parameters": ["c0", "c1"], "Mean": [1.0, 1.0], "SD": [0.1, 0.1]}
                 ),
                 "Data": None,
-                "RMSE": None,
+                "Metrics": None,
             },
         }
         # todo [dev] Gumbel model: f(x) = exp(-exp(-((x-a)/b)))
@@ -2069,11 +2140,11 @@ class Bivar(DataSet):
                 "width": viewer.FIG_SIZES["S"]["w"],
                 "height": viewer.FIG_SIZES["S"]["h"],
             },
-            "model": {
+            "model": {  # square: three stacked panels
                 "ncols": 24,
                 "nrows": 24,
                 "width": viewer.FIG_SIZES["M"]["w"],
-                "height": viewer.FIG_SIZES["M"]["h"],
+                "height": viewer.FIG_SIZES["M"]["w"],
             },
             "default": {
                 "ncols": 24,
@@ -2201,7 +2272,6 @@ class Bivar(DataSet):
             self.x_max = self.data[self.xfield].max()
             self.y_min = self.data[self.yfield].min()
             self.y_max = self.data[self.yfield].max()
-            self.corr = self.get_correlation()
 
             # view specs
             self.view_specs["range_x"] = [self.x_min, self.x_max]
@@ -2255,8 +2325,9 @@ class Bivar(DataSet):
         self._update_model_data(model_type=model_type)
         # update model metrics
         df = self.models[model_type]["Data"]
-        self.models[model_type]["RMSE"] = Bivar.rmse(
-            pred=df[f"{self.yfield}_Mean"].values, obs=df[self.yfield].values
+        self.models[model_type]["Metrics"] = Bivar.get_metrics(
+            observed=df[self.yfield].values,
+            predicted=df[f"{self.yfield}_Mean"].values,
         )
         return None
 
@@ -2282,15 +2353,6 @@ class Bivar(DataSet):
 
     # GET METHODS
     # ===================================================================
-
-    def get_correlation(self):
-        """
-        Get the Pearson correlation coefficient between x and y.
-
-        :return: R correlation coefficient
-        :rtype: float
-        """
-        return self.data[self.xfield].corr(self.data[self.yfield])
 
     def get_error_normality(self, model_type="Linear", clevel=0.95):
         """
@@ -2395,11 +2457,13 @@ class Bivar(DataSet):
         Add subplots to figure based on layout.
         """
         if specs["layout"] == "model":
-            fig.add_subplot(gs[3:11, 3:13])  # 0: model
-            fig.add_subplot(gs[3:11, 16:23])  # 1: error variance
-            fig.add_subplot(gs[15:21, 3:13])  # 2: error
-            fig.add_subplot(gs[15:21, 14:17])  # 3: error hist
-            fig.add_subplot(gs[15:21, 19:23])  # 4: error qq
+            # left column stacked: model, error, variance (shared x)
+            # 3-row gaps keep titles clear of the x labels above
+            fig.add_subplot(gs[2:9, 3:14])  # 0: model
+            fig.add_subplot(gs[19:23, 3:14])  # 1: error variance
+            fig.add_subplot(gs[12:16, 3:14])  # 2: error
+            fig.add_subplot(gs[12:16, 16:19])  # 3: error hist
+            fig.add_subplot(gs[12:16, 21:24])  # 4: error qq
         else:
             fig.add_subplot(gs[8:21, 4:18])  # 0: scatter
             fig.add_subplot(gs[2:7, 4:18])  # 1: x hist
@@ -2469,6 +2533,13 @@ class Bivar(DataSet):
         ax_histx.yaxis.set_major_formatter(mticker.PercentFormatter(1))
         ax_histx.set_xlim(specs["range_x"])
         ax_histx.tick_params(labelbottom=False)
+        if specs["plot_mean"]:
+            ax_histx.axvline(
+                x=np.mean(vct_x),
+                color=specs["color_mean"],
+                linestyle=specs["linestyle_mean"],
+            )
+        # todo [DRY] consider a Univar.plot_histv counterpart of plot_histh
 
         # PLOT Y HIST
         # -------------------------------------------------------------------
@@ -2501,6 +2572,11 @@ class Bivar(DataSet):
             e_max = 1.5 * np.max(np.abs(vct_e))
             specs["range_e"] = [-e_max, e_max]
 
+        # error ticks with explicit sign (e.g., +2)
+        fmt_sign = mticker.FuncFormatter(
+            lambda v, pos: "0" if v == 0 else "{:+g}".format(v)
+        )
+
         # PLOT MODEL
         # -------------------------------------------------------------------
         ax_model.scatter(
@@ -2525,8 +2601,8 @@ class Bivar(DataSet):
             )
         ax_model.set_xlim(specs["range_x"])
         ax_model.set_ylim(specs["range"])
+        ax_model.set_xlabel(specs["xlabel"])
         ax_model.set_ylabel(specs["ylabel"])
-        ax_model.tick_params(labelbottom=False)
 
         # PLOT VARIANCE TRACING
         # -------------------------------------------------------------------
@@ -2556,6 +2632,7 @@ class Bivar(DataSet):
         ax_error.set_ylim(specs["range_e"])
         ax_error.set_xlabel(specs["xlabel"])
         ax_error.set_ylabel(r"$\epsilon$")
+        ax_error.yaxis.set_major_formatter(fmt_sign)
         if specs["plot_mean"]:
             Univar.plot_mean(
                 ax=ax_error,
@@ -2570,8 +2647,9 @@ class Bivar(DataSet):
         specs_ehist = self._get_histh_specs(specs=specs, data=vct_e)
         specs_ehist["range"] = specs["range_e"]
         specs_ehist["plot_mean_label"] = False
-        Univar.plot_histh(data=vct_e, ax=ax_ehist, specs=specs_ehist)
-        ax_ehist.tick_params(labelleft=False)
+        Univar.plot_histh(
+            data=vct_e, ax=ax_ehist, specs=specs_ehist, formatter=fmt_sign
+        )
 
         # PLOT ERROR QQ
         # -------------------------------------------------------------------
@@ -2588,7 +2666,7 @@ class Bivar(DataSet):
             ax_qq.set_title(specs["subtitle_qq"], loc="left")
         ax_qq.set_ylim(specs["range_e"])
         ax_qq.set_xlabel("Normal quantiles")
-        ax_qq.tick_params(labelleft=False)
+        ax_qq.yaxis.set_major_formatter(fmt_sign)
 
         return None
 
@@ -2643,62 +2721,131 @@ class Bivar(DataSet):
     # ===================================================================
 
     @staticmethod
-    def bias(pred, obs):
+    def get_metrics(observed, predicted):
         """
-        Compute the Bias (%) between predicted and observed sample.
+        Get all fit metrics between observed and predicted sample.
 
-        :param pred: vector of predicted values
-        :type pred: :class:`numpy.ndarray`
-        :param obs: vector of observed values
-        :type obs: :class:`numpy.ndarray`
-        :return: Bias value
-        :rtype: float
+        :param observed: vector of observed values
+        :type observed: :class:`numpy.ndarray`
+        :param predicted: vector of predicted values
+        :type predicted: :class:`numpy.ndarray`
+        :return: dictionary of metrics (r, rho, R2, RMSE, MAE, Bias)
+        :rtype: dict
         """
-        return 100 * np.sum(pred - obs) / np.sum(obs)
-
-    @staticmethod
-    def rmse(pred, obs):
-        """
-        Compute the Root Mean Squared Error (RMSE) between predicted and observed sample.
-
-        :param pred: vector of predicted values
-        :type pred: :class:`numpy.ndarray`
-        :param obs: vector of observed values
-        :type obs: :class:`numpy.ndarray`
-        :return: RMSE value
-        :rtype: float
-        """
-        return np.sqrt(np.sum(np.power(pred - obs, 2)) / len(pred))
-
-    @staticmethod
-    def mae(pred, obs):
-        """
-        Compute the Mean Absolute Error (MAE) between predicted and observed sample.
-
-        :param pred: vector of predicted values
-        :type pred: :class:`numpy.ndarray`
-        :param obs: vector of observed values
-        :type obs: :class:`numpy.ndarray`
-        :return: MAE value
-        :rtype: float
-        """
-        return np.sum(np.abs(pred - obs)) / len(pred)
+        # correlations
+        dc_metrics = {
+            "r": Bivar.pearson(x=observed, y=predicted),
+            "rho": Bivar.spearman(x=observed, y=predicted),
+        }
+        # agreement
+        dc_funcs = {
+            "R2": Bivar.rsq,
+            "RMSE": Bivar.rmse,
+            "MAE": Bivar.mae,
+            "Bias": Bivar.bias,
+        }
+        for k in dc_funcs:
+            dc_metrics[k] = dc_funcs[k](observed=observed, predicted=predicted)
+        return {k: float(dc_metrics[k]) for k in dc_metrics}
 
     @staticmethod
-    def rsq(pred, obs):
+    def pearson(x, y):
         """
-        Compute the R-square between predicted and observed sample.
+        Compute the Pearson correlation coefficient (r), a measure of linear association.
+        Symmetric: swapping ``x`` and ``y`` gives the same value.
 
-        :param pred: vector of predicted values
-        :type pred: :class:`numpy.ndarray`
-        :param obs: vector of observed values
-        :type obs: :class:`numpy.ndarray`
-        :return: R-square value
+        :param x: vector of x values
+        :type x: :class:`numpy.ndarray`
+        :param y: vector of y values
+        :type y: :class:`numpy.ndarray`
+        :return: r value, from -1 to 1
+        :rtype: float
+        """
+        return np.corrcoef(x, y)[0, 1]
+
+    @staticmethod
+    def spearman(x, y):
+        """
+        Compute the Spearman rank correlation coefficient (rho), a measure of
+        monotonic association. It is the Pearson r of the ranks (ties averaged).
+        Symmetric: swapping ``x`` and ``y`` gives the same value.
+
+        :param x: vector of x values
+        :type x: :class:`numpy.ndarray`
+        :param y: vector of y values
+        :type y: :class:`numpy.ndarray`
+        :return: rho value, from -1 to 1
+        :rtype: float
+        """
+        from scipy.stats import rankdata
+
+        return Bivar.pearson(x=rankdata(x), y=rankdata(y))
+
+    @staticmethod
+    def rsq(observed, predicted):
+        """
+        Compute the coefficient of determination (R2), as the fraction of
+        observed variance explained: ``1 - SS_res / SS_tot``.
+
+        .. note::
+
+            Equals r squared only for least-squares linear models with intercept.
+            For other models it can differ, and is negative when the model is worse
+            than the observed mean.
+
+        :param observed: vector of observed values
+        :type observed: :class:`numpy.ndarray`
+        :param predicted: vector of predicted values
+        :type predicted: :class:`numpy.ndarray`
+        :return: R2 value
         :rtype: float
         """
         return 1 - (
-            np.sum(np.power(pred - obs, 2)) / np.sum(np.power(obs - np.mean(obs), 2))
+            np.sum(np.power(predicted - observed, 2))
+            / np.sum(np.power(observed - np.mean(observed), 2))
         )
+
+    @staticmethod
+    def rmse(observed, predicted):
+        """
+        Compute the Root Mean Squared Error (RMSE).
+
+        :param observed: vector of observed values
+        :type observed: :class:`numpy.ndarray`
+        :param predicted: vector of predicted values
+        :type predicted: :class:`numpy.ndarray`
+        :return: RMSE value
+        :rtype: float
+        """
+        return np.sqrt(np.sum(np.power(predicted - observed, 2)) / len(predicted))
+
+    @staticmethod
+    def mae(observed, predicted):
+        """
+        Compute the Mean Absolute Error (MAE).
+
+        :param observed: vector of observed values
+        :type observed: :class:`numpy.ndarray`
+        :param predicted: vector of predicted values
+        :type predicted: :class:`numpy.ndarray`
+        :return: MAE value
+        :rtype: float
+        """
+        return np.sum(np.abs(predicted - observed)) / len(predicted)
+
+    @staticmethod
+    def bias(observed, predicted):
+        """
+        Compute the Bias (%), positive when predicted overestimates observed.
+
+        :param observed: vector of observed values
+        :type observed: :class:`numpy.ndarray`
+        :param predicted: vector of predicted values
+        :type predicted: :class:`numpy.ndarray`
+        :return: Bias value
+        :rtype: float
+        """
+        return 100 * np.sum(predicted - observed) / np.sum(observed)
 
 
 # todo [upgrade] make it a child of some MbaE class

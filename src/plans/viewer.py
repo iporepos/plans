@@ -44,6 +44,9 @@ LABEL_SIZE_TICK = 2.2  # mm
 LABEL_SIZE_AXIS = 2.52  # mm
 LABEL_SIZE_TITLE = 2.78  # mm
 
+# screen resolution (inline and windows) -- saving uses its own dpi
+FIG_DPI = 150
+
 
 FIG_SIZES = {
     "S": {
@@ -344,6 +347,7 @@ def build_fig(specs):
 
     # start plot and apply style
     set_figsize(width_mm=specs["width"], height_mm=specs["height"])
+    plt.rcParams["figure.dpi"] = FIG_DPI
 
     # set style
     set_style(style=specs["style"])

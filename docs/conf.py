@@ -121,6 +121,8 @@ exclude_patterns = [
 
 # Jupyter Notebooks variables from myst-nb
 nb_execution_mode = "cache"
+# enable $...$ and $$...$$ math in markdown cells
+myst_enable_extensions = ["dollarmath"]
 highlight_language = "python"
 
 # HTML AND THEMES

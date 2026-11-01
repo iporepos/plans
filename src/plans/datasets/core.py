@@ -806,7 +806,10 @@ class TimeSeries(Univar):
         end_std = end_std.date()
 
         # Get a standard date range for all periods
-        dt_index = pd.date_range(start=start_std, end=end_std, freq=self.dtfreq)
+        # next day is excluded: grid ends at the last slot of the last day
+        dt_index = pd.date_range(
+            start=start_std, end=end_std, freq=self.dtfreq, inclusive="left"
+        )
 
         # Set standarnd dataframe
         df_data_std = pd.DataFrame({self.dtfield: dt_index})
@@ -907,8 +910,9 @@ class TimeSeries(Univar):
             else:
                 if skip_arr[i + 1] == 0:
                     counter = counter + 1
-        if skip_arr[i + 1] == 0:
-            epoch_v[i] = counter
+        # last row (not covered by the loop)
+        if len(df) > 0 and skip_arr[-1] == 0:
+            epoch_v[-1] = counter
         df[self.epochs_id_field] = epoch_v
 
         df = df.drop(columns=["CumSum", "Skip"])
@@ -1956,6 +1960,7 @@ class TimeSeries(Univar):
                 marker=specs["marker"],
                 color=specs["color"],
                 alpha=specs["alpha"],
+                linewidth=specs.get("linewidth", None),
                 drawstyle=specs["drawstyle"],
                 label=label,
                 zorder=specs["zorder_data"],
@@ -2188,7 +2193,7 @@ class TimeSeries(Univar):
     
     This method allows further montecarlo analysis features, like fitting the 
     specs parameters based on the current data.
-    Even then a generate_ensamble() method -> TimeSeriesCluster()
+    Even then a generate_ensamble() method -> TimeSeriesEnsemble()
     
         
     """
@@ -2680,7 +2685,9 @@ class TimeSeriesCollection(Collection):
             "color_over": "tab:blue",
             "alpha_over": 0.4,
             "color_prev": "tab:gray",
-            "gantt_linewidth": 6,
+            "gantt_linewidth": 6,  # max width, shrinks to fit many series
+            # above this many series, per-series labels are hidden
+            "n_series_max": 10,
             # ranges (None = auto from self.start/self.end and data)
             "xmin": None,
             "xmax": None,
@@ -2692,7 +2699,49 @@ class TimeSeriesCollection(Collection):
             "suff": "",
             "dpi": 300,
             "fig_format": "jpg",
+            # series layouts (registered by same-variable subclasses)
+            "series": "Series",
+            "subtitle_hist": "Histogram",
+            "subtitle_cdf": "CDF",
+            "ylabel": None,
+            "range": None,  # common y range, None is auto
+            "cmap_series": "tab10",  # None uses each series color
+            "linewidth": 0.8,
+            "alpha_hist": 0.4,
+            "histtype": "bar",  # "step" draws outlines only
+            "bins": 30,  # common bins for all histograms
+            "plot_mean": True,
+            "legend": True,
+            # background series (large collections or highlight mode)
+            "highlight": None,  # list of names drawn in color
+            "color_background": "silver",
+            "linewidth_background": 0.5,
+            "alpha_background": 0.6,
+            "alpha_hist_background": 0.1,
         }
+        return None
+
+    def _set_series_layouts(self):
+        """
+        Register the ``series`` layouts. Meant for same-variable subclasses only,
+        since series of different variables can not share axes.
+        """
+        self.layouts.update(
+            {
+                "series": {  # series + histograms + CDFs
+                    "ncols": 34,
+                    "nrows": 12,
+                    "width": viewer.FIG_SIZES["L"]["w"],
+                    "height": viewer.FIG_SIZES["L"]["h"],
+                },
+                "series-simple": {  # series only
+                    "ncols": 34,
+                    "nrows": 16,
+                    "width": viewer.FIG_SIZES["L2"]["w"],
+                    "height": viewer.FIG_SIZES["L2"]["h"],
+                },
+            }
+        )
         return None
 
     def _get_fig_specs(self):
@@ -2714,7 +2763,13 @@ class TimeSeriesCollection(Collection):
 
     def _build_axes(self, fig, gs, specs):
         """Add the dashboard's Axes to ``fig`` according to ``layout``."""
-        if specs["layout"] == "simple":
+        if specs["layout"] == "series":
+            fig.add_subplot(gs[2:10, 3:21])  # 0: series
+            fig.add_subplot(gs[2:10, 23:28])  # 1: histograms
+            fig.add_subplot(gs[2:10, 29:])  # 2: CDFs
+        elif specs["layout"] == "series-simple":
+            fig.add_subplot(gs[2:14, 4:27])
+        elif specs["layout"] == "simple":
             fig.add_subplot(gs[2:7, 4:32])  # gantt
             fig.add_subplot(gs[10:15, 4:32])  # overlap
         else:  # "full" / default
@@ -2730,6 +2785,13 @@ class TimeSeriesCollection(Collection):
         stateful ``plt.*`` calls, so this composes safely with other plots
         and is safe to call more than once per session.
         """
+        # series layouts
+        if specs["layout"] in ["series", "series-simple"]:
+            fig = self._build_axes(fig=fig, gs=gs, specs=specs)
+            self._plot_series(axes=fig.get_axes(), specs=specs)
+            fig.suptitle(specs["title"])
+            return fig
+
         fig = self._build_axes(fig=fig, gs=gs, specs=specs)
         axes = fig.get_axes()
 
@@ -2797,9 +2859,16 @@ class TimeSeriesCollection(Collection):
             ticks = pd.date_range(start=xmin, end=xmax, periods=n_dates)
         format_dates = specs.get("format_dates", None)
 
+        # large collections drop per-series labels
+        n_series = len(names)
+        is_large = n_series > specs["n_series_max"]
+
         # --- a. Gantt chart ---
         ax_gantt = axes[0]
         ax_gantt.set_title("a. {}".format(specs["gantt"]), loc="left")
+        # fit line width to row height (points), so rows never overlap
+        row_pt = ax_gantt.get_window_extent().height * 72 / fig.dpi / n_series
+        gantt_linewidth = min(specs["gantt_linewidth"], 0.7 * row_pt)
         for i in range(len(names)):
             name = names[i]
             df_aux = local_epochs_df.query("{} == '{}'".format(self.field_name, name))
@@ -2810,12 +2879,16 @@ class TimeSeriesCollection(Collection):
                     x_time,
                     y_height,
                     color=df_aux["color"].values[j],
-                    linewidth=specs["gantt_linewidth"],
+                    linewidth=gantt_linewidth,
                     solid_capstyle="butt",
                 )
         ax_gantt.set_ylim(0, 1)
         ax_gantt.set_xlim(xmin, xmax)
-        ax_gantt.set_yticks(heights, labels)
+        if is_large:
+            ax_gantt.set_yticks([])
+            ax_gantt.set_ylabel("{} series".format(n_series))
+        else:
+            ax_gantt.set_yticks(heights, labels)
         ax_gantt.set_xlabel(specs["xlabel"])
         if ticks is not None:
             ax_gantt.set_xticks(ticks)
@@ -2858,22 +2931,207 @@ class TimeSeriesCollection(Collection):
         if len(axes) > 2:
             ax_prev = axes[2]
             ax_prev.set_title("c. {}".format(specs["prev"]), loc="left")
-            ax_prev.barh(labels, preval, color=specs["color_prev"])
-            for index, value in enumerate(preval):
-                ax_prev.text(
-                    value,
-                    index,
-                    " {:.1f}%".format(value),
-                    ha="left",
-                    va="center",
-                    fontsize=8,
-                )
+            # rows aligned with the gantt chart
+            ax_prev.barh(
+                heights,
+                preval,
+                height=0.8 / n_series,
+                color=specs["color_prev"],
+            )
+            ax_prev.set_ylim(0, 1)
+            if is_large:
+                ax_prev.set_yticks([])
+            else:
+                # percentages as tick labels (names read across from the gantt)
+                ax_prev.set_yticks(heights, ["{:.1f}%".format(p) for p in preval])
             ax_prev.set_xlim(0, 100)
             ax_prev.grid(axis="x")
             ax_prev.set_xlabel(specs["xlabel_prev"])
 
         fig.suptitle(specs["title"])
         return fig
+
+    def _get_labels(self, specs):
+        """
+        Get series labels (names or aliases), in catalog order.
+        """
+        field = self.field_alias if specs["usealias"] else self.field_name
+        return list(self.catalog[field].values)
+
+    def _plot_series(self, axes, specs, extra=None, force_background=False):
+        """
+        Plot all series overlaid: series, and (if axes are given) horizontal
+        histograms and CDFs. Reuses the single ``TimeSeries`` plotters.
+
+        Series in ``highlight`` are drawn in color on top of the others, drawn
+        in background style. Above ``n_series_max`` series without highlights,
+        all series are background.
+
+        :param axes: axes to plot on (1 or 3)
+        :type axes: list
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :param extra: [optional] foreground series that are not members
+            (e.g., ensemble reducers)
+        :type extra: list
+        :param force_background: option to draw all non-highlighted members
+            in background style
+        :type force_background: bool
+        :return: None
+        :rtype: None
+        """
+        ls_names = list(self.catalog[self.field_name].values)
+        dc_labels = dict(zip(ls_names, self._get_labels(specs=specs)))
+        ls_extra = extra if extra is not None else []
+
+        # FOREGROUND AND BACKGROUND
+        # -------------------------------------------------------------------
+        ls_highlight = [n for n in (specs["highlight"] or []) if n in ls_names]
+        if len(ls_highlight) > 0:
+            ls_fore = ls_highlight
+        elif force_background or len(ls_names) > specs["n_series_max"]:
+            ls_fore = []
+        else:
+            ls_fore = ls_names
+        # (series, label, is foreground): background first, extras last
+        ls_items = [
+            (self.collection[n], dc_labels[n], False)
+            for n in ls_names
+            if n not in ls_fore
+        ]
+        ls_items += [(self.collection[n], dc_labels[n], True) for n in ls_fore]
+        ls_items += [(ts, ts.name, True) for ts in ls_extra]
+        n_fore = len(ls_fore) + len(ls_extra)
+        if specs["cmap_series"] is not None and n_fore > 0:
+            cmap = viewer.get_discrete_cmap(
+                n_classes=n_fore, base_cmap_name=specs["cmap_series"]
+            )
+
+        # COMMON RANGES
+        # -------------------------------------------------------------------
+        xmin = specs["xmin"] if specs["xmin"] is not None else self.start
+        xmax = specs["xmax"] if specs["xmax"] is not None else self.end
+        range_y = specs["range"]
+        if range_y is None:
+            vmin = np.nanmin(
+                [
+                    self.collection[n].data[self.collection[n].varfield].min()
+                    for n in ls_names
+                ]
+            )
+            vmax = np.nanmax(
+                [
+                    self.collection[n].data[self.collection[n].varfield].max()
+                    for n in ls_names
+                ]
+            )
+            margin = 0.05 * (vmax - vmin)
+            range_y = [vmin - margin, vmax + margin]
+        # common bin edges, so histograms are comparable
+        vct_bins = np.linspace(range_y[0], range_y[1], specs["bins"] + 1)
+
+        ylabel = specs["ylabel"]
+        if ylabel is None:
+            ylabel = "{} ({})".format(self.varname, self.catalog["units"].values[0])
+
+        # PLOT EACH SERIES
+        # -------------------------------------------------------------------
+        hist_max = 0
+        i_fore = 0
+        for i, (ts, label, is_fore) in enumerate(ls_items):
+            if not is_fore:
+                color = specs["color_background"]
+            elif specs["cmap_series"] is None:
+                color = ts.color
+            else:
+                color = cmap(i_fore)
+            i_fore = i_fore + 1 if is_fore else i_fore
+
+            # series specs from the single series, with cluster overrides
+            sp = ts.view_specs.copy()
+            sp.update(
+                {
+                    "color": color,
+                    "color_hist": color,
+                    "color_cdf": color,
+                    "color_mean": color,
+                    "data_label": label if is_fore else None,
+                    "data_legend": False,
+                    "linewidth": specs["linewidth"],
+                    "range": range_y,
+                    "range_x": [xmin, xmax],
+                    "n_dates": None,
+                    "xlabel": specs["xlabel"],
+                    "ylabel": ylabel,
+                    # subtitles only once
+                    "subtitle_data": specs["series"] if i == 0 else None,
+                    "subtitle_hist": specs["subtitle_hist"] if i == 0 else None,
+                    "subtitle_cdf": specs["subtitle_cdf"] if i == 0 else None,
+                    # histograms
+                    "bins": vct_bins,
+                    "bins_density": False,
+                    "alpha_hist": specs["alpha_hist"],
+                    "histtype": specs["histtype"],
+                    "alpha_cdf": 1,
+                    # mean lines without labels
+                    "plot_mean": specs["plot_mean"],
+                    "plot_mean_label": False,
+                    "linestyle_mean": "dashed",
+                    # foreground above anything else (e.g., bands)
+                    "zorder_data": 3 if is_fore else 1,
+                    "zorder_histh": 3 if is_fore else 1,
+                    "zorder_cdf": 3 if is_fore else 1,
+                }
+            )
+            if not is_fore:
+                sp.update(
+                    {
+                        "linewidth": specs["linewidth_background"],
+                        "alpha": specs["alpha_background"],
+                        "alpha_hist": specs["alpha_hist_background"],
+                        "alpha_cdf": specs["alpha_background"],
+                        "plot_mean": False,
+                    }
+                )
+            TimeSeries.plot_series(data=ts.data, ax=axes[0], specs=sp)
+
+            if len(axes) > 1:
+                vct_data = ts.data[ts.varfield].dropna().values
+                h = Univar.plot_histh(data=vct_data, ax=axes[1], specs=sp)
+                hist_max = max(hist_max, np.max(h[0]))
+                Univar.plot_cdf(cdf_df=ts.get_cdf_weibull(), ax=axes[2], specs=sp)
+
+        # DECORATIONS
+        # -------------------------------------------------------------------
+        axes[0].xaxis.set_major_locator(mdates.AutoDateLocator(minticks=3, maxticks=6))
+        if len(axes) > 1:
+            # histograms share the series axis
+            axes[1].set_xlim(0, 1.1 * hist_max)
+            axes[1].set_ylabel(None)
+            axes[1].tick_params(labelleft=False)
+
+        self._set_series_legend(axes=axes, specs=specs)
+        return None
+
+    def _set_series_legend(self, axes, specs):
+        """
+        Set the legend of labeled (foreground) artists of the series panel.
+        """
+        _, ls_labels = axes[0].get_legend_handles_labels()
+        if not specs["legend"] or len(ls_labels) == 0:
+            return None
+        if len(axes) > 1:
+            # above the series panel, beside its title
+            axes[0].legend(
+                loc="lower right",
+                bbox_to_anchor=(1, 1),
+                ncol=min(len(ls_labels), 6),
+                fontsize=7,
+                frameon=False,
+            )
+        else:
+            axes[0].legend(loc="upper left", bbox_to_anchor=(1.01, 1), frameon=False)
+        return None
 
     def view(self, show=True, return_fig=False):
         """
@@ -3168,8 +3426,18 @@ class TimeSeriesCollection(Collection):
 
 class TimeSeriesCluster(TimeSeriesCollection):
     """
-    The ``TimeSeriesCluster`` instance is desgined for holding a collection
-    of same variable time series. That is, no miscellaneus data is allowed.
+    Collection of same-variable time series from different sites
+    (e.g., a network of rain gauges). No miscellaneous data is allowed.
+
+    Supports cross-site analysis: correlation between sites via
+    :meth:`get_correlation` and gap filling from neighboring sites via
+    :meth:`regionalize`. Site coordinates are read from the ``x`` and ``y``
+    attributes of each series.
+
+    .. note::
+
+        See ``TimeSeriesEnsemble`` for many realizations of the same series
+        (same site and time).
 
     """
 
@@ -3178,36 +3446,291 @@ class TimeSeriesCluster(TimeSeriesCollection):
         super().__init__(name=name, base_object=base_object)
 
         # Set extra specific attributes
-        self.varname = base_object().varname
-        self.varalias = base_object().varalias
+        self.varname = self.baseobject().varname
+        self.varalias = self.baseobject().varalias
 
         # Overwrite parent attributes
         self.name_object = "Time Series Cluster"
 
+        # Cluster layouts
+        self._set_series_layouts()
+        self.layouts.update(
+            {
+                "correlation": {
+                    "ncols": 24,
+                    "nrows": 24,
+                    "width": viewer.FIG_SIZES["S"]["w"],
+                    "height": viewer.FIG_SIZES["S"]["h"],
+                },
+            }
+        )
 
-class TimeSeriesSamples(TimeSeriesCluster):
+        # reload view specs
+        self._set_view_specs()
+
+    # Data methods
+    # -------------------------------------------------------------------
+    def _get_names_others(self, name):
+        """
+        Get names of all series except ``name``, in catalog order.
+        """
+        return [n for n in self.catalog[self.field_name].values if n != name]
+
+    def get_correlation(self, method="pearson", min_overlap=30):
+        """
+        Get the correlation matrix between all series, on their overlapping time steps.
+
+        :param method: correlation method. Options: ``pearson`` or ``spearman``
+        :type method: str
+        :param min_overlap: minimum number of overlapping time steps.
+            Pairs with less overlap are set to NaN.
+        :type min_overlap: int
+        :return: square correlation matrix, indexed by series names
+        :rtype: :class:`pandas.DataFrame`
+        """
+        from plans.analyst import Bivar
+
+        dc_funcs = {"pearson": Bivar.pearson, "spearman": Bivar.spearman}
+        func = dc_funcs[method.lower()]
+
+        # merged columns follow catalog order
+        df = self.merge_data()
+        ls_names = list(self.catalog[self.field_name].values)
+        grd = df[df.columns[1:]].values
+
+        n = len(ls_names)
+        grd_corr = np.full(shape=(n, n), fill_value=np.nan)
+        for i in range(n):
+            for j in range(i, n):
+                # overlapping steps only
+                mask = ~np.isnan(grd[:, i]) & ~np.isnan(grd[:, j])
+                if np.sum(mask) < min_overlap:
+                    continue
+                r = func(x=grd[mask, i], y=grd[mask, j])
+                grd_corr[i, j] = r
+                grd_corr[j, i] = r
+
+        return pd.DataFrame(grd_corr, index=ls_names, columns=ls_names)
+
+    def get_weights_by_name(self, name, method="average"):
+        """
+        Compute interpolation weights of all other series relative to a named series.
+
+        :param name: name of the target series (excluded from the weight set)
+        :type name: str
+        :param method: weighting scheme: ``average`` (uniform) or ``idw``
+            (inverse-distance). Default is ``average``.
+        :type method: str
+        :return: weights for the other series, in catalog order
+        :rtype: :class:`numpy.ndarray`
+        """
+        ls_names = self._get_names_others(name=name)
+        w = np.ones(len(ls_names))
+
+        if method.lower() == "idw":
+            x = self.collection[name].x
+            y = self.collection[name].y
+            x_i = np.array([self.collection[n].x for n in ls_names])
+            y_i = np.array([self.collection[n].y for n in ls_names])
+            d_i = np.sqrt(np.square(x - x_i) + np.square(y - y_i))
+            # small offset handles zero distance
+            idw_i = 1 / (d_i + (np.mean(d_i) / 10000))
+            # normalize to [0-100] range
+            w = 100 * idw_i / np.sum(idw_i)
+
+        return w
+
+    def regionalize(self, method="average"):
+        """
+        Fill gaps of every series with a weighted average of the other series.
+
+        :param method: weighting scheme: ``average`` (uniform) or ``idw``
+            (inverse-distance). Default is ``average``.
+        :type method: str
+        :return: None
+        :rtype: None
+
+        **Notes**
+
+        - Series are standardized first, if not yet.
+        - Only gaps are filled; observed values are never changed.
+        - Values are taken as they are, so sites with different levels
+          (e.g., temperature at different elevations) will bias the filling.
+        - All fillings use the original data, so filled values do not cascade.
+
+        """
+        # Handle standardization
+        if not self.isstandard:
+            self.standardize()
+
+        # merged columns follow catalog order
+        df = self.merge_data()
+        ls_names = list(self.catalog[self.field_name].values)
+        ls_columns = list(df.columns[1:])
+
+        for name in ls_names:
+            ts = self.collection[name]
+
+            # sources
+            ls_src = self._get_names_others(name=name)
+            ls_src_columns = [ls_columns[ls_names.index(n)] for n in ls_src]
+            grd_src = df[ls_src_columns].values
+
+            # weighted average over available sources
+            vct_w = self.get_weights_by_name(name=name, method=method)
+            grd_w = vct_w * ~np.isnan(grd_src)
+            vct_w_sum = np.sum(grd_w, axis=1)
+            vct_w_sum = np.where(vct_w_sum == 0, np.nan, vct_w_sum)
+            vct_o = np.nansum(grd_src * grd_w, axis=1) / vct_w_sum
+
+            # align merged grid to the series own grid
+            vct_o = (
+                pd.Series(vct_o, index=df[self.dtfield])
+                .reindex(ts.data[ts.dtfield].values)
+                .values
+            )
+
+            # fill gaps only
+            vct_dst = ts.data[ts.varfield].values
+            ts.data[ts.varfield] = np.where(np.isnan(vct_dst), vct_o, vct_dst)
+            ts.update()
+            ts.update_epochs_stats()
+
+        # Update the collection catalog with details
+        self.update(details=True)
+        return None
+
+    # View internal methods
+    # -------------------------------------------------------------------
+    def _set_view_specs(self):
+        """
+        Set view specifications. Expected to increment superior methods.
+        """
+        super()._set_view_specs()
+        self.view_specs.update(
+            {
+                # correlation layout
+                "correlation": "Correlation",
+                "corr_method": "pearson",
+                "corr_min_overlap": 30,
+                "cmap_corr": "RdBu_r",
+                "range_corr": [-1, 1],  # narrow it to reveal structure
+                "annotate": True,
+            }
+        )
+        return None
+
+    def _build_axes(self, fig, gs, specs):
+        """
+        Add axes to figure based on layout.
+        """
+        if specs["layout"] == "correlation":
+            fig.add_subplot(gs[3:20, 5:20])
+        else:
+            fig = super()._build_axes(fig=fig, gs=gs, specs=specs)
+        return fig
+
+    def _plot(self, fig, gs, specs):
+        """
+        Plot on figure based on layout.
+        """
+        if specs["layout"] == "correlation":
+            fig = self._build_axes(fig=fig, gs=gs, specs=specs)
+            self._plot_correlation(ax=fig.get_axes()[0], specs=specs)
+            fig.suptitle(specs["title"])
+        else:
+            fig = super()._plot(fig=fig, gs=gs, specs=specs)
+        return fig
+
+    def _plot_correlation(self, ax, specs):
+        """
+        Plot the correlation matrix as an annotated heatmap.
+        """
+        df_corr = self.get_correlation(
+            method=specs["corr_method"], min_overlap=specs["corr_min_overlap"]
+        )
+        ls_labels = self._get_labels(specs=specs)
+        grd = df_corr.values
+        n = len(ls_labels)
+
+        im = ax.imshow(
+            grd,
+            cmap=specs["cmap_corr"],
+            vmin=specs["range_corr"][0],
+            vmax=specs["range_corr"][1],
+        )
+        # annotations are unreadable on large clusters
+        if specs["annotate"] and n <= specs["n_series_max"]:
+            for i in range(n):
+                for j in range(n):
+                    s = "-" if np.isnan(grd[i, j]) else "{:.2f}".format(grd[i, j])
+                    # white text on strong colors
+                    color = "white" if abs(np.nan_to_num(grd[i, j])) > 0.6 else "black"
+                    ax.text(j, i, s, ha="center", va="center", color=color, fontsize=6)
+        if n <= specs["n_series_max"]:
+            ax.set_xticks(range(n), ls_labels, rotation=90)
+            ax.set_yticks(range(n), ls_labels)
+        else:
+            ax.set_xticks([])
+            ax.set_yticks([])
+            ax.set_xlabel("{} series".format(n))
+            ax.set_ylabel("{} series".format(n))
+        ax.grid(visible=False)
+        ax.set_title(
+            "{} ({})".format(specs["correlation"], specs["corr_method"]), loc="left"
+        )
+        plt.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+        return None
+
+
+class TimeSeriesEnsemble(TimeSeriesCollection):
     """
-    Collection of same-variable time series from the same underlying process,
-    treated as statistical samples. Supports ensemble reduction via :meth:`reducer`.
+    Collection of same-variable time series as realizations of the same
+    series (same site and time), e.g., stochastic draws or model runs.
+
+    Supports ensemble reduction across members at each time step via
+    :meth:`reducer` and its shortcuts (:meth:`mean`, :meth:`percentiles`,
+    :meth:`stats`, etc.). Reducers ignore missing values. The ``series``
+    view draws members in background style, with reducers and percentile
+    bands on top.
+
+    .. note::
+
+        See ``TimeSeriesCluster`` for same-variable series from different sites.
+
     """
 
-    def __init__(self, name="myTimeSeriesSamples", base_object=None):
+    def __init__(self, name="myTimeSeriesEnsemble", base_object=None):
         # initialize parent
         super().__init__(name=name, base_object=base_object)
-        # Overwrite parent attributes
-        self.name_object = "Time Series Samples"
 
+        # Set extra specific attributes
+        self.varname = self.baseobject().varname
+        self.varalias = self.baseobject().varalias
+
+        # Overwrite parent attributes
+        self.name_object = "Time Series Ensemble"
+
+        # Ensemble layouts
+        self._set_series_layouts()
+
+        # reload view specs
+        self._set_view_specs()
+
+    # Reducer methods
+    # -------------------------------------------------------------------
     def reducer(self, reducer_funcs=None, stepwise=False):
         """
-        Apply row-wise reducer functions across all merged sample data.
+        Apply reducer functions across all members at each time step.
 
-        :param reducer_funcs: Mapping of output column name to a dict with
+        :param reducer_funcs: mapping of output name to a dict with
             ``"Func"`` (callable) and ``"Args"`` (extra scalar argument or None).
         :type reducer_funcs: dict
-        :param stepwise: If True, apply each function row-by-row rather than
+        :param stepwise: if True, apply each function row-by-row rather than
             vectorized along axis 1. Default is False.
         :type stepwise: bool
-        :return: DataFrame with datetime and one column per reducer function.
+        :return: DataFrame with datetime and one column per reducer function,
+            named ``"{varalias}_{name}"``
         :rtype: :class:`pandas.DataFrame`
         """
         df_merged = self.merge_data()
@@ -3244,209 +3767,191 @@ class TimeSeriesSamples(TimeSeriesCluster):
         return df
 
     def mean(self):
-        """Return the time-step-wise mean across all samples."""
-        df = self.reducer(reducer_funcs={"mean": {"Func": np.mean, "Args": None}})
-        return df
+        """Return the time-step-wise mean across all members."""
+        return self.reducer(reducer_funcs={"mean": {"Func": np.nanmean, "Args": None}})
+
+    def median(self):
+        """Return the time-step-wise median across all members."""
+        return self.reducer(
+            reducer_funcs={"median": {"Func": np.nanmedian, "Args": None}}
+        )
 
     def rng(self):
-        """Return the time-step-wise range across all samples."""
-        # todo [revise] -- np.r is an array concatenator, not a range function.
-        #  Intended behaviour is likely max - min per row; replace with
-        #  lambda x, axis=None: np.max(x, axis=axis) - np.min(x, axis=axis)
-        #  Note: np.ptp (peak-to-peak) is deprecated since NumPy 1.25.
-        df = self.reducer(reducer_funcs={"rng": {"Func": np.r, "Args": None}})
-        return df
+        """Return the time-step-wise range (max - min) across all members."""
+        return self.reducer(
+            reducer_funcs={"rng": {"Func": TimeSeriesEnsemble._nanrange, "Args": None}}
+        )
 
     def std(self):
-        """Return the time-step-wise standard deviation across all samples."""
-        df = self.reducer(reducer_funcs={"std": {"Func": np.std, "Args": None}})
-        return df
+        """Return the time-step-wise standard deviation across all members."""
+        return self.reducer(reducer_funcs={"std": {"Func": np.nanstd, "Args": None}})
 
     def min(self):
-        """Return the time-step-wise minimum across all samples."""
-        df = self.reducer(reducer_funcs={"min": {"Func": np.min, "Args": None}})
-        return df
+        """Return the time-step-wise minimum across all members."""
+        return self.reducer(reducer_funcs={"min": {"Func": np.nanmin, "Args": None}})
 
     def max(self):
-        """Return the time-step-wise maximum across all samples."""
-        df = self.reducer(reducer_funcs={"max": {"Func": np.max, "Args": None}})
-        return df
+        """Return the time-step-wise maximum across all members."""
+        return self.reducer(reducer_funcs={"max": {"Func": np.nanmax, "Args": None}})
 
     def percentile(self, p=90):
         """
-        Return the time-step-wise p-th percentile across all samples.
+        Return the time-step-wise p-th percentile across all members.
 
-        :param p: Percentile value (0–100). Default is 90.
-        :type p: int
+        :param p: percentile value (0-100). Default is 90.
+        :type p: float
+        :return: DataFrame with datetime and the ``"{varalias}_p{p}"`` column
+        :rtype: :class:`pandas.DataFrame`
         """
-        df = self.reducer(reducer_funcs={"max": {"Func": np.percentile, "Args": p}})
-        return df
+        return self.percentiles(values=[p])
 
     def percentiles(self, values=None):
         """
-        Return time-step-wise percentiles across all samples.
+        Return time-step-wise percentiles across all members.
 
-        :param values: List of percentile values to compute. Default is
+        :param values: percentile values to compute. Default is
             ``[1, 5, 10, 25, 50, 75, 90, 95, 99]``.
-        :type values: list or None
+        :type values: list
+        :return: DataFrame with datetime and one ``"{varalias}_p{p}"`` column
+            per value (e.g., ``p05``, ``p50``)
+        :rtype: :class:`pandas.DataFrame`
         """
         if values is None:
             values = [1, 5, 10, 25, 50, 75, 90, 95, 99]
-        dict_funcs = {}
-        for v in values:
-            if v < 10:
-                dict_funcs["p0{}".format(v)] = {"Func": np.percentile, "Args": v}
-            else:
-                dict_funcs["p0{}".format(v)] = {"Func": np.percentile, "Args": v}
-
-        df = self.reducer(reducer_funcs=dict_funcs)
-        return df
+        dict_funcs = {
+            TimeSeriesEnsemble._get_percentile_name(p=v): {
+                "Func": np.nanpercentile,
+                "Args": v,
+            }
+            for v in values
+        }
+        return self.reducer(reducer_funcs=dict_funcs)
 
     def stats(self, basic=False):
         """
-        Return a combined DataFrame of common statistics and percentiles across all samples.
+        Return a combined DataFrame of common statistics and percentiles across all members.
 
-        :param basic: If True, compute only quartile percentiles (25, 50, 75).
+        :param basic: if True, compute only quartile percentiles (25, 50, 75).
         :type basic: bool
+        :return: DataFrame with datetime, sum, mean, std, min, max and percentiles
+        :rtype: :class:`pandas.DataFrame`
         """
         df_stats = self.reducer(
             reducer_funcs={
-                "sum": {"Func": np.sum, "Args": None},
-                "mean": {"Func": np.mean, "Args": None},
-                "std": {"Func": np.max, "Args": None},
-                "min": {"Func": np.min, "Args": None},
-                "max": {"Func": np.max, "Args": None},
+                "sum": {"Func": np.nansum, "Args": None},
+                "mean": {"Func": np.nanmean, "Args": None},
+                "std": {"Func": np.nanstd, "Args": None},
+                "min": {"Func": np.nanmin, "Args": None},
+                "max": {"Func": np.nanmax, "Args": None},
             }
         )
-        if basic:
-            values = [25, 50, 75]
-        # get percentiles
-        df_per = self.percentiles(values=None)
-        # join dataframes
+        values = [25, 50, 75] if basic else None
+        df_per = self.percentiles(values=values)
         df = pd.merge(left=df_stats, right=df_per, on=self.dtfield)
-
         return df
 
-
-class TimeSeriesSpatialSamples(TimeSeriesSamples):
-    """
-    Spatial extension of :class:`TimeSeriesSamples` for geolocated station data.
-    Supports spatial interpolation via :meth:`regionalize` and distance-based weighting.
-    """
-
-    def __init__(self, name="myTimeSeriesSpatialSample", base_object=None):
-        # initialize parent
-        super().__init__(name=name, base_object=base_object)
-        # Overwrite parent attributes
-        self.name_object = "Time Series Spatial"
-
-    def get_weights_by_name(self, name, method="average"):
+    def get_reducer_series(self, name):
         """
-        Compute interpolation weights for all stations relative to a named station.
+        Get a reducer as a series object of the ensemble base type.
 
-        :param name: Name of the target station (excluded from the weight set).
+        :param name: reducer name: ``mean``, ``median``, ``min``, ``max`` or a
+            percentile such as ``p90``
         :type name: str
-        :param method: Weighting scheme: ``"average"`` (uniform) or ``"idw"``
-            (inverse-distance). Default is ``"average"``.
-        :type method: str
-        :return: Weight array for the remaining stations.
-        :rtype: :class:`numpy.ndarray`
+        :return: series holding the reducer values
+        :rtype: :class:`TimeSeries`
         """
-        # remaining names
-        df_remain = self.catalog.query("Name != '{}'".format(name))
-        list_names = list(df_remain["Name"].values)
-
-        # w array
-        w = np.ones(len(list_names))
-
-        # handle methods
-        if method.lower() == "average":
-            return w
-        elif method.lower() == "idw":
-            # Get x,y
-            x = self.collection[name].x
-            y = self.collection[name].y
-            # Get distances
-            x_i = np.array([self.collection[_].x for _ in list_names])
-            y_i = np.array([self.collection[_].y for _ in list_names])
-            d_i = np.sqrt(np.square(x - x_i) + np.square(y - y_i))
-            # Compute IDW
-            idw_i = 1 / (d_i + (np.mean(d_i) / 10000))  # handle zero distance
-            # Normaliza to [0-100] range
-            w = 100 * idw_i / np.sum(idw_i)
-            return w
+        dc_funcs = {
+            "mean": self.mean,
+            "median": self.median,
+            "min": self.min,
+            "max": self.max,
+        }
+        if name in dc_funcs:
+            df = dc_funcs[name]()
+        elif name.startswith("p"):
+            df = self.percentile(p=float(name[1:]))
         else:
-            return w
+            raise ValueError(f"Unknown reducer: {name}")
 
-    # docs ok
-    def regionalize(self, method="average"):
+        ts = self.baseobject(name=name, alias=name)
+        ts.set_data(
+            input_df=df, input_dtfield=self.dtfield, input_varfield=df.columns[1]
+        )
+        return ts
+
+    # View internal methods
+    # -------------------------------------------------------------------
+    def _set_view_specs(self):
         """
-        Regionalize the time series data using a specified method.
-
-        :param method: Method for regionalization, default is "average".
-        :type method: str
-
-        **Notes**
-
-        - This method handles standardization. If the time series data is not standardized, it applies standardization.
-        - Computes epochs for the time series data.
-        - Iterates through each time series in the collection and performs regionalization.
-        - For each time series, sets up source and destination vectors, computes weights, and calculates regionalized values.
-        - Updates the destination column in-place with the regionalized values and updates epochs statistics.
-        - Updates the collection catalog with details.
-
-
+        Set view specifications. Expected to increment superior methods.
         """
-        # Handle stardardization
-        if self.isstandard:
-            pass
-        else:
-            self.standardize()
-        # Compute Epochs
-        df = self.get_epochs()
+        super()._set_view_specs()
+        self.view_specs.update(
+            {
+                "layout": "series",
+                # reducers drawn in color, members in background
+                "reducers": ["mean"],
+                # percentile bands, as [low, high] pairs
+                "bands": [[5, 95]],
+                "color_band": "tab:blue",
+                "alpha_band": 0.2,
+            }
+        )
+        return None
 
-        for i in range(len(self.catalog)):
+    def _plot_series(self, axes, specs, extra=None, force_background=False):
+        """
+        Plot members in background style, with reducers and bands on top.
+        """
+        ls_reducers = specs["reducers"] or []
+        ls_bands = specs["bands"] or []
+        ls_extra = [self.get_reducer_series(name=r) for r in ls_reducers]
+        super()._plot_series(
+            axes=axes,
+            specs=specs,
+            extra=ls_extra,
+            force_background=len(ls_reducers) + len(ls_bands) > 0,
+        )
 
-            varfield = self.catalog["VarField"].values[
-                i
-            ]  # todo refactor fields (avoid hardcoded)
-            name = self.catalog["Name"].values[i]
-            df_src_catalog = self.catalog.query("Name != '{}'".format(name))
+        # BANDS
+        # -------------------------------------------------------------------
+        # between background members and foreground lines
+        for p_lo, p_hi in ls_bands:
+            df = self.percentiles(values=[p_lo, p_hi])
+            s_lo = TimeSeriesEnsemble._get_percentile_name(p=p_lo)
+            s_hi = TimeSeriesEnsemble._get_percentile_name(p=p_hi)
+            axes[0].fill_between(
+                df[self.dtfield],
+                df["{}_{}".format(self.varalias, s_lo)],
+                df["{}_{}".format(self.varalias, s_hi)],
+                color=specs["color_band"],
+                alpha=specs["alpha_band"],
+                edgecolor="none",
+                zorder=2,
+                label="{}-{}".format(s_lo, s_hi),
+            )
 
-            # Get destination vector
-            dst_vct = self.collection[name].data[varfield].values
-            dst_mask = 1 * np.isnan(dst_vct)
+        # legend again, now including bands
+        self._set_series_legend(axes=axes, specs=specs)
+        return None
 
-            # Set up source
-            src_vars = df_src_catalog["VarField"].values
-            src_names = df_src_catalog["Name"].values
-            src_alias = df_src_catalog["Alias"].values
-            src_columns = [
-                "{}_{}".format(src_vars[i], src_alias[i])
-                for i in range(len(df_src_catalog))
-            ]
-            df_src = df[src_columns].copy()  # ensure name order
+    # Static methods
+    # -------------------------------------------------------------------
+    @staticmethod
+    def _nanrange(x, axis=None):
+        """
+        Range (max - min) ignoring missing values.
+        """
+        return np.nanmax(x, axis=axis) - np.nanmin(x, axis=axis)
 
-            # Set up weights
-            vct_w = self.get_weights_by_name(name=name, method=method)
-
-            # get product w * values
-            w_v = vct_w * ~np.isnan(df_src.values)
-            # horizontal weights sum
-            w_sum = np.sum(w_v, axis=1)
-            w_sum = np.where(w_sum == 0, np.nan, w_sum)
-            # output sum
-            o_sum = np.nansum(df_src.values * w_v, axis=1)
-            # output average
-            o = o_sum / w_sum
-
-            # set destination column inplace
-            self.collection[name].data[varfield] = np.where(dst_mask == 1, o, dst_vct)
-            self.collection[name].update()
-            self.collection[name].update_epochs_stats()
-
-        # Update the collection catalog with details
-        self.update(details=True)
+    @staticmethod
+    def _get_percentile_name(p):
+        """
+        Get the percentile name, zero padded (e.g., ``p05``, ``p50``, ``p2.5``).
+        """
+        if float(p).is_integer():
+            return "p{:02d}".format(int(p))
+        return "p{}".format(p)
 
 
 # Core spatial classes

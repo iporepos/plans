@@ -361,9 +361,9 @@ class LinearStorage(Model):
         vc_obs = df["{}_obs".format(self.var_eval)].values
 
         # compute evaluation metrics
-        self.rmse = Bivar.rmse(pred=vc_pred, obs=vc_obs)
-        self.rsq = Bivar.rsq(pred=vc_pred, obs=vc_obs)
-        self.bias = Bivar.bias(pred=vc_pred, obs=vc_obs)
+        self.rmse = Bivar.rmse(observed=vc_obs, predicted=vc_pred)
+        self.rsq = Bivar.rsq(observed=vc_obs, predicted=vc_pred)
+        self.bias = Bivar.bias(observed=vc_obs, predicted=vc_pred)
 
         return None
 

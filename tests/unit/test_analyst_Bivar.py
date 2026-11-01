@@ -17,7 +17,8 @@ The test suite verifies that:
 * Paired data is cleaned (missing pairs dropped) and sorted by ``x``.
 * CSV data is loaded with custom input column names.
 * Metadata contains the ``Bivar`` fields.
-* Fitting recovers known parameters and stores a consistent RMSE.
+* Fitting recovers known parameters and stores consistent fit metrics.
+* Static metrics take ``observed`` and ``predicted`` and behave as expected.
 * Figures are built for all layouts without writing files.
 
 """
@@ -135,25 +136,35 @@ class TestBivar(unittest.TestCase):
         self.assertIn(self.bv.field_yunits, metadata)
         self.assertEqual(list(metadata.keys())[-1], self.bv.field_file_data)
 
-    def test_correlation(self):
-        self.assertAlmostEqual(self.bv.corr, 1.0, places=6)
-
     def test_fit(self):
         self.bv.fit(model_type="Linear")
         model = self.bv.models["Linear"]
         params = model["Setup"]["Mean"].values
         self.assertAlmostEqual(params[0], C0, places=4)
         self.assertAlmostEqual(params[1], C1, places=4)
-        self.assertAlmostEqual(model["RMSE"], 0.0, places=4)
+        self.assertAlmostEqual(model["Metrics"]["RMSE"], 0.0, places=4)
+        self.assertAlmostEqual(model["Metrics"]["R2"], 1.0, places=4)
         self.assertIn("e_Mean", model["Data"].columns)
+
+    def test_correlation(self):
+        # monotonic but non-linear: rho is perfect, r is not
+        x = np.linspace(start=0, stop=10, num=N_SIZE)
+        y = np.exp(x)
+        self.assertAlmostEqual(Bivar.spearman(x=x, y=y), 1.0, places=6)
+        self.assertLess(Bivar.pearson(x=x, y=y), 0.9)
+        # symmetric
+        self.assertAlmostEqual(Bivar.pearson(x=x, y=y), Bivar.pearson(x=y, y=x))
 
     def test_metrics(self):
         obs = np.array([1.0, 2.0, 3.0])
         pred = np.array([2.0, 2.0, 2.0])
-        self.assertAlmostEqual(Bivar.rmse(pred=pred, obs=obs), np.sqrt(2 / 3))
-        self.assertAlmostEqual(Bivar.mae(pred=pred, obs=obs), 2 / 3)
-        self.assertAlmostEqual(Bivar.bias(pred=pred, obs=obs), 0.0)
-        self.assertAlmostEqual(Bivar.rsq(pred=obs, obs=obs), 1.0)
+        dc = Bivar.get_metrics(observed=obs, predicted=pred)
+        self.assertAlmostEqual(dc["RMSE"], np.sqrt(2 / 3))
+        self.assertAlmostEqual(dc["MAE"], 2 / 3)
+        self.assertAlmostEqual(dc["Bias"], 0.0)
+        self.assertAlmostEqual(dc["R2"], 0.0)  # constant at the mean
+        # bias sign: overestimation is positive
+        self.assertGreater(Bivar.bias(observed=obs, predicted=obs + 1), 0)
 
     def test_get_error_normality(self):
         # perturb to avoid zero-variance errors
