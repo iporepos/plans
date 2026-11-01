@@ -438,7 +438,7 @@
 <span class="c1"># Project-level imports</span>
 <span class="c1"># =======================================================================</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">plans.root</span><span class="w"> </span><span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">DataSet</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">plans.analyst</span><span class="w"> </span><span class="kn">import</span> <span class="n">Univar</span><span class="p">,</span> <span class="n">GeoUnivar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.analyst</span><span class="w"> </span><span class="kn">import</span> <span class="n">Univar</span><span class="p">,</span> <span class="n">GeoUnivar</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">plans</span><span class="w"> </span><span class="kn">import</span> <span class="n">viewer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">plans</span><span class="w"> </span><span class="kn">import</span> <span class="n">geo</span>
 
@@ -547,7 +547,7 @@
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A time series dataset with a datetime-indexed variable.</span>
 
-<span class="sd">    Extends :class:`~plans.analyst.Univar` with temporal structure:</span>
+<span class="sd">    Extends :class:`~plans.datasets.analyst.Univar` with temporal structure:</span>
 <span class="sd">    frequency detection, standardization, gap analysis, and scaling.</span>
 <span class="sd">    """</span>
 
@@ -4061,7 +4061,7 @@
 <span class="sd">        :return: square correlation matrix, indexed by series names</span>
 <span class="sd">        :rtype: :class:`pandas.DataFrame`</span>
 <span class="sd">        """</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">plans.analyst</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bivar</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.analyst</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bivar</span>
 
         <span class="n">dc_funcs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"pearson"</span><span class="p">:</span> <span class="n">Bivar</span><span class="o">.</span><span class="n">pearson</span><span class="p">,</span> <span class="s2">"spearman"</span><span class="p">:</span> <span class="n">Bivar</span><span class="o">.</span><span class="n">spearman</span><span class="p">}</span>
         <span class="n">func</span> <span class="o">=</span> <span class="n">dc_funcs</span><span class="p">[</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
@@ -4865,9 +4865,9 @@
 <span class="sd">        Creates and returns a Univar object initialized with the current object's grid data.</span>
 
 <span class="sd">        :return: A Univar object containing the grid data for univariate analysis.</span>
-<span class="sd">        :rtype: :class:`plans.analyst.Univar`</span>
+<span class="sd">        :rtype: :class:`plans.datasets.analyst.Univar`</span>
 <span class="sd">        """</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">plans.analyst</span><span class="w"> </span><span class="kn">import</span> <span class="n">Univar</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.analyst</span><span class="w"> </span><span class="kn">import</span> <span class="n">Univar</span>
 
         <span class="n">uni</span> <span class="o">=</span> <span class="n">Univar</span><span class="p">()</span>
         <span class="n">uni</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">array</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_grid_data</span><span class="p">())</span>
@@ -6380,7 +6380,7 @@
 <span class="sd">        :return: dataframe of zonal stats</span>
 <span class="sd">        :rtype: :class:`pandas.DataFrame`</span>
 <span class="sd">        """</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">plans.analyst</span><span class="w"> </span><span class="kn">import</span> <span class="n">Univar</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.analyst</span><span class="w"> </span><span class="kn">import</span> <span class="n">Univar</span>
 
         <span class="c1"># deploy dataframe</span>
         <span class="n">df_aux1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>

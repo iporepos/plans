@@ -11,11 +11,6 @@
 .. autosummary::
    :toctree: generated
 
-   plans.analyst
-
-.. autosummary::
-   :toctree: generated
-
    plans.geo
 
 .. autosummary::

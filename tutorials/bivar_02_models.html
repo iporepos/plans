@@ -505,7 +505,7 @@
 <p>Stage-discharge relations (rating curves) are a classic case for model fitting in hydrology. Discharge usually starts at a stage offset (the gauge zero is below the channel bottom), so lets make one with <span class="math notranslate nohighlight">\(h_0 = 0.2\)</span> m plus gaussian noise. Stages are drawn from a skewed (gamma) distribution, since low flows are far more frequent than floods in a real gauging record:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.analyst</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bivar</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.analyst</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bivar</span>
 
 <span class="c1"># make synthetic power-law data with a stage offset</span>
 <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>  <span class="c1"># ensure reproducibility</span>
@@ -612,12 +612,12 @@ Power_zero   f(x) =  c1 * (x^c0)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'r': 0.9628756752076763,
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'r': 0.9628756752076765,
  'rho': 0.9634260856521415,
  'R2': 0.9271295659066388,
- 'RMSE': 1.2349857669571263,
- 'MAE': 0.9190128306347826,
- 'Bias': -4.4877824410893e-07}
+ 'RMSE': 1.2349857669571258,
+ 'MAE': 0.919012840087451,
+ 'Bias': 2.4696790784111732e-08}
 </pre></div>
 </div>
 </div>
@@ -633,7 +633,7 @@ Power_zero   f(x) =  c1 * (x^c0)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f6648183b39ee7e73fd7b4dc01b9871f2bf1cc519c7e70742ac0af254596a533.png" src="../_images/f6648183b39ee7e73fd7b4dc01b9871f2bf1cc519c7e70742ac0af254596a533.png" />
+<img alt="../_images/7d589c60d038d6b852fef449819260a35f2ae808b1cc0a46df820d522d8fc65d.png" src="../_images/7d589c60d038d6b852fef449819260a35f2ae808b1cc0a46df820d522d8fc65d.png" />
 </div>
 </div>
 <p>The model <code class="docutils literal notranslate"><span class="pre">Data</span></code> holds the predictions (<code class="docutils literal notranslate"><span class="pre">y_Mean</span></code>) and the errors (<code class="docutils literal notranslate"><span class="pre">e_Mean</span></code>, model minus observed):</p>
@@ -772,12 +772,12 @@ Power_zero   f(x) =  c1 * (x^c0)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'r': 0.9935712183516946,
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'r': 0.9935712183539649,
  'rho': 0.9634260856521415,
  'R2': 0.9867430899580296,
- 'RMSE': 0.5267534985525241,
- 'MAE': 0.40790128845357926,
- 'Bias': 2.05827208823269}
+ 'RMSE': 0.5267534985525246,
+ 'MAE': 0.4079012884987642,
+ 'Bias': 2.058272102394914}
 </pre></div>
 </div>
 </div>
@@ -866,12 +866,12 @@ Power_zero   f(x) =  c1 * (x^c0)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'r': 0.9941759516642587,
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'r': 0.9941759516644231,
  'rho': 0.9634260856521415,
- 'R2': 0.9883855277023154,
- 'RMSE': 0.4930443828553086,
- 'MAE': 0.3951174168065944,
- 'Bias': -0.05401650852806081}
+ 'R2': 0.9883855277023155,
+ 'RMSE': 0.4930443828553082,
+ 'MAE': 0.3951174167884024,
+ 'Bias': -0.05401654624550328}
 </pre></div>
 </div>
 </div>
@@ -941,7 +941,7 @@ Power_zero   f(x) =  c1 * (x^c0)
       <td>0.927130</td>
       <td>1.234986</td>
       <td>0.919013</td>
-      <td>-4.487782e-07</td>
+      <td>2.469679e-08</td>
     </tr>
     <tr>
       <th>Power</th>
@@ -950,7 +950,7 @@ Power_zero   f(x) =  c1 * (x^c0)
       <td>0.988386</td>
       <td>0.493044</td>
       <td>0.395117</td>
-      <td>-5.401651e-02</td>
+      <td>-5.401655e-02</td>
     </tr>
     <tr>
       <th>Power_zero</th>
@@ -1036,7 +1036,7 @@ Linear r^2: 0.9271
       <td>Linear</td>
       <td>Shapiro-Wilk</td>
       <td>0.876952</td>
-      <td>1.074657e-11</td>
+      <td>1.074658e-11</td>
       <td>False</td>
       <td>0.95</td>
     </tr>
@@ -1044,8 +1044,8 @@ Linear r^2: 0.9271
       <th>2</th>
       <td>Linear</td>
       <td>D'Agostino-Pearson</td>
-      <td>113.712191</td>
-      <td>2.031007e-25</td>
+      <td>113.712185</td>
+      <td>2.031013e-25</td>
       <td>False</td>
       <td>0.95</td>
     </tr>
@@ -1120,7 +1120,7 @@ Linear r^2: 0.9271
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'r': 0.994033909930358,
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'r': 0.9940339099303578,
  'rho': 0.9634260856521415,
  'R2': 0.9878227099891589,
  'RMSE': 0.5048491143405004,
