@@ -431,7 +431,8 @@
 
 <span class="c1"># Project-level imports</span>
 <span class="c1"># =======================================================================</span>
-<span class="c1"># import {module}</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plans.stochastic.sampling</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize</span>
+
 <span class="c1"># ... {develop}</span>
 
 
@@ -791,36 +792,6 @@
                 <span class="p">(</span><span class="n">array</span> <span class="o">&gt;</span> <span class="n">upvalues</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">array</span> <span class="o">&lt;=</span> <span class="n">upvalues</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">classes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="p">)</span>
     <span class="k">return</span> <span class="n">new</span></div>
-
-
-
-<div class="viewcode-block" id="normalize">
-<a class="viewcode-back" href="../../generated/plans.geo.html#plans.geo.normalize">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Normalize array between min and max values</span>
-
-<span class="sd">    :param array: Input array or float</span>
-<span class="sd">    :type array: float or :class:`numpy.ndarray`</span>
-<span class="sd">    :param min_value: minimum vale</span>
-<span class="sd">    :type min_value: float</span>
-<span class="sd">    :param max_value: maximum value</span>
-<span class="sd">    :type max_value: float</span>
-<span class="sd">    :return: Output array or float</span>
-<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
-<span class="sd">    """</span>
-    <span class="c1"># Find the minimum and maximum values in the original array</span>
-    <span class="n">old_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
-    <span class="n">old_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
-
-    <span class="c1"># Calculate the range of the original array</span>
-    <span class="n">old_range</span> <span class="o">=</span> <span class="n">old_max</span> <span class="o">-</span> <span class="n">old_min</span>
-    <span class="c1"># Calculate the range of the desired new scale</span>
-    <span class="n">new_range</span> <span class="o">=</span> <span class="n">max_value</span> <span class="o">-</span> <span class="n">min_value</span>
-
-    <span class="c1"># Apply the normalization formula using NumPy's broadcasting capabilities</span>
-    <span class="n">normalized</span> <span class="o">=</span> <span class="n">min_value</span> <span class="o">+</span> <span class="p">((</span><span class="n">array</span> <span class="o">-</span> <span class="n">old_min</span><span class="p">)</span> <span class="o">*</span> <span class="n">new_range</span><span class="p">)</span> <span class="o">/</span> <span class="n">old_range</span>
-    <span class="k">return</span> <span class="n">normalized</span></div>
 
 
 
