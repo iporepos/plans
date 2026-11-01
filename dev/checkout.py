@@ -4,12 +4,11 @@
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
 """
-Master CLI tool for checkout after development sessions
+Master CLI tool for checkout after development sessions.
 
+Runs Black formatting, Sphinx docs build, unit tests, and guided git
+operations (commit, tag, push) in an interactive loop.
 """
-# todo apply clean code principles
-# todo this workflow needs to be more stable in edge cases
-# todo handle when there is no action to stage, etc
 
 # IMPORTS
 # ***********************************************************************
@@ -23,13 +22,59 @@ import time
 
 # FUNCTIONS
 # =======================================================================
+def _clear():
+    """Clear the terminal screen on both Windows and Unix."""
+    subprocess.run("cls" if sys.platform == "win32" else "clear", shell=True)
+
+
+def _show_recent_tags(n=10):
+    """Print the n most recent semver tags, newest first.
+
+    Uses git's built-in version sort. If the repo has more than ``n`` tags,
+    a count of hidden older tags is shown.
+
+    :param n: Maximum number of tags to display.
+    :type n: int
+    """
+    result = subprocess.run(
+        ["git", "tag", "--sort=-version:refname"],
+        capture_output=True,
+        text=True,
+    )
+    tags = [t for t in result.stdout.splitlines() if t.strip()]
+    for tag in tags[:n]:
+        print(f"  {tag}")
+    if len(tags) > n:
+        print(f"  ... ({len(tags) - n} older tags not shown)")
+
+
 def _heading(message, symbol="-"):
+    """Print a section heading preceded by a separator line.
+
+    :param message: Heading text.
+    :type message: str
+    :param symbol: Character used to build the separator (repeated 50 times).
+    :type symbol: str
+    """
     print("\n")
     print(50 * symbol)
     print(message)
 
 
 def fork(message="Chose action", exit_option="exit", clear_option=True):
+    """Prompt the user for a binary decision with optional extra choices.
+
+    Loops until a valid key is entered.
+
+    :param message: Prompt text shown to the user.
+    :type message: str
+    :param exit_option: Label for an optional exit/cancel key. Pass ``None`` to omit.
+    :type exit_option: str or None
+    :param clear_option: When ``True``, adds a ``[clear]`` key to the prompt.
+    :type clear_option: bool
+    :returns: The key entered by the user (``"y"``, ``"n"``, the exit label, or ``"clear"``).
+    :rtype: str
+    """
     s_prefix = f" >>> {message}"
     s_opt = "[y][n]"
     ls = ["y", "n"]
@@ -54,6 +99,15 @@ def fork(message="Chose action", exit_option="exit", clear_option=True):
 
 
 def user_input(message="Enter input"):
+    """Prompt for a free-text string with inline confirmation.
+
+    Repeats until the user confirms or cancels.
+
+    :param message: Prompt text shown to the user.
+    :type message: str
+    :returns: The confirmed string, or ``None`` if the user cancelled.
+    :rtype: str or None
+    """
     s_inp = None
     s = f" >>> {message}: "
     while True:
@@ -72,21 +126,19 @@ def user_input(message="Enter input"):
         elif decision == "n":
             print(" >>> input restarted.")
             continue
-        elif decision == "clear":
-            subprocess.run(["clear"])
-            print(" >>> input restarted.")
-            continue
 
     return s_inp
 
 
 def run_style():
+    """Run Black formatter on the current directory."""
     _heading("Black style", "=")
     subprocess.run(["black", "."])
     return None
 
 
 def build_docs():
+    """Build the Sphinx documentation via ``dev.docs``."""
     _heading("Sphinx docs", "=")
     subprocess.run([sys.executable, "-m", "dev.docs"])
     time.sleep(3)
@@ -94,6 +146,7 @@ def build_docs():
 
 
 def run_tests():
+    """Run the unit test suite via ``dev.tests``."""
     _heading("Unit tests", "=")
     subprocess.run([sys.executable, "-m", "dev.tests"])
     time.sleep(3)
@@ -101,19 +154,19 @@ def run_tests():
 
 
 def handle_commit():
+    """Show git status and interactively commit staged changes."""
     while True:
         _heading("", "-")
         subprocess.run(["git", "status"])
         s = fork(message="Commit changes?", exit_option=None, clear_option=False)
 
         if s == "y":
-            s_msg = "Enter commit message"
-            git_msg = user_input(s_msg)
+            git_msg = user_input("Enter commit message")
             if git_msg is None:
                 print(" >>> Commit cancelled.")
                 time.sleep(1)
             else:
-                subprocess.run(["git", "commit", "-m", f'"{git_msg}"'])
+                subprocess.run(["git", "commit", "-m", git_msg])
                 print(f" >>> '{git_msg}' successfully commited.")
                 time.sleep(3)
             break
@@ -123,17 +176,19 @@ def handle_commit():
 
 
 def handle_tag():
+    """Show existing tags and interactively create an annotated tag.
 
+    :returns: The new tag string (e.g. ``"v1.2.3"``), or ``None`` if skipped.
+    :rtype: str or None
+    """
     while True:
-
         _heading("Current tags", "-")
-        subprocess.run(["git", "tag"])
+        _show_recent_tags()
 
         s = fork(message="Enter new tag?", exit_option=None, clear_option=False)
 
         if s == "y":
-            s_msg = "Enter new tag in vX.Y.Z format"
-            stag = user_input(s_msg)
+            stag = user_input("Enter new tag in vX.Y.Z format")
 
             if stag is None:
                 print(" >>> Tagging cancelled.")
@@ -145,20 +200,21 @@ def handle_tag():
 
             print(f" >>> '{stag}' successfully added")
             print("Updated tags:")
-            subprocess.run(["git", "tag"])
+            _show_recent_tags()
             time.sleep(3)
 
-            return stag  # ← return the created tag
+            return stag
 
         elif s == "n":
-            return None  # ← explicitly return None
-
-        elif s == "clear":
-            subprocess.run(["clear"])
-            continue
+            return None
 
 
 def handle_push(stag=None):
+    """Interactively push the main branch and an optional tag to remote.
+
+    :param stag: Tag to push alongside main, or ``None`` to skip tag push.
+    :type stag: str or None
+    """
     while True:
         _heading("Publish", "-")
         s = fork(
@@ -187,20 +243,21 @@ def handle_push(stag=None):
             break
 
         elif s == "clear":
-            subprocess.run(["clear"])
+            _clear()
             continue
 
 
 def exiting():
+    """Print exit message and clear the screen."""
     print(" >>> exiting ...")
     time.sleep(1)
-    subprocess.run(["clear"])
+    _clear()
 
 
 def main():
-
+    """Run the interactive checkout loop: docs, tests, style, commit, tag, push."""
     while True:
-        subprocess.run(["clear"])
+        _clear()
         _heading("CHECK OUT", "#")
         print("\n")
 
@@ -217,7 +274,7 @@ def main():
         run_style()
 
         _heading("Git Tags", "=")
-        subprocess.run(["git", "tag"])
+        _show_recent_tags()
 
         _heading("Git Status", "=")
         subprocess.run(["git", "status"])
@@ -242,7 +299,7 @@ def main():
             continue
 
         elif s == "clear":
-            subprocess.run(["clear"])
+            _clear()
             continue
 
 
