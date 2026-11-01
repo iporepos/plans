@@ -588,7 +588,7 @@ class TestArma(unittest.TestCase):
         with self.assertRaises(ValueError):
             arma.fit_params(x=x[:35], period=12)
         with self.assertRaises(ValueError):
-            arma.fit_params(x=x, period=12.0)
+            arma.fit_params(x=x, period=0)
         x[5] = np.nan
         with self.assertRaises(ValueError):
             arma.fit_params(x=x, period=12)
@@ -662,6 +662,13 @@ class TestArma(unittest.TestCase):
             warnings.simplefilter("error")
             arma.describe(params=low, n=12)
             arma.describe(params=dict(low, start=6.0), n=12, positive=True)
+
+    def test_float_period(self):
+        truth = dict(self.temperature, period=12.5)
+        x = arma.build(params=truth, n=1000, seed=1)
+        fit = arma.fit_params(x=x, period=12.5)
+        self.assertEqual(fit["period"], 12.5)
+        self.assertAlmostEqual(fit["amplitude"] / 10.0, 1.0, delta=0.05)
 
     def test_package_top(self):
         self.assertIs(plans.stochastic.fit_params, arma.fit_params)

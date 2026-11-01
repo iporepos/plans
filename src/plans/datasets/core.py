@@ -35,6 +35,7 @@ import rasterio
 # =======================================================================
 from plans.root import Collection, DataSet
 from plans.datasets.analyst import Univar, GeoUnivar
+from plans.stochastic import arma as _arma
 from plans.stochastic import binning as _binning
 from plans.stochastic import metrics as _metrics
 from plans import viewer
@@ -46,6 +47,9 @@ from plans import geo
 # CONSTANTS
 # ***********************************************************************
 # define constants in uppercase
+
+# days in a year, averaged over a full cycle of the leap years
+YEAR_DAYS = 365.2425
 
 # CONSTANTS -- Project-level
 # =======================================================================
@@ -183,6 +187,18 @@ class TimeSeries(Univar):
         self.file_data = None
         self.file_data_dtfield = self.dtfield
         self.file_data_varfield = self.varfield
+
+        # generator defaults. See generate()
+        self.generator_floor = None
+        self.generator_specs = {
+            "baseline": 10.0,
+            "topline": 20.0,
+            "peak_day": 15,
+            "power": 1.0,
+            "memory_days": 5.0,
+            "noise_sd": 1.0,
+            "change_per_year": 0.0,
+        }
 
         self.layouts = {
             "full": {
@@ -741,9 +757,9 @@ class TimeSeries(Univar):
         >>> ts.is_standard
         True
         >>> len(ts.data)          # now includes inserted null rows
-        361
+        360
         >>> ts.data[ts.varfield].isna().sum()
-        50
+        49
         """
 
         def _insert_epochs(df):
@@ -2064,7 +2080,8 @@ class TimeSeries(Univar):
             also include ``"folder"`` and ``"filename"`` (used to build
             the output file path); ``"dpi"`` and ``"fig_format"`` are
             taken from ``ts_first.view_specs`` regardless of what is
-            passed in ``specs``.
+            passed in ``specs``. Without ``"range"``, the y axis of
+            all panels covers both series.
         :type specs: dict
         :param show: If ``return_fig`` is ``False``, whether to display
             the figure interactively in addition to saving it. Ignored
@@ -2112,10 +2129,19 @@ class TimeSeries(Univar):
         ts1.view_specs.update(specs)
         ts2.view_specs.update(specs)
 
+        # shared range, so neither series is cut off
+        range_y = specs.get("range")
+        if range_y is None:
+            vmin = min(ts1.var_min, ts2.var_min)
+            vmax = max(ts1.var_max, ts2.var_max)
+            margin = 0.05 * (vmax - vmin)
+            range_y = [vmin - margin, vmax + margin]
+        ts1.view_specs["range"] = range_y
+        ts2.view_specs["range"] = range_y
+
         # setup first series
         # ----------------------------------------------------------------
         ts1.view_specs["title"] = specs["title"]
-        # ts1.view_specs['range'] = specs['range']
 
         # colors are the same from data
         ts1.view_specs["color_hist"] = ts1.view_specs["color"]
@@ -2173,112 +2199,201 @@ class TimeSeries(Univar):
             )
             viewer.ship_fig(fig=fig, show=show, file_output=file_path, dpi=specs["dpi"])
 
-    # todo develop method
-    """
-    # def generate(self, specs=None, seed=None, inplace=True)
-    
-    This method is intented to generate a synthetic time series data based on 
-    the specs object. This specs can be a dict or a path (string or Path)
-    directing to a json file.
-    
-    The class must hold a 'generator_specs' attribute for using as default.
-    
-    The 'seed' parameter is intended to override the default seed.
-    This method always saves data in place unless inplace=False.
-    In this case, the method returns a copy of the object (unlinked copy).
-    
-    the base TimeSeries(), this method generates a time series based on the
-    make_synthetic_tsn() static method.
-    
-    This method can be overwritten downstream. Example: precipitation
-    time series generation at daily or hourly scales can be very different.
-    
-    This method allows further montecarlo analysis features, like fitting the 
-    specs parameters based on the current data.
-    Even then a generate_ensamble() method -> TimeSeriesEnsemble()
-    
-        
-    """
-
+    # Generator methods
+    # -------------------------------------------------------------------
     @staticmethod
-    def make_synthetic_tsn(
-        start,
-        end,
-        base,
-        trend,
-        amplitude,
-        noise_sd,
-        freq="10min",
-        seasonal_period="YS",
-        minor_seasonal_period="D",
-        minor_amplitude=0,
-        variable="level",
-    ):
-        # todo new feature
-        #  add a 'seed' parameters for reproducible runs
-
+    def _get_steps_per_year(freq):
         """
-        Generates a synthetic time series `pandas.DataFrame`
-        incorporating trend, dual seasonality, and Gaussian noise.
+        Get the number of time steps in a year for a frequency.
 
-        :param start: The starting date for the time series.
-        :type start: str or :class:`pandas.Timestamp`
-        :param end: The ending date for the time series.
-        :type end: str or :class:`pandas.Timestamp`
-        :param base: The initial base level of the series.
-        :type base: float
-        :param trend: The linear change applied per time step.
-        :type trend: float
-        :param amplitude: The amplitude of the primary (major) seasonal sine wave.
-        :type amplitude: float
-        :param noise_sd: The standard deviation of the normal distribution used for noise.
-        :type noise_sd: float
-        :param freq: The frequency string for the date range. Default value = ``10min``
+        :param freq: frequency alias
         :type freq: str
-        :param seasonal_period: The period string for the major seasonality. Default value = ``YS``
-        :type seasonal_period: str
-        :param minor_seasonal_period: The period string for the secondary seasonality. Default value = ``D``
-        :type minor_seasonal_period: str
-        :param minor_amplitude: The amplitude of the secondary seasonal sine wave. Default value = 0
-        :type minor_amplitude: float
-        :param variable: The name of the column containing the generated values. Default value = ``level``
-        :type variable: str
-        :return: A DataFrame containing the ``datetime`` index and the generated synthetic values.
-        :rtype: :class:`pandas.DataFrame`
+        :return: steps per year, a whole number when the steps follow the calendar
+        :rtype: float
         """
+        dates = pd.date_range(start="2000-01-01", periods=13, freq=freq)
+        deltas = dates[1:] - dates[:-1]
+        # fixed steps
+        if deltas.nunique() == 1:
+            return YEAR_DAYS / (deltas[0].total_seconds() / 86400)
+        # calendar steps, counted over a full cycle of the leap years
+        dates = pd.date_range(start="1700-01-01", end="2099-12-31", freq=freq)
+        return len(dates) / 400
 
-        # 1. Generate the actual time index
-        date_range = pd.date_range(start=start, end=end, freq=freq)
-        steps = len(date_range)
-        step_indices = np.arange(steps)
+    def _get_generator_params(self, start, freq, n):
+        r"""
+        Convert ``generator_specs`` to the parameters of a given time step.
 
-        # Helper to calculate steps per cycle based on the provided start date
-        def get_steps_per_cycle(p_freq):
-            f_delta = pd.date_range(start=start, periods=2, freq=freq).diff()[-1]
-            p_delta = pd.date_range(start=start, periods=2, freq=p_freq).diff()[-1]
-            return p_delta.total_seconds() / f_delta.total_seconds()
+        .. math::
 
-        # 2. Major Seasonality (e.g., Yearly)
-        major_steps = get_steps_per_cycle(seasonal_period)
-        major_seasonality = amplitude * np.sin(2 * np.pi * (step_indices / major_steps))
+            \varphi = e^{-\Delta t / \tau},
+            \qquad \sigma = s \sqrt{1 - \varphi^2}
 
-        # 3. Minor Seasonality (e.g., Daily)
-        # If minor_amplitude is 0, this whole series becomes 0
-        minor_steps = get_steps_per_cycle(minor_seasonal_period)
-        minor_seasonality = minor_amplitude * np.sin(
-            2 * np.pi * (step_indices / minor_steps)
+        :param start: first date of the series
+        :type start: :class:`pandas.Timestamp`
+        :param freq: frequency alias
+        :type freq: str
+        :param n: number of steps
+        :type n: int
+        :return: parameters. See :func:`plans.stochastic.arma.fit_params`.
+        :rtype: dict
+        """
+        specs = self.generator_specs
+        period = TimeSeries._get_steps_per_year(freq=freq)
+        step_days = YEAR_DAYS / period
+
+        # memory in days to memory per step
+        phi = 0.0
+        if specs["memory_days"] > 0:
+            phi = np.exp(-step_days / specs["memory_days"])
+
+        # variables that accumulate over the step are given per day
+        factor = step_days if self.agg == "sum" else 1.0
+        baseline = factor * specs["baseline"]
+        topline = factor * specs["topline"]
+        m = _arma.shape_mean(power=specs["power"])
+
+        return _arma.make_params(
+            period=period,
+            average=baseline + (topline - baseline) * m,
+            n=n,
+            cycle_change=factor * specs["change_per_year"],
+            baseline=baseline,
+            topline=topline,
+            phase=((specs["peak_day"] - start.dayofyear) / step_days) % period,
+            power=specs["power"],
+            phi=phi,
+            sigma=factor * specs["noise_sd"] * np.sqrt(1 - phi**2),
         )
 
-        # 4. Other Components
-        trend_series = step_indices * trend
-        noise_series = np.random.normal(loc=0, scale=noise_sd, size=steps)
+    def generate(self, start, end, freq=None, params=None, seed=None, inplace=False):
+        """
+        Generate a synthetic series with trend, a yearly season and AR(1) memory.
 
-        # 5. Combine All
-        time_series_values = (
-            base + trend_series + major_seasonality + minor_seasonality + noise_series
-        )
+        Without ``params``, it uses the ``generator_specs`` attribute, which each child
+        class sets for its own variable and which can be edited. These specs are in
+        physical terms, so they apply to any time step:
 
-        return pd.DataFrame({"datetime": date_range, variable: time_series_values})
+        - ``baseline`` and ``topline``: lowest and highest points of the yearly cycle,
+          at the middle of the record. Per day if the object aggregates by sum.
+        - ``peak_day``: day of the year of the peak.
+        - ``power``: shape of the season. See :func:`plans.stochastic.arma.season_shape`.
+        - ``memory_days``: time for the noise memory to decay by a factor of e.
+        - ``noise_sd``: standard deviation of the noise. Per day if aggregated by sum.
+        - ``change_per_year``: change of the trend per year. Per day if aggregated by sum.
+
+        Values below ``generator_floor`` are pruned to it, if it is set.
+
+        .. warning::
+
+            Default specs are plausible values for examples, not climatology. There is
+            no daily cycle at any time step, since sub-daily series are meant to come
+            from downscaling a daily series.
+
+        :param start: first date
+        :type start: str or :class:`pandas.Timestamp`
+        :param end: last date
+        :type end: str or :class:`pandas.Timestamp`
+        :param freq: frequency alias. By default, it is the one in ``params`` or ``D``.
+        :type freq: str
+        :param params: parameters, usually from :meth:`fit`. Those from :meth:`fit` follow
+            the calendar, so the season and trend carry over to any ``start``.
+        :type params: dict
+        :param seed: random seed
+        :type seed: int
+        :param inplace: If True, sets the data of this object. Default value = False
+        :type inplace: bool
+        :return: generated data if inplace is False, otherwise None.
+        :rtype: :class:`pandas.DataFrame` or None
+        """
+        # handle frequency
+        params_freq = None if params is None else params.get("freq")
+        if freq is None:
+            freq = "D" if params_freq is None else params_freq
+        elif params_freq is not None:
+            # memory and noise in parameters are per step
+            if pd.tseries.frequencies.to_offset(freq) != (
+                pd.tseries.frequencies.to_offset(params_freq)
+            ):
+                raise ValueError(f"params were fitted for freq '{params_freq}'")
+
+        period = TimeSeries._get_steps_per_year(freq=freq)
+        if period < 2:
+            raise ValueError("freq must have at least 2 steps per year")
+
+        dates = pd.date_range(start=start, end=end, freq=freq)
+        if len(dates) == 0:
+            raise ValueError(f"No dates between {start} and {end} for freq '{freq}'")
+
+        # handle parameters
+        if params is None:
+            params = self._get_generator_params(start=dates[0], freq=freq, n=len(dates))
+        elif "origin" in params:
+            # move step 0 from the origin to the new start
+            delta = dates[0] - pd.Timestamp(params["origin"])
+            shift = (delta.total_seconds() / 86400) / (YEAR_DAYS / period)
+            params = dict(
+                params,
+                start=params["start"] + params["slope"] * shift,
+                phase=(params["phase"] - shift) % params["period"],
+            )
+
+        values = _arma.build(params=params, n=len(dates), seed=seed)
+        if self.generator_floor is not None:
+            values = np.clip(values, a_min=self.generator_floor, a_max=None)
+
+        df = pd.DataFrame({self.dtfield: dates, self.varfield: values})
+
+        if inplace:
+            self.set_data(
+                input_df=df, input_dtfield=self.dtfield, input_varfield=self.varfield
+            )
+            return None
+        return df
+
+    def fit(self):
+        """
+        Fit the generator parameters to the data. The data is not changed.
+
+        The time step comes from the timestamps, so the data must be regular and
+        without gaps. Use :meth:`standardize` and :meth:`interpolate_gaps` first if needed.
+
+        :return: parameters from :func:`plans.stochastic.arma.fit_params`, and also
+            ``origin`` and ``freq``, so :meth:`generate` can use them from any date.
+        :rtype: dict
+        """
+        if self.data is None:
+            raise ValueError("There is no data to fit")
+
+        df = self.data.sort_values(by=self.dtfield)
+        deltas = df[self.dtfield].diff().dropna()
+        if len(deltas) == 0:
+            raise ValueError("There is not enough data to fit")
+        step = deltas.mode().iloc[0]
+
+        # months vary in length, while all other steps must be constant
+        s_error = "Timestamps are not regular. Check for gaps or use standardize()"
+        if 27 < step.total_seconds() / 86400 < 32:
+            freq = "MS"
+            if deltas.max() > pd.Timedelta(days=31):
+                raise ValueError(s_error)
+        else:
+            freq = pd.tseries.frequencies.to_offset(step).freqstr
+            # whole days use the same alias as generate()
+            n_days = step.total_seconds() / 86400
+            if n_days == int(n_days):
+                freq = "D" if n_days == 1 else f"{int(n_days)}D"
+            if (deltas != step).any():
+                raise ValueError(s_error)
+
+        period = TimeSeries._get_steps_per_year(freq=freq)
+        if period < 2:
+            raise ValueError("Data must have at least 2 steps per year")
+
+        params = _arma.fit_params(x=df[self.varfield].values, period=period)
+        params["origin"] = str(df[self.dtfield].iloc[0])
+        params["freq"] = freq
+        return params
 
 
 # Chronological classes - collections

@@ -66,6 +66,7 @@ class WaterBalanceSeries(TimeSeries):
         self.rawcolor = "blue"
         self.datarange_max = 10000  # absurd yearly precipitation
         self.datarange_min = 0
+        self.generator_floor = 0.0
 
     @staticmethod
     def view_pq_plot(ts_rain, ts_flow, specs, show=True, return_fig=False):
@@ -121,6 +122,15 @@ class RainSeries(WaterBalanceSeries):
             7 * 72
         )  # Maximum gap size of 1 week assuming measure device turns off when is not raining
         self.rawcolor = "slateblue"
+        self.generator_specs.update(
+            {
+                "baseline": 0.5,
+                "topline": 10.0,
+                "power": 3.0,
+                "memory_days": 1.0,
+                "noise_sd": 2.0,
+            }
+        )
 
     def interpolate_gaps(self, inplace=False, method=None):
         # overwrite interpolation method with constant=0
@@ -165,6 +175,16 @@ class StreamflowSeries(WaterBalanceSeries):
         # Overwrite attributes specific
         self.name_object = "Streamflow Time Series"
         self.rawcolor = "blue"
+        self.generator_specs.update(
+            {
+                "baseline": 0.5,
+                "topline": 4.0,
+                "peak_day": 45,
+                "power": 2.0,
+                "memory_days": 20.0,
+                "noise_sd": 0.3,
+            }
+        )
 
     def get_baseflow(self):
         # todo docstring
@@ -243,6 +263,14 @@ class ETSeries(WaterBalanceSeries):
         # Overwrite attributes specific
         self.name_object = "ET Time Series"
         self.rawcolor = "red"
+        self.generator_specs.update(
+            {
+                "baseline": 2.0,
+                "topline": 4.5,
+                "memory_days": 2.0,
+                "noise_sd": 0.5,
+            }
+        )
 
 
 class PETSeries(WaterBalanceSeries):
@@ -268,6 +296,14 @@ class PETSeries(WaterBalanceSeries):
         # Overwrite attributes specific
         self.name_object = "PET Time Series"
         self.rawcolor = "darkred"
+        self.generator_specs.update(
+            {
+                "baseline": 3.0,
+                "topline": 5.5,
+                "memory_days": 2.0,
+                "noise_sd": 0.5,
+            }
+        )
 
 
 # Other
@@ -302,6 +338,15 @@ class TemperatureSeries(TimeSeries):
         self.datarange_max = 50
         self.datarange_min = -20
         self.rawcolor = "orange"
+        self.generator_specs.update(
+            {
+                "baseline": 18.0,
+                "topline": 28.0,
+                "memory_days": 3.0,
+                "noise_sd": 1.5,
+                "change_per_year": 0.03,
+            }
+        )
 
 
 class StageSeries(TimeSeries):
@@ -336,6 +381,17 @@ class StageSeries(TimeSeries):
         self.gapsize = 10  # Maximum gap size allowed for data interpolation
         # Extra attributes specific to StageSeries
         self.upstream_area = None
+        self.generator_floor = 0.0
+        self.generator_specs.update(
+            {
+                "baseline": 50.0,
+                "topline": 200.0,
+                "peak_day": 45,
+                "power": 2.0,
+                "memory_days": 20.0,
+                "noise_sd": 10.0,
+            }
+        )
 
     def get_metadata(self):
         # Get metadata from the base class (TimeSeries)
@@ -379,6 +435,17 @@ class DischargeSeries(TimeSeries):
         self.rawcolor = "navy"
         # Specific attributes
         self.upstream_area = None  # in sq km
+        self.generator_floor = 0.0
+        self.generator_specs.update(
+            {
+                "baseline": 5.0,
+                "topline": 40.0,
+                "peak_day": 45,
+                "power": 2.0,
+                "memory_days": 20.0,
+                "noise_sd": 3.0,
+            }
+        )
 
     @staticmethod
     def view_cfcs(freqs, specs=None, show=True, colors=None, labels=None):

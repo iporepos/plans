@@ -35,13 +35,13 @@ to a Python 3 environment via pip:
 
 .. code-block:: console
 
-    python -m pip install copyme
+    python -m pip install plans
 
 Or any desired branch or version via github url:
 
 .. code-block:: console
 
-    python -m pip install git+https://github.com/iporepos/copyme.git@main
+    python -m pip install git+https://github.com/iporepos/plans.git@main
 
 On a `Jupyter`_ or `Colab`_ environment, run this command on a cell:
 

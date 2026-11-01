@@ -27,6 +27,7 @@ Available tutorials
    tutorials/univar_02_plots
    tutorials/bivar_01
    tutorials/bivar_02_models
+   tutorials/stochastic_01_arma
    tutorials/timeseries_01
    tutorials/timeseries_05_compare
    tutorials/timeseries_02_upscale

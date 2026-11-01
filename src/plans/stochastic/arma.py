@@ -18,8 +18,8 @@ remainder driven by Gaussian shocks. For steps :math:`t = 0, 1, \dots, n-1`:
 
 Parameters map to symbols as ``start`` :math:`b`, ``slope`` :math:`a`, ``amplitude``
 :math:`A`, ``period`` :math:`P`, ``phase`` :math:`t_0`, ``power`` :math:`k`, ``phi``
-:math:`\varphi` and ``sigma`` :math:`\sigma`. Functions take plain arrays and an
-integer ``period`` (steps per cycle), so they know nothing about dates or units.
+:math:`\varphi` and ``sigma`` :math:`\sigma`. Functions take plain arrays and a
+``period`` (steps per cycle), so they know nothing about dates or units.
 
 Three operations link observed data, parameters and synthetic data:
 :func:`fit_params` goes from data to parameters, :func:`decompose` splits data into
@@ -77,9 +77,9 @@ MIN_CYCLES = 3
 
 
 def _check_period(period):
-    """Raise an error if the period is not a positive integer."""
-    if not isinstance(period, (int, np.integer)) or period < 1:
-        raise ValueError("period must be a positive integer")
+    """Raise an error if the period is not a positive number."""
+    if not isinstance(period, (int, float, np.integer, np.floating)) or period <= 0:
+        raise ValueError("period must be a positive number")
 
 
 def _check_phi(phi):
@@ -129,7 +129,7 @@ def season_shape(n, period, phase, power):
     :param n: number of steps
     :type n: int
     :param period: steps per cycle
-    :type period: int
+    :type period: float
     :param phase: step at which the season peaks
     :type phase: float
     :param power: shape. 1 gives a plain cosine, larger gives a sharper peak.
@@ -176,7 +176,7 @@ def season_component(n, amplitude, period, phase, power):
     :param amplitude: peak-to-trough range of the seasonal term
     :type amplitude: float
     :param period: steps per cycle
-    :type period: int
+    :type period: float
     :param phase: step at which the season peaks
     :type phase: float
     :param power: shape
@@ -290,7 +290,7 @@ def fit_params(x, period):
     :param x: series without nan values
     :type x: :class:`numpy.ndarray`
     :param period: steps per cycle
-    :type period: int
+    :type period: float
     :return: parameters. Keys: start, slope, amplitude, period, phase, power, phi, sigma
     :rtype: dict
     """
@@ -299,8 +299,9 @@ def fit_params(x, period):
     _check_period(period=period)
     x = np.asarray(x, dtype=float)
     if np.any(np.isnan(x)):
-        raise ValueError("x has NaN values. Fill or remove them first")
-    if len(x) < MIN_CYCLES * period:
+        raise ValueError("x has NaN values. Fill them first")
+    # whole steps, since a cycle may not be a whole number of them
+    if len(x) < int(MIN_CYCLES * period):
         raise ValueError(f"x must have at least {MIN_CYCLES} cycles of data")
 
     n = len(x)
@@ -355,7 +356,7 @@ def fit_params(x, period):
         "start": float(start),
         "slope": float(slope),
         "amplitude": float(amplitude),
-        "period": int(period),
+        "period": period,
         "phase": float(phase % period),
         "power": float(power),
         "phi": float(phi),
@@ -597,7 +598,7 @@ def slope_from_cycle_change(change, period):
     :param change: trend change per cycle
     :type change: float
     :param period: steps per cycle
-    :type period: int
+    :type period: float
     :return: trend change per step
     :rtype: float
     """
@@ -633,7 +634,7 @@ def make_params(
     :func:`slope_from_cycle_change` for the formulas.
 
     :param period: steps per cycle
-    :type period: int
+    :type period: float
     :param start: trend value at step 0
     :type start: float
     :param average: trend average over the record. Requires ``n``.
@@ -706,7 +707,7 @@ def make_params(
         "start": float(start),
         "slope": float(slope),
         "amplitude": float(amplitude),
-        "period": int(period),
+        "period": period,
         "phase": float(phase),
         "power": float(power),
         "phi": float(phi),

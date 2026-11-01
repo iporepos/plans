@@ -1,5 +1,32 @@
 # Memory Log
 
+## 2026-11-01 — `make_synthetic_tsn` removed, without a deprecation release
+User decision: the user deleted the method and its test was removed. Overrides the earlier plan of warning for one release; the warning never shipped, so callers of the pip package get an `AttributeError`.
+
+## 2026-11-01 — `standardize()` docstring example and `timeseries_04` text match the whole-day grid
+The grid pads to 23:00 on the last day, so the old 361 rows and the "full regular hourly range" wording were out of date.
+
+## 2026-11-01 — `make_synthetic_tsn` deprecated (step 3); `view_compare_times_series` shares a y range
+Requested by the user. `make_synthetic_tsn` warns with `DeprecationWarning`, for removal in the next release. The compare view drew the histogram and CDF on the second series' range, cutting off the first; it now covers both unless `specs` has `"range"`, so the `timeseries_05` workaround is gone.
+
+## 2026-11-01 — All 7 notebooks moved from `make_synthetic_tsn` to `generate()` (step 2)
+Notebooks now use the default parameters, so the column is `v` and axis ranges changed. `timeseries_07` uses child classes (columns `ppt`, `Q`, `tas`, `et`). `timeseries_05` changed from 1 month hourly to 4 years daily, because a month has too little season to compare. Stored outputs were cleared from `timeseries_03` and `timeseries_05`, because they would be stale. `make_synthetic_tsn` not deprecated yet.
+
+## 2026-11-01 — Soft test script `testing/datasets_TimeSeries_generate.py`
+Requested by the user, for `generate()` and `fit()`. The `testing/` folder is git-ignored.
+
+## 2026-11-01 — `TimeSeries.generate()` and `fit()`, with defaults by child class (step 1 of replacing `make_synthetic_tsn`)
+User decisions: `generate()` returns a DataFrame by default, and `inplace=True` sets the object data (overrides the brief's "never mutate"); no daily cycle at any step, since hourly series will come from downscaling a daily series. Child defaults live in `generator_specs` in physical terms (memory in days, peak day of year), because `phi`, `sigma`, `slope` and `phase` depend on the step; values are plausible for examples, not climatology. `fit()` measures the step from timestamps because `dtfreq` is a coarse label (3h data is labelled `h`), and rejects irregular data because `set_data` drops NaN rows, which otherwise fits silently wrong (tested: phase 11.88 vs 6). `fit()` stores `origin` and `freq`, so `generate()` can start on any date. `arma` now accepts a float `period` (daily is 365.2425). `make_synthetic_tsn` and the notebooks are untouched: migration and deprecation are the next steps.
+
+## 2026-11-01 — Non-Gaussian noise rejected for now; rain-like example pruned at zero
+User decision: keep additive Gaussian noise in `arma`, and handle positive variables downstream. A prototype compared gamma and lognormal noise (centered gamma did not prevent negatives; multiplicative lognormal did, with no extra parameters, but cannot represent exact zeros); nothing was added to the package. `stochastic_01_arma` keeps the rain-like limitation and prunes negatives with `np.clip` in the notebook only, reporting the shift in the mean.
+
+## 2026-11-01 — `stochastic_01_arma`: autoregression scatter, y axis from zero, third phi
+Requested by the user. Series plots start the y axis at zero, except the rain-like plot, where that would hide the negative values the section is about. Non-Gaussian noise is under discussion only; no package code yet.
+
+## 2026-11-01 — New tutorial `stochastic_01_arma`
+Simple showcase of `plans.stochastic.arma` with plain arrays and matplotlib, no `TimeSeries`, registered after `bivar_02_models` in `docs/examples.rst`. Includes the positive-variable limitation (rain-like series below zero) instead of claiming it stays positive, as the brief's step 6 did. Seed chosen on purpose: seed 1 gave the lowest `phi` of 300 seeds (0.325 vs true 0.5, mean 0.481), so the notebook uses a typical seed and shows the spread across seeds.
+
 ## 2026-11-01 — Golden test tolerance for curve fits (CI failure)
 `test_golden` failed on CI for `fit_Power` by 6e-8 while passing locally. Not a regression: `curve_fit` stops at its solver tolerance, and locally changing only solver settings moves `Bias` by up to 8e-6. Fit cases now use `TOL_FIT` (1e-4), other golden cases keep `TOL_EXACT` (1e-8). Also noted: CI installs unpinned dependencies on Python 3.11 and already warns that pandas will remove `inplace` (PDEP-8); not changed.
 
