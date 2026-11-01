@@ -46,12 +46,14 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/plans.stochastic.sampling';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="plans.tools" href="plans.tools.html" />
+    <link rel="next" title="plans.stochastic.arma" href="plans.stochastic.arma.html" />
     <link rel="prev" title="plans.stochastic.normality" href="plans.stochastic.normality.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
@@ -442,6 +444,9 @@
 <dt class="sig sig-object py" id="plans.stochastic.sampling.normalize">
 <span class="sig-prename descclassname"><span class="pre">plans.stochastic.sampling.</span></span><span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/stochastic/sampling.html#normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.stochastic.sampling.normalize" title="Link to this definition">#</a></dt>
 <dd><p>Normalize array between min and max values</p>
+<div class="math notranslate nohighlight">
+\[y = y_{\min} + \frac{(x - x_{\min}) (y_{\max} - y_{\min})}{x_{\max} - x_{\min}}\]</div>
+<p>Here <span class="math notranslate nohighlight">\(y_{\min}\)</span> and <span class="math notranslate nohighlight">\(y_{\max}\)</span> are <code class="docutils literal notranslate"><span class="pre">min_value</span></code> and <code class="docutils literal notranslate"><span class="pre">max_value</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -463,6 +468,8 @@
 <dt class="sig sig-object py" id="plans.stochastic.sampling.sample_gamma">
 <span class="sig-prename descclassname"><span class="pre">plans.stochastic.sampling.</span></span><span class="sig-name descname"><span class="pre">sample_gamma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/stochastic/sampling.html#sample_gamma"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.stochastic.sampling.sample_gamma" title="Link to this definition">#</a></dt>
 <dd><p>Draw a gamma sample, then rescale it so its own extremes sit on the bounds.</p>
+<p>The draw is <span class="math notranslate nohighlight">\(x \sim \mathrm{Gamma}(k, \theta)\)</span>, with <code class="docutils literal notranslate"><span class="pre">shape</span></code> <span class="math notranslate nohighlight">\(k\)</span>
+and <code class="docutils literal notranslate"><span class="pre">scale</span></code> <span class="math notranslate nohighlight">\(\theta\)</span>, followed by <a class="reference internal" href="#plans.stochastic.sampling.normalize" title="plans.stochastic.sampling.normalize"><code class="xref py py-func docutils literal notranslate"><span class="pre">normalize()</span></code></a>.</p>
 <p>The sample minimum becomes <code class="docutils literal notranslate"><span class="pre">n_min</span></code> and the sample maximum becomes <code class="docutils literal notranslate"><span class="pre">n_max</span></code>,
 so the result is a gamma-shaped sample, not a gamma sample with that <code class="docutils literal notranslate"><span class="pre">scale</span></code>.
 A missing bound defaults to the sample’s own extreme. When both bounds are given,
@@ -510,11 +517,11 @@ A missing bound defaults to the sample’s own extreme. When both bounds are giv
       </div>
     </a>
     <a class="right-next"
-       href="plans.tools.html"
+       href="plans.stochastic.arma.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">plans.tools</p>
+        <p class="prev-next-title">plans.stochastic.arma</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

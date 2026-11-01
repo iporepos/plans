@@ -407,8 +407,10 @@
 <span class="c1"># Copyright (C) 2025 The Project Authors</span>
 <span class="c1"># See pyproject.toml for authors/maintainers.</span>
 <span class="c1"># See LICENSE for license details.</span>
-<span class="sd">"""</span>
+<span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">Association and agreement metrics between two samples.</span>
+
+<span class="sd">Formulas use :math:`o_i` for observed values and :math:`p_i` for predicted values.</span>
 <span class="sd">"""</span>
 
 <span class="c1"># IMPORTS</span>
@@ -464,9 +466,14 @@
 <div class="viewcode-block" id="pearson">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.metrics.html#plans.stochastic.metrics.pearson">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">pearson</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Compute the Pearson correlation coefficient (r), a measure of linear association.</span>
 <span class="sd">    Symmetric: swapping ``x`` and ``y`` gives the same value.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        r = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}</span>
+<span class="sd">        {\sqrt{\sum_i (x_i - \bar{x})^2} \sqrt{\sum_i (y_i - \bar{y})^2}}</span>
 
 <span class="sd">    :param x: vector of x values</span>
 <span class="sd">    :type x: :class:`numpy.ndarray`</span>
@@ -482,10 +489,14 @@
 <div class="viewcode-block" id="spearman">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.metrics.html#plans.stochastic.metrics.spearman">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">spearman</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Compute the Spearman rank correlation coefficient (rho), a measure of</span>
 <span class="sd">    monotonic association. It is the Pearson r of the ranks (ties averaged).</span>
 <span class="sd">    Symmetric: swapping ``x`` and ``y`` gives the same value.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \rho = r\left( \mathrm{rank}(x), \mathrm{rank}(y) \right)</span>
 
 <span class="sd">    :param x: vector of x values</span>
 <span class="sd">    :type x: :class:`numpy.ndarray`</span>
@@ -503,7 +514,7 @@
 <div class="viewcode-block" id="rsq">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.metrics.html#plans.stochastic.metrics.rsq">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">rsq</span><span class="p">(</span><span class="n">observed</span><span class="p">,</span> <span class="n">predicted</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Compute the coefficient of determination (R2), as the fraction of</span>
 <span class="sd">    observed variance explained: ``1 - SS_res / SS_tot``.</span>
 
@@ -512,6 +523,10 @@
 <span class="sd">        Equals r squared only for least-squares linear models with intercept.</span>
 <span class="sd">        For other models it can differ, and is negative when the model is worse</span>
 <span class="sd">        than the observed mean.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        R^2 = 1 - \frac{\sum_i (p_i - o_i)^2}{\sum_i (o_i - \bar{o})^2}</span>
 
 <span class="sd">    :param observed: vector of observed values</span>
 <span class="sd">    :type observed: :class:`numpy.ndarray`</span>
@@ -530,8 +545,12 @@
 <div class="viewcode-block" id="rmse">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.metrics.html#plans.stochastic.metrics.rmse">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">rmse</span><span class="p">(</span><span class="n">observed</span><span class="p">,</span> <span class="n">predicted</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Compute the Root Mean Squared Error (RMSE).</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \mathrm{RMSE} = \sqrt{\frac{1}{n} \sum_i (p_i - o_i)^2}</span>
 
 <span class="sd">    :param observed: vector of observed values</span>
 <span class="sd">    :type observed: :class:`numpy.ndarray`</span>
@@ -547,8 +566,12 @@
 <div class="viewcode-block" id="mae">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.metrics.html#plans.stochastic.metrics.mae">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">mae</span><span class="p">(</span><span class="n">observed</span><span class="p">,</span> <span class="n">predicted</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Compute the Mean Absolute Error (MAE).</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \mathrm{MAE} = \frac{1}{n} \sum_i \lvert p_i - o_i \rvert</span>
 
 <span class="sd">    :param observed: vector of observed values</span>
 <span class="sd">    :type observed: :class:`numpy.ndarray`</span>
@@ -564,8 +587,12 @@
 <div class="viewcode-block" id="bias">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.metrics.html#plans.stochastic.metrics.bias">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">bias</span><span class="p">(</span><span class="n">observed</span><span class="p">,</span> <span class="n">predicted</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Compute the Bias (%), positive when predicted overestimates observed.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \mathrm{Bias} = 100 \, \frac{\sum_i (p_i - o_i)}{\sum_i o_i}</span>
 
 <span class="sd">    :param observed: vector of observed values</span>
 <span class="sd">    :type observed: :class:`numpy.ndarray`</span>

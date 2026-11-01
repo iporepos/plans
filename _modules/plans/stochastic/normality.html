@@ -443,6 +443,8 @@
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Util function for statistical testing</span>
 
+<span class="sd">    The distribution is accepted when :math:`p &gt; 1 - c`, at confidence level :math:`c`.</span>
+
 <span class="sd">    :param test_name: name of test</span>
 <span class="sd">    :type test_name: str</span>
 <span class="sd">    :param stat: statistic</span>
@@ -476,12 +478,14 @@
 <div class="viewcode-block" id="test_normality_ks">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.normality.html#plans.stochastic.normality.test_normality_ks">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_normality_ks</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">clevel</span><span class="o">=</span><span class="mf">0.95</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Test for normality using the Kolmogorov-Smirnov test</span>
 
 <span class="sd">    Kolmogorov-Smirnov Test: This test compares the observed distribution with</span>
 <span class="sd">    the expected normal distribution using a test statistic and a p-value.</span>
 <span class="sd">    A p-value less than 0.05 indicates that the null hypothesis should be rejected.</span>
+
+<span class="sd">    The sample is first standardized as :math:`z_i = (x_i - \bar{x}) / s`.</span>
 
 <span class="sd">    :param data: vector of data without nan values</span>
 <span class="sd">    :type data: :class:`numpy.ndarray`</span>

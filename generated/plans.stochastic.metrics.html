@@ -46,6 +46,8 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/plans.stochastic.metrics';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="author" title="About these documents" href="../about.html" />
@@ -426,6 +428,7 @@
   <section id="module-plans.stochastic.metrics">
 <span id="plans-stochastic-metrics"></span><h1>plans.stochastic.metrics<a class="headerlink" href="#module-plans.stochastic.metrics" title="Link to this heading">#</a></h1>
 <p>Association and agreement metrics between two samples.</p>
+<p>Formulas use <span class="math notranslate nohighlight">\(o_i\)</span> for observed values and <span class="math notranslate nohighlight">\(p_i\)</span> for predicted values.</p>
 <p class="rubric">Functions</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
@@ -478,6 +481,9 @@
 <span class="sig-prename descclassname"><span class="pre">plans.stochastic.metrics.</span></span><span class="sig-name descname"><span class="pre">pearson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/stochastic/metrics.html#pearson"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.stochastic.metrics.pearson" title="Link to this definition">#</a></dt>
 <dd><p>Compute the Pearson correlation coefficient (r), a measure of linear association.
 Symmetric: swapping <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> gives the same value.</p>
+<div class="math notranslate nohighlight">
+\[r = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}
+{\sqrt{\sum_i (x_i - \bar{x})^2} \sqrt{\sum_i (y_i - \bar{y})^2}}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -500,6 +506,8 @@ Symmetric: swapping <code class="docutils literal notranslate"><span class="pre"
 <dd><p>Compute the Spearman rank correlation coefficient (rho), a measure of
 monotonic association. It is the Pearson r of the ranks (ties averaged).
 Symmetric: swapping <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> gives the same value.</p>
+<div class="math notranslate nohighlight">
+\[\rho = r\left( \mathrm{rank}(x), \mathrm{rank}(y) \right)\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -527,6 +535,8 @@ observed variance explained: <code class="docutils literal notranslate"><span cl
 For other models it can differ, and is negative when the model is worse
 than the observed mean.</p>
 </div>
+<div class="math notranslate nohighlight">
+\[R^2 = 1 - \frac{\sum_i (p_i - o_i)^2}{\sum_i (o_i - \bar{o})^2}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -547,6 +557,8 @@ than the observed mean.</p>
 <dt class="sig sig-object py" id="plans.stochastic.metrics.rmse">
 <span class="sig-prename descclassname"><span class="pre">plans.stochastic.metrics.</span></span><span class="sig-name descname"><span class="pre">rmse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/stochastic/metrics.html#rmse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.stochastic.metrics.rmse" title="Link to this definition">#</a></dt>
 <dd><p>Compute the Root Mean Squared Error (RMSE).</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{RMSE} = \sqrt{\frac{1}{n} \sum_i (p_i - o_i)^2}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -567,6 +579,8 @@ than the observed mean.</p>
 <dt class="sig sig-object py" id="plans.stochastic.metrics.mae">
 <span class="sig-prename descclassname"><span class="pre">plans.stochastic.metrics.</span></span><span class="sig-name descname"><span class="pre">mae</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/stochastic/metrics.html#mae"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.stochastic.metrics.mae" title="Link to this definition">#</a></dt>
 <dd><p>Compute the Mean Absolute Error (MAE).</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{MAE} = \frac{1}{n} \sum_i \lvert p_i - o_i \rvert\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -587,6 +601,8 @@ than the observed mean.</p>
 <dt class="sig sig-object py" id="plans.stochastic.metrics.bias">
 <span class="sig-prename descclassname"><span class="pre">plans.stochastic.metrics.</span></span><span class="sig-name descname"><span class="pre">bias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/stochastic/metrics.html#bias"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.stochastic.metrics.bias" title="Link to this definition">#</a></dt>
 <dd><p>Compute the Bias (%), positive when predicted overestimates observed.</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{Bias} = 100 \, \frac{\sum_i (p_i - o_i)}{\sum_i o_i}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>plans.stochastic.arma &#8212; plans 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/plans/stochastic/arma';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-light" alt=""/>
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">plans</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">plans.stochastic.arma</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for plans.stochastic.arma</h1><div class="highlight"><pre>
+<span></span><span class="c1"># SPDX-License-Identifier: GPL-3.0-or-later</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2025 The Project Authors</span>
+<span class="c1"># See pyproject.toml for authors/maintainers.</span>
+<span class="c1"># See LICENSE for license details.</span>
+<span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">Trend, season and AR(1) memory model for synthetic series.</span>
+
+<span class="sd">A series is the sum of a linear trend, a mean-zero seasonal term and an AR(1)</span>
+<span class="sd">remainder driven by Gaussian shocks. For steps :math:`t = 0, 1, \dots, n-1`:</span>
+
+<span class="sd">.. math::</span>
+
+<span class="sd">    x_t = \underbrace{b + a t}_{\text{trend}}</span>
+<span class="sd">    + \underbrace{A (g_t - m_k)}_{\text{season}} + R_t,</span>
+<span class="sd">    \qquad R_t = \varphi R_{t-1} + \varepsilon_t,</span>
+<span class="sd">    \qquad \varepsilon_t \sim \mathcal{N}(0, \sigma^2)</span>
+
+<span class="sd">Parameters map to symbols as ``start`` :math:`b`, ``slope`` :math:`a`, ``amplitude``</span>
+<span class="sd">:math:`A`, ``period`` :math:`P`, ``phase`` :math:`t_0`, ``power`` :math:`k`, ``phi``</span>
+<span class="sd">:math:`\varphi` and ``sigma`` :math:`\sigma`. Functions take plain arrays and an</span>
+<span class="sd">integer ``period`` (steps per cycle), so they know nothing about dates or units.</span>
+
+<span class="sd">Three operations link observed data, parameters and synthetic data:</span>
+<span class="sd">:func:`fit_params` goes from data to parameters, :func:`decompose` splits data into</span>
+<span class="sd">components given the parameters, and :func:`build` makes a series from parameters.</span>
+<span class="sd">"""</span>
+
+<span class="c1"># IMPORTS</span>
+<span class="c1"># ***********************************************************************</span>
+<span class="c1"># import modules from other libs</span>
+
+<span class="c1"># Native imports</span>
+<span class="c1"># =======================================================================</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="c1"># External imports</span>
+<span class="c1"># =======================================================================</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># CONSTANTS</span>
+<span class="c1"># ***********************************************************************</span>
+<span class="c1"># define constants in uppercase</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"trend_line"</span><span class="p">,</span>
+    <span class="s2">"season_shape"</span><span class="p">,</span>
+    <span class="s2">"shape_mean"</span><span class="p">,</span>
+    <span class="s2">"season_component"</span><span class="p">,</span>
+    <span class="s2">"draw_shocks"</span><span class="p">,</span>
+    <span class="s2">"ar1_from_shocks"</span><span class="p">,</span>
+    <span class="s2">"simulate_ar1"</span><span class="p">,</span>
+    <span class="s2">"fit_params"</span><span class="p">,</span>
+    <span class="s2">"decompose"</span><span class="p">,</span>
+    <span class="s2">"build"</span><span class="p">,</span>
+    <span class="s2">"get_floor"</span><span class="p">,</span>
+    <span class="s2">"describe"</span><span class="p">,</span>
+    <span class="s2">"make_params"</span><span class="p">,</span>
+    <span class="s2">"start_from_average"</span><span class="p">,</span>
+    <span class="s2">"average_from_start"</span><span class="p">,</span>
+    <span class="s2">"slope_from_end"</span><span class="p">,</span>
+    <span class="s2">"slope_from_cycle_change"</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">POWER_MIN</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">POWER_MAX</span> <span class="o">=</span> <span class="mf">10.0</span>
+<span class="c1"># starting shapes of the fit, so a sharp season is not missed</span>
+<span class="n">POWER_STARTS</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">)</span>
+<span class="n">MIN_CYCLES</span> <span class="o">=</span> <span class="mi">3</span>
+
+
+<span class="c1"># FUNCTIONS</span>
+<span class="c1"># ***********************************************************************</span>
+
+<span class="c1"># FUNCTIONS -- Module-level</span>
+<span class="c1"># =======================================================================</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_period</span><span class="p">(</span><span class="n">period</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Raise an error if the period is not a positive integer."""</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span> <span class="ow">or</span> <span class="n">period</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"period must be a positive integer"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_phi</span><span class="p">(</span><span class="n">phi</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Raise an error if the AR(1) memory is not stationary."""</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"phi must be inside (-1, 1)"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_ols</span><span class="p">(</span><span class="n">design</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Get ordinary least squares coefficients."""</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lstsq</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">design</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="c1"># FUNCTIONS -- Components</span>
+<span class="c1"># =======================================================================</span>
+
+
+<div class="viewcode-block" id="trend_line">
+<a class="viewcode-back" href="../../../generated/plans.stochastic.arma.html#plans.stochastic.arma.trend_line">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">trend_line</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">slope</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Get the linear trend.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        T_t = b + a t</span>
+
+<span class="sd">    :param n: number of steps</span>
+<span class="sd">    :type n: int</span>
+<span class="sd">    :param start: trend value at step 0</span>
+<span class="sd">    :type start: float</span>
+<span class="sd">    :param slope: trend change per step</span>
+<span class="sd">    :type slope: float</span>
+<span class="sd">    :return: trend values</span>
+<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">start</span> <span class="o">+</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="n">n</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="season_shape">
+<a class="viewcode-back" href="../../../generated/plans.stochastic.arma.html#plans.stochastic.arma.season_shape">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">season_shape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">power</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Get the seasonal shape, a raised cosine to a power.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        g_t = \left[ \frac{1 + \cos\theta_t}{2} \right]^{k},</span>
+<span class="sd">        \qquad \theta_t = \frac{2 \pi (t - t_0)}{P}</span>
+
+<span class="sd">    :param n: number of steps</span>
+<span class="sd">    :type n: int</span>
+<span class="sd">    :param period: steps per cycle</span>
+<span class="sd">    :type period: int</span>
+<span class="sd">    :param phase: step at which the season peaks</span>
+<span class="sd">    :type phase: float</span>
+<span class="sd">    :param power: shape. 1 gives a plain cosine, larger gives a sharper peak.</span>
+<span class="sd">    :type power: float</span>
+<span class="sd">    :return: shape values, from 0 to 1</span>
+<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
+<span class="sd">    """</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="n">n</span><span class="p">)</span> <span class="o">-</span> <span class="n">phase</span><span class="p">)</span> <span class="o">/</span> <span class="n">period</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">power</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="shape_mean">
+<a class="viewcode-back" href="../../../generated/plans.stochastic.arma.html#plans.stochastic.arma.shape_mean">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">shape_mean</span><span class="p">(</span><span class="n">power</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Get the average of the seasonal shape over a cycle.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        m_k = \frac{\Gamma(k + \tfrac{1}{2})}{\sqrt{\pi} \, \Gamma(k + 1)}</span>
+
+<span class="sd">    It equals 0.5 for :math:`k = 1` and 0.375 for :math:`k = 2`.</span>
+
+<span class="sd">    :param power: shape</span>
+<span class="sd">    :type power: float</span>
+<span class="sd">    :return: average of the shape</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">gammaln</span>
+
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">gammaln</span><span class="p">(</span><span class="n">power</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">-</span> <span class="n">gammaln</span><span class="p">(</span><span class="n">power</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="season_component">
+<a class="viewcode-back" href="../../../generated/plans.stochastic.arma.html#plans.stochastic.arma.season_component">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">season_component</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">power</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Get the seasonal term, which averages zero over a cycle.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        S_t = A (g_t - m_k)</span>
+
+<span class="sd">    For :math:`k = 1` this is a plain cosine of half-range :math:`A / 2`.</span>
+
+<span class="sd">    :param n: number of steps</span>
+<span class="sd">    :type n: int</span>
+<span class="sd">    :param amplitude: peak-to-trough range of the seasonal term</span>
+<span class="sd">    :type amplitude: float</span>
+<span class="sd">    :param period: steps per cycle</span>
+<span class="sd">    :type period: int</span>
+<span class="sd">    :param phase: step at which the season peaks</span>
+<span class="sd">    :type phase: float</span>
+<span class="sd">    :param power: shape</span>
+<span class="sd">    :type power: float</span>
+<span class="sd">    :return: seasonal values</span>
+<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
+<span class="sd">    """</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">season_shape</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">power</span><span class="o">=</span><span class="n">power</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="p">(</span><span class="n">g</span> <span class="o">-</span> <span class="n">shape_mean</span><span class="p">(</span><span class="n">power</span><span class="o">=</span><span class="n">power</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="draw_shocks">
+<a class="viewcode-back" href="../../../generated/plans.stochastic.arma.html#plans.stochastic.arma.draw_shocks">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">draw_shocks</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">rng</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Draw independent Gaussian shocks.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \varepsilon_t \sim \mathcal{N}(0, \sigma^2)</span>
+
+<span class="sd">    :param n: number of steps</span>
+<span class="sd">    :type n: int</span>
+<span class="sd">    :param sigma: shock standard deviation</span>
+<span class="sd">    :type sigma: float</span>
+<span class="sd">    :param rng: random generator</span>
+<span class="sd">    :type rng: :class:`numpy.random.Generator`</span>
+<span class="sd">    :return: shocks</span>
+<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ar1_from_shocks">
+<a class="viewcode-back" href="../../../generated/plans.stochastic.arma.html#plans.stochastic.arma.ar1_from_shocks">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ar1_from_shocks</span><span class="p">(</span><span class="n">shocks</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Get the AR(1) remainder from given shocks, with the first value set to the</span>
+<span class="sd">    first shock.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        R_0 = \varepsilon_0, \qquad R_t = \varphi R_{t-1} + \varepsilon_t</span>
+
+<span class="sd">    :param shocks: shocks</span>
+<span class="sd">    :type shocks: :class:`numpy.ndarray`</span>
+<span class="sd">    :param phi: AR(1) memory</span>
+<span class="sd">    :type phi: float</span>
+<span class="sd">    :return: remainder</span>
+<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
+<span class="sd">    """</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">shocks</span><span class="p">))</span>
+    <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">shocks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">shocks</span><span class="p">)):</span>
+        <span class="n">r</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">phi</span> <span class="o">*</span> <span class="n">r</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">shocks</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">r</span></div>
+
+
+
+<div class="viewcode-block" id="simulate_ar1">
+<a class="viewcode-back" href="../../../generated/plans.stochastic.arma.html#plans.stochastic.arma.simulate_ar1">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate_ar1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">rng</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Simulate an AR(1) remainder that is stationary from the first step.</span>
+
+<span class="sd">    The first shock is scaled to the stationary variance instead of discarding a</span>
+<span class="sd">    burn-in. Draws therefore stay aligned when ``phi`` changes, so the same generator</span>
+<span class="sd">    state isolates the effect of ``phi``.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        R_0 = \frac{\varepsilon_0}{\sqrt{1 - \varphi^2}},</span>
+<span class="sd">        \qquad \mathrm{Var}(R_t) = \frac{\sigma^2}{1 - \varphi^2}</span>
+
+<span class="sd">    :param n: number of steps</span>
+<span class="sd">    :type n: int</span>
+<span class="sd">    :param phi: AR(1) memory, inside (-1, 1)</span>
+<span class="sd">    :type phi: float</span>
+<span class="sd">    :param sigma: shock standard deviation</span>
+<span class="sd">    :type sigma: float</span>
+<span class="sd">    :param rng: random generator</span>
+<span class="sd">    :type rng: :class:`numpy.random.Generator`</span>
+<span class="sd">    :return: remainder</span>
+<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
+<span class="sd">    """</span>
+    <span class="n">_check_phi</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">shocks</span> <span class="o">=</span> <span class="n">draw_shocks</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span>
+    <span class="n">shocks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">shocks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">phi</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ar1_from_shocks</span><span class="p">(</span><span class="n">shocks</span><span class="o">=</span><span class="n">shocks</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="n">phi</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># FUNCTIONS -- Triangle</span>
+<span class="c1"># =======================================================================</span>
+
+
+<div class="viewcode-block" id="fit_params">
+<a class="viewcode-back" href="../../../generated/plans.stochastic.arma.html#plans.stochastic.arma.fit_params">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fit_params</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">period</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Fit the model to a series.</span>
+
+<span class="sd">    Trend and season are fitted jointly by nonlinear least squares from several</span>
+<span class="sd">    starting shapes, keeping the best. ``power`` is bounded by ``POWER_MIN`` and</span>
+<span class="sd">    ``POWER_MAX``, so a season with a sharp trough and a flat top cannot be represented.</span>
+
+<span class="sd">    Memory and shocks come from the remainder :math:`R_t`, after removing its mean.</span>
+<span class="sd">    The memory is a regression through the origin, and :math:`\hat{\sigma}` is the</span>
+<span class="sd">    standard deviation of the residuals of that regression:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \hat{\varphi} = \frac{\sum_t R_{t-1} R_t}{\sum_t R_{t-1}^2},</span>
+<span class="sd">        \qquad \hat{\sigma} = \mathrm{sd}\left( R_t - \hat{\varphi} R_{t-1} \right)</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        Trend and season estimates ignore the memory, so they are less precise than</span>
+<span class="sd">        they could be, and ``phi`` tends to be low on short series.</span>
+
+<span class="sd">    :param x: series without nan values</span>
+<span class="sd">    :type x: :class:`numpy.ndarray`</span>
+<span class="sd">    :param period: steps per cycle</span>
+<span class="sd">    :type period: int</span>
+<span class="sd">    :return: parameters. Keys: start, slope, amplitude, period, phase, power, phi, sigma</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">least_squares</span>
+
+    <span class="n">_check_period</span><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"x has NaN values. Fill or remove them first"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">MIN_CYCLES</span> <span class="o">*</span> <span class="n">period</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"x must have at least </span><span class="si">{</span><span class="n">MIN_CYCLES</span><span class="si">}</span><span class="s2"> cycles of data"</span><span class="p">)</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">period</span>
+
+    <span class="c1"># phase from a linear harmonic fit</span>
+    <span class="n">design</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">n</span><span class="p">),</span> <span class="n">t</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)],</span>
+    <span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">_ols</span><span class="p">(</span><span class="n">design</span><span class="o">=</span><span class="n">design</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">phase_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">*</span> <span class="n">period</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_residuals</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+        <span class="n">trend</span> <span class="o">=</span> <span class="n">trend_line</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">slope</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">season</span> <span class="o">=</span> <span class="n">season_component</span><span class="p">(</span>
+            <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">power</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">trend</span> <span class="o">+</span> <span class="n">season</span> <span class="o">-</span> <span class="n">x</span>
+
+    <span class="c1"># joint fit from each starting shape</span>
+    <span class="n">bounds</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">[</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">POWER_MIN</span><span class="p">],</span>
+        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">POWER_MAX</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">best</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">power_0</span> <span class="ow">in</span> <span class="n">POWER_STARTS</span><span class="p">:</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">season_shape</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">phase_0</span><span class="p">,</span> <span class="n">power</span><span class="o">=</span><span class="n">power_0</span><span class="p">)</span>
+        <span class="n">design</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">n</span><span class="p">),</span> <span class="n">t</span><span class="p">,</span> <span class="n">g</span> <span class="o">-</span> <span class="n">shape_mean</span><span class="p">(</span><span class="n">power</span><span class="o">=</span><span class="n">power_0</span><span class="p">)],</span>
+        <span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">_ols</span><span class="p">(</span><span class="n">design</span><span class="o">=</span><span class="n">design</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">p_0</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">max</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">phase_0</span><span class="p">,</span> <span class="n">power_0</span><span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">least_squares</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">_residuals</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">p_0</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">x_scale</span><span class="o">=</span><span class="s2">"jac"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">best</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">result</span><span class="o">.</span><span class="n">cost</span> <span class="o">&lt;</span> <span class="n">best</span><span class="o">.</span><span class="n">cost</span><span class="p">:</span>
+            <span class="n">best</span> <span class="o">=</span> <span class="n">result</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">power</span> <span class="o">=</span> <span class="n">best</span><span class="o">.</span><span class="n">x</span>
+
+    <span class="k">if</span> <span class="n">power</span> <span class="o">&gt;=</span> <span class="n">POWER_MAX</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-6</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"power reached its upper bound of </span><span class="si">{</span><span class="n">POWER_MAX</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="c1"># memory and shocks from the centered remainder</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="o">-</span><span class="n">_residuals</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">best</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">r</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
+    <span class="n">denominator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">r</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="k">if</span> <span class="n">denominator</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">r</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">/</span> <span class="n">denominator</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The remainder is not stationary: phi = </span><span class="si">{</span><span class="n">phi</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">phi</span> <span class="o">*</span> <span class="n">r</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">"start"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">start</span><span class="p">),</span>
+        <span class="s2">"slope"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">slope</span><span class="p">),</span>
+        <span class="s2">"amplitude"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">amplitude</span><span class="p">),</span>
+        <span class="s2">"period"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">period</span><span class="p">),</span>
+        <span class="s2">"phase"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">phase</span> <span class="o">%</span> <span class="n">period</span><span class="p">),</span>
+        <span class="s2">"power"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">power</span><span class="p">),</span>
+        <span class="s2">"phi"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">phi</span><span class="p">),</span>
+        <span class="s2">"sigma"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">sigma</span><span class="p">),</span>
+    <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="decompose">
+<a class="viewcode-back" href="../../../generated/plans.stochastic.arma.html#plans.stochastic.arma.decompose">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">decompose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Split a series into components, given the parameters.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        R_t = x_t - T_t - S_t,</span>
+<span class="sd">        \qquad \varepsilon_0 = R_0,</span>
+<span class="sd">        \qquad \varepsilon_t = R_t - \varphi R_{t-1}</span>
+
+<span class="sd">    :param x: series</span>
+<span class="sd">    :type x: :class:`numpy.ndarray`</span>
+<span class="sd">    :param params: parameters. See :func:`fit_params`.</span>
+<span class="sd">    :type params: dict</span>
+<span class="sd">    :return: arrays by component. Keys: trend, season, remainder, shocks</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    """</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">trend</span> <span class="o">=</span> <span class="n">trend_line</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"start"</span><span class="p">],</span> <span class="n">slope</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"slope"</span><span class="p">])</span>
+    <span class="n">season</span> <span class="o">=</span> <span class="n">season_component</span><span class="p">(</span>
+        <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
+        <span class="n">amplitude</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"amplitude"</span><span class="p">],</span>
+        <span class="n">period</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"period"</span><span class="p">],</span>
+        <span class="n">phase</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"phase"</span><span class="p">],</span>
+        <span class="n">power</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"power"</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">trend</span> <span class="o">-</span> <span class="n">season</span>
+    <span class="c1"># the first shock is the first remainder, as in ar1_from_shocks</span>
+    <span class="n">shocks</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">shocks</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">params</span><span class="p">[</span><span class="s2">"phi"</span><span class="p">]</span> <span class="o">*</span> <span class="n">r</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"trend"</span><span class="p">:</span> <span class="n">trend</span><span class="p">,</span> <span class="s2">"season"</span><span class="p">:</span> <span class="n">season</span><span class="p">,</span> <span class="s2">"remainder"</span><span class="p">:</span> <span class="n">r</span><span class="p">,</span> <span class="s2">"shocks"</span><span class="p">:</span> <span class="n">shocks</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="build">
+<a class="viewcode-back" href="../../../generated/plans.stochastic.arma.html#plans.stochastic.arma.build">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shocks</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Make a series from the parameters.</span>
+
+<span class="sd">    To isolate the effect of one parameter, change it and build again with the same</span>
+<span class="sd">    ``seed`` or the same ``shocks``.</span>
+
+<span class="sd">    :param params: parameters. See :func:`fit_params`.</span>
+<span class="sd">    :type params: dict</span>
+<span class="sd">    :param n: number of steps</span>
+<span class="sd">    :type n: int</span>
+<span class="sd">    :param seed: random seed, used when ``shocks`` is None</span>
+<span class="sd">    :type seed: int or None</span>
+<span class="sd">    :param shocks: shocks to use instead of drawing them, of size ``n``</span>
+<span class="sd">    :type shocks: :class:`numpy.ndarray` or None</span>
+<span class="sd">    :return: series</span>
+<span class="sd">    :rtype: :class:`numpy.ndarray`</span>
+<span class="sd">    """</span>
+    <span class="n">_check_phi</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"phi"</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">shocks</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">simulate_ar1</span><span class="p">(</span>
+            <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
+            <span class="n">phi</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"phi"</span><span class="p">],</span>
+            <span class="n">sigma</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"sigma"</span><span class="p">],</span>
+            <span class="n">rng</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shocks</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"shocks must have size n"</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">ar1_from_shocks</span><span class="p">(</span><span class="n">shocks</span><span class="o">=</span><span class="n">shocks</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"phi"</span><span class="p">])</span>
+    <span class="n">trend</span> <span class="o">=</span> <span class="n">trend_line</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"start"</span><span class="p">],</span> <span class="n">slope</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"slope"</span><span class="p">])</span>
+    <span class="n">season</span> <span class="o">=</span> <span class="n">season_component</span><span class="p">(</span>
+        <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
+        <span class="n">amplitude</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"amplitude"</span><span class="p">],</span>
+        <span class="n">period</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"period"</span><span class="p">],</span>
+        <span class="n">phase</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"phase"</span><span class="p">],</span>
+        <span class="n">power</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"power"</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">trend</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="n">r</span></div>
+
+
+
+<span class="c1"># FUNCTIONS -- Presenting</span>
+<span class="c1"># =======================================================================</span>
+
+
+<div class="viewcode-block" id="get_floor">
+<a class="viewcode-back" href="../../../generated/plans.stochastic.arma.html#plans.stochastic.arma.get_floor">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_floor</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Get the lowest value of trend plus season, :math:`\min_t (T_t + S_t)`.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        This is the deterministic floor. Shocks are Gaussian and additive, so a</span>
+<span class="sd">        synthetic series can still fall below it.</span>
+
+<span class="sd">    :param params: parameters. See :func:`fit_params`.</span>
+<span class="sd">    :type params: dict</span>
+<span class="sd">    :param n: number of steps</span>
+<span class="sd">    :type n: int</span>
+<span class="sd">    :return: lowest value of trend plus season</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    """</span>
+    <span class="n">trend</span> <span class="o">=</span> <span class="n">trend_line</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"start"</span><span class="p">],</span> <span class="n">slope</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"slope"</span><span class="p">])</span>
+    <span class="n">season</span> <span class="o">=</span> <span class="n">season_component</span><span class="p">(</span>
+        <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
+        <span class="n">amplitude</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"amplitude"</span><span class="p">],</span>
+        <span class="n">period</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"period"</span><span class="p">],</span>
+        <span class="n">phase</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"phase"</span><span class="p">],</span>
+        <span class="n">power</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"power"</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">trend</span> <span class="o">+</span> <span class="n">season</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="describe">
+<a class="viewcode-back" href="../../../generated/plans.stochastic.arma.html#plans.stochastic.arma.describe">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">describe</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Get a printout with all views of the same model.</span>
+
+<span class="sd">    Baseline and topline are the extremes of the deterministic cycle, at the trend</span>
+<span class="sd">    average :math:`\bar{T}`. Noise moves the observed extremes beyond them.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \text{baseline} = \bar{T} - A m_k,</span>
+<span class="sd">        \qquad \text{topline} = \bar{T} + A (1 - m_k)</span>
+
+<span class="sd">    :param params: parameters. See :func:`fit_params`.</span>
+<span class="sd">    :type params: dict</span>
+<span class="sd">    :param n: number of steps, used by the views that depend on the length</span>
+<span class="sd">    :type n: int</span>
+<span class="sd">    :param positive: set True for variables that must stay positive. It warns if the</span>
+<span class="sd">        deterministic floor is below zero.</span>
+<span class="sd">    :type positive: bool</span>
+<span class="sd">    :return: formatted text</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    """</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">slope</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">"start"</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="s2">"slope"</span><span class="p">]</span>
+    <span class="n">amplitude</span><span class="p">,</span> <span class="n">period</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">"amplitude"</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="s2">"period"</span><span class="p">]</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">shape_mean</span><span class="p">(</span><span class="n">power</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"power"</span><span class="p">])</span>
+    <span class="n">average</span> <span class="o">=</span> <span class="n">average_from_start</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="n">slope</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">floor</span> <span class="o">=</span> <span class="n">get_floor</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+
+    <span class="n">ls_rows</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">"start"</span><span class="p">,</span> <span class="n">start</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"slope per step"</span><span class="p">,</span> <span class="n">slope</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"slope per cycle"</span><span class="p">,</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">period</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">f</span><span class="s2">"trend end (n=</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span> <span class="n">start</span> <span class="o">+</span> <span class="n">slope</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)),</span>
+        <span class="p">(</span><span class="sa">f</span><span class="s2">"trend average (n=</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span> <span class="n">average</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"amplitude"</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"baseline (at trend average)"</span><span class="p">,</span> <span class="n">average</span> <span class="o">-</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">m</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"topline (at trend average)"</span><span class="p">,</span> <span class="n">average</span> <span class="o">+</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">m</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s2">"period"</span><span class="p">,</span> <span class="n">period</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"phase"</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="s2">"phase"</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s2">"power"</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="s2">"power"</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s2">"phi"</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="s2">"phi"</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s2">"sigma"</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="s2">"sigma"</span><span class="p">]),</span>
+        <span class="p">(</span><span class="sa">f</span><span class="s2">"floor (n=</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span> <span class="n">floor</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="s2">&lt;30</span><span class="si">}{</span><span class="n">v</span><span class="si">:</span><span class="s2">&gt;14.6g</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ls_rows</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">positive</span> <span class="ow">and</span> <span class="n">floor</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">s_warn</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Floor of trend + season is below zero: </span><span class="si">{</span><span class="n">floor</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">s_warn</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">WARNING: </span><span class="si">{</span><span class="n">s_warn</span><span class="si">}</span><span class="s2">"</span>
+    <span class="k">return</span> <span class="n">s</span></div>
+
+
+
+<span class="c1"># FUNCTIONS -- Conversions</span>
+<span class="c1"># =======================================================================</span>
+
+
+<div class="viewcode-block" id="start_from_average">
+<a class="viewcode-back" href="../../../generated/plans.stochastic.arma.html#plans.stochastic.arma.start_from_average">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">start_from_average</span><span class="p">(</span><span class="n">average</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Get the trend start from the trend average over the record.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        b = \bar{T} - a \frac{n - 1}{2}</span>
+
+<span class="sd">    :param average: trend average</span>
+<span class="sd">    :type average: float</span>
+<span class="sd">    :param slope: trend change per step</span>
+<span class="sd">    :type slope: float</span>
+<span class="sd">    :param n: number of steps</span>
+<span class="sd">    :type n: int</span>
+<span class="sd">    :return: trend value at step 0</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">average</span> <span class="o">-</span> <span class="n">slope</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span></div>
+
+
+
+<div class="viewcode-block" id="average_from_start">
+<a class="viewcode-back" href="../../../generated/plans.stochastic.arma.html#plans.stochastic.arma.average_from_start">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">average_from_start</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Get the trend average over the record from the trend start.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \bar{T} = b + a \frac{n - 1}{2}</span>
+
+<span class="sd">    :param start: trend value at step 0</span>
+<span class="sd">    :type start: float</span>
+<span class="sd">    :param slope: trend change per step</span>
+<span class="sd">    :type slope: float</span>
+<span class="sd">    :param n: number of steps</span>
+<span class="sd">    :type n: int</span>
+<span class="sd">    :return: trend average</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">start</span> <span class="o">+</span> <span class="n">slope</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span></div>
+
+
+
+<div class="viewcode-block" id="slope_from_end">
+<a class="viewcode-back" href="../../../generated/plans.stochastic.arma.html#plans.stochastic.arma.slope_from_end">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">slope_from_end</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Get the slope from the trend values at the first and last steps.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        a = \frac{T_{n-1} - b}{n - 1}</span>
+
+<span class="sd">    :param start: trend value at step 0</span>
+<span class="sd">    :type start: float</span>
+<span class="sd">    :param end: trend value at the last step</span>
+<span class="sd">    :type end: float</span>
+<span class="sd">    :param n: number of steps</span>
+<span class="sd">    :type n: int</span>
+<span class="sd">    :return: trend change per step</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="slope_from_cycle_change">
+<a class="viewcode-back" href="../../../generated/plans.stochastic.arma.html#plans.stochastic.arma.slope_from_cycle_change">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">slope_from_cycle_change</span><span class="p">(</span><span class="n">change</span><span class="p">,</span> <span class="n">period</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Get the slope from the trend change per cycle :math:`\Delta T`.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        a = \frac{\Delta T}{P}</span>
+
+<span class="sd">    :param change: trend change per cycle</span>
+<span class="sd">    :type change: float</span>
+<span class="sd">    :param period: steps per cycle</span>
+<span class="sd">    :type period: int</span>
+<span class="sd">    :return: trend change per step</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">change</span> <span class="o">/</span> <span class="n">period</span></div>
+
+
+
+<div class="viewcode-block" id="make_params">
+<a class="viewcode-back" href="../../../generated/plans.stochastic.arma.html#plans.stochastic.arma.make_params">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_params</span><span class="p">(</span>
+    <span class="n">period</span><span class="p">,</span>
+    <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">average</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">slope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cycle_change</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">baseline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">topline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">phase</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">power</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">phi</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">sigma</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Make the parameters from what is known, converting to the stored form.</span>
+
+<span class="sd">    The trend level comes from ``start`` or ``average``, its change from ``slope``,</span>
+<span class="sd">    ``end`` or ``cycle_change``, and the season from ``amplitude`` or from both</span>
+<span class="sd">    ``baseline`` and ``topline``, with :math:`A = \text{topline} - \text{baseline}`.</span>
+<span class="sd">    Giving more than one option for the same item raises an error. Length-based</span>
+<span class="sd">    conversions apply once here, so a longer series continues the same line.</span>
+
+<span class="sd">    See :func:`start_from_average`, :func:`slope_from_end` and</span>
+<span class="sd">    :func:`slope_from_cycle_change` for the formulas.</span>
+
+<span class="sd">    :param period: steps per cycle</span>
+<span class="sd">    :type period: int</span>
+<span class="sd">    :param start: trend value at step 0</span>
+<span class="sd">    :type start: float</span>
+<span class="sd">    :param average: trend average over the record. Requires ``n``.</span>
+<span class="sd">    :type average: float</span>
+<span class="sd">    :param slope: trend change per step</span>
+<span class="sd">    :type slope: float</span>
+<span class="sd">    :param end: trend value at the last step. Requires ``start`` and ``n``.</span>
+<span class="sd">    :type end: float</span>
+<span class="sd">    :param cycle_change: trend change per cycle</span>
+<span class="sd">    :type cycle_change: float</span>
+<span class="sd">    :param n: number of steps, used only by the length-based conversions</span>
+<span class="sd">    :type n: int</span>
+<span class="sd">    :param amplitude: peak-to-trough range of the seasonal term</span>
+<span class="sd">    :type amplitude: float</span>
+<span class="sd">    :param baseline: lowest value of the deterministic cycle</span>
+<span class="sd">    :type baseline: float</span>
+<span class="sd">    :param topline: highest value of the deterministic cycle</span>
+<span class="sd">    :type topline: float</span>
+<span class="sd">    :param phase: step at which the season peaks</span>
+<span class="sd">    :type phase: float</span>
+<span class="sd">    :param power: shape</span>
+<span class="sd">    :type power: float</span>
+<span class="sd">    :param phi: AR(1) memory, inside (-1, 1)</span>
+<span class="sd">    :type phi: float</span>
+<span class="sd">    :param sigma: shock standard deviation</span>
+<span class="sd">    :type sigma: float</span>
+<span class="sd">    :return: parameters. See :func:`fit_params`.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    """</span>
+    <span class="n">_check_period</span><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">)</span>
+    <span class="n">_check_phi</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="n">phi</span><span class="p">)</span>
+
+    <span class="c1"># one option per item</span>
+    <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">average</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Give only one of: start, average"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">[</span><span class="n">slope</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">cycle_change</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Give only one of: slope, end, cycle_change"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">amplitude</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">baseline</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">topline</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Give amplitude or baseline and topline, not both"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">baseline</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">topline</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"baseline and topline must be given together"</span><span class="p">)</span>
+
+    <span class="c1"># requirements of the length-based options</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">average</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"average and end require n"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"end requires start"</span><span class="p">)</span>
+
+    <span class="c1"># trend change</span>
+    <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">slope</span> <span class="o">=</span> <span class="n">slope_from_end</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">cycle_change</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">slope</span> <span class="o">=</span> <span class="n">slope_from_cycle_change</span><span class="p">(</span><span class="n">change</span><span class="o">=</span><span class="n">cycle_change</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">slope</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">slope</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="c1"># trend level</span>
+    <span class="k">if</span> <span class="n">average</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">start_from_average</span><span class="p">(</span><span class="n">average</span><span class="o">=</span><span class="n">average</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="n">slope</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="c1"># season</span>
+    <span class="k">if</span> <span class="n">baseline</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">amplitude</span> <span class="o">=</span> <span class="n">topline</span> <span class="o">-</span> <span class="n">baseline</span>
+    <span class="k">elif</span> <span class="n">amplitude</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">amplitude</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">"start"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">start</span><span class="p">),</span>
+        <span class="s2">"slope"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">slope</span><span class="p">),</span>
+        <span class="s2">"amplitude"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">amplitude</span><span class="p">),</span>
+        <span class="s2">"period"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">period</span><span class="p">),</span>
+        <span class="s2">"phase"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">phase</span><span class="p">),</span>
+        <span class="s2">"power"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">power</span><span class="p">),</span>
+        <span class="s2">"phi"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">phi</span><span class="p">),</span>
+        <span class="s2">"sigma"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">sigma</span><span class="p">),</span>
+    <span class="p">}</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Iporã Possantti.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

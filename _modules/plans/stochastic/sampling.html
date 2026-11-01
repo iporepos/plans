@@ -444,8 +444,14 @@
 <div class="viewcode-block" id="normalize">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.sampling.html#plans.stochastic.sampling.normalize">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Normalize array between min and max values</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        y = y_{\min} + \frac{(x - x_{\min}) (y_{\max} - y_{\min})}{x_{\max} - x_{\min}}</span>
+
+<span class="sd">    Here :math:`y_{\min}` and :math:`y_{\max}` are ``min_value`` and ``max_value``.</span>
 
 <span class="sd">    :param array: Input array or float</span>
 <span class="sd">    :type array: float or :class:`numpy.ndarray`</span>
@@ -476,8 +482,11 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">sample_gamma</span><span class="p">(</span>
     <span class="n">size</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">shape_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Draw a gamma sample, then rescale it so its own extremes sit on the bounds.</span>
+
+<span class="sd">    The draw is :math:`x \sim \mathrm{Gamma}(k, \theta)`, with ``shape`` :math:`k`</span>
+<span class="sd">    and ``scale`` :math:`\theta`, followed by :func:`normalize`.</span>
 
 <span class="sd">    The sample minimum becomes ``n_min`` and the sample maximum becomes ``n_max``,</span>
 <span class="sd">    so the result is a gamma-shaped sample, not a gamma sample with that ``scale``.</span>

@@ -42,3 +42,8 @@
    :toctree: generated
 
    plans.stochastic.sampling
+
+.. autosummary::
+   :toctree: generated
+
+   plans.stochastic.arma

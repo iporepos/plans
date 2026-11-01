@@ -407,8 +407,11 @@
 <span class="c1"># Copyright (C) 2025 The Project Authors</span>
 <span class="c1"># See pyproject.toml for authors/maintainers.</span>
 <span class="c1"># See LICENSE for license details.</span>
-<span class="sd">"""</span>
+<span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">Exceedance probabilities, return periods and the Gumbel model.</span>
+
+<span class="sd">Formulas use :math:`r` for the rank (1 is the largest value), :math:`n` for the sample</span>
+<span class="sd">size, :math:`s` for the standard deviation and :math:`T` for the return period.</span>
 <span class="sd">"""</span>
 
 <span class="c1"># IMPORTS</span>
@@ -446,8 +449,12 @@
 <div class="viewcode-block" id="get_tx">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.frequency.html#plans.stochastic.frequency.get_tx">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_tx</span><span class="p">(</span><span class="n">fx</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Simple function for computing the Return Period from the CDF</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        T = \frac{1}{1 - F}</span>
 
 <span class="sd">    :param fx: CDF (FX)</span>
 <span class="sd">    :type fx: float | :class:`numpy.ndarray`</span>
@@ -461,8 +468,12 @@
 <div class="viewcode-block" id="gumbel_fx">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.frequency.html#plans.stochastic.frequency.gumbel_fx">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">gumbel_fx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Gumbel probability distribution F(X)</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        F(x) = \exp\left[ -\exp\left( -\frac{x - a}{b} \right) \right]</span>
 
 <span class="sd">    :param x: function inputs</span>
 <span class="sd">    :type x: float | :class:`numpy.ndarray`</span>
@@ -483,8 +494,12 @@
 <div class="viewcode-block" id="gumbel_tx">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.frequency.html#plans.stochastic.frequency.gumbel_tx">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">gumbel_tx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Gumbel return period distribution T(X)</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        T(x) = \frac{1}{1 - F(x)}</span>
 
 <span class="sd">    :param x: function inputs</span>
 <span class="sd">    :type x: float | :class:`numpy.ndarray`</span>
@@ -503,8 +518,13 @@
 <div class="viewcode-block" id="gumbel_freqfactor">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.frequency.html#plans.stochastic.frequency.gumbel_freqfactor">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">gumbel_freqfactor</span><span class="p">(</span><span class="n">tx</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Gumbel Frequency Factor K(T)</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        K_T = -\frac{\sqrt{6}}{\pi}</span>
+<span class="sd">        \left[ 0.5772 + \ln \ln \left( \frac{T}{T - 1} \right) \right]</span>
 
 <span class="sd">    :param tx: return period T</span>
 <span class="sd">    :type tx: float | :class:`numpy.ndarray`</span>
@@ -523,8 +543,12 @@
 <div class="viewcode-block" id="gumbel_se">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.frequency.html#plans.stochastic.frequency.gumbel_se">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">gumbel_se</span><span class="p">(</span><span class="n">std_sample</span><span class="p">,</span> <span class="n">n_sample</span><span class="p">,</span> <span class="n">tx</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Gumbel Standard Error for the MM fitted Gumbel function</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        S_e = \frac{s}{\sqrt{n}} \sqrt{1 + 1.14 K_T + 1.1 K_T^2}</span>
 
 <span class="sd">    :param std_sample: sample standard deviation</span>
 <span class="sd">    :type std_sample: float</span>
@@ -546,8 +570,12 @@
 <div class="viewcode-block" id="empirical_px">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.frequency.html#plans.stochastic.frequency.empirical_px">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">empirical_px</span><span class="p">(</span><span class="n">ranks</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Get the empirical exceedance probability P(X)</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        P(X) = \frac{r}{n}</span>
 
 <span class="sd">    :param ranks: vector of ranks</span>
 <span class="sd">    :type ranks: :class:`numpy.ndarray`</span>
@@ -561,8 +589,12 @@
 <div class="viewcode-block" id="weibull_px">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.frequency.html#plans.stochastic.frequency.weibull_px">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">weibull_px</span><span class="p">(</span><span class="n">ranks</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Get the Weibull exceedance probability P(X)</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        P(X) = \frac{r}{n + 1}</span>
 
 <span class="sd">    :param ranks: vector of ranks</span>
 <span class="sd">    :type ranks: :class:`numpy.ndarray`</span>
@@ -576,8 +608,12 @@
 <div class="viewcode-block" id="gringorten_px">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.frequency.html#plans.stochastic.frequency.gringorten_px">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">gringorten_px</span><span class="p">(</span><span class="n">ranks</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Get the Gringorten exceedance probability P(X)</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        P(X) = \frac{r - 0.44}{n + 0.12}</span>
 
 <span class="sd">    :param ranks: vector of ranks</span>
 <span class="sd">    :type ranks: :class:`numpy.ndarray`</span>
@@ -629,8 +665,12 @@
 <div class="viewcode-block" id="get_cdf_weibull">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.frequency.html#plans.stochastic.frequency.get_cdf_weibull">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_cdf_weibull</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Get the Weibull model for the data.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        P(X) = \frac{r}{n + 1}, \qquad F(X) = 1 - P(X)</span>
 
 <span class="sd">    :param data: vector of data without nan values</span>
 <span class="sd">    :type data: :class:`numpy.ndarray`</span>
@@ -649,8 +689,15 @@
 <div class="viewcode-block" id="get_cdf_gumbel">
 <a class="viewcode-back" href="../../../generated/plans.stochastic.frequency.html#plans.stochastic.frequency.get_cdf_gumbel">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_cdf_gumbel</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">varfield</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Get the Gumbel CDF for the data (it assumes that is a maxima dataset).</span>
+
+<span class="sd">    Stages by return period use the frequency factor and the standard error, with</span>
+<span class="sd">    Student's t bands at confidence :math:`c`:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        x_T = \bar{x} + K_T s, \qquad x_T \pm t_{(1 + c) / 2, \, n - 1} \, S_e</span>
 
 <span class="sd">    :param df: dataframe without nan values. Other columns are kept in the output.</span>
 <span class="sd">    :type df: :class:`pandas.DataFrame`</span>
