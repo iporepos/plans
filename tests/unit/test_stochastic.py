@@ -100,6 +100,10 @@ RANKS = np.arange(start=1, stop=21)
 TX = np.array([2.0, 10.0, 100.0])
 EDGES = np.array([-1.0, 0.0, 5.0, 10.0, 15.0, 20.0, 25.0])
 
+# curve fits stop at the solver tolerance, so they vary across library builds
+TOL_EXACT = 1e-8
+TOL_FIT = 1e-4
+
 # size, first, last and sum of each output, flattened
 GOLDEN = {
     "test_normality_ks": [4, 0.13010066682172883, 1.0, 2.875040153335374],
@@ -336,9 +340,10 @@ class TestGolden(unittest.TestCase):
         for key in CASES:
             with self.subTest(case=key):
                 result = fingerprint(obj=CASES[key]())
+                tol = TOL_FIT if key.startswith("fit_") else TOL_EXACT
                 self.assertEqual(result[0], GOLDEN[key][0])
                 for a, b in zip(result[1:], GOLDEN[key][1:]):
-                    self.assertAlmostEqual(a, b, delta=1e-8 * max(1.0, abs(b)))
+                    self.assertAlmostEqual(a, b, delta=tol * max(1.0, abs(b)))
 
 
 class TestDelegates(unittest.TestCase):

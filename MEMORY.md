@@ -1,5 +1,8 @@
 # Memory Log
 
+## 2026-11-01 — Golden test tolerance for curve fits (CI failure)
+`test_golden` failed on CI for `fit_Power` by 6e-8 while passing locally. Not a regression: `curve_fit` stops at its solver tolerance, and locally changing only solver settings moves `Bias` by up to 8e-6. Fit cases now use `TOL_FIT` (1e-4), other golden cases keep `TOL_EXACT` (1e-8). Also noted: CI installs unpinned dependencies on Python 3.11 and already warns that pandas will remove `inplace` (PDEP-8); not changed.
+
 ## 2026-11-01 — Sphinx math added across `plans.stochastic` (except `bayes`)
 Requested by the user; `bayes` left out on purpose, since that part is still pending. Added to `metrics`, `frequency`, `binning`, `descriptive`, `sampling`, `curves`, `normality`, with symbols defined in module docstrings. Docstrings only: code compared equal to the commit by AST, and formulas evaluated against the functions. Noted, not changed: `get_cdf_gumbel` passes `np.std` (n in the denominator) as the "sample standard deviation" of `gumbel_se`.
 
