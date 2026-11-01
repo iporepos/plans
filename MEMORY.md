@@ -1,5 +1,16 @@
 # Memory Log
 
+## 2026-11-01 — Sphinx math added across `plans.stochastic` (except `bayes`)
+Requested by the user; `bayes` left out on purpose, since that part is still pending. Added to `metrics`, `frequency`, `binning`, `descriptive`, `sampling`, `curves`, `normality`, with symbols defined in module docstrings. Docstrings only: code compared equal to the commit by AST, and formulas evaluated against the functions. Noted, not changed: `get_cdf_gumbel` passes `np.std` (n in the denominator) as the "sample standard deviation" of `gumbel_se`.
+
+## 2026-11-01 — Sphinx math added to `stochastic.arma` docstrings
+Requested by the user. Model, components, fit estimators, decomposition, baseline and topline, and conversions, using `.. math::` and `:math:`; those docstrings are now raw strings. Only `arma` for now; other `stochastic` modules (Gumbel, metrics) have no math yet.
+
+## 2026-11-01 — `plans.stochastic.arma`: trend, season and AR(1) library (stage 3)
+Array-only library: `fit_params`, `decompose`, `build`, `describe`, `make_params`, components and conversions. No `TimeSeries` changes; tutorial and wrappers come later. Departures from the brief: `simulate_ar1` has no `burn` (first shock scaled to the stationary variance, because `burn=100` is short at high `phi` and a `phi`-dependent burn-in breaks common random numbers); new `draw_shocks` keeps shock generation separate; only the upper `power` bound (10) warns, since `power=1` is the right answer for temperature; no "large offset" test, since the fitted `start` already centers the remainder.
+
+Known limits, measured: Gaussian noise is additive, so a rain-like series with a positive floor still went negative in 3.25% of steps (floor 6.25, 1200 steps); `describe(positive=True)` only checks the deterministic floor. Pure noise fits a spurious sharp season (`power` at 10), where the bound warning is the only signal.
+
 ## 2026-11-01 — `plans.stochastic` completed; `analyst` purged of pure computation (stage 2)
 New modules: `frequency`, `normality`, `binning`, `descriptive`, `sampling`, `curves`, `bayes`. `Univar` statics are thin delegates kept for backward compatibility; `plans` source calls `stochastic` directly. Computation also left instance methods (`get_normality`, `get_frequency`, `get_basic_stats`, `get_cdf_weibull`, `get_cdf_gumbel`, `Bivar.fit`, `Bayes.conditionalize`). `geo.normalize` is now a re-export of `stochastic.sampling.normalize`. Outputs recorded before the refactor match at full precision (50 cases).
 

@@ -3,8 +3,11 @@
 # Copyright (C) 2025 The Project Authors
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
-"""
+r"""
 Exceedance probabilities, return periods and the Gumbel model.
+
+Formulas use :math:`r` for the rank (1 is the largest value), :math:`n` for the sample
+size, :math:`s` for the standard deviation and :math:`T` for the return period.
 """
 
 # IMPORTS
@@ -40,8 +43,12 @@ __all__ = [
 
 
 def get_tx(fx):
-    """
+    r"""
     Simple function for computing the Return Period from the CDF
+
+    .. math::
+
+        T = \frac{1}{1 - F}
 
     :param fx: CDF (FX)
     :type fx: float | :class:`numpy.ndarray`
@@ -52,8 +59,12 @@ def get_tx(fx):
 
 
 def gumbel_fx(x, a, b):
-    """
+    r"""
     Gumbel probability distribution F(X)
+
+    .. math::
+
+        F(x) = \exp\left[ -\exp\left( -\frac{x - a}{b} \right) \right]
 
     :param x: function inputs
     :type x: float | :class:`numpy.ndarray`
@@ -71,8 +82,12 @@ def gumbel_fx(x, a, b):
 
 
 def gumbel_tx(x, a, b):
-    """
+    r"""
     Gumbel return period distribution T(X)
+
+    .. math::
+
+        T(x) = \frac{1}{1 - F(x)}
 
     :param x: function inputs
     :type x: float | :class:`numpy.ndarray`
@@ -88,8 +103,13 @@ def gumbel_tx(x, a, b):
 
 
 def gumbel_freqfactor(tx=2):
-    """
+    r"""
     Gumbel Frequency Factor K(T)
+
+    .. math::
+
+        K_T = -\frac{\sqrt{6}}{\pi}
+        \left[ 0.5772 + \ln \ln \left( \frac{T}{T - 1} \right) \right]
 
     :param tx: return period T
     :type tx: float | :class:`numpy.ndarray`
@@ -105,8 +125,12 @@ def gumbel_freqfactor(tx=2):
 
 
 def gumbel_se(std_sample, n_sample, tx):
-    """
+    r"""
     Gumbel Standard Error for the MM fitted Gumbel function
+
+    .. math::
+
+        S_e = \frac{s}{\sqrt{n}} \sqrt{1 + 1.14 K_T + 1.1 K_T^2}
 
     :param std_sample: sample standard deviation
     :type std_sample: float
@@ -125,8 +149,12 @@ def gumbel_se(std_sample, n_sample, tx):
 
 
 def empirical_px(ranks):
-    """
+    r"""
     Get the empirical exceedance probability P(X)
+
+    .. math::
+
+        P(X) = \frac{r}{n}
 
     :param ranks: vector of ranks
     :type ranks: :class:`numpy.ndarray`
@@ -137,8 +165,12 @@ def empirical_px(ranks):
 
 
 def weibull_px(ranks):
-    """
+    r"""
     Get the Weibull exceedance probability P(X)
+
+    .. math::
+
+        P(X) = \frac{r}{n + 1}
 
     :param ranks: vector of ranks
     :type ranks: :class:`numpy.ndarray`
@@ -149,8 +181,12 @@ def weibull_px(ranks):
 
 
 def gringorten_px(ranks):
-    """
+    r"""
     Get the Gringorten exceedance probability P(X)
+
+    .. math::
+
+        P(X) = \frac{r - 0.44}{n + 0.12}
 
     :param ranks: vector of ranks
     :type ranks: :class:`numpy.ndarray`
@@ -196,8 +232,12 @@ def get_frequency(data):
 
 
 def get_cdf_weibull(data):
-    """
+    r"""
     Get the Weibull model for the data.
+
+    .. math::
+
+        P(X) = \frac{r}{n + 1}, \qquad F(X) = 1 - P(X)
 
     :param data: vector of data without nan values
     :type data: :class:`numpy.ndarray`
@@ -213,8 +253,15 @@ def get_cdf_weibull(data):
 
 
 def get_cdf_gumbel(df, varfield):
-    """
+    r"""
     Get the Gumbel CDF for the data (it assumes that is a maxima dataset).
+
+    Stages by return period use the frequency factor and the standard error, with
+    Student's t bands at confidence :math:`c`:
+
+    .. math::
+
+        x_T = \bar{x} + K_T s, \qquad x_T \pm t_{(1 + c) / 2, \, n - 1} \, S_e
 
     :param df: dataframe without nan values. Other columns are kept in the output.
     :type df: :class:`pandas.DataFrame`

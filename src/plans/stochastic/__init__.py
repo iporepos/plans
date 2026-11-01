@@ -20,3 +20,4 @@ from .descriptive import *
 from .frequency import *
 from .normality import *
 from .sampling import *
+from .arma import *

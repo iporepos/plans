@@ -72,8 +72,12 @@ def get_basic_stats(data):
 
 
 def qqplot(data):
-    """
+    r"""
     Calculate the QQ-plot of data against normal distribution
+
+    .. math::
+
+        E_i = \frac{i - 0.5}{n}, \qquad T_i = \Phi^{-1}(E_i)
 
     :param data: vector of data without nan values
     :type data: :class:`numpy.ndarray`
@@ -95,8 +99,11 @@ def qqplot(data):
 
 
 def trace_variance(data):
-    """
+    r"""
     Trace the mean variance from sample
+
+    Step :math:`i` holds :math:`\mathrm{Var}(x_0, \dots, x_{i-1})`, the variance of the
+    values before it. The first two steps are zero.
 
     :param data: vector of data without nan values
     :type data: :class:`numpy.ndarray`

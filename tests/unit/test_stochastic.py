@@ -19,6 +19,7 @@ The test suite verifies that:
 * Instance methods of ``Univar``, ``Bivar`` and ``Bayes`` still return them.
 * Known bugs in binning and ``Bayes`` stay fixed.
 * ``sample_gamma`` keeps its seeded results and validates its inputs.
+* The ``arma`` model rebuilds series exactly and recovers known parameters.
 
 """
 # IMPORTS
@@ -30,6 +31,7 @@ The test suite verifies that:
 import ast
 import pathlib
 import unittest
+import warnings
 
 # External imports
 # =======================================================================
@@ -42,6 +44,7 @@ import plans.geo
 import plans.stochastic
 from plans.datasets.analyst import Bayes, Bivar, Univar
 from plans.stochastic import (
+    arma,
     bayes,
     binning,
     curves,
@@ -180,6 +183,10 @@ def fingerprint(obj):
     """
     v = [e for e in _flatten(obj=obj) if not np.isnan(e)]
     return [len(v), v[0], v[-1], float(np.sum(a=v))]
+
+
+def _trend(params):
+    return {"start": params["start"], "slope": params["slope"]}
 
 
 def get_univar():
@@ -468,6 +475,191 @@ class TestBayes(unittest.TestCase):
             upper=0.7,
         )
         self.assertTrue(np.isnan(lo) and np.isnan(hi))
+
+
+class TestArma(unittest.TestCase):
+
+    def setUp(self):
+        self.temperature = arma.make_params(
+            period=12,
+            start=15.0,
+            slope=0.01,
+            amplitude=10.0,
+            phase=3.0,
+            phi=0.5,
+            sigma=1.0,
+        )
+        self.rain = arma.make_params(
+            period=12,
+            start=100.0,
+            amplitude=300.0,
+            phase=2.0,
+            power=3.0,
+            phi=0.3,
+            sigma=5.0,
+        )
+
+    def test_identity(self):
+        x = arma.build(params=self.temperature, n=240, seed=1)
+        shocks = arma.decompose(x=x, params=self.temperature)["shocks"]
+        rebuilt = arma.build(params=self.temperature, n=240, shocks=shocks)
+        np.testing.assert_allclose(rebuilt, x, atol=1e-10)
+
+    def test_seed(self):
+        a = arma.build(params=self.temperature, n=60, seed=1)
+        b = arma.build(params=self.temperature, n=60, seed=1)
+        c = arma.build(params=self.temperature, n=60, seed=2)
+        np.testing.assert_array_equal(a, b)
+        self.assertFalse(np.array_equal(a, c))
+
+    def test_common_random_numbers(self):
+        # a change in slope only adds the line to the same noise
+        steeper = dict(self.temperature, slope=0.11)
+        a = arma.build(params=self.temperature, n=60, seed=1)
+        b = arma.build(params=steeper, n=60, seed=1)
+        np.testing.assert_allclose(b - a, 0.1 * np.arange(start=0, stop=60))
+        # after the first step, draws stay aligned when phi changes
+        rng_a = np.random.default_rng(seed=1)
+        rng_b = np.random.default_rng(seed=1)
+        r_a = arma.simulate_ar1(n=30, phi=0.5, sigma=1.0, rng=rng_a)
+        r_b = arma.simulate_ar1(n=30, phi=0.0, sigma=1.0, rng=rng_b)
+        np.testing.assert_allclose(r_a[1:] - 0.5 * r_a[:-1], r_b[1:])
+
+    def test_shape_mean(self):
+        self.assertAlmostEqual(arma.shape_mean(power=1), 0.5)
+        self.assertAlmostEqual(arma.shape_mean(power=2), 0.375)
+        for power in [1.0, 2.5, 7.0]:
+            with self.subTest(power=power):
+                g = arma.season_shape(n=1000, period=1000, phase=0, power=power)
+                self.assertAlmostEqual(np.mean(a=g), arma.shape_mean(power=power))
+
+    def test_season(self):
+        s = arma.season_component(n=12, amplitude=10.0, period=12, phase=3, power=1)
+        expected = 5 * np.cos(2 * np.pi * (np.arange(start=0, stop=12) - 3) / 12)
+        np.testing.assert_allclose(s, expected, atol=1e-12)
+        s = arma.season_component(n=24, amplitude=10.0, period=24, phase=5, power=4)
+        self.assertAlmostEqual(np.mean(a=s), 0.0)
+        self.assertEqual(np.argmax(a=s), 5)
+
+    def test_stationary(self):
+        phi, sigma = 0.9, 2.0
+        expected = sigma**2 / (1 - phi**2)
+        r = arma.simulate_ar1(
+            n=200000, phi=phi, sigma=sigma, rng=np.random.default_rng(seed=1)
+        )
+        self.assertAlmostEqual(np.var(a=r) / expected, 1.0, delta=0.05)
+        # the variance holds from the first step, across many short runs
+        r_0 = [
+            arma.simulate_ar1(
+                n=2, phi=phi, sigma=sigma, rng=np.random.default_rng(seed=i)
+            )[0]
+            for i in range(4000)
+        ]
+        self.assertAlmostEqual(np.var(a=r_0) / expected, 1.0, delta=0.1)
+
+    def test_recovery(self):
+        for truth in [self.temperature, self.rain]:
+            x = arma.build(params=truth, n=2400, seed=1)
+            fit = arma.fit_params(x=x, period=12)
+            with self.subTest(power=truth["power"]):
+                self.assertAlmostEqual(
+                    fit["amplitude"] / truth["amplitude"], 1.0, delta=0.05
+                )
+                self.assertAlmostEqual(fit["power"], truth["power"], delta=0.3)
+                self.assertAlmostEqual(fit["phase"], truth["phase"], delta=0.2)
+                self.assertAlmostEqual(fit["phi"], truth["phi"], delta=0.06)
+                self.assertAlmostEqual(fit["sigma"] / truth["sigma"], 1.0, delta=0.06)
+
+    def test_phase_wraps(self):
+        truth = dict(self.temperature, phase=11.5, sigma=0.1)
+        x = arma.build(params=truth, n=240, seed=1)
+        fit = arma.fit_params(x=x, period=12)
+        self.assertGreaterEqual(fit["phase"], 0)
+        self.assertLess(fit["phase"], 12)
+        self.assertAlmostEqual(fit["phase"], 11.5, delta=0.2)
+
+    def test_fit_errors(self):
+        x = arma.build(params=self.temperature, n=60, seed=1)
+        with self.assertRaises(ValueError):
+            arma.fit_params(x=x[:35], period=12)
+        with self.assertRaises(ValueError):
+            arma.fit_params(x=x, period=12.0)
+        x[5] = np.nan
+        with self.assertRaises(ValueError):
+            arma.fit_params(x=x, period=12)
+
+    def test_phi_errors(self):
+        for phi in [1.0, -1.0, 1.5]:
+            with self.subTest(phi=phi):
+                with self.assertRaises(ValueError):
+                    arma.build(params=dict(self.temperature, phi=phi), n=10)
+                with self.assertRaises(ValueError):
+                    arma.make_params(period=12, phi=phi)
+
+    def test_conversions(self):
+        start = arma.start_from_average(average=15.0, slope=0.5, n=11)
+        self.assertAlmostEqual(start, 12.5)
+        self.assertAlmostEqual(
+            arma.average_from_start(start=start, slope=0.5, n=11), 15.0
+        )
+        self.assertAlmostEqual(arma.slope_from_end(start=1.0, end=6.0, n=11), 0.5)
+        self.assertAlmostEqual(
+            arma.slope_from_cycle_change(change=0.04, period=12), 0.04 / 12
+        )
+
+    def test_make_params_modes(self):
+        # worked example: monthly temperature with a yearly change
+        p = arma.make_params(
+            period=12,
+            average=15.0,
+            n=240,
+            cycle_change=0.04,
+            baseline=10.0,
+            topline=20.0,
+        )
+        self.assertAlmostEqual(p["amplitude"], 10.0)
+        self.assertAlmostEqual(p["slope"], 0.04 / 12)
+        self.assertAlmostEqual(np.mean(a=arma.trend_line(n=240, **_trend(p))), 15.0)
+        ls_invalid = [
+            {"start": 1.0, "average": 1.0, "n": 10},
+            {"slope": 1.0, "end": 1.0, "start": 0.0, "n": 10},
+            {"slope": 1.0, "cycle_change": 1.0},
+            {"amplitude": 1.0, "baseline": 0.0, "topline": 1.0},
+            {"baseline": 0.0},
+            {"average": 1.0},
+            {"end": 1.0, "n": 10},
+        ]
+        for kwargs in ls_invalid:
+            with self.subTest(kwargs=kwargs):
+                with self.assertRaises(ValueError):
+                    arma.make_params(period=12, **kwargs)
+
+    def test_stored_form_ignores_length(self):
+        p = arma.make_params(period=12, start=1.0, end=11.0, n=11)
+        short = arma.build(params=dict(p, sigma=0.0), n=11, seed=1)
+        longer = arma.build(params=dict(p, sigma=0.0), n=21, seed=1)
+        np.testing.assert_allclose(longer[:11], short)
+        self.assertAlmostEqual(longer[-1], 21.0)
+
+    def test_describe(self):
+        s = arma.describe(params=self.temperature, n=240)
+        for label in ["baseline", "topline", "slope per cycle", "floor", "phi"]:
+            self.assertIn(label, s)
+
+    def test_floor_warning(self):
+        # the floor sits at trend - amplitude * shape mean
+        low = arma.make_params(period=12, start=1.0, amplitude=10.0)
+        self.assertAlmostEqual(arma.get_floor(params=low, n=12), -4.0)
+        with self.assertWarns(UserWarning):
+            s = arma.describe(params=low, n=12, positive=True)
+        self.assertIn("WARNING", s)
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            arma.describe(params=low, n=12)
+            arma.describe(params=dict(low, start=6.0), n=12, positive=True)
+
+    def test_package_top(self):
+        self.assertIs(plans.stochastic.fit_params, arma.fit_params)
 
 
 # SCRIPT

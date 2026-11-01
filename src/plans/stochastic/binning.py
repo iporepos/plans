@@ -3,8 +3,11 @@
 # Copyright (C) 2025 The Project Authors
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
-"""
+r"""
 Histogram bin rules, class boundaries and classification.
+
+Formulas use :math:`k` for the number of bins, :math:`w` for the bin width, :math:`n`
+for the sample size and :math:`s` for the standard deviation.
 """
 
 # IMPORTS
@@ -40,9 +43,14 @@ __all__ = [
 
 
 def get_nbins_fd(data):
-    """
+    r"""
     This function computes the number of bins for histograms using the Freedman-Diaconis rule, which takes into
     account the interquartile range (IQR) of the sample, in addition to its range.
+
+    .. math::
+
+        w = 2 \, \mathrm{IQR} \, n^{-1/3},
+        \qquad k = \left\lceil \frac{\max(x) - \min(x)}{w} \right\rceil
 
     :param data: vector of data without nan values
     :type data: :class:`numpy.ndarray`
@@ -58,10 +66,14 @@ def get_nbins_fd(data):
 
 
 def get_nbins_sturges(data):
-    """
+    r"""
     This function computes the number of bins using the Sturges rule,
     which assumes that the data follows a normal distribution and computes
     the number of bins based on its data runsize.
+
+    .. math::
+
+        k = \left\lceil \log_2 n + 1 \right\rceil
 
     :param data: vector of data without nan values
     :type data: :class:`numpy.ndarray`
@@ -72,10 +84,15 @@ def get_nbins_sturges(data):
 
 
 def get_nbins_scott(data):
-    """
+    r"""
     This function computes the number of bins using the Scott rule,
     which is similar to the Freedman-Diaconis rule, but uses the standard deviation
     of the data to compute the bin runsize.
+
+    .. math::
+
+        w = 3.5 \, s \, n^{-1/3},
+        \qquad k = \left\lceil \frac{\max(x) - \min(x)}{w} \right\rceil
 
     :param data: vector of data without nan values
     :type data: :class:`numpy.ndarray`
@@ -87,8 +104,12 @@ def get_nbins_scott(data):
 
 
 def get_nbins_density(n_units, data_range):
-    """
+    r"""
     Compute the number of bins from a target bin width, with a minimum of one.
+
+    .. math::
+
+        k = \max\left( 1, \left\lfloor \frac{x_1 - x_0}{w} \right\rfloor \right)
 
     :param n_units: bin width, in data units
     :type n_units: float
@@ -221,10 +242,10 @@ def bins_quantiles(data, n_bins=5):
 
 
 def classify(data, bins=None, n_classes=5, scheme="equal"):
-    """
+    r"""
     Classifies a 1D NumPy array into 0-indexed bins based on provided bin boundaries.
 
-    Values ``x`` are assigned to class ``i`` if ``bins[i] <= x < bins[i+1]``.
+    Values are assigned to class :math:`i` if :math:`b_i \le x < b_{i+1}`.
     Values below ``bins[0]`` are assigned to class 0.
     Values at or above ``bins[-1]`` are assigned to the last class (``len(bins) - 2``).
 

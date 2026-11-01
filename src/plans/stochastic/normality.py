@@ -37,6 +37,8 @@ def test_distribution(test_name, stat, p, clevel=0.95, distr="normal"):
     """
     Util function for statistical testing
 
+    The distribution is accepted when :math:`p > 1 - c`, at confidence level :math:`c`.
+
     :param test_name: name of test
     :type test_name: str
     :param stat: statistic
@@ -67,12 +69,14 @@ def test_distribution(test_name, stat, p, clevel=0.95, distr="normal"):
 
 
 def test_normality_ks(data, clevel=0.95):
-    """
+    r"""
     Test for normality using the Kolmogorov-Smirnov test
 
     Kolmogorov-Smirnov Test: This test compares the observed distribution with
     the expected normal distribution using a test statistic and a p-value.
     A p-value less than 0.05 indicates that the null hypothesis should be rejected.
+
+    The sample is first standardized as :math:`z_i = (x_i - \bar{x}) / s`.
 
     :param data: vector of data without nan values
     :type data: :class:`numpy.ndarray`

@@ -27,7 +27,11 @@ __all__ = ["linear", "power", "power_zero", "fit_curve"]
 
 
 def linear(x, c0, c1):
-    """Linear function f(x) = c0 + c1 * x
+    """Linear function.
+
+    .. math::
+
+        f(x) = c_0 + c_1 x
 
     :param x: function inputs
     :type x: float | :class:`numpy.ndarray`
@@ -42,7 +46,11 @@ def linear(x, c0, c1):
 
 
 def power(x, c0, c1, c2):
-    """Power function f(x) =  c2 * ((x + c0)^c1)
+    """Power function.
+
+    .. math::
+
+        f(x) = c_2 (x + c_0)^{c_1}
 
     :param x: function inputs
     :type x: float | :class:`numpy.ndarray`
@@ -59,7 +67,11 @@ def power(x, c0, c1, c2):
 
 
 def power_zero(x, c0, c1):
-    """Power function with root in zero f(x) =  c1 * ((x)^c0)
+    """Power function with root in zero.
+
+    .. math::
+
+        f(x) = c_1 x^{c_0}
 
     :param x: function inputs
     :type x: float | :class:`numpy.ndarray`
@@ -74,8 +86,12 @@ def power_zero(x, c0, c1):
 
 
 def fit_curve(func, x, y, p0):
-    """
+    r"""
     Fit a curve to paired data using least squares.
+
+    .. math::
+
+        \min_{c} \sum_i \left[ y_i - f(x_i; c) \right]^2
 
     :param func: curve function, taking ``x`` followed by its parameters
     :type func: callable

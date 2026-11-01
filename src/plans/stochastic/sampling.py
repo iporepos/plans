@@ -38,8 +38,14 @@ GAMMA_SHAPES = {
 
 
 def normalize(array, min_value=0, max_value=100):
-    """
+    r"""
     Normalize array between min and max values
+
+    .. math::
+
+        y = y_{\min} + \frac{(x - x_{\min}) (y_{\max} - y_{\min})}{x_{\max} - x_{\min}}
+
+    Here :math:`y_{\min}` and :math:`y_{\max}` are ``min_value`` and ``max_value``.
 
     :param array: Input array or float
     :type array: float or :class:`numpy.ndarray`
@@ -67,8 +73,11 @@ def normalize(array, min_value=0, max_value=100):
 def sample_gamma(
     size, shape=3, scale=1, shape_mode=None, n_min=None, n_max=None, rng=None
 ):
-    """
+    r"""
     Draw a gamma sample, then rescale it so its own extremes sit on the bounds.
+
+    The draw is :math:`x \sim \mathrm{Gamma}(k, \theta)`, with ``shape`` :math:`k`
+    and ``scale`` :math:`\theta`, followed by :func:`normalize`.
 
     The sample minimum becomes ``n_min`` and the sample maximum becomes ``n_max``,
     so the result is a gamma-shaped sample, not a gamma sample with that ``scale``.
