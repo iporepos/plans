@@ -9,6 +9,7 @@ Dataset subpackage providing primitives, time series, and spatial map classes.
 # EXPOSE MODULES FROM PACKAGE
 # ***********************************************************************
 # todo [docstring]
+from .analyst import *
 from .core import *
 from .spatial import *
 from .chrono import *

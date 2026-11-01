@@ -47,7 +47,7 @@ import matplotlib.pyplot as plt
 # Project-level imports
 # =======================================================================
 from plans.root import DataSet
-from plans.analyst import Bivar
+from plans.datasets.analyst import Bivar
 
 # ... {develop}
 

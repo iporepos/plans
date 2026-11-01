@@ -34,7 +34,7 @@ import rasterio
 # Project-level imports
 # =======================================================================
 from plans.root import Collection, DataSet
-from plans.analyst import Univar, GeoUnivar
+from plans.datasets.analyst import Univar, GeoUnivar
 from plans import viewer
 from plans import geo
 
@@ -135,7 +135,7 @@ class TimeSeries(Univar):
     """
     A time series dataset with a datetime-indexed variable.
 
-    Extends :class:`~plans.analyst.Univar` with temporal structure:
+    Extends :class:`~plans.datasets.analyst.Univar` with temporal structure:
     frequency detection, standardization, gap analysis, and scaling.
     """
 
@@ -3488,7 +3488,7 @@ class TimeSeriesCluster(TimeSeriesCollection):
         :return: square correlation matrix, indexed by series names
         :rtype: :class:`pandas.DataFrame`
         """
-        from plans.analyst import Bivar
+        from plans.datasets.analyst import Bivar
 
         dc_funcs = {"pearson": Bivar.pearson, "spearman": Bivar.spearman}
         func = dc_funcs[method.lower()]
@@ -4196,9 +4196,9 @@ class Raster(DataSet):
         Creates and returns a Univar object initialized with the current object's grid data.
 
         :return: A Univar object containing the grid data for univariate analysis.
-        :rtype: :class:`plans.analyst.Univar`
+        :rtype: :class:`plans.datasets.analyst.Univar`
         """
-        from plans.analyst import Univar
+        from plans.datasets.analyst import Univar
 
         uni = Univar()
         uni.set_array(array=self.get_grid_data())
@@ -5555,7 +5555,7 @@ class QualiRaster(Raster):
         :return: dataframe of zonal stats
         :rtype: :class:`pandas.DataFrame`
         """
-        from plans.analyst import Univar
+        from plans.datasets.analyst import Univar
 
         # deploy dataframe
         df_aux1 = self.table.copy()

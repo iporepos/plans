@@ -38,7 +38,7 @@ import matplotlib.pyplot as plt
 
 # Project-level imports
 # =======================================================================
-from plans.analyst import Univar
+from plans.datasets.analyst import Univar
 
 # ... {develop}
 

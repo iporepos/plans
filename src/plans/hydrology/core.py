@@ -34,7 +34,7 @@ import matplotlib.dates as mdates
 from plans.root import DataSet
 from plans import geo
 import plans.datasets as ds
-from plans.analyst import Bivar
+from plans.datasets.analyst import Bivar
 
 # ... {develop}
 
