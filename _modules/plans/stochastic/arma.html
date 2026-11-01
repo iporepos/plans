@@ -422,8 +422,8 @@
 
 <span class="sd">Parameters map to symbols as ``start`` :math:`b`, ``slope`` :math:`a`, ``amplitude``</span>
 <span class="sd">:math:`A`, ``period`` :math:`P`, ``phase`` :math:`t_0`, ``power`` :math:`k`, ``phi``</span>
-<span class="sd">:math:`\varphi` and ``sigma`` :math:`\sigma`. Functions take plain arrays and an</span>
-<span class="sd">integer ``period`` (steps per cycle), so they know nothing about dates or units.</span>
+<span class="sd">:math:`\varphi` and ``sigma`` :math:`\sigma`. Functions take plain arrays and a</span>
+<span class="sd">``period`` (steps per cycle), so they know nothing about dates or units.</span>
 
 <span class="sd">Three operations link observed data, parameters and synthetic data:</span>
 <span class="sd">:func:`fit_params` goes from data to parameters, :func:`decompose` splits data into</span>
@@ -481,9 +481,9 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_check_period</span><span class="p">(</span><span class="n">period</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Raise an error if the period is not a positive integer."""</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span> <span class="ow">or</span> <span class="n">period</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"period must be a positive integer"</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Raise an error if the period is not a positive number."""</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">))</span> <span class="ow">or</span> <span class="n">period</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"period must be a positive number"</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_check_phi</span><span class="p">(</span><span class="n">phi</span><span class="p">):</span>
@@ -538,7 +538,7 @@
 <span class="sd">    :param n: number of steps</span>
 <span class="sd">    :type n: int</span>
 <span class="sd">    :param period: steps per cycle</span>
-<span class="sd">    :type period: int</span>
+<span class="sd">    :type period: float</span>
 <span class="sd">    :param phase: step at which the season peaks</span>
 <span class="sd">    :type phase: float</span>
 <span class="sd">    :param power: shape. 1 gives a plain cosine, larger gives a sharper peak.</span>
@@ -591,7 +591,7 @@
 <span class="sd">    :param amplitude: peak-to-trough range of the seasonal term</span>
 <span class="sd">    :type amplitude: float</span>
 <span class="sd">    :param period: steps per cycle</span>
-<span class="sd">    :type period: int</span>
+<span class="sd">    :type period: float</span>
 <span class="sd">    :param phase: step at which the season peaks</span>
 <span class="sd">    :type phase: float</span>
 <span class="sd">    :param power: shape</span>
@@ -717,7 +717,7 @@
 <span class="sd">    :param x: series without nan values</span>
 <span class="sd">    :type x: :class:`numpy.ndarray`</span>
 <span class="sd">    :param period: steps per cycle</span>
-<span class="sd">    :type period: int</span>
+<span class="sd">    :type period: float</span>
 <span class="sd">    :return: parameters. Keys: start, slope, amplitude, period, phase, power, phi, sigma</span>
 <span class="sd">    :rtype: dict</span>
 <span class="sd">    """</span>
@@ -726,8 +726,9 @@
     <span class="n">_check_period</span><span class="p">(</span><span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"x has NaN values. Fill or remove them first"</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">MIN_CYCLES</span> <span class="o">*</span> <span class="n">period</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"x has NaN values. Fill them first"</span><span class="p">)</span>
+    <span class="c1"># whole steps, since a cycle may not be a whole number of them</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">MIN_CYCLES</span> <span class="o">*</span> <span class="n">period</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"x must have at least </span><span class="si">{</span><span class="n">MIN_CYCLES</span><span class="si">}</span><span class="s2"> cycles of data"</span><span class="p">)</span>
 
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -782,7 +783,7 @@
         <span class="s2">"start"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">start</span><span class="p">),</span>
         <span class="s2">"slope"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">slope</span><span class="p">),</span>
         <span class="s2">"amplitude"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">amplitude</span><span class="p">),</span>
-        <span class="s2">"period"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">period</span><span class="p">),</span>
+        <span class="s2">"period"</span><span class="p">:</span> <span class="n">period</span><span class="p">,</span>
         <span class="s2">"phase"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">phase</span> <span class="o">%</span> <span class="n">period</span><span class="p">),</span>
         <span class="s2">"power"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">power</span><span class="p">),</span>
         <span class="s2">"phi"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">phi</span><span class="p">),</span>
@@ -1048,7 +1049,7 @@
 <span class="sd">    :param change: trend change per cycle</span>
 <span class="sd">    :type change: float</span>
 <span class="sd">    :param period: steps per cycle</span>
-<span class="sd">    :type period: int</span>
+<span class="sd">    :type period: float</span>
 <span class="sd">    :return: trend change per step</span>
 <span class="sd">    :rtype: float</span>
 <span class="sd">    """</span>
@@ -1087,7 +1088,7 @@
 <span class="sd">    :func:`slope_from_cycle_change` for the formulas.</span>
 
 <span class="sd">    :param period: steps per cycle</span>
-<span class="sd">    :type period: int</span>
+<span class="sd">    :type period: float</span>
 <span class="sd">    :param start: trend value at step 0</span>
 <span class="sd">    :type start: float</span>
 <span class="sd">    :param average: trend average over the record. Requires ``n``.</span>
@@ -1160,7 +1161,7 @@
         <span class="s2">"start"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">start</span><span class="p">),</span>
         <span class="s2">"slope"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">slope</span><span class="p">),</span>
         <span class="s2">"amplitude"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">amplitude</span><span class="p">),</span>
-        <span class="s2">"period"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">period</span><span class="p">),</span>
+        <span class="s2">"period"</span><span class="p">:</span> <span class="n">period</span><span class="p">,</span>
         <span class="s2">"phase"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">phase</span><span class="p">),</span>
         <span class="s2">"power"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">power</span><span class="p">),</span>
         <span class="s2">"phi"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">phi</span><span class="p">),</span>

@@ -46,6 +46,8 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/plans.datasets.core';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="author" title="About these documents" href="../about.html" />
@@ -774,9 +776,9 @@ method rather than assuming they’re unchanged.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span><span class="o">.</span><span class="n">is_standard</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>          <span class="c1"># now includes inserted null rows</span>
-<span class="go">361</span>
+<span class="go">360</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-<span class="go">50</span>
+<span class="go">49</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1192,7 +1194,8 @@ include <code class="docutils literal notranslate"><span class="pre">&quot;title
 also include <code class="docutils literal notranslate"><span class="pre">&quot;folder&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;filename&quot;</span></code> (used to build
 the output file path); <code class="docutils literal notranslate"><span class="pre">&quot;dpi&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;fig_format&quot;</span></code> are
 taken from <code class="docutils literal notranslate"><span class="pre">ts_first.view_specs</span></code> regardless of what is
-passed in <code class="docutils literal notranslate"><span class="pre">specs</span></code>.</p></li>
+passed in <code class="docutils literal notranslate"><span class="pre">specs</span></code>. Without <code class="docutils literal notranslate"><span class="pre">&quot;range&quot;</span></code>, the y axis of
+all panels covers both series.</p></li>
 <li><p><strong>show</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">return_fig</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, whether to display
 the figure interactively in addition to saving it. Ignored
 if <code class="docutils literal notranslate"><span class="pre">return_fig</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
@@ -1233,31 +1236,103 @@ need the originals preserved, pass copies.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="plans.datasets.core.TimeSeries.make_synthetic_tsn">
-<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">make_synthetic_tsn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_sd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'10min'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seasonal_period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'YS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minor_seasonal_period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'D'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minor_amplitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'level'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeries.make_synthetic_tsn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeries.make_synthetic_tsn" title="Link to this definition">#</a></dt>
-<dd><p>Generates a synthetic time series <cite>pandas.DataFrame</cite>
-incorporating trend, dual seasonality, and Gaussian noise.</p>
+<dt class="sig sig-object py" id="plans.datasets.core.TimeSeries._get_steps_per_year">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_get_steps_per_year</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeries._get_steps_per_year"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeries._get_steps_per_year" title="Link to this definition">#</a></dt>
+<dd><p>Get the number of time steps in a year for a frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>freq</strong> (<em>str</em>) – frequency alias</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>steps per year, a whole number when the steps follow the calendar</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.core.TimeSeries._get_generator_params">
+<span class="sig-name descname"><span class="pre">_get_generator_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeries._get_generator_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeries._get_generator_params" title="Link to this definition">#</a></dt>
+<dd><p>Convert <code class="docutils literal notranslate"><span class="pre">generator_specs</span></code> to the parameters of a given time step.</p>
+<div class="math notranslate nohighlight">
+\[\varphi = e^{-\Delta t / \tau},
+\qquad \sigma = s \sqrt{1 - \varphi^2}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>start</strong> (str or <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Timestamp</span></code>) – The starting date for the time series.</p></li>
-<li><p><strong>end</strong> (str or <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Timestamp</span></code>) – The ending date for the time series.</p></li>
-<li><p><strong>base</strong> (<em>float</em>) – The initial base level of the series.</p></li>
-<li><p><strong>trend</strong> (<em>float</em>) – The linear change applied per time step.</p></li>
-<li><p><strong>amplitude</strong> (<em>float</em>) – The amplitude of the primary (major) seasonal sine wave.</p></li>
-<li><p><strong>noise_sd</strong> (<em>float</em>) – The standard deviation of the normal distribution used for noise.</p></li>
-<li><p><strong>freq</strong> (<em>str</em>) – The frequency string for the date range. Default value = <code class="docutils literal notranslate"><span class="pre">10min</span></code></p></li>
-<li><p><strong>seasonal_period</strong> (<em>str</em>) – The period string for the major seasonality. Default value = <code class="docutils literal notranslate"><span class="pre">YS</span></code></p></li>
-<li><p><strong>minor_seasonal_period</strong> (<em>str</em>) – The period string for the secondary seasonality. Default value = <code class="docutils literal notranslate"><span class="pre">D</span></code></p></li>
-<li><p><strong>minor_amplitude</strong> (<em>float</em>) – The amplitude of the secondary seasonal sine wave. Default value = 0</p></li>
-<li><p><strong>variable</strong> (<em>str</em>) – The name of the column containing the generated values. Default value = <code class="docutils literal notranslate"><span class="pre">level</span></code></p></li>
+<li><p><strong>start</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Timestamp</span></code>) – first date of the series</p></li>
+<li><p><strong>freq</strong> (<em>str</em>) – frequency alias</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – number of steps</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A DataFrame containing the <code class="docutils literal notranslate"><span class="pre">datetime</span></code> index and the generated synthetic values.</p>
+<dd class="field-even"><p>parameters. See <a class="reference internal" href="plans.stochastic.arma.html#plans.stochastic.arma.fit_params" title="plans.stochastic.arma.fit_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">plans.stochastic.arma.fit_params()</span></code></a>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></p>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.core.TimeSeries.generate">
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeries.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeries.generate" title="Link to this definition">#</a></dt>
+<dd><p>Generate a synthetic series with trend, a yearly season and AR(1) memory.</p>
+<p>Without <code class="docutils literal notranslate"><span class="pre">params</span></code>, it uses the <code class="docutils literal notranslate"><span class="pre">generator_specs</span></code> attribute, which each child
+class sets for its own variable and which can be edited. These specs are in
+physical terms, so they apply to any time step:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">baseline</span></code> and <code class="docutils literal notranslate"><span class="pre">topline</span></code>: lowest and highest points of the yearly cycle,
+at the middle of the record. Per day if the object aggregates by sum.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">peak_day</span></code>: day of the year of the peak.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">power</span></code>: shape of the season. See <a class="reference internal" href="plans.stochastic.arma.html#plans.stochastic.arma.season_shape" title="plans.stochastic.arma.season_shape"><code class="xref py py-func docutils literal notranslate"><span class="pre">plans.stochastic.arma.season_shape()</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">memory_days</span></code>: time for the noise memory to decay by a factor of e.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">noise_sd</span></code>: standard deviation of the noise. Per day if aggregated by sum.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">change_per_year</span></code>: change of the trend per year. Per day if aggregated by sum.</p></li>
+</ul>
+<p>Values below <code class="docutils literal notranslate"><span class="pre">generator_floor</span></code> are pruned to it, if it is set.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Default specs are plausible values for examples, not climatology. There is
+no daily cycle at any time step, since sub-daily series are meant to come
+from downscaling a daily series.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> (str or <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Timestamp</span></code>) – first date</p></li>
+<li><p><strong>end</strong> (str or <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Timestamp</span></code>) – last date</p></li>
+<li><p><strong>freq</strong> (<em>str</em>) – frequency alias. By default, it is the one in <code class="docutils literal notranslate"><span class="pre">params</span></code> or <code class="docutils literal notranslate"><span class="pre">D</span></code>.</p></li>
+<li><p><strong>params</strong> (<em>dict</em>) – parameters, usually from <a class="reference internal" href="#plans.datasets.core.TimeSeries.fit" title="plans.datasets.core.TimeSeries.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a>. Those from <a class="reference internal" href="#plans.datasets.core.TimeSeries.fit" title="plans.datasets.core.TimeSeries.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a> follow
+the calendar, so the season and trend carry over to any <code class="docutils literal notranslate"><span class="pre">start</span></code>.</p></li>
+<li><p><strong>seed</strong> (<em>int</em>) – random seed</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em>) – If True, sets the data of this object. Default value = False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>generated data if inplace is False, otherwise None.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.core.TimeSeries.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeries.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeries.fit" title="Link to this definition">#</a></dt>
+<dd><p>Fit the generator parameters to the data. The data is not changed.</p>
+<p>The time step comes from the timestamps, so the data must be regular and
+without gaps. Use <a class="reference internal" href="#plans.datasets.core.TimeSeries.standardize" title="plans.datasets.core.TimeSeries.standardize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">standardize()</span></code></a> and <a class="reference internal" href="#plans.datasets.core.TimeSeries.interpolate_gaps" title="plans.datasets.core.TimeSeries.interpolate_gaps"><code class="xref py py-meth docutils literal notranslate"><span class="pre">interpolate_gaps()</span></code></a> first if needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>parameters from <a class="reference internal" href="plans.stochastic.arma.html#plans.stochastic.arma.fit_params" title="plans.stochastic.arma.fit_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">plans.stochastic.arma.fit_params()</span></code></a>, and also
+<code class="docutils literal notranslate"><span class="pre">origin</span></code> and <code class="docutils literal notranslate"><span class="pre">freq</span></code>, so <a class="reference internal" href="#plans.datasets.core.TimeSeries.generate" title="plans.datasets.core.TimeSeries.generate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">generate()</span></code></a> can use them from any date.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3839,7 +3914,10 @@ returns a dictionary with metadata keys and values.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries.plot_series"><code class="docutils literal notranslate"><span class="pre">TimeSeries.plot_series()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries.add_hour"><code class="docutils literal notranslate"><span class="pre">TimeSeries.add_hour()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries.view_compare_times_series"><code class="docutils literal notranslate"><span class="pre">TimeSeries.view_compare_times_series()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries.make_synthetic_tsn"><code class="docutils literal notranslate"><span class="pre">TimeSeries.make_synthetic_tsn()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries._get_steps_per_year"><code class="docutils literal notranslate"><span class="pre">TimeSeries._get_steps_per_year()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries._get_generator_params"><code class="docutils literal notranslate"><span class="pre">TimeSeries._get_generator_params()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries.generate"><code class="docutils literal notranslate"><span class="pre">TimeSeries.generate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries.fit"><code class="docutils literal notranslate"><span class="pre">TimeSeries.fit()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeriesCollection"><code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection</span></code></a><ul class="nav section-nav flex-column">

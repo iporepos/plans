@@ -378,6 +378,7 @@
 <li class="toctree-l2"><a class="reference internal" href="univar_02_plots.html">Univariate data - Plots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bivar_01.html">Bivariate data - Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bivar_02_models.html">Bivariate data - Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochastic_01_arma.html">Stochastic series - AR(1) generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time Series - Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_05_compare.html">Time Series - Comparing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_02_upscale.html">Time Series - Upscaling</a></li>
@@ -467,7 +468,7 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">P</span></code> (rainfall)</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ppt</span></code> (rainfall)</p></td>
 <td><p>daily</p></td>
 <td><p>full year</p></td>
 <td><p>1 small (3d) + 1 large (20d)</p></td>
@@ -482,12 +483,12 @@
 <td><p>Mar–Nov (shorter)</p></td>
 <td><p>1 small (2d)</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">T</span></code> (air temp.)</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tas</span></code> (air temp.)</p></td>
 <td><p><strong>hourly</strong></p></td>
 <td><p>Jan–Jun (shorter, different unit of time)</p></td>
 <td><p>1 small (5h) + 1 large (72h)</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ET</span></code> (evapotransp.)</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">et</span></code> (evapotransp.)</p></td>
 <td><p>daily</p></td>
 <td><p>full year</p></td>
 <td><p>2 separate medium gaps (10d, 15d)</p></td>
@@ -497,7 +498,7 @@
 </div>
 <p>Covered here:</p>
 <ul class="simple">
-<li><p>Building the four series with <code class="docutils literal notranslate"><span class="pre">TimeSeries.make_synthetic_tsn()</span></code></p></li>
+<li><p>Building the five series with <code class="docutils literal notranslate"><span class="pre">.generate()</span></code>, from the default parameters of each child class</p></li>
 <li><p>Loading them into one <code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">standardize()</span></code> and what it does to each series</p></li>
 <li><p>Cross-series overlap via <code class="docutils literal notranslate"><span class="pre">get_epochs()</span></code></p></li>
@@ -547,50 +548,25 @@
 <h2>Build synthetic series<a class="headerlink" href="#build-synthetic-series" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_p</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">make_synthetic_tsn</span><span class="p">(</span>
-    <span class="n">start</span><span class="o">=</span><span class="s2">"2019-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2019-12-31"</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-    <span class="n">amplitude</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">noise_sd</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span>
-    <span class="n">seasonal_period</span><span class="o">=</span><span class="s2">"YS"</span><span class="p">,</span> <span class="n">minor_seasonal_period</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">minor_amplitude</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="n">variable</span><span class="o">=</span><span class="s2">"P"</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">df_p</span><span class="p">[</span><span class="s2">"P"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_p</span><span class="p">[</span><span class="s2">"P"</span><span class="p">]</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df_p</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">20</span><span class="p">:</span><span class="mi">22</span><span class="p">,</span> <span class="s2">"P"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>     <span class="c1"># small gap (3d) -&gt; interpolate_gaps should close this</span>
-<span class="n">df_p</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">150</span><span class="p">:</span><span class="mi">169</span><span class="p">,</span> <span class="s2">"P"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>   <span class="c1"># large gap (20d) -&gt; a real Epoch 0 gap</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">DischargeSeries</span><span class="p">,</span> <span class="n">ETSeries</span><span class="p">,</span> <span class="n">RainSeries</span><span class="p">,</span> <span class="n">TemperatureSeries</span>
 
-<span class="n">df_q</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">make_synthetic_tsn</span><span class="p">(</span>
-    <span class="n">start</span><span class="o">=</span><span class="s2">"2019-03-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2019-11-30"</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
-    <span class="n">amplitude</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">noise_sd</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span>
-    <span class="n">seasonal_period</span><span class="o">=</span><span class="s2">"YS"</span><span class="p">,</span> <span class="n">minor_seasonal_period</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">minor_amplitude</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="n">variable</span><span class="o">=</span><span class="s2">"Q"</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">df_p</span> <span class="o">=</span> <span class="n">RainSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Rain"</span><span class="p">)</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"2019-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2019-12-31"</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">df_p</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">20</span><span class="p">:</span><span class="mi">22</span><span class="p">,</span> <span class="s2">"ppt"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>     <span class="c1"># small gap (3d) -&gt; interpolate_gaps should close this</span>
+<span class="n">df_p</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">150</span><span class="p">:</span><span class="mi">169</span><span class="p">,</span> <span class="s2">"ppt"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>   <span class="c1"># large gap (20d) -&gt; a real Epoch 0 gap</span>
+
+<span class="n">df_q</span> <span class="o">=</span> <span class="n">DischargeSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Flow"</span><span class="p">)</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"2019-03-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2019-11-30"</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">df_q</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">40</span><span class="p">:</span><span class="mi">41</span><span class="p">,</span> <span class="s2">"Q"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>     <span class="c1"># small gap (2d)</span>
 
-<span class="n">df_q2</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">make_synthetic_tsn</span><span class="p">(</span>
-    <span class="n">start</span><span class="o">=</span><span class="s2">"2019-03-20"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2019-11-30"</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
-    <span class="n">amplitude</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">noise_sd</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span>
-    <span class="n">seasonal_period</span><span class="o">=</span><span class="s2">"YS"</span><span class="p">,</span> <span class="n">minor_seasonal_period</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">minor_amplitude</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="n">variable</span><span class="o">=</span><span class="s2">"Q"</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">df_q2</span> <span class="o">=</span> <span class="n">DischargeSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Flow2"</span><span class="p">)</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"2019-03-20"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2019-11-30"</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="n">df_q2</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">46</span><span class="p">:</span><span class="mi">50</span><span class="p">,</span> <span class="s2">"Q"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>     <span class="c1"># small gap (2d)</span>
 
-<span class="n">df_t</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">make_synthetic_tsn</span><span class="p">(</span>
-    <span class="n">start</span><span class="o">=</span><span class="s2">"2019-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2019-06-30"</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-    <span class="n">amplitude</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">noise_sd</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"h"</span><span class="p">,</span>
-    <span class="n">seasonal_period</span><span class="o">=</span><span class="s2">"YS"</span><span class="p">,</span> <span class="n">minor_seasonal_period</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">minor_amplitude</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">variable</span><span class="o">=</span><span class="s2">"T"</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">df_t</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">100</span><span class="p">:</span><span class="mi">104</span><span class="p">,</span> <span class="s2">"T"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>     <span class="c1"># small gap (5h)</span>
-<span class="n">df_t</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">2000</span><span class="p">:</span><span class="mi">2071</span><span class="p">,</span> <span class="s2">"T"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>   <span class="c1"># large gap (72h)</span>
+<span class="n">df_t</span> <span class="o">=</span> <span class="n">TemperatureSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"AirTemp"</span><span class="p">)</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"2019-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2019-06-30"</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"h"</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">df_t</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">100</span><span class="p">:</span><span class="mi">104</span><span class="p">,</span> <span class="s2">"tas"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>     <span class="c1"># small gap (5h)</span>
+<span class="n">df_t</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">2000</span><span class="p">:</span><span class="mi">2071</span><span class="p">,</span> <span class="s2">"tas"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>   <span class="c1"># large gap (72h)</span>
 
-<span class="n">df_et</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">make_synthetic_tsn</span><span class="p">(</span>
-    <span class="n">start</span><span class="o">=</span><span class="s2">"2019-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2019-12-31"</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">trend</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-    <span class="n">amplitude</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">noise_sd</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span>
-    <span class="n">seasonal_period</span><span class="o">=</span><span class="s2">"YS"</span><span class="p">,</span> <span class="n">minor_seasonal_period</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">minor_amplitude</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="n">variable</span><span class="o">=</span><span class="s2">"ET"</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">df_et</span><span class="p">[</span><span class="s2">"ET"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_et</span><span class="p">[</span><span class="s2">"ET"</span><span class="p">]</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df_et</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">60</span><span class="p">:</span><span class="mi">69</span><span class="p">,</span> <span class="s2">"ET"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>     <span class="c1"># medium gap (10d)</span>
-<span class="n">df_et</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">300</span><span class="p">:</span><span class="mi">314</span><span class="p">,</span> <span class="s2">"ET"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>   <span class="c1"># medium gap (15d), separate from the first</span>
+<span class="n">df_et</span> <span class="o">=</span> <span class="n">ETSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"ET"</span><span class="p">)</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"2019-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2019-12-31"</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">df_et</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">60</span><span class="p">:</span><span class="mi">69</span><span class="p">,</span> <span class="s2">"et"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>     <span class="c1"># medium gap (10d)</span>
+<span class="n">df_et</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">300</span><span class="p">:</span><span class="mi">314</span><span class="p">,</span> <span class="s2">"et"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>   <span class="c1"># medium gap (15d), separate from the first</span>
 
 <span class="k">for</span> <span class="n">df</span><span class="p">,</span> <span class="n">fname</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">df_p</span><span class="p">,</span> <span class="s2">"rain.csv"</span><span class="p">),</span> <span class="p">(</span><span class="n">df_q</span><span class="p">,</span> <span class="s2">"flow.csv"</span><span class="p">),</span> <span class="p">(</span><span class="n">df_q2</span><span class="p">,</span> <span class="s2">"flow2.csv"</span><span class="p">),</span> <span class="p">(</span><span class="n">df_t</span><span class="p">,</span> <span class="s2">"temp.csv"</span><span class="p">),</span> <span class="p">(</span><span class="n">df_et</span><span class="p">,</span> <span class="s2">"et.csv"</span><span class="p">)]:</span>
     <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="n">fname</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">)</span>
@@ -615,7 +591,7 @@
     <span class="s2">"Name"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Rain"</span><span class="p">,</span> <span class="s2">"Flow"</span><span class="p">,</span> <span class="s2">"Flow2"</span><span class="p">,</span> <span class="s2">"AirTemp"</span><span class="p">,</span> <span class="s2">"ET"</span><span class="p">],</span>
     <span class="s2">"Alias"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"P1"</span><span class="p">,</span> <span class="s2">"Q1"</span><span class="p">,</span> <span class="s2">"Q2"</span><span class="p">,</span> <span class="s2">"T1"</span><span class="p">,</span> <span class="s2">"ET1"</span><span class="p">],</span>
     <span class="s2">"File"</span><span class="p">:</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"rain.csv"</span><span class="p">,</span> <span class="s2">"flow.csv"</span><span class="p">,</span> <span class="s2">"flow2.csv"</span><span class="p">,</span> <span class="s2">"temp.csv"</span><span class="p">,</span> <span class="s2">"et.csv"</span><span class="p">]],</span>
-    <span class="s2">"VarField"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"P"</span><span class="p">,</span> <span class="s2">"Q"</span><span class="p">,</span> <span class="s2">"Q"</span><span class="p">,</span> <span class="s2">"T"</span><span class="p">,</span> <span class="s2">"ET"</span><span class="p">],</span>
+    <span class="s2">"VarField"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"ppt"</span><span class="p">,</span> <span class="s2">"Q"</span><span class="p">,</span> <span class="s2">"Q"</span><span class="p">,</span> <span class="s2">"tas"</span><span class="p">,</span> <span class="s2">"et"</span><span class="p">],</span>
     <span class="s2">"DtField"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"datetime"</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span><span class="p">,</span>
     <span class="s2">"Units"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"mm"</span><span class="p">,</span> <span class="s2">"m3/s"</span><span class="p">,</span> <span class="s2">"m3/s"</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">,</span> <span class="s2">"mm"</span><span class="p">],</span>
     <span class="s2">"X"</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
@@ -703,7 +679,7 @@
       <td>None</td>
       <td>None</td>
       <td>datetime</td>
-      <td>T</td>
+      <td>tas</td>
       <td>/home/runner/work/plans/plans/docs/tutorials/o...</td>
     </tr>
     <tr>
@@ -727,7 +703,7 @@
       <td>None</td>
       <td>None</td>
       <td>datetime</td>
-      <td>ET</td>
+      <td>et</td>
       <td>/home/runner/work/plans/plans/docs/tutorials/o...</td>
     </tr>
     <tr>
@@ -799,7 +775,7 @@
       <td>None</td>
       <td>None</td>
       <td>datetime</td>
-      <td>P</td>
+      <td>ppt</td>
       <td>/home/runner/work/plans/plans/docs/tutorials/o...</td>
     </tr>
   </tbody>
@@ -819,8 +795,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a1304ce0d766252f1c4b76942ffb9cf64ea1b6c38fc01f9dc7576ea6097f3826.png" src="../_images/a1304ce0d766252f1c4b76942ffb9cf64ea1b6c38fc01f9dc7576ea6097f3826.png" />
-<img alt="../_images/a2a84ae3c3b96e738a7de0778b30cf4eba51be4899d38645a08c9d4de30a7e50.png" src="../_images/a2a84ae3c3b96e738a7de0778b30cf4eba51be4899d38645a08c9d4de30a7e50.png" />
+<img alt="../_images/8154211fc9cd0e1257def5cf679de303d74750622902962f7aad235977196ae4.png" src="../_images/8154211fc9cd0e1257def5cf679de303d74750622902962f7aad235977196ae4.png" />
+<img alt="../_images/06f314cbf74615d5d5ef7d533a53e18f7c974d34206b7e7294cead8c8d33edd3.png" src="../_images/06f314cbf74615d5d5ef7d533a53e18f7c974d34206b7e7294cead8c8d33edd3.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -832,9 +808,9 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/3db8ae8e3630f034763511605a60571261de2e75c6c4d2ebb5515ff42fd5f071.png" src="../_images/3db8ae8e3630f034763511605a60571261de2e75c6c4d2ebb5515ff42fd5f071.png" />
-<img alt="../_images/4d6ab2a250015ffd1488edb2cf4d3ab42f14cd258150bb51a6a66a16ab72b9a4.png" src="../_images/4d6ab2a250015ffd1488edb2cf4d3ab42f14cd258150bb51a6a66a16ab72b9a4.png" />
-<img alt="../_images/16399ccf4624d772c4dfeef5098fc40852af2871fb0db99b490b964477e77c29.png" src="../_images/16399ccf4624d772c4dfeef5098fc40852af2871fb0db99b490b964477e77c29.png" />
+<img alt="../_images/6cb402a77fcab076e501f1663b9df8816a70992a5dad7e8e741e0cbc05a8761d.png" src="../_images/6cb402a77fcab076e501f1663b9df8816a70992a5dad7e8e741e0cbc05a8761d.png" />
+<img alt="../_images/fd77e4c1709cbd0bbc8ffa461455c7396cb6298f704b9954497d9f1d8ed90c41.png" src="../_images/fd77e4c1709cbd0bbc8ffa461455c7396cb6298f704b9954497d9f1d8ed90c41.png" />
+<img alt="../_images/935d052523c07409c3db0606ed0efcbb5e7c044b588956cca36d49392cea76c3.png" src="../_images/935d052523c07409c3db0606ed0efcbb5e7c044b588956cca36d49392cea76c3.png" />
 </div>
 </div>
 </section>
@@ -848,7 +824,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/453aa26325957c4aef4a73d468b37b2c50ae7f9f5af869e78bd3912ebfe4d788.png" src="../_images/453aa26325957c4aef4a73d468b37b2c50ae7f9f5af869e78bd3912ebfe4d788.png" />
+<img alt="../_images/3b92dea0f3d17a78407da5fd31922fd023f3315643f586332f6f43506cda4fb8.png" src="../_images/3b92dea0f3d17a78407da5fd31922fd023f3315643f586332f6f43506cda4fb8.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -858,7 +834,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/760bbf2d450df2ba24bad4c584075df74425c4850eb44ea7f8c3e1eaa18c2799.png" src="../_images/760bbf2d450df2ba24bad4c584075df74425c4850eb44ea7f8c3e1eaa18c2799.png" />
+<img alt="../_images/a1837487982dcbc92f22a3a76101ec5c655d3152793a71cac945a90d1450a808.png" src="../_images/a1837487982dcbc92f22a3a76101ec5c655d3152793a71cac945a90d1450a808.png" />
 </div>
 </div>
 <p>Learn collection-wise epochs</p>
@@ -1043,18 +1019,18 @@
     <tr>
       <th>0</th>
       <td>2019-01-01 00:00:00</td>
-      <td>20.558105</td>
-      <td>3.278440</td>
+      <td>26.870612</td>
+      <td>4.062957</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>7.060863</td>
+      <td>10.285795</td>
       <td>0.6</td>
       <td>1</td>
     </tr>
     <tr>
       <th>1</th>
       <td>2019-01-01 01:00:00</td>
-      <td>20.591839</td>
+      <td>26.841576</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1065,7 +1041,7 @@
     <tr>
       <th>2</th>
       <td>2019-01-01 02:00:00</td>
-      <td>24.247251</td>
+      <td>27.269388</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1076,7 +1052,7 @@
     <tr>
       <th>3</th>
       <td>2019-01-01 03:00:00</td>
-      <td>21.888637</td>
+      <td>27.441897</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1087,7 +1063,7 @@
     <tr>
       <th>4</th>
       <td>2019-01-01 04:00:00</td>
-      <td>23.939504</td>
+      <td>27.040871</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1110,10 +1086,10 @@
       <th>4500</th>
       <td>2019-12-27 00:00:00</td>
       <td>NaN</td>
-      <td>3.721585</td>
+      <td>4.598460</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1.434334</td>
+      <td>10.239898</td>
       <td>0.4</td>
       <td>5</td>
     </tr>
@@ -1121,10 +1097,10 @@
       <th>4501</th>
       <td>2019-12-28 00:00:00</td>
       <td>NaN</td>
-      <td>4.716271</td>
+      <td>4.682095</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>5.210317</td>
+      <td>11.556343</td>
       <td>0.4</td>
       <td>5</td>
     </tr>
@@ -1132,10 +1108,10 @@
       <th>4502</th>
       <td>2019-12-29 00:00:00</td>
       <td>NaN</td>
-      <td>4.225181</td>
+      <td>4.329283</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>0.000000</td>
+      <td>8.844813</td>
       <td>0.4</td>
       <td>5</td>
     </tr>
@@ -1143,10 +1119,10 @@
       <th>4503</th>
       <td>2019-12-30 00:00:00</td>
       <td>NaN</td>
-      <td>4.009106</td>
+      <td>4.136005</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>3.812393</td>
+      <td>9.161709</td>
       <td>0.4</td>
       <td>5</td>
     </tr>
@@ -1154,10 +1130,10 @@
       <th>4504</th>
       <td>2019-12-31 00:00:00</td>
       <td>NaN</td>
-      <td>4.192162</td>
+      <td>4.438775</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>2.374481</td>
+      <td>9.484644</td>
       <td>0.4</td>
       <td>5</td>
     </tr>
@@ -1233,16 +1209,16 @@
     <tr>
       <th>0</th>
       <td>2019-01-01 00:00:00</td>
-      <td>20.558105</td>
-      <td>3.278440</td>
+      <td>26.870612</td>
+      <td>4.062957</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>7.060863</td>
+      <td>10.285795</td>
     </tr>
     <tr>
       <th>1</th>
       <td>2019-01-01 01:00:00</td>
-      <td>20.591839</td>
+      <td>26.841576</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1251,7 +1227,7 @@
     <tr>
       <th>2</th>
       <td>2019-01-01 02:00:00</td>
-      <td>24.247251</td>
+      <td>27.269388</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1260,7 +1236,7 @@
     <tr>
       <th>3</th>
       <td>2019-01-01 03:00:00</td>
-      <td>21.888637</td>
+      <td>27.441897</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1269,7 +1245,7 @@
     <tr>
       <th>4</th>
       <td>2019-01-01 04:00:00</td>
-      <td>23.939504</td>
+      <td>27.040871</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1288,46 +1264,46 @@
       <th>4523</th>
       <td>2019-12-27 00:00:00</td>
       <td>NaN</td>
-      <td>3.721585</td>
+      <td>4.598460</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1.434334</td>
+      <td>10.239898</td>
     </tr>
     <tr>
       <th>4524</th>
       <td>2019-12-28 00:00:00</td>
       <td>NaN</td>
-      <td>4.716271</td>
+      <td>4.682095</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>5.210317</td>
+      <td>11.556343</td>
     </tr>
     <tr>
       <th>4525</th>
       <td>2019-12-29 00:00:00</td>
       <td>NaN</td>
-      <td>4.225181</td>
+      <td>4.329283</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>0.000000</td>
+      <td>8.844813</td>
     </tr>
     <tr>
       <th>4526</th>
       <td>2019-12-30 00:00:00</td>
       <td>NaN</td>
-      <td>4.009106</td>
+      <td>4.136005</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>3.812393</td>
+      <td>9.161709</td>
     </tr>
     <tr>
       <th>4527</th>
       <td>2019-12-31 00:00:00</td>
       <td>NaN</td>
-      <td>4.192162</td>
+      <td>4.438775</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>2.374481</td>
+      <td>9.484644</td>
     </tr>
   </tbody>
 </table>

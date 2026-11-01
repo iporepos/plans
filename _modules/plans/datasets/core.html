@@ -439,6 +439,7 @@
 <span class="c1"># =======================================================================</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">plans.root</span><span class="w"> </span><span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">DataSet</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.analyst</span><span class="w"> </span><span class="kn">import</span> <span class="n">Univar</span><span class="p">,</span> <span class="n">GeoUnivar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plans.stochastic</span><span class="w"> </span><span class="kn">import</span> <span class="n">arma</span> <span class="k">as</span> <span class="n">_arma</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">plans.stochastic</span><span class="w"> </span><span class="kn">import</span> <span class="n">binning</span> <span class="k">as</span> <span class="n">_binning</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">plans.stochastic</span><span class="w"> </span><span class="kn">import</span> <span class="n">metrics</span> <span class="k">as</span> <span class="n">_metrics</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">plans</span><span class="w"> </span><span class="kn">import</span> <span class="n">viewer</span>
@@ -450,6 +451,9 @@
 <span class="c1"># CONSTANTS</span>
 <span class="c1"># ***********************************************************************</span>
 <span class="c1"># define constants in uppercase</span>
+
+<span class="c1"># days in a year, averaged over a full cycle of the leap years</span>
+<span class="n">YEAR_DAYS</span> <span class="o">=</span> <span class="mf">365.2425</span>
 
 <span class="c1"># CONSTANTS -- Project-level</span>
 <span class="c1"># =======================================================================</span>
@@ -597,6 +601,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">file_data</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_data_dtfield</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_data_varfield</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span>
+
+        <span class="c1"># generator defaults. See generate()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_floor</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_specs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"baseline"</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+            <span class="s2">"topline"</span><span class="p">:</span> <span class="mf">20.0</span><span class="p">,</span>
+            <span class="s2">"peak_day"</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+            <span class="s2">"power"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="s2">"memory_days"</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
+            <span class="s2">"noise_sd"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="s2">"change_per_year"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="p">}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">layouts</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">"full"</span><span class="p">:</span> <span class="p">{</span>
@@ -1185,9 +1201,9 @@
 <span class="sd">        &gt;&gt;&gt; ts.is_standard</span>
 <span class="sd">        True</span>
 <span class="sd">        &gt;&gt;&gt; len(ts.data)          # now includes inserted null rows</span>
-<span class="sd">        361</span>
+<span class="sd">        360</span>
 <span class="sd">        &gt;&gt;&gt; ts.data[ts.varfield].isna().sum()</span>
-<span class="sd">        50</span>
+<span class="sd">        49</span>
 <span class="sd">        """</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">_insert_epochs</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
@@ -2556,7 +2572,8 @@
 <span class="sd">            also include ``"folder"`` and ``"filename"`` (used to build</span>
 <span class="sd">            the output file path); ``"dpi"`` and ``"fig_format"`` are</span>
 <span class="sd">            taken from ``ts_first.view_specs`` regardless of what is</span>
-<span class="sd">            passed in ``specs``.</span>
+<span class="sd">            passed in ``specs``. Without ``"range"``, the y axis of</span>
+<span class="sd">            all panels covers both series.</span>
 <span class="sd">        :type specs: dict</span>
 <span class="sd">        :param show: If ``return_fig`` is ``False``, whether to display</span>
 <span class="sd">            the figure interactively in addition to saving it. Ignored</span>
@@ -2604,10 +2621,19 @@
         <span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">specs</span><span class="p">)</span>
         <span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">specs</span><span class="p">)</span>
 
+        <span class="c1"># shared range, so neither series is cut off</span>
+        <span class="n">range_y</span> <span class="o">=</span> <span class="n">specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"range"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">range_y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">vmin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ts1</span><span class="o">.</span><span class="n">var_min</span><span class="p">,</span> <span class="n">ts2</span><span class="o">.</span><span class="n">var_min</span><span class="p">)</span>
+            <span class="n">vmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ts1</span><span class="o">.</span><span class="n">var_max</span><span class="p">,</span> <span class="n">ts2</span><span class="o">.</span><span class="n">var_max</span><span class="p">)</span>
+            <span class="n">margin</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="p">(</span><span class="n">vmax</span> <span class="o">-</span> <span class="n">vmin</span><span class="p">)</span>
+            <span class="n">range_y</span> <span class="o">=</span> <span class="p">[</span><span class="n">vmin</span> <span class="o">-</span> <span class="n">margin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">+</span> <span class="n">margin</span><span class="p">]</span>
+        <span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span> <span class="o">=</span> <span class="n">range_y</span>
+        <span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span> <span class="o">=</span> <span class="n">range_y</span>
+
         <span class="c1"># setup first series</span>
         <span class="c1"># ----------------------------------------------------------------</span>
         <span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">]</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">]</span>
-        <span class="c1"># ts1.view_specs['range'] = specs['range']</span>
 
         <span class="c1"># colors are the same from data</span>
         <span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"color_hist"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"color"</span><span class="p">]</span>
@@ -2666,114 +2692,212 @@
             <span class="n">viewer</span><span class="o">.</span><span class="n">ship_fig</span><span class="p">(</span><span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span> <span class="n">file_output</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"dpi"</span><span class="p">])</span></div>
 
 
-    <span class="c1"># todo develop method</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    # def generate(self, specs=None, seed=None, inplace=True)</span>
-<span class="sd">    </span>
-<span class="sd">    This method is intented to generate a synthetic time series data based on </span>
-<span class="sd">    the specs object. This specs can be a dict or a path (string or Path)</span>
-<span class="sd">    directing to a json file.</span>
-<span class="sd">    </span>
-<span class="sd">    The class must hold a 'generator_specs' attribute for using as default.</span>
-<span class="sd">    </span>
-<span class="sd">    The 'seed' parameter is intended to override the default seed.</span>
-<span class="sd">    This method always saves data in place unless inplace=False.</span>
-<span class="sd">    In this case, the method returns a copy of the object (unlinked copy).</span>
-<span class="sd">    </span>
-<span class="sd">    the base TimeSeries(), this method generates a time series based on the</span>
-<span class="sd">    make_synthetic_tsn() static method.</span>
-<span class="sd">    </span>
-<span class="sd">    This method can be overwritten downstream. Example: precipitation</span>
-<span class="sd">    time series generation at daily or hourly scales can be very different.</span>
-<span class="sd">    </span>
-<span class="sd">    This method allows further montecarlo analysis features, like fitting the </span>
-<span class="sd">    specs parameters based on the current data.</span>
-<span class="sd">    Even then a generate_ensamble() method -&gt; TimeSeriesEnsemble()</span>
-<span class="sd">    </span>
-<span class="sd">        </span>
-<span class="sd">    """</span>
-
-<div class="viewcode-block" id="TimeSeries.make_synthetic_tsn">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.make_synthetic_tsn">[docs]</a>
+    <span class="c1"># Generator methods</span>
+    <span class="c1"># -------------------------------------------------------------------</span>
+<div class="viewcode-block" id="TimeSeries._get_steps_per_year">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries._get_steps_per_year">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">make_synthetic_tsn</span><span class="p">(</span>
-        <span class="n">start</span><span class="p">,</span>
-        <span class="n">end</span><span class="p">,</span>
-        <span class="n">base</span><span class="p">,</span>
-        <span class="n">trend</span><span class="p">,</span>
-        <span class="n">amplitude</span><span class="p">,</span>
-        <span class="n">noise_sd</span><span class="p">,</span>
-        <span class="n">freq</span><span class="o">=</span><span class="s2">"10min"</span><span class="p">,</span>
-        <span class="n">seasonal_period</span><span class="o">=</span><span class="s2">"YS"</span><span class="p">,</span>
-        <span class="n">minor_seasonal_period</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span>
-        <span class="n">minor_amplitude</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">variable</span><span class="o">=</span><span class="s2">"level"</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="c1"># todo new feature</span>
-        <span class="c1">#  add a 'seed' parameters for reproducible runs</span>
-
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_steps_per_year</span><span class="p">(</span><span class="n">freq</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Generates a synthetic time series `pandas.DataFrame`</span>
-<span class="sd">        incorporating trend, dual seasonality, and Gaussian noise.</span>
+<span class="sd">        Get the number of time steps in a year for a frequency.</span>
 
-<span class="sd">        :param start: The starting date for the time series.</span>
-<span class="sd">        :type start: str or :class:`pandas.Timestamp`</span>
-<span class="sd">        :param end: The ending date for the time series.</span>
-<span class="sd">        :type end: str or :class:`pandas.Timestamp`</span>
-<span class="sd">        :param base: The initial base level of the series.</span>
-<span class="sd">        :type base: float</span>
-<span class="sd">        :param trend: The linear change applied per time step.</span>
-<span class="sd">        :type trend: float</span>
-<span class="sd">        :param amplitude: The amplitude of the primary (major) seasonal sine wave.</span>
-<span class="sd">        :type amplitude: float</span>
-<span class="sd">        :param noise_sd: The standard deviation of the normal distribution used for noise.</span>
-<span class="sd">        :type noise_sd: float</span>
-<span class="sd">        :param freq: The frequency string for the date range. Default value = ``10min``</span>
+<span class="sd">        :param freq: frequency alias</span>
 <span class="sd">        :type freq: str</span>
-<span class="sd">        :param seasonal_period: The period string for the major seasonality. Default value = ``YS``</span>
-<span class="sd">        :type seasonal_period: str</span>
-<span class="sd">        :param minor_seasonal_period: The period string for the secondary seasonality. Default value = ``D``</span>
-<span class="sd">        :type minor_seasonal_period: str</span>
-<span class="sd">        :param minor_amplitude: The amplitude of the secondary seasonal sine wave. Default value = 0</span>
-<span class="sd">        :type minor_amplitude: float</span>
-<span class="sd">        :param variable: The name of the column containing the generated values. Default value = ``level``</span>
-<span class="sd">        :type variable: str</span>
-<span class="sd">        :return: A DataFrame containing the ``datetime`` index and the generated synthetic values.</span>
-<span class="sd">        :rtype: :class:`pandas.DataFrame`</span>
+<span class="sd">        :return: steps per year, a whole number when the steps follow the calendar</span>
+<span class="sd">        :rtype: float</span>
 <span class="sd">        """</span>
+        <span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"2000-01-01"</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
+        <span class="n">deltas</span> <span class="o">=</span> <span class="n">dates</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">dates</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># fixed steps</span>
+        <span class="k">if</span> <span class="n">deltas</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">YEAR_DAYS</span> <span class="o">/</span> <span class="p">(</span><span class="n">deltas</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="mi">86400</span><span class="p">)</span>
+        <span class="c1"># calendar steps, counted over a full cycle of the leap years</span>
+        <span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"1700-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2099-12-31"</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span> <span class="o">/</span> <span class="mi">400</span></div>
 
-        <span class="c1"># 1. Generate the actual time index</span>
-        <span class="n">date_range</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
-        <span class="n">steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">date_range</span><span class="p">)</span>
-        <span class="n">step_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
 
-        <span class="c1"># Helper to calculate steps per cycle based on the provided start date</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">get_steps_per_cycle</span><span class="p">(</span><span class="n">p_freq</span><span class="p">):</span>
-            <span class="n">f_delta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span><span class="o">.</span><span class="n">diff</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">p_delta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">p_freq</span><span class="p">)</span><span class="o">.</span><span class="n">diff</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">return</span> <span class="n">p_delta</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="n">f_delta</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+<div class="viewcode-block" id="TimeSeries._get_generator_params">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries._get_generator_params">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_generator_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">        Convert ``generator_specs`` to the parameters of a given time step.</span>
 
-        <span class="c1"># 2. Major Seasonality (e.g., Yearly)</span>
-        <span class="n">major_steps</span> <span class="o">=</span> <span class="n">get_steps_per_cycle</span><span class="p">(</span><span class="n">seasonal_period</span><span class="p">)</span>
-        <span class="n">major_seasonality</span> <span class="o">=</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">step_indices</span> <span class="o">/</span> <span class="n">major_steps</span><span class="p">))</span>
+<span class="sd">        .. math::</span>
 
-        <span class="c1"># 3. Minor Seasonality (e.g., Daily)</span>
-        <span class="c1"># If minor_amplitude is 0, this whole series becomes 0</span>
-        <span class="n">minor_steps</span> <span class="o">=</span> <span class="n">get_steps_per_cycle</span><span class="p">(</span><span class="n">minor_seasonal_period</span><span class="p">)</span>
-        <span class="n">minor_seasonality</span> <span class="o">=</span> <span class="n">minor_amplitude</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span>
-            <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">step_indices</span> <span class="o">/</span> <span class="n">minor_steps</span><span class="p">)</span>
-        <span class="p">)</span>
+<span class="sd">            \varphi = e^{-\Delta t / \tau},</span>
+<span class="sd">            \qquad \sigma = s \sqrt{1 - \varphi^2}</span>
 
-        <span class="c1"># 4. Other Components</span>
-        <span class="n">trend_series</span> <span class="o">=</span> <span class="n">step_indices</span> <span class="o">*</span> <span class="n">trend</span>
-        <span class="n">noise_series</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">noise_sd</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">steps</span><span class="p">)</span>
+<span class="sd">        :param start: first date of the series</span>
+<span class="sd">        :type start: :class:`pandas.Timestamp`</span>
+<span class="sd">        :param freq: frequency alias</span>
+<span class="sd">        :type freq: str</span>
+<span class="sd">        :param n: number of steps</span>
+<span class="sd">        :type n: int</span>
+<span class="sd">        :return: parameters. See :func:`plans.stochastic.arma.fit_params`.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        """</span>
+        <span class="n">specs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator_specs</span>
+        <span class="n">period</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">_get_steps_per_year</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
+        <span class="n">step_days</span> <span class="o">=</span> <span class="n">YEAR_DAYS</span> <span class="o">/</span> <span class="n">period</span>
 
-        <span class="c1"># 5. Combine All</span>
-        <span class="n">time_series_values</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">base</span> <span class="o">+</span> <span class="n">trend_series</span> <span class="o">+</span> <span class="n">major_seasonality</span> <span class="o">+</span> <span class="n">minor_seasonality</span> <span class="o">+</span> <span class="n">noise_series</span>
-        <span class="p">)</span>
+        <span class="c1"># memory in days to memory per step</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"memory_days"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">step_days</span> <span class="o">/</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"memory_days"</span><span class="p">])</span>
 
-        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"datetime"</span><span class="p">:</span> <span class="n">date_range</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">time_series_values</span><span class="p">})</span></div>
+        <span class="c1"># variables that accumulate over the step are given per day</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="n">step_days</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">agg</span> <span class="o">==</span> <span class="s2">"sum"</span> <span class="k">else</span> <span class="mf">1.0</span>
+        <span class="n">baseline</span> <span class="o">=</span> <span class="n">factor</span> <span class="o">*</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"baseline"</span><span class="p">]</span>
+        <span class="n">topline</span> <span class="o">=</span> <span class="n">factor</span> <span class="o">*</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"topline"</span><span class="p">]</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">_arma</span><span class="o">.</span><span class="n">shape_mean</span><span class="p">(</span><span class="n">power</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"power"</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">_arma</span><span class="o">.</span><span class="n">make_params</span><span class="p">(</span>
+            <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">,</span>
+            <span class="n">average</span><span class="o">=</span><span class="n">baseline</span> <span class="o">+</span> <span class="p">(</span><span class="n">topline</span> <span class="o">-</span> <span class="n">baseline</span><span class="p">)</span> <span class="o">*</span> <span class="n">m</span><span class="p">,</span>
+            <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
+            <span class="n">cycle_change</span><span class="o">=</span><span class="n">factor</span> <span class="o">*</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"change_per_year"</span><span class="p">],</span>
+            <span class="n">baseline</span><span class="o">=</span><span class="n">baseline</span><span class="p">,</span>
+            <span class="n">topline</span><span class="o">=</span><span class="n">topline</span><span class="p">,</span>
+            <span class="n">phase</span><span class="o">=</span><span class="p">((</span><span class="n">specs</span><span class="p">[</span><span class="s2">"peak_day"</span><span class="p">]</span> <span class="o">-</span> <span class="n">start</span><span class="o">.</span><span class="n">dayofyear</span><span class="p">)</span> <span class="o">/</span> <span class="n">step_days</span><span class="p">)</span> <span class="o">%</span> <span class="n">period</span><span class="p">,</span>
+            <span class="n">power</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"power"</span><span class="p">],</span>
+            <span class="n">phi</span><span class="o">=</span><span class="n">phi</span><span class="p">,</span>
+            <span class="n">sigma</span><span class="o">=</span><span class="n">factor</span> <span class="o">*</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"noise_sd"</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">phi</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeSeries.generate">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.generate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Generate a synthetic series with trend, a yearly season and AR(1) memory.</span>
+
+<span class="sd">        Without ``params``, it uses the ``generator_specs`` attribute, which each child</span>
+<span class="sd">        class sets for its own variable and which can be edited. These specs are in</span>
+<span class="sd">        physical terms, so they apply to any time step:</span>
+
+<span class="sd">        - ``baseline`` and ``topline``: lowest and highest points of the yearly cycle,</span>
+<span class="sd">          at the middle of the record. Per day if the object aggregates by sum.</span>
+<span class="sd">        - ``peak_day``: day of the year of the peak.</span>
+<span class="sd">        - ``power``: shape of the season. See :func:`plans.stochastic.arma.season_shape`.</span>
+<span class="sd">        - ``memory_days``: time for the noise memory to decay by a factor of e.</span>
+<span class="sd">        - ``noise_sd``: standard deviation of the noise. Per day if aggregated by sum.</span>
+<span class="sd">        - ``change_per_year``: change of the trend per year. Per day if aggregated by sum.</span>
+
+<span class="sd">        Values below ``generator_floor`` are pruned to it, if it is set.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            Default specs are plausible values for examples, not climatology. There is</span>
+<span class="sd">            no daily cycle at any time step, since sub-daily series are meant to come</span>
+<span class="sd">            from downscaling a daily series.</span>
+
+<span class="sd">        :param start: first date</span>
+<span class="sd">        :type start: str or :class:`pandas.Timestamp`</span>
+<span class="sd">        :param end: last date</span>
+<span class="sd">        :type end: str or :class:`pandas.Timestamp`</span>
+<span class="sd">        :param freq: frequency alias. By default, it is the one in ``params`` or ``D``.</span>
+<span class="sd">        :type freq: str</span>
+<span class="sd">        :param params: parameters, usually from :meth:`fit`. Those from :meth:`fit` follow</span>
+<span class="sd">            the calendar, so the season and trend carry over to any ``start``.</span>
+<span class="sd">        :type params: dict</span>
+<span class="sd">        :param seed: random seed</span>
+<span class="sd">        :type seed: int</span>
+<span class="sd">        :param inplace: If True, sets the data of this object. Default value = False</span>
+<span class="sd">        :type inplace: bool</span>
+<span class="sd">        :return: generated data if inplace is False, otherwise None.</span>
+<span class="sd">        :rtype: :class:`pandas.DataFrame` or None</span>
+<span class="sd">        """</span>
+        <span class="c1"># handle frequency</span>
+        <span class="n">params_freq</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"freq"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">freq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">freq</span> <span class="o">=</span> <span class="s2">"D"</span> <span class="k">if</span> <span class="n">params_freq</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">params_freq</span>
+        <span class="k">elif</span> <span class="n">params_freq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># memory and noise in parameters are per step</span>
+            <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">tseries</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">to_offset</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span>
+                <span class="n">pd</span><span class="o">.</span><span class="n">tseries</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">to_offset</span><span class="p">(</span><span class="n">params_freq</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"params were fitted for freq '</span><span class="si">{</span><span class="n">params_freq</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
+
+        <span class="n">period</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">_get_steps_per_year</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">period</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"freq must have at least 2 steps per year"</span><span class="p">)</span>
+
+        <span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No dates between </span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">end</span><span class="si">}</span><span class="s2"> for freq '</span><span class="si">{</span><span class="n">freq</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
+
+        <span class="c1"># handle parameters</span>
+        <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_generator_params</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">dates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">freq</span><span class="o">=</span><span class="n">freq</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="s2">"origin"</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="c1"># move step 0 from the origin to the new start</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="n">dates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">"origin"</span><span class="p">])</span>
+            <span class="n">shift</span> <span class="o">=</span> <span class="p">(</span><span class="n">delta</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="mi">86400</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">YEAR_DAYS</span> <span class="o">/</span> <span class="n">period</span><span class="p">)</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">params</span><span class="p">,</span>
+                <span class="n">start</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"start"</span><span class="p">]</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="s2">"slope"</span><span class="p">]</span> <span class="o">*</span> <span class="n">shift</span><span class="p">,</span>
+                <span class="n">phase</span><span class="o">=</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">"phase"</span><span class="p">]</span> <span class="o">-</span> <span class="n">shift</span><span class="p">)</span> <span class="o">%</span> <span class="n">params</span><span class="p">[</span><span class="s2">"period"</span><span class="p">],</span>
+            <span class="p">)</span>
+
+        <span class="n">values</span> <span class="o">=</span> <span class="n">_arma</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator_floor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">generator_floor</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">:</span> <span class="n">dates</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">:</span> <span class="n">values</span><span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">inplace</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span>
+                <span class="n">input_df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">input_dtfield</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">,</span> <span class="n">input_varfield</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="TimeSeries.fit">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Fit the generator parameters to the data. The data is not changed.</span>
+
+<span class="sd">        The time step comes from the timestamps, so the data must be regular and</span>
+<span class="sd">        without gaps. Use :meth:`standardize` and :meth:`interpolate_gaps` first if needed.</span>
+
+<span class="sd">        :return: parameters from :func:`plans.stochastic.arma.fit_params`, and also</span>
+<span class="sd">            ``origin`` and ``freq``, so :meth:`generate` can use them from any date.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"There is no data to fit"</span><span class="p">)</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">)</span>
+        <span class="n">deltas</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">deltas</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"There is not enough data to fit"</span><span class="p">)</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="n">deltas</span><span class="o">.</span><span class="n">mode</span><span class="p">()</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># months vary in length, while all other steps must be constant</span>
+        <span class="n">s_error</span> <span class="o">=</span> <span class="s2">"Timestamps are not regular. Check for gaps or use standardize()"</span>
+        <span class="k">if</span> <span class="mi">27</span> <span class="o">&lt;</span> <span class="n">step</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="mi">86400</span> <span class="o">&lt;</span> <span class="mi">32</span><span class="p">:</span>
+            <span class="n">freq</span> <span class="o">=</span> <span class="s2">"MS"</span>
+            <span class="k">if</span> <span class="n">deltas</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">31</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">s_error</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">freq</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">tseries</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">to_offset</span><span class="p">(</span><span class="n">step</span><span class="p">)</span><span class="o">.</span><span class="n">freqstr</span>
+            <span class="c1"># whole days use the same alias as generate()</span>
+            <span class="n">n_days</span> <span class="o">=</span> <span class="n">step</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="mi">86400</span>
+            <span class="k">if</span> <span class="n">n_days</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_days</span><span class="p">):</span>
+                <span class="n">freq</span> <span class="o">=</span> <span class="s2">"D"</span> <span class="k">if</span> <span class="n">n_days</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">n_days</span><span class="p">)</span><span class="si">}</span><span class="s2">D"</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">deltas</span> <span class="o">!=</span> <span class="n">step</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">s_error</span><span class="p">)</span>
+
+        <span class="n">period</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">_get_steps_per_year</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">period</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Data must have at least 2 steps per year"</span><span class="p">)</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="n">_arma</span><span class="o">.</span><span class="n">fit_params</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">)</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">"origin"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">"freq"</span><span class="p">]</span> <span class="o">=</span> <span class="n">freq</span>
+        <span class="k">return</span> <span class="n">params</span></div>
 </div>
 
 

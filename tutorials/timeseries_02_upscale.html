@@ -378,6 +378,7 @@
 <li class="toctree-l2"><a class="reference internal" href="univar_02_plots.html">Univariate data - Plots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bivar_01.html">Bivariate data - Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bivar_02_models.html">Bivariate data - Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochastic_01_arma.html">Stochastic series - AR(1) generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time Series - Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_05_compare.html">Time Series - Comparing</a></li>
 <li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Time Series - Upscaling</a></li>
@@ -510,22 +511,13 @@ This object is a child from the <code class="docutils literal notranslate"><span
 </section>
 <section id="create-and-load-tutorial-data">
 <h2>Create and load tutorial data<a class="headerlink" href="#create-and-load-tutorial-data" title="Link to this heading">#</a></h2>
-<p>Lets first make a perfect time series using <code class="docutils literal notranslate"><span class="pre">.make_synthetic_tsn()</span></code> method and save it to a CSV file.
-This method makes a Trend-Seasonality-Noise archetype time-series:</p>
+<p>Lets first make a perfect time series using the <code class="docutils literal notranslate"><span class="pre">.generate()</span></code> method and save it to a CSV file.
+This method makes a Trend-Seasonality-Noise archetype time-series from the default parameters in <code class="docutils literal notranslate"><span class="pre">.generator_specs</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make synthetic TSN (Trend-Seasonality-Noise) time-series</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">make_synthetic_tsn</span><span class="p">(</span>
-    <span class="n">start</span><span class="o">=</span><span class="s2">"2020-01-01"</span><span class="p">,</span>
-    <span class="n">end</span><span class="o">=</span><span class="s2">"2026-01-01"</span><span class="p">,</span>
-    <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-    <span class="n">freq</span><span class="o">=</span><span class="s2">"1h"</span><span class="p">,</span>
-    <span class="n">trend</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
-    <span class="n">noise_sd</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
-    <span class="n">amplitude</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
-    <span class="n">seasonal_period</span><span class="o">=</span><span class="s2">"YS"</span><span class="p">,</span>
-    <span class="n">minor_amplitude</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-    <span class="n">minor_seasonal_period</span><span class="o">=</span><span class="s2">"D"</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Testing"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"tst"</span><span class="p">)</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
+    <span class="n">start</span><span class="o">=</span><span class="s2">"2020-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2026-01-01"</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"h"</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span>
 <span class="p">)</span>
 <span class="c1"># Export CSV file</span>
 <span class="n">file_csv</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"time_series.csv"</span>
@@ -547,7 +539,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 <span class="n">ts</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
     <span class="n">file_data</span><span class="o">=</span><span class="n">file_csv</span><span class="p">,</span>  <span class="c1"># file path</span>
     <span class="n">input_dtfield</span><span class="o">=</span><span class="s2">"datetime"</span><span class="p">,</span> <span class="c1"># name of datetime field</span>
-    <span class="n">input_varfield</span><span class="o">=</span><span class="s2">"level"</span><span class="p">,</span>  <span class="c1"># name of variable</span>
+    <span class="n">input_varfield</span><span class="o">=</span><span class="s2">"v"</span><span class="p">,</span>  <span class="c1"># name of variable</span>
     <span class="n">in_sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span>  <span class="c1"># input separator</span>
     <span class="n">filter_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">"2020-01-01"</span><span class="p">,</span> <span class="s2">"2026-01-01"</span><span class="p">]</span>  <span class="c1"># filter dates</span>
 <span class="p">)</span>
@@ -564,7 +556,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5bf726c473a49f39ef7e1937b31274df3fbce1d1154181683540600c2ebdaafd.png" src="../_images/5bf726c473a49f39ef7e1937b31274df3fbce1d1154181683540600c2ebdaafd.png" />
+<img alt="../_images/4bc94d57dad3d611bc087622b179144de1f234ce5b51d99acc1e808fe71747e6.png" src="../_images/4bc94d57dad3d611bc087622b179144de1f234ce5b51d99acc1e808fe71747e6.png" />
 </div>
 </div>
 </section>
@@ -641,7 +633,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/03056f26011aa29a59ac54c1ea2e4b2ae985adabaeb5af6200ebd4f528bf59bd.png" src="../_images/03056f26011aa29a59ac54c1ea2e4b2ae985adabaeb5af6200ebd4f528bf59bd.png" />
+<img alt="../_images/93798a930b36f0021b83652797c995a7084c15da7ab7982f702ffea2c3c97e9f.png" src="../_images/93798a930b36f0021b83652797c995a7084c15da7ab7982f702ffea2c3c97e9f.png" />
 </div>
 </div>
 </section>
@@ -657,7 +649,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1559c619982d26af3e1753e8cef6f44da93505ff7923f2cf3ef6b8c7161e9814.png" src="../_images/1559c619982d26af3e1753e8cef6f44da93505ff7923f2cf3ef6b8c7161e9814.png" />
+<img alt="../_images/a81b232587862409b14d76cbd4be8720270bd72d655eb4ae9a360bd91ffd3c21.png" src="../_images/a81b232587862409b14d76cbd4be8720270bd72d655eb4ae9a360bd91ffd3c21.png" />
 </div>
 </div>
 </section>
@@ -674,7 +666,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ce35d9561abdea5b446f6546f60b4c1be196a7affef07212775287fbeef879df.png" src="../_images/ce35d9561abdea5b446f6546f60b4c1be196a7affef07212775287fbeef879df.png" />
+<img alt="../_images/bb62ba8b2bf7bff961be76d8fe1945367fd6f35b596142892735798a401edc70.png" src="../_images/bb62ba8b2bf7bff961be76d8fe1945367fd6f35b596142892735798a401edc70.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -686,7 +678,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/888ce578a94e5f5c1e0ba234480f8e189fdfc56741dde123e3cff95beccd84f6.png" src="../_images/888ce578a94e5f5c1e0ba234480f8e189fdfc56741dde123e3cff95beccd84f6.png" />
+<img alt="../_images/b2fb29a36e8501412117473172a3a290658ec563b66fd5d2ba5260295ce45c16.png" src="../_images/b2fb29a36e8501412117473172a3a290658ec563b66fd5d2ba5260295ce45c16.png" />
 </div>
 </div>
 <p>Upscale to monthly resolution</p>
@@ -698,7 +690,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1f8dd1c8868cfeb19710792537f7d9f369cf5af75cd4b42f5d74d92ef825641c.png" src="../_images/1f8dd1c8868cfeb19710792537f7d9f369cf5af75cd4b42f5d74d92ef825641c.png" />
+<img alt="../_images/c76da988a1859a094180dd69da9c6e337eb245102151d556023c53b2c0c29ca3.png" src="../_images/c76da988a1859a094180dd69da9c6e337eb245102151d556023c53b2c0c29ca3.png" />
 </div>
 </div>
 <p>Upscale to yearly resolution</p>
@@ -710,7 +702,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/542eac97588ea06d9b7ad400bcfa3fe5af2aeccc6c9d79ebd3370c5719da4870.png" src="../_images/542eac97588ea06d9b7ad400bcfa3fe5af2aeccc6c9d79ebd3370c5719da4870.png" />
+<img alt="../_images/0a43e07feb5fa10c3ae93a2af3cb52ea14bf0feb84221e36b4b99e7e04ba3d44.png" src="../_images/0a43e07feb5fa10c3ae93a2af3cb52ea14bf0feb84221e36b4b99e7e04ba3d44.png" />
 </div>
 </div>
 </section>
@@ -732,7 +724,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e084b72fa6d2c4f4d64b65dec872301fe65fc73cda012c1ef1b47374a81e56bc.png" src="../_images/e084b72fa6d2c4f4d64b65dec872301fe65fc73cda012c1ef1b47374a81e56bc.png" />
+<img alt="../_images/53637211ed97d3b4afedc4d604f0a4a4b381005bdc809977f60915867a960985.png" src="../_images/53637211ed97d3b4afedc4d604f0a4a4b381005bdc809977f60915867a960985.png" />
 </div>
 </div>
 <p>Because the <code class="docutils literal notranslate"><span class="pre">agg</span></code> attribute is the ‘mean’, the mean across all scales is preserved</p>
@@ -743,8 +735,8 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic          mean
-value        126.299093
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic         mean
+value        14.871547
 Name: 2, dtype: object
 </pre></div>
 </div>
@@ -757,8 +749,8 @@ Name: 2, dtype: object
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic          mean
-value        126.299093
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic         mean
+value        14.871547
 Name: 2, dtype: object
 </pre></div>
 </div>
@@ -771,8 +763,8 @@ Name: 2, dtype: object
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic          mean
-value        126.329602
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic         mean
+value        14.877761
 Name: 2, dtype: object
 </pre></div>
 </div>
@@ -785,8 +777,8 @@ Name: 2, dtype: object
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic          mean
-value        126.316888
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic         mean
+value        14.884686
 Name: 2, dtype: object
 </pre></div>
 </div>
@@ -799,8 +791,8 @@ Name: 2, dtype: object
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic          mean
-value        126.474587
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic         mean
+value        14.889393
 Name: 2, dtype: object
 </pre></div>
 </div>
@@ -813,8 +805,8 @@ Name: 2, dtype: object
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic          mean
-value        126.303114
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic         mean
+value        14.871417
 Name: 2, dtype: object
 </pre></div>
 </div>
@@ -827,8 +819,8 @@ Name: 2, dtype: object
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic          mean
-value        124.922087
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic         mean
+value        15.095997
 Name: 2, dtype: object
 </pre></div>
 </div>
@@ -857,7 +849,7 @@ Name: 2, dtype: object
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1151dd0696ce6d79c1f6ab64a475d051704d480c5389bb0ed4f7fde786bc0542.png" src="../_images/1151dd0696ce6d79c1f6ab64a475d051704d480c5389bb0ed4f7fde786bc0542.png" />
+<img alt="../_images/62463ca8daec5490a1859701ca24a949d16e5dec62be0fb71db4621fadc649c3.png" src="../_images/62463ca8daec5490a1859701ca24a949d16e5dec62be0fb71db4621fadc649c3.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -868,7 +860,7 @@ Name: 2, dtype: object
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>statistic          mean
-value        3031.17824
+value        356.917131
 Name: 2, dtype: object
 </pre></div>
 </div>

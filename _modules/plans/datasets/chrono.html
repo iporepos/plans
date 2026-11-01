@@ -473,7 +473,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">outlier_min</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">"blue"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datarange_max</span> <span class="o">=</span> <span class="mi">10000</span>  <span class="c1"># absurd yearly precipitation</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">datarange_min</span> <span class="o">=</span> <span class="mi">0</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datarange_min</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_floor</span> <span class="o">=</span> <span class="mf">0.0</span></div>
 
 
 <div class="viewcode-block" id="WaterBalanceSeries.view_pq_plot">
@@ -537,7 +538,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">gapsize</span> <span class="o">=</span> <span class="p">(</span>
             <span class="mi">7</span> <span class="o">*</span> <span class="mi">72</span>
         <span class="p">)</span>  <span class="c1"># Maximum gap size of 1 week assuming measure device turns off when is not raining</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">"slateblue"</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">"slateblue"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"baseline"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+                <span class="s2">"topline"</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+                <span class="s2">"power"</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span>
+                <span class="s2">"memory_days"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                <span class="s2">"noise_sd"</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RainSeries.interpolate_gaps">
@@ -593,7 +603,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span> <span class="o">=</span> <span class="s2">"q"</span>
         <span class="c1"># Overwrite attributes specific</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">"Streamflow Time Series"</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">"blue"</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">"blue"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"baseline"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+                <span class="s2">"topline"</span><span class="p">:</span> <span class="mf">4.0</span><span class="p">,</span>
+                <span class="s2">"peak_day"</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span>
+                <span class="s2">"power"</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+                <span class="s2">"memory_days"</span><span class="p">:</span> <span class="mf">20.0</span><span class="p">,</span>
+                <span class="s2">"noise_sd"</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="StreamflowSeries.get_baseflow">
@@ -683,7 +703,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span> <span class="o">=</span> <span class="s2">"et"</span>
         <span class="c1"># Overwrite attributes specific</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">"ET Time Series"</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">"red"</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">"red"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"baseline"</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+                <span class="s2">"topline"</span><span class="p">:</span> <span class="mf">4.5</span><span class="p">,</span>
+                <span class="s2">"memory_days"</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+                <span class="s2">"noise_sd"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
 </div>
 
 
@@ -714,7 +742,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span> <span class="o">=</span> <span class="s2">"pet"</span>
         <span class="c1"># Overwrite attributes specific</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">"PET Time Series"</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">"darkred"</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">"darkred"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"baseline"</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span>
+                <span class="s2">"topline"</span><span class="p">:</span> <span class="mf">5.5</span><span class="p">,</span>
+                <span class="s2">"memory_days"</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+                <span class="s2">"noise_sd"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
 </div>
 
 
@@ -754,7 +790,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">gapsize</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># Maximum gap size of 6 hours assuming hourly Temperature</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datarange_max</span> <span class="o">=</span> <span class="mi">50</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datarange_min</span> <span class="o">=</span> <span class="o">-</span><span class="mi">20</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">"orange"</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">"orange"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"baseline"</span><span class="p">:</span> <span class="mf">18.0</span><span class="p">,</span>
+                <span class="s2">"topline"</span><span class="p">:</span> <span class="mf">28.0</span><span class="p">,</span>
+                <span class="s2">"memory_days"</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span>
+                <span class="s2">"noise_sd"</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
+                <span class="s2">"change_per_year"</span><span class="p">:</span> <span class="mf">0.03</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
 </div>
 
 
@@ -794,7 +839,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">agg</span> <span class="o">=</span> <span class="s2">"mean"</span>  <span class="c1"># Aggregation method, set to "mean" by default</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gapsize</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># Maximum gap size allowed for data interpolation</span>
         <span class="c1"># Extra attributes specific to StageSeries</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">upstream_area</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upstream_area</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_floor</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"baseline"</span><span class="p">:</span> <span class="mf">50.0</span><span class="p">,</span>
+                <span class="s2">"topline"</span><span class="p">:</span> <span class="mf">200.0</span><span class="p">,</span>
+                <span class="s2">"peak_day"</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span>
+                <span class="s2">"power"</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+                <span class="s2">"memory_days"</span><span class="p">:</span> <span class="mf">20.0</span><span class="p">,</span>
+                <span class="s2">"noise_sd"</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="StageSeries.get_metadata">
@@ -846,7 +902,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">datarange_min</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rawcolor</span> <span class="o">=</span> <span class="s2">"navy"</span>
         <span class="c1"># Specific attributes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">upstream_area</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># in sq km</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upstream_area</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># in sq km</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_floor</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"baseline"</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
+                <span class="s2">"topline"</span><span class="p">:</span> <span class="mf">40.0</span><span class="p">,</span>
+                <span class="s2">"peak_day"</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span>
+                <span class="s2">"power"</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+                <span class="s2">"memory_days"</span><span class="p">:</span> <span class="mf">20.0</span><span class="p">,</span>
+                <span class="s2">"noise_sd"</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DischargeSeries.view_cfcs">

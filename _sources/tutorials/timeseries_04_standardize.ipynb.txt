@@ -85,17 +85,8 @@
    "source": [
     "from plans.datasets import TimeSeries\n",
     "\n",
-    "df_perfect = TimeSeries.make_synthetic_tsn(\n",
-    "    start=\"2020-01-01\",\n",
-    "    end=\"2020-01-15\",\n",
-    "    base=100,\n",
-    "    freq=\"1h\",\n",
-    "    trend=0.001,\n",
-    "    noise_sd=4.0,\n",
-    "    amplitude=50,\n",
-    "    seasonal_period=\"YS\",\n",
-    "    minor_amplitude=20,\n",
-    "    minor_seasonal_period=\"D\"\n",
+    "df_perfect = TimeSeries(name=\"Perfect\", alias=\"pft\").generate(\n",
+    "    start=\"2020-01-01\", end=\"2020-01-15\", freq=\"h\", seed=RNG_SEED\n",
     ")\n",
     "print(f\"Rows: {len(df_perfect)}\")\n",
     "df_perfect.head()"
@@ -172,7 +163,7 @@
     "ts.load_data(\n",
     "    file_data=file_csv,\n",
     "    input_dtfield=\"datetime\",\n",
-    "    input_varfield=\"level\",\n",
+    "    input_varfield=\"v\",\n",
     "    in_sep=\";\",\n",
     ")"
    ],
@@ -221,7 +212,7 @@
    "source": [
     "## Standardize\n",
     "\n",
-    "`.standardize()` builds a full, regular date range at `.dtfreq` spanning the series' start to end, and left-merges the existing data onto it. Any regular-grid slot with no matching data becomes a null row. It updates `self.data` in place and sets `.is_standard = True`."
+    "`.standardize()` builds a full, regular date range at `.dtfreq` covering whole days from the series' start to its end, and left-merges the existing data onto it. Any regular-grid slot with no matching data becomes a null row. It updates `self.data` in place and sets `.is_standard = True`."
    ]
   },
   {
@@ -245,7 +236,7 @@
    "cell_type": "markdown",
    "id": "b1c2d3e4f50013",
    "metadata": {},
-   "source": "The row count now matches a full regular hourly range, and every missing timestamp from the original irregular data has become an explicit `NaN` row -- exactly the kind of gap the earlier gaps/epochs tutorial works with. Confirming the grid is now evenly spaced:"
+   "source": "The grid covers whole days, so it runs up to 23:00 on the last day even though the data stops at midnight. That is why there are more null rows than dropped timestamps: every missing timestamp from the original irregular data has become an explicit `NaN` row, and so has each padded hour -- exactly the kind of gap the earlier gaps/epochs tutorial works with. Confirming the grid is now evenly spaced:"
   },
   {
    "cell_type": "code",
@@ -275,17 +266,8 @@
    "id": "b1c2d3e4f50016",
    "metadata": {},
    "source": [
-    "df_jitter = TimeSeries.make_synthetic_tsn(\n",
-    "    start=\"2020-01-01\",\n",
-    "    end=\"2020-01-03\",\n",
-    "    base=100,\n",
-    "    freq=\"1h\",\n",
-    "    trend=0.0,\n",
-    "    noise_sd=2.0,\n",
-    "    amplitude=10,\n",
-    "    seasonal_period=\"YS\",\n",
-    "    minor_amplitude=5,\n",
-    "    minor_seasonal_period=\"D\"\n",
+    "df_jitter = TimeSeries(name=\"Jitter\", alias=\"jit\").generate(\n",
+    "    start=\"2020-01-01\", end=\"2020-01-03\", freq=\"h\", seed=RNG_SEED\n",
     ")\n",
     "n_jitter = len(df_jitter)\n",
     "\n",
@@ -302,7 +284,7 @@
     "ts_jitter.load_data(\n",
     "    file_data=file_jitter,\n",
     "    input_dtfield=\"datetime\",\n",
-    "    input_varfield=\"level\",\n",
+    "    input_varfield=\"v\",\n",
     "    in_sep=\";\",\n",
     ")\n",
     "print(f\"Only {len(jitter_idx)} of {n_jitter} timestamps were nudged, \"\n",
@@ -316,7 +298,7 @@
    "cell_type": "markdown",
    "id": "b1c2d3e4f50017",
    "metadata": {},
-   "source": "Frequency detection uses the *mode* of consecutive timestamp deltas rather than checking whether any minute value repeats, so a small minority of jittered timestamps doesn't change the outcome -- most deltas are still exactly 1 hour, and that's what wins. Standardizing now produces the expected row count with no artifacts:"
+   "source": "Frequency detection uses the *mode* of consecutive timestamp deltas rather than checking whether any minute value repeats, so a small minority of jittered timestamps doesn't change the outcome -- most deltas are still exactly 1 hour, and that's what wins. Standardizing now produces the expected whole-day row count with no artifacts:"
   },
   {
    "cell_type": "code",

@@ -437,8 +437,8 @@ remainder driven by Gaussian shocks. For steps <span class="math notranslate noh
 \qquad \varepsilon_t \sim \mathcal{N}(0, \sigma^2)\]</div>
 <p>Parameters map to symbols as <code class="docutils literal notranslate"><span class="pre">start</span></code> <span class="math notranslate nohighlight">\(b\)</span>, <code class="docutils literal notranslate"><span class="pre">slope</span></code> <span class="math notranslate nohighlight">\(a\)</span>, <code class="docutils literal notranslate"><span class="pre">amplitude</span></code>
 <span class="math notranslate nohighlight">\(A\)</span>, <code class="docutils literal notranslate"><span class="pre">period</span></code> <span class="math notranslate nohighlight">\(P\)</span>, <code class="docutils literal notranslate"><span class="pre">phase</span></code> <span class="math notranslate nohighlight">\(t_0\)</span>, <code class="docutils literal notranslate"><span class="pre">power</span></code> <span class="math notranslate nohighlight">\(k\)</span>, <code class="docutils literal notranslate"><span class="pre">phi</span></code>
-<span class="math notranslate nohighlight">\(\varphi\)</span> and <code class="docutils literal notranslate"><span class="pre">sigma</span></code> <span class="math notranslate nohighlight">\(\sigma\)</span>. Functions take plain arrays and an
-integer <code class="docutils literal notranslate"><span class="pre">period</span></code> (steps per cycle), so they know nothing about dates or units.</p>
+<span class="math notranslate nohighlight">\(\varphi\)</span> and <code class="docutils literal notranslate"><span class="pre">sigma</span></code> <span class="math notranslate nohighlight">\(\sigma\)</span>. Functions take plain arrays and a
+<code class="docutils literal notranslate"><span class="pre">period</span></code> (steps per cycle), so they know nothing about dates or units.</p>
 <p>Three operations link observed data, parameters and synthetic data:
 <a class="reference internal" href="#plans.stochastic.arma.fit_params" title="plans.stochastic.arma.fit_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_params()</span></code></a> goes from data to parameters, <a class="reference internal" href="#plans.stochastic.arma.decompose" title="plans.stochastic.arma.decompose"><code class="xref py py-func docutils literal notranslate"><span class="pre">decompose()</span></code></a> splits data into
 components given the parameters, and <a class="reference internal" href="#plans.stochastic.arma.build" title="plans.stochastic.arma.build"><code class="xref py py-func docutils literal notranslate"><span class="pre">build()</span></code></a> makes a series from parameters.</p>
@@ -533,7 +533,7 @@ components given the parameters, and <a class="reference internal" href="#plans.
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> (<em>int</em>) – number of steps</p></li>
-<li><p><strong>period</strong> (<em>int</em>) – steps per cycle</p></li>
+<li><p><strong>period</strong> (<em>float</em>) – steps per cycle</p></li>
 <li><p><strong>phase</strong> (<em>float</em>) – step at which the season peaks</p></li>
 <li><p><strong>power</strong> (<em>float</em>) – shape. 1 gives a plain cosine, larger gives a sharper peak.</p></li>
 </ul>
@@ -579,7 +579,7 @@ components given the parameters, and <a class="reference internal" href="#plans.
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> (<em>int</em>) – number of steps</p></li>
 <li><p><strong>amplitude</strong> (<em>float</em>) – peak-to-trough range of the seasonal term</p></li>
-<li><p><strong>period</strong> (<em>int</em>) – steps per cycle</p></li>
+<li><p><strong>period</strong> (<em>float</em>) – steps per cycle</p></li>
 <li><p><strong>phase</strong> (<em>float</em>) – step at which the season peaks</p></li>
 <li><p><strong>power</strong> (<em>float</em>) – shape</p></li>
 </ul>
@@ -689,7 +689,7 @@ they could be, and <code class="docutils literal notranslate"><span class="pre">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – series without nan values</p></li>
-<li><p><strong>period</strong> (<em>int</em>) – steps per cycle</p></li>
+<li><p><strong>period</strong> (<em>float</em>) – steps per cycle</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -815,7 +815,7 @@ conversions apply once here, so a longer series continues the same line.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>period</strong> (<em>int</em>) – steps per cycle</p></li>
+<li><p><strong>period</strong> (<em>float</em>) – steps per cycle</p></li>
 <li><p><strong>start</strong> (<em>float</em>) – trend value at step 0</p></li>
 <li><p><strong>average</strong> (<em>float</em>) – trend average over the record. Requires <code class="docutils literal notranslate"><span class="pre">n</span></code>.</p></li>
 <li><p><strong>slope</strong> (<em>float</em>) – trend change per step</p></li>
@@ -919,7 +919,7 @@ conversions apply once here, so a longer series continues the same line.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>change</strong> (<em>float</em>) – trend change per cycle</p></li>
-<li><p><strong>period</strong> (<em>int</em>) – steps per cycle</p></li>
+<li><p><strong>period</strong> (<em>float</em>) – steps per cycle</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

@@ -378,6 +378,7 @@
 <li class="toctree-l2"><a class="reference internal" href="univar_02_plots.html">Univariate data - Plots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bivar_01.html">Bivariate data - Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bivar_02_models.html">Bivariate data - Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochastic_01_arma.html">Stochastic series - AR(1) generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time Series - Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_05_compare.html">Time Series - Comparing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_02_upscale.html">Time Series - Upscaling</a></li>
@@ -514,17 +515,8 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-<span class="n">df_perfect</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">make_synthetic_tsn</span><span class="p">(</span>
-    <span class="n">start</span><span class="o">=</span><span class="s2">"2020-01-01"</span><span class="p">,</span>
-    <span class="n">end</span><span class="o">=</span><span class="s2">"2020-01-15"</span><span class="p">,</span>
-    <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-    <span class="n">freq</span><span class="o">=</span><span class="s2">"1h"</span><span class="p">,</span>
-    <span class="n">trend</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
-    <span class="n">noise_sd</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
-    <span class="n">amplitude</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
-    <span class="n">seasonal_period</span><span class="o">=</span><span class="s2">"YS"</span><span class="p">,</span>
-    <span class="n">minor_amplitude</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-    <span class="n">minor_seasonal_period</span><span class="o">=</span><span class="s2">"D"</span>
+<span class="n">df_perfect</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Perfect"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"pft"</span><span class="p">)</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
+    <span class="n">start</span><span class="o">=</span><span class="s2">"2020-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2020-01-15"</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"h"</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">RNG_SEED</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Rows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_perfect</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 <span class="n">df_perfect</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
@@ -554,34 +546,34 @@
     <tr style="text-align: right;">
       <th></th>
       <th>datetime</th>
-      <th>level</th>
+      <th>v</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
       <td>2020-01-01 00:00:00</td>
-      <td>106.997819</td>
+      <td>19.889884</td>
     </tr>
     <tr>
       <th>1</th>
       <td>2020-01-01 01:00:00</td>
-      <td>104.068854</td>
+      <td>20.065267</td>
     </tr>
     <tr>
       <th>2</th>
       <td>2020-01-01 02:00:00</td>
-      <td>108.135269</td>
+      <td>20.221841</td>
     </tr>
     <tr>
       <th>3</th>
       <td>2020-01-01 03:00:00</td>
-      <td>103.639156</td>
+      <td>20.154058</td>
     </tr>
     <tr>
       <th>4</th>
       <td>2020-01-01 04:00:00</td>
-      <td>117.434429</td>
+      <td>20.114141</td>
     </tr>
   </tbody>
 </table>
@@ -608,7 +600,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Original rows: 337
-Rows after dropping: 311 (26 timestamps missing entirely)
+Rows after dropping: 306 (31 timestamps missing entirely)
 </pre></div>
 </div>
 </div>
@@ -623,8 +615,8 @@ Rows after dropping: 311 (26 timestamps missing entirely)
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>datetime
-0 days 01:00:00    287
-0 days 02:00:00     20
+0 days 01:00:00    277
+0 days 02:00:00     25
 0 days 03:00:00      3
 Name: count, dtype: int64
 </pre></div>
@@ -645,7 +637,7 @@ Name: count, dtype: int64
 <span class="n">ts</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
     <span class="n">file_data</span><span class="o">=</span><span class="n">file_csv</span><span class="p">,</span>
     <span class="n">input_dtfield</span><span class="o">=</span><span class="s2">"datetime"</span><span class="p">,</span>
-    <span class="n">input_varfield</span><span class="o">=</span><span class="s2">"level"</span><span class="p">,</span>
+    <span class="n">input_varfield</span><span class="o">=</span><span class="s2">"v"</span><span class="p">,</span>
     <span class="n">in_sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -676,7 +668,7 @@ Name: count, dtype: int64
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Rows loaded: 311
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Rows loaded: 306
 Detected frequency (.dtfreq): h
 Is standard (.is_standard): False
 Null records: 0
@@ -688,7 +680,7 @@ Null records: 0
 </section>
 <section id="standardize">
 <h2>Standardize<a class="headerlink" href="#standardize" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">.standardize()</span></code> builds a full, regular date range at <code class="docutils literal notranslate"><span class="pre">.dtfreq</span></code> spanning the series’ start to end, and left-merges the existing data onto it. Any regular-grid slot with no matching data becomes a null row. It updates <code class="docutils literal notranslate"><span class="pre">self.data</span></code> in place and sets <code class="docutils literal notranslate"><span class="pre">.is_standard</span> <span class="pre">=</span> <span class="pre">True</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">.standardize()</span></code> builds a full, regular date range at <code class="docutils literal notranslate"><span class="pre">.dtfreq</span></code> covering whole days from the series’ start to its end, and left-merges the existing data onto it. Any regular-grid slot with no matching data becomes a null row. It updates <code class="docutils literal notranslate"><span class="pre">self.data</span></code> in place and sets <code class="docutils literal notranslate"><span class="pre">.is_standard</span> <span class="pre">=</span> <span class="pre">True</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rows_before</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
@@ -703,15 +695,15 @@ Null records: 0
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Rows before standardize: 311
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Rows before standardize: 306
 Rows after standardize:  360
-Null records introduced: 49
+Null records introduced: 54
 Is standard now: True
 </pre></div>
 </div>
 </div>
 </div>
-<p>The row count now matches a full regular hourly range, and every missing timestamp from the original irregular data has become an explicit <code class="docutils literal notranslate"><span class="pre">NaN</span></code> row – exactly the kind of gap the earlier gaps/epochs tutorial works with. Confirming the grid is now evenly spaced:</p>
+<p>The grid covers whole days, so it runs up to 23:00 on the last day even though the data stops at midnight. That is why there are more null rows than dropped timestamps: every missing timestamp from the original irregular data has become an explicit <code class="docutils literal notranslate"><span class="pre">NaN</span></code> row, and so has each padded hour – exactly the kind of gap the earlier gaps/epochs tutorial works with. Confirming the grid is now evenly spaced:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">deltas_std</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
@@ -734,17 +726,8 @@ Name: count, dtype: int64
 <p>The next cell stress-tests this on a small, isolated example – three timestamps out of 49 nudged by a random number of minutes, everything else exactly hourly:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_jitter</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">make_synthetic_tsn</span><span class="p">(</span>
-    <span class="n">start</span><span class="o">=</span><span class="s2">"2020-01-01"</span><span class="p">,</span>
-    <span class="n">end</span><span class="o">=</span><span class="s2">"2020-01-03"</span><span class="p">,</span>
-    <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-    <span class="n">freq</span><span class="o">=</span><span class="s2">"1h"</span><span class="p">,</span>
-    <span class="n">trend</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-    <span class="n">noise_sd</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-    <span class="n">amplitude</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-    <span class="n">seasonal_period</span><span class="o">=</span><span class="s2">"YS"</span><span class="p">,</span>
-    <span class="n">minor_amplitude</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">minor_seasonal_period</span><span class="o">=</span><span class="s2">"D"</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_jitter</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Jitter"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"jit"</span><span class="p">)</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
+    <span class="n">start</span><span class="o">=</span><span class="s2">"2020-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2020-01-03"</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"h"</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">RNG_SEED</span>
 <span class="p">)</span>
 <span class="n">n_jitter</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_jitter</span><span class="p">)</span>
 
@@ -761,7 +744,7 @@ Name: count, dtype: int64
 <span class="n">ts_jitter</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
     <span class="n">file_data</span><span class="o">=</span><span class="n">file_jitter</span><span class="p">,</span>
     <span class="n">input_dtfield</span><span class="o">=</span><span class="s2">"datetime"</span><span class="p">,</span>
-    <span class="n">input_varfield</span><span class="o">=</span><span class="s2">"level"</span><span class="p">,</span>
+    <span class="n">input_varfield</span><span class="o">=</span><span class="s2">"v"</span><span class="p">,</span>
     <span class="n">in_sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Only </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">jitter_idx</span><span class="p">)</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">n_jitter</span><span class="si">}</span><span class="s2"> timestamps were nudged, "</span>
@@ -776,7 +759,7 @@ Name: count, dtype: int64
 </div>
 </div>
 </div>
-<p>Frequency detection uses the <em>mode</em> of consecutive timestamp deltas rather than checking whether any minute value repeats, so a small minority of jittered timestamps doesn’t change the outcome – most deltas are still exactly 1 hour, and that’s what wins. Standardizing now produces the expected row count with no artifacts:</p>
+<p>Frequency detection uses the <em>mode</em> of consecutive timestamp deltas rather than checking whether any minute value repeats, so a small minority of jittered timestamps doesn’t change the outcome – most deltas are still exactly 1 hour, and that’s what wins. Standardizing now produces the expected whole-day row count with no artifacts:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Rows before standardize: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_jitter</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
@@ -817,47 +800,47 @@ Rows after standardize:  72
     <tr>
       <th>0</th>
       <td>2020-01-01 00:00:00</td>
-      <td>102.592102</td>
+      <td>19.889884</td>
     </tr>
     <tr>
       <th>1</th>
       <td>2020-01-01 01:00:00</td>
-      <td>103.513343</td>
+      <td>20.065267</td>
     </tr>
     <tr>
       <th>2</th>
       <td>2020-01-01 02:00:00</td>
-      <td>99.538197</td>
+      <td>20.221841</td>
     </tr>
     <tr>
       <th>3</th>
       <td>2020-01-01 03:00:00</td>
-      <td>102.020622</td>
+      <td>20.154058</td>
     </tr>
     <tr>
       <th>4</th>
       <td>2020-01-01 04:00:00</td>
-      <td>104.179624</td>
+      <td>20.114141</td>
     </tr>
     <tr>
       <th>5</th>
       <td>2020-01-01 05:00:00</td>
-      <td>105.861248</td>
+      <td>20.045066</td>
     </tr>
     <tr>
       <th>6</th>
       <td>2020-01-01 06:00:00</td>
-      <td>103.070165</td>
+      <td>20.117617</td>
     </tr>
     <tr>
       <th>7</th>
       <td>2020-01-01 07:00:00</td>
-      <td>109.329654</td>
+      <td>20.109116</td>
     </tr>
     <tr>
       <th>8</th>
       <td>2020-01-01 08:00:00</td>
-      <td>106.803752</td>
+      <td>20.203920</td>
     </tr>
   </tbody>
 </table>

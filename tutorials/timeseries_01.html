@@ -52,7 +52,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Time Series - Comparing" href="timeseries_05_compare.html" />
-    <link rel="prev" title="Bivariate data - Models" href="bivar_02_models.html" />
+    <link rel="prev" title="Stochastic series - AR(1) generator" href="stochastic_01_arma.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
@@ -378,6 +378,7 @@
 <li class="toctree-l2"><a class="reference internal" href="univar_02_plots.html">Univariate data - Plots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bivar_01.html">Bivariate data - Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bivar_02_models.html">Bivariate data - Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochastic_01_arma.html">Stochastic series - AR(1) generator</a></li>
 <li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Time Series - Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_05_compare.html">Time Series - Comparing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_02_upscale.html">Time Series - Upscaling</a></li>
@@ -584,23 +585,12 @@ None
 <p>A perfect data for time series means that there are no time gaps, so it does not need standardization.</p>
 <section id="create-synthetic-time-series-data">
 <h3>Create synthetic time series data<a class="headerlink" href="#create-synthetic-time-series-data" title="Link to this heading">#</a></h3>
-<p>Lets first make a perfect time series using <code class="docutils literal notranslate"><span class="pre">.make_synthetic_tsn()</span></code> method and save it to a CSV file.
-This method makes a Trend-Seasonality-Noise archetype time-series:</p>
+<p>Lets first make a perfect time series using the <code class="docutils literal notranslate"><span class="pre">.generate()</span></code> method and save it to a CSV file.
+This method makes a Trend-Seasonality-Noise archetype time-series from the default parameters in <code class="docutils literal notranslate"><span class="pre">.generator_specs</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make synthetic TSN (Trend-Seasonality-Noise) time-series</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">make_synthetic_tsn</span><span class="p">(</span>
-    <span class="n">start</span><span class="o">=</span><span class="s2">"2020-01-01"</span><span class="p">,</span>
-    <span class="n">end</span><span class="o">=</span><span class="s2">"2026-01-01"</span><span class="p">,</span>
-    <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-    <span class="n">freq</span><span class="o">=</span><span class="s2">"3h"</span><span class="p">,</span>
-    <span class="n">trend</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span>
-    <span class="n">noise_sd</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
-    <span class="n">amplitude</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
-    <span class="n">seasonal_period</span><span class="o">=</span><span class="s2">"YS"</span><span class="p">,</span>
-    <span class="n">minor_amplitude</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-    <span class="n">minor_seasonal_period</span><span class="o">=</span><span class="s2">"D"</span>
-<span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"2020-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2026-01-01"</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"3h"</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="c1"># Export CSV file</span>
 <span class="n">file_csv</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"time_series.csv"</span>
@@ -619,28 +609,28 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get simple visualization</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'datetime'</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">'level'</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'datetime'</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">'v'</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">25</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/274bd87d23da911da88535803e4096261b3d944525263f3bc0f265685d245ea3.png" src="../_images/274bd87d23da911da88535803e4096261b3d944525263f3bc0f265685d245ea3.png" />
+<img alt="../_images/a758ab200988790938401459b6d7aad075d4ccb0f98952f5409f5866cede4667.png" src="../_images/a758ab200988790938401459b6d7aad075d4ccb0f98952f5409f5866cede4667.png" />
 </div>
 </div>
 <p>A zoom to the month scale:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get simple visualization</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'datetime'</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">'level'</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'datetime'</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">'v'</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">([</span><span class="s2">"2020-01-01 00:00:00"</span><span class="p">,</span> <span class="s2">"2020-02-01 00:00:00"</span><span class="p">]))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/086e273bacb1b65f6cf4ed3a30440713468ce502d490117dcf2be116c19d5da6.png" src="../_images/086e273bacb1b65f6cf4ed3a30440713468ce502d490117dcf2be116c19d5da6.png" />
+<img alt="../_images/34844dbd26ae11ea0ebcf931c8e7d63aa9d73c4c10c2aa8c3d8105548b05215d.png" src="../_images/34844dbd26ae11ea0ebcf931c8e7d63aa9d73c4c10c2aa8c3d8105548b05215d.png" />
 </div>
 </div>
 </section>
@@ -655,7 +645,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 <span class="n">ts</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
     <span class="n">file_data</span><span class="o">=</span><span class="n">file_csv</span><span class="p">,</span>  <span class="c1"># file path</span>
     <span class="n">input_dtfield</span><span class="o">=</span><span class="s2">"datetime"</span><span class="p">,</span> <span class="c1"># name of datetime field</span>
-    <span class="n">input_varfield</span><span class="o">=</span><span class="s2">"level"</span><span class="p">,</span>  <span class="c1"># name of variable</span>
+    <span class="n">input_varfield</span><span class="o">=</span><span class="s2">"v"</span><span class="p">,</span>  <span class="c1"># name of variable</span>
     <span class="n">in_sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span>  <span class="c1"># input separator</span>
     <span class="n">filter_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">"2020-01-01"</span><span class="p">,</span> <span class="s2">"2020-03-01"</span><span class="p">]</span>  <span class="c1"># filter dates</span>
 <span class="p">)</span>
@@ -697,27 +687,27 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
     <tr>
       <th>0</th>
       <td>2020-01-01 00:00:00</td>
-      <td>99.936952</td>
+      <td>20.201275</td>
     </tr>
     <tr>
       <th>1</th>
       <td>2020-01-01 03:00:00</td>
-      <td>116.634533</td>
+      <td>20.376743</td>
     </tr>
     <tr>
       <th>2</th>
       <td>2020-01-01 06:00:00</td>
-      <td>124.507851</td>
+      <td>20.439446</td>
     </tr>
     <tr>
       <th>3</th>
       <td>2020-01-01 09:00:00</td>
-      <td>121.043196</td>
+      <td>20.139877</td>
     </tr>
     <tr>
       <th>4</th>
       <td>2020-01-01 12:00:00</td>
-      <td>103.243948</td>
+      <td>20.335473</td>
     </tr>
     <tr>
       <th>...</th>
@@ -727,27 +717,27 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
     <tr>
       <th>475</th>
       <td>2020-02-29 09:00:00</td>
-      <td>157.795885</td>
+      <td>19.906116</td>
     </tr>
     <tr>
       <th>476</th>
       <td>2020-02-29 12:00:00</td>
-      <td>137.921237</td>
+      <td>19.901330</td>
     </tr>
     <tr>
       <th>477</th>
       <td>2020-02-29 15:00:00</td>
-      <td>131.032778</td>
+      <td>19.923379</td>
     </tr>
     <tr>
       <th>478</th>
       <td>2020-02-29 18:00:00</td>
-      <td>121.873011</td>
+      <td>20.011835</td>
     </tr>
     <tr>
       <th>479</th>
       <td>2020-02-29 21:00:00</td>
-      <td>132.020918</td>
+      <td>19.820738</td>
     </tr>
   </tbody>
 </table>
@@ -773,7 +763,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/85a7ad89e38404737960667d5b27383153df12b6c0460d2ec3cc36a034108934.png" src="../_images/85a7ad89e38404737960667d5b27383153df12b6c0460d2ec3cc36a034108934.png" />
+<img alt="../_images/bb92b39fba30a3a88ae4dd2bedef8cf1bc5d6aabdaa6a0f8e43d55365e5d7056.png" src="../_images/bb92b39fba30a3a88ae4dd2bedef8cf1bc5d6aabdaa6a0f8e43d55365e5d7056.png" />
 </div>
 </div>
 </section>
@@ -803,7 +793,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 <span class="n">ts</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"subtitle_cdf"</span><span class="p">]</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"$\bf</span><span class="si">{c}</span><span class="s2">$  CDF"</span>
 
 <span class="c1"># Axis</span>
-<span class="n">ts</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">]</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">15.0</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">]</span>
 
 <span class="c1"># Number of dates in the X axis</span>
 <span class="n">ts</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"n_dates"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">7</span>
@@ -814,7 +804,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/0e1a1b4e1a31a9e6262918e80f1572ac68bb1898f8616ca2d52a22248081eb61.png" src="../_images/0e1a1b4e1a31a9e6262918e80f1572ac68bb1898f8616ca2d52a22248081eb61.png" />
+<img alt="../_images/5bdda992e5ccfc16adc6f13a230f91db7b278d7e8536beb3e9ed7b36609f0082.png" src="../_images/5bdda992e5ccfc16adc6f13a230f91db7b278d7e8536beb3e9ed7b36609f0082.png" />
 </div>
 </div>
 </section>
@@ -841,7 +831,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/0e1a1b4e1a31a9e6262918e80f1572ac68bb1898f8616ca2d52a22248081eb61.png" src="../_images/0e1a1b4e1a31a9e6262918e80f1572ac68bb1898f8616ca2d52a22248081eb61.png" />
+<img alt="../_images/5bdda992e5ccfc16adc6f13a230f91db7b278d7e8536beb3e9ed7b36609f0082.png" src="../_images/5bdda992e5ccfc16adc6f13a230f91db7b278d7e8536beb3e9ed7b36609f0082.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -852,7 +842,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d7035c5a1d39eba3a1c1cd407090cec46d9c6534e6223d86d772a382f3edad91.png" src="../_images/d7035c5a1d39eba3a1c1cd407090cec46d9c6534e6223d86d772a382f3edad91.png" />
+<img alt="../_images/9db77e52d2c1e1674b272c8050a98f2a1c2cd6b1989cdf03bee8db0b9ac3ac2c.png" src="../_images/9db77e52d2c1e1674b272c8050a98f2a1c2cd6b1989cdf03bee8db0b9ac3ac2c.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -863,7 +853,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7ccfccecf0602ad41488d9239f8f3dc9102db670cde5c6776bbdd3685fca04ef.png" src="../_images/7ccfccecf0602ad41488d9239f8f3dc9102db670cde5c6776bbdd3685fca04ef.png" />
+<img alt="../_images/46e74119a11eefd3ee0dbd447590494d833681052993882eb3a8d533b71c3258.png" src="../_images/46e74119a11eefd3ee0dbd447590494d833681052993882eb3a8d533b71c3258.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -874,7 +864,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/4dbb69869fd5fd492cdec63a4f40cda5ada722fa9920d5149bfd6cbdad058309.png" src="../_images/4dbb69869fd5fd492cdec63a4f40cda5ada722fa9920d5149bfd6cbdad058309.png" />
+<img alt="../_images/1a263ec9499fae12dde2950a102e3ec66d0ba4697c13cdd26867d14e015c3a45.png" src="../_images/1a263ec9499fae12dde2950a102e3ec66d0ba4697c13cdd26867d14e015c3a45.png" />
 </div>
 </div>
 </section>
@@ -892,12 +882,12 @@ This method makes a Trend-Seasonality-Noise archetype time-series:</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="bivar_02_models.html"
+       href="stochastic_01_arma.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Bivariate data - Models</p>
+        <p class="prev-next-title">Stochastic series - AR(1) generator</p>
       </div>
     </a>
     <a class="right-next"
