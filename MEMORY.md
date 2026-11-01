@@ -1,5 +1,21 @@
 # Memory Log
 
+## 2026-11-01 — `plans.stochastic` completed; `analyst` purged of pure computation (stage 2)
+New modules: `frequency`, `normality`, `binning`, `descriptive`, `sampling`, `curves`, `bayes`. `Univar` statics are thin delegates kept for backward compatibility; `plans` source calls `stochastic` directly. Computation also left instance methods (`get_normality`, `get_frequency`, `get_basic_stats`, `get_cdf_weibull`, `get_cdf_gumbel`, `Bivar.fit`, `Bayes.conditionalize`). `geo.normalize` is now a re-export of `stochastic.sampling.normalize`. Outputs recorded before the refactor match at full precision (50 cases).
+
+Bugs fixed: `get_nbins_by_rule` and `get_histogram(rule=...)` raised `TypeError`; `quantiles_classify` raised `NameError` (returned a name that only existed in a dead string); `Bayes.conditionalize` raised `ValueError` under pandas 3 (wrote into read-only `.values`). The Bayes reference comes from the old code with only that accumulation loop patched, since the original could not run.
+
+Behavior changes in `sample_gamma` (brief tier 1): new `rng`; seeded global-state results unchanged; invalid inputs and constant samples raise `ValueError` (constant samples used to return NaN, unknown `shape_mode` used to raise `KeyError`); warns when `scale` is set with both bounds. `classify` docstring corrected to match the code: a value on an edge goes to the class above. Tier 2 (`mode="theoretical"`) postponed.
+
+## 2026-11-01 — Source callers use `plans.stochastic.metrics` directly, not `Bivar` wrappers
+User decision: other modules call `stochastic` directly; `Bivar` statics remain only for backward compatibility. Changed `TimeSeriesCluster.get_correlation` (dropped its local `Bivar` import), `LinearStorage.evaluate` and `Bivar.update_model`. Imported as `_metrics` so `from .core import *` does not leak the name. This also fixes `LinearStorage.evaluate`, which raised `NameError` because `upscaled.py` never imported `Bivar`.
+
+## 2026-11-01 — `plans.stochastic.metrics` extracted from `Bivar` (stage 2)
+`pearson`, `spearman`, `rsq`, `rmse`, `mae`, `bias`, `get_metrics` are now plain functions; `Bivar` statics keep their signatures and delegate. Module list approved by the user: metrics, frequency, normality, binning, descriptive, sampling, curves, bayes (no `regression.py`, its targets no longer exist). Modules declare `__all__` to keep the package top clean. New `tests/unit/test_stochastic.py` holds golden values recorded from the original code and a source-scan independence test.
+
+## 2026-11-01 — `plans.stochastic` package skeleton created (stage 2, step B)
+Requested by the user. Empty package with docstring only, plus `docs/api_stochastic.rst` registered in `docs/api.rst`. Independence from `plans.datasets`, `plans.viewer` and `plans.geo` holds at runtime, but `plans/__init__.py` always loads `plans.project` and `plans.root`, so the brief's runtime criterion for `plans.root` cannot hold; the source-scan rule still can.
+
 ## 2026-11-01 — `plans.analyst` moved to `plans.datasets.analyst` (stage 1 of stochastic refactor)
 Whole file moved, explicitly requested by the user as first stage (next: `plans.stochastic` package and purge of pure computations, then `arma`). `plans/analyst.py` is now a deprecation shim (star import plus `DeprecationWarning`), so old imports and pickles still resolve to the same classes; its removal date is still undecided. `datasets/__init__.py` imports `.analyst` before `.core`; this adds `Bayes`, `Bivar`, `linear`, `power`, `power_zero` and `pprint` to the `plans.datasets` namespace. References updated in src, tests, API docs and 7 notebooks (literal replace, stored outputs included). No logic changed.
 

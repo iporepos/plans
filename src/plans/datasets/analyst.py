@@ -29,57 +29,15 @@ import matplotlib.colors as mcolors
 # =======================================================================
 from plans import viewer
 from plans.root import DataSet
-
-
-# FUNCTIONS
-# ***********************************************************************
-
-
-def linear(x, c0, c1):
-    """Linear function f(x) = c0 + c1 * x
-
-    :param x: function inputs
-    :type x: float | :class:`numpy.ndarray`
-    :param c0: translational parameter
-    :type c0: float
-    :param c1: scaling parameter
-    :type c1: float
-    :return: function output
-    :rtype: float | :class:`numpy.ndarray`
-    """
-    return c0 + (x * c1)
-
-
-def power(x, c0, c1, c2):
-    """Power function f(x) =  c2 * ((x + c0)^c1)
-
-    :param x: function inputs
-    :type x: float | :class:`numpy.ndarray`
-    :param c0: translational parameter
-    :type c0: float
-    :param c1: exponent parameter
-    :type c1: float
-    :param c2: scaling parameter
-    :type c2: float
-    :return: function output
-    :rtype: float | :class:`numpy.ndarray`
-    """
-    return c2 * (np.power((x + c0), c1))
-
-
-def power_zero(x, c0, c1):
-    """Power function with root in zero f(x) =  c1 * ((x)^c0)
-
-    :param x: function inputs
-    :type x: float | :class:`numpy.ndarray`
-    :param c0: exponent parameter
-    :type c0: float
-    :param c1: scaling parameter
-    :type c1: float
-    :return: function output
-    :rtype: float | :class:`numpy.ndarray`
-    """
-    return c1 * (np.power((x), c0))
+from plans.stochastic import bayes as _bayes
+from plans.stochastic import binning as _binning
+from plans.stochastic import curves as _curves
+from plans.stochastic import descriptive as _descriptive
+from plans.stochastic import frequency as _frequency
+from plans.stochastic import metrics as _metrics
+from plans.stochastic import normality as _normality
+from plans.stochastic import sampling as _sampling
+from plans.stochastic.curves import linear, power, power_zero
 
 
 # CLASSES
@@ -270,39 +228,13 @@ class Univar(DataSet):
         """
         Get normality analysis using standard tests
 
+        :param clevel: confidence level
+        :type clevel: float
         :return: dataframe of assessment results
         :rtype: :class:`pandas.DataFrame`
         """
-        df_clean = self.data.dropna()
-        data = df_clean[self.varfield].values
-
-        # run tests
-        lst_tests = []
-        lst_tests.append(Univar.test_normality_ks(data, clevel=clevel))
-        lst_tests.append(Univar.test_normality_sw(data, clevel=clevel))
-        lst_tests.append(Univar.test_normality_dp(data, clevel=clevel))
-        # create dataframe
-        lst_names = []
-        lst_stats = []
-        lst_p = []
-        lst_clvl = []
-        lst_is = []
-        for e in lst_tests:
-            lst_names.append(e["Test"])
-            lst_stats.append(e["Statistic"])
-            lst_p.append(e["p-value"])
-            lst_clvl.append(e["Confidence"])
-            lst_is.append(e["is_normal"])
-        df_result = pd.DataFrame(
-            {
-                "Test": lst_names,
-                "Statistic": lst_stats,
-                "p-value": lst_p,
-                "is_normal": lst_is,
-                "Confidence": lst_clvl,
-            }
-        )
-        return df_result
+        data = self.data.dropna()[self.varfield].values
+        return _normality.get_normality(data=data, clevel=clevel)
 
     def get_frequency(self):
         """
@@ -311,35 +243,8 @@ class Univar(DataSet):
         :return: result dataframe
         :rtype: :class:`pandas.DataFrame`
         """
-
-        df_clean = self.data.dropna()
-        data = df_clean[self.varfield].values
-
-        # compute percentiles intevarls
-        vct_percentiles = np.arange(0, 100)
-
-        # get CFC values
-        vct_cfc = np.percentile(data, vct_percentiles)
-
-        # reverse to get exceedance
-        vct_exeed = 100 - vct_percentiles
-
-        # get count
-        vct_count = np.histogram(data, bins=len(vct_percentiles))[0]
-
-        # get empirical prob in the histogram
-        vct_empprob = vct_count / np.sum(vct_count)
-
-        df_result = pd.DataFrame(
-            {
-                "Percentiles": vct_percentiles,
-                "Exceedance": vct_exeed,
-                "Frequency": vct_count,
-                "Empirical Probability": vct_empprob,
-                "Values": vct_cfc,
-            }
-        )
-        return df_result
+        data = self.data.dropna()[self.varfield].values
+        return _frequency.get_frequency(data=data)
 
     def get_basic_stats(self):
         """
@@ -348,68 +253,18 @@ class Univar(DataSet):
         :return: DataFrame with statistics and their values.
         :rtype: :class:`pandas.DataFrame`
         """
-
-        def _compute(data):
-            return {
-                "count": len(data),
-                "sum": np.sum(data),
-                "mean": np.mean(data),
-                "sd": np.std(data),
-                "min": np.min(data),
-                "p01": np.percentile(data, 1),
-                "p05": np.percentile(data, 5),
-                "p10": np.percentile(data, 10),
-                "p20": np.percentile(data, 20),
-                "p25": np.percentile(data, 25),
-                "p40": np.percentile(data, 40),
-                "p50": np.percentile(data, 50),
-                "p60": np.percentile(data, 60),
-                "p75": np.percentile(data, 75),
-                "p80": np.percentile(data, 80),
-                "p90": np.percentile(data, 90),
-                "p95": np.percentile(data, 95),
-                "p99": np.percentile(data, 99),
-                "max": np.max(data),
-            }
-
-        # handle data
-        df_clean = self.data.dropna()
-        # get data
-        data = df_clean[self.varfield].values
-
-        # handle void case
-        if len(df_clean) == 0:
-            dct = _compute(data=[0])  # feed dummy values
-            ls_values = [np.nan for key in dct]
-            ls_values[0] = 0  # fix for count
-            df_result = pd.DataFrame(
-                {"statistic": list(dct.keys()), "value": ls_values}
-            )
-        else:
-            dct = _compute(data=data)
-            ls_values = [dct[key] for key in dct]
-        df_result = pd.DataFrame({"statistic": list(dct.keys()), "value": ls_values})
-        return df_result
+        data = self.data.dropna()[self.varfield].values
+        return _descriptive.get_basic_stats(data=data)
 
     def get_cdf_weibull(self):
         """
         Get the Weibull model for the data
 
-        :param x: function inputs
-        :type x: :class:`numpy.ndarray`
         :return: model dataframe
         :rtype: :class:`pandas.DataFrame`
         """
-        df_clean = self.data.dropna()
-        x = df_clean[self.varfield].values
-        v = np.sort(x)
-        vr = v[::-1]
-        r = np.arange(0, len(x)) + 1
-        px = Univar.weibull_px(ranks=r)
-
-        result_df = pd.DataFrame({"Data": vr, "P(X)": px, "F(X)": 1 - px})
-
-        return result_df
+        data = self.data.dropna()[self.varfield].values
+        return _frequency.get_cdf_weibull(data=data)
 
     def get_cdf_gumbel(self):
         """
@@ -418,126 +273,7 @@ class Univar(DataSet):
         :return: multiple results from the assessment
         :rtype: dict
         """
-        from scipy import stats
-
-        # clean data
-        df = self.data.dropna()
-
-        # get extra values
-        df = df.sort_values(by=self.varfield, ascending=False).reset_index(drop=True)
-        df["Rank"] = df.index + 1
-        df["P(X)_Empirical"] = Univar.empirical_px(ranks=df["Rank"].values)
-        df["P(X)_Weibull"] = Univar.weibull_px(ranks=df["Rank"].values)
-        df["T(X)_Weibull"] = 1 / df["P(X)_Weibull"]
-        df["P(X)_Gringorten"] = Univar.gringorten_px(ranks=df["Rank"].values)
-
-        # ---- model Gumbel using the method of moments ----
-
-        # using scipy
-        # Fit a Gumbel distribution to the data
-        params = stats.gumbel_r.fit(df[self.varfield].values, method="MM")  # MLM or MM
-        gumbel_a = params[0]
-        gumbel_b = params[1]
-
-        # compute fit gumbel values
-        df["P(X)_Gumbel"] = 1 - Univar.gumbel_fx(
-            x=df[self.varfield].values, a=gumbel_a, b=gumbel_b
-        )
-        # return period
-        df["T(X)_Gumbel"] = 1 / df["P(X)_Gumbel"]
-
-        # compute uncertainty 90% bands for T(X) in the Annual Series
-        t = stats.t.ppf((1 + 0.9) / 2, df=len(df) - 1)
-        gumbel_se = Univar.gumbel_se(
-            std_sample=np.std(a=df[self.varfield].values),
-            n_sample=len(df),
-            tx=df["T(X)_Gumbel"],
-        )
-        # Standar error analysis
-        df["T(X)_Gumbel_SE90"] = t * gumbel_se
-        h_max = df[self.varfield] + df["T(X)_Gumbel_SE90"]
-        h_min = df[self.varfield] - df["T(X)_Gumbel_SE90"]
-        df["T(X)_Gumbel_P05"] = Univar.gumbel_tx(x=h_min, a=gumbel_a, b=gumbel_b)
-        df["T(X)_Gumbel_P95"] = Univar.gumbel_tx(x=h_max, a=gumbel_a, b=gumbel_b)
-
-        # -------- Return Period analysis
-
-        # evely spaced
-        txs = np.arange(2, 1001, step=1)
-        k = Univar.gumbel_freqfactor(txs)
-
-        # apply reverse formula
-        stages = np.mean(a=df[self.varfield]) + k * np.std(a=df[self.varfield])
-
-        # get standard error
-        gumbel_se = Univar.gumbel_se(
-            std_sample=np.std(a=df[self.varfield]), n_sample=len(df), tx=txs
-        )
-        # compute 50% uncertainty bands by Student's t distribution
-        t_50 = stats.t.ppf((1 + 0.5) / 2, df=len(df) - 1)
-        h_range_50 = t_50 * gumbel_se
-
-        # compute 90% uncertainty bands by Student's t distribution
-        t_90 = stats.t.ppf((1 + 0.9) / 2, df=len(df) - 1)
-        h_range_90 = t_90 * gumbel_se
-
-        # Set TX dataframe
-        df_tx = pd.DataFrame(
-            {
-                "T(X)_Gumbel": txs,
-                f"{self.varfield}": stages,
-                f"{self.varfield}_P25": stages - h_range_50,
-                f"{self.varfield}_P75": stages + h_range_50,
-                f"{self.varfield}_P05": stages - h_range_90,
-                f"{self.varfield}_P95": stages + h_range_90,
-            }
-        )
-
-        # -------- QQ plots
-        qq, qq_params = stats.probplot(
-            x=df[self.varfield].values, dist="gumbel_r", sparams=params
-        )
-        # Set QQ dataframe
-        df_qq = pd.DataFrame({self.varfield: qq[1], "T-Q": qq[0]})
-
-        # -------- Goodness of fit tests
-        ks_stat, ks_p_value = stats.kstest(
-            df[self.varfield].values, cdf="gumbel_r", args=params
-        )
-        # accept Null Hypothesis
-        is_gumbel = True
-        if ks_p_value <= 0.05:
-            is_gumbel = False
-
-        # -------- Metadata dataframe
-        df_meta = pd.DataFrame(
-            {
-                "Metadata": [
-                    "N",
-                    "Gumbel a",
-                    "Gumbel b",
-                    "KS-test s-value",
-                    "KS-test p-value",
-                    "KS-test Is Gumbel (NullH)",
-                    "QQ-plot c0",
-                    "QQ plot c1",
-                    "QQ-plot r2",
-                ],
-                "Value": [
-                    len(df),
-                    gumbel_a,
-                    gumbel_b,
-                    ks_stat,
-                    ks_p_value,
-                    is_gumbel,
-                    qq_params[1],
-                    qq_params[0],
-                    qq_params[2],
-                ],
-            }
-        )
-
-        return {"Data": df, "Data_T(X)": df_tx, "Data_QQ": df_qq, "Metadata": df_meta}
+        return _frequency.get_cdf_gumbel(df=self.data.dropna(), varfield=self.varfield)
 
     # PLOT METHODS
     # ===================================================================
@@ -586,7 +322,7 @@ class Univar(DataSet):
         specs = default_specs
 
         # process quantiles
-        _df = Univar.qqplot(data=data)
+        _df = _descriptive.qqplot(data=data)
         # plot
         fig = plt.figure(figsize=(specs["width"], specs["height"]))  # Width, Height
         # grid
@@ -927,7 +663,7 @@ class Univar(DataSet):
         x_factor = specs["scatter_factor"]
         # handle scheme
         if specs["colorize_scatter"]:
-            color_data = Univar.classify(
+            color_data = _binning.classify(
                 data=data, n_classes=5, scheme=specs["scheme_cmap"]
             )
             color_cmap = viewer.get_discrete_cmap(
@@ -1087,7 +823,7 @@ class Univar(DataSet):
         if specs["bins_density"]:
             n_units = n_bins
             d_range = [np.nanmin(data), np.nanmax(data)]
-            n_bins = Univar.get_nbins_density(n_units=n_units, data_range=d_range)
+            n_bins = _binning.get_nbins_density(n_units=n_units, data_range=d_range)
 
         # plot horizontal hist
         h = ax.hist(
@@ -1242,7 +978,7 @@ class Univar(DataSet):
         # todo [docstring]
 
         # handle bins
-        bins = Univar.get_bins(data=data, n_bins=n_classes, scheme=scheme)
+        bins = _binning.get_bins(data=data, n_bins=n_classes, scheme=scheme)
 
         # handle egde cases
         n_bins = len(bins)
@@ -1279,559 +1015,147 @@ class Univar(DataSet):
 
     @staticmethod
     def test_distribution(test_name, stat, p, clevel=0.95, distr="normal"):
-        """
-        Util function for statistical testing
-
-        :param test_name: name of test
-        :type test_name: str
-        :param stat: statistic
-        :type stat: float
-        :param p: p-value
-        :type p: float
-        :param clevel: confidence level
-        :type clevel: float
-        :param distr: name of distribution
-        :type distr: str
-        :return: summary of test
-        :rtype: dict
-        """
-        # built output dict
-        dct_out = {
-            "Test": test_name,
-            "Statistic": stat,
-            "p-value": p,
-            "Confidence": clevel,
-        }
-
-        if p > (1 - clevel):
-            dct_out["is_{}".format(distr.lower())] = True
-        else:
-            dct_out["is_{}".format(distr.lower())] = False
-
-        return dct_out
+        """See :func:`plans.stochastic.normality.test_distribution`."""
+        return _normality.test_distribution(
+            test_name=test_name, stat=stat, p=p, clevel=clevel, distr=distr
+        )
 
     @staticmethod
     def test_normality_ks(data, clevel=0.95):
-        """
-        Test for normality using the Kolmogorov-Smirnov test
-
-        Kolmogorov-Smirnov Test: This test compares the observed distribution with
-        the expected normal distribution using a test statistic and a p-value.
-        A p-value less than 0.05 indicates that the null hypothesis should be rejected.
-
-        :param data: vector of data without nan values
-        :type data: :class:`numpy.ndarray`
-        :return: test result dictionary. Keys: Statistic, p-value and Is normal
-        :rtype: dct
-        """
-        from scipy.stats import kstest
-
-        vct_norm = (data - np.mean(data)) / np.std(data)
-
-        # test
-        result = kstest(vct_norm, "norm")
-        return Univar.test_distribution(
-            test_name="Kolmogorov-Smirnov",
-            stat=result.statistic,
-            p=result.pvalue,
-            clevel=clevel,
-            distr="normal",
-        )
+        """See :func:`plans.stochastic.normality.test_normality_ks`."""
+        return _normality.test_normality_ks(data=data, clevel=clevel)
 
     @staticmethod
     def test_normality_sw(data, clevel=0.95):
-        """
-        Test for normality using the Shapiro-Wilk test.
-
-        :param data: vector of data without nan values
-        :type data: :class:`numpy.ndarray`
-        :return: test result dictionary. Keys: Statistic, p-value and Is normal
-        :rtype: dct
-        """
-        from scipy.stats import shapiro
-
-        # test
-        stat, p = shapiro(data)
-
-        return Univar.test_distribution(
-            test_name="Shapiro-Wilk", stat=stat, p=p, clevel=clevel, distr="normal"
-        )
+        """See :func:`plans.stochastic.normality.test_normality_sw`."""
+        return _normality.test_normality_sw(data=data, clevel=clevel)
 
     @staticmethod
     def test_normality_dp(data, clevel=0.95):
-        """
-        Test for normality using the D'Agostino-Pearson test.
-
-        :param data: vector of data without nan values
-        :type data: :class:`numpy.ndarray`
-        :return: test result dictionary. Keys: Statistic, p-value and Is normal
-        :rtype: dct
-        """
-        from scipy.stats import normaltest
-
-        # test
-        stat, p = normaltest(data)
-
-        return Univar.test_distribution(
-            test_name="D'Agostino-Pearson",
-            stat=stat,
-            p=p,
-            clevel=clevel,
-            distr="normal",
-        )
+        """See :func:`plans.stochastic.normality.test_normality_dp`."""
+        return _normality.test_normality_dp(data=data, clevel=clevel)
 
     @staticmethod
     def get_tx(fx):
-        """
-        Simple function for computing the Return Period from the CDF
-
-        :param fx: CDF (FX)
-        :type fx: float | :class:`numpy.ndarray`
-        :return: Return Period
-        :rtype: float | :class:`numpy.ndarray`
-        """
-        return 1 / (1 - fx)
+        """Return period. See :func:`plans.stochastic.frequency.get_tx`."""
+        return _frequency.get_tx(fx=fx)
 
     @staticmethod
     def gumbel_fx(x, a, b):
-        """
-        Gumbel probability distribution F(X)
-
-        :param x: function inputs
-        :type x: float | :class:`numpy.ndarray`
-        :param a: distribution parameter a
-        :type a: float
-        :param b: distribution parameter b
-        :type b: float
-        :return: function output
-        :rtype: float | :class:`numpy.ndarray`
-        """
-        aux_1 = (x - a) / b
-        aux_2 = np.exp(-aux_1)
-        g_fx = np.exp(-aux_2)
-        return g_fx
+        """Gumbel F(X). See :func:`plans.stochastic.frequency.gumbel_fx`."""
+        return _frequency.gumbel_fx(x=x, a=a, b=b)
 
     @staticmethod
     def gumbel_tx(x, a, b):
-        """
-        Gumbel return period distribution T(X)
-
-        :param x: function inputs
-        :type x: float | :class:`numpy.ndarray`
-        :param a: distribution parameter a
-        :type a: float
-        :param b: distribution parameter b
-        :type b: float
-        :return: function output
-        :rtype: float | :class:`numpy.ndarray`
-        """
-        g_fx = Univar.gumbel_fx(x, a, b)
-        return Univar.get_tx(fx=g_fx)
+        """Gumbel T(X). See :func:`plans.stochastic.frequency.gumbel_tx`."""
+        return _frequency.gumbel_tx(x=x, a=a, b=b)
 
     @staticmethod
     def gumbel_freqfactor(tx=2):
-        """
-        Gumbel Frequency Factor K(T)
-
-        :param tx: return period T
-        :type tx: float | :class:`numpy.ndarray`
-        :return: function output
-        :rtype: float | :class:`numpy.ndarray`
-        """
-        aux1 = tx / (tx - 1)
-        aux2 = np.log(aux1)
-        aux3 = np.log(aux2)
-        aux4 = 0.5772 + aux3
-        aux5 = -np.sqrt(6) * aux4 / np.pi
-        return aux5
+        """See :func:`plans.stochastic.frequency.gumbel_freqfactor`."""
+        return _frequency.gumbel_freqfactor(tx=tx)
 
     @staticmethod
     def gumbel_se(std_sample, n_sample, tx):
-        """
-        Gumbel Standard Error for the MM fitted Gumbel function
-
-        :param std_sample: sample standard deviation
-        :type std_sample: float
-        :param n_sample: sample size
-        :type n_sample: int
-        :param tx: return period T
-        :type tx: float | :class:`numpy.ndarray`
-        :return: function output
-        :rtype: float | :class:`numpy.ndarray`
-        """
-        aux1 = std_sample / np.sqrt(n_sample)
-        k = Univar.gumbel_freqfactor(tx=tx)
-        aux2 = 1 + (1.14 * k) + (1.1 * np.square(k))
-        aux3 = np.sqrt(aux2)
-        return aux1 * aux3
+        """Gumbel SE. See :func:`plans.stochastic.frequency.gumbel_se`."""
+        return _frequency.gumbel_se(std_sample=std_sample, n_sample=n_sample, tx=tx)
 
     @staticmethod
     def empirical_px(ranks):
-        """
-        Get the empirical exceedance probability P(X)
-
-        :param ranks: vector of ranks
-        :type ranks: class:`numpy.array`
-        :return: empirical exceedance probability P(X)
-        :rtype: class:`numpy.array`
-        """
-        return ranks / len(ranks)
+        """Empirical P(X). See :func:`plans.stochastic.frequency.empirical_px`."""
+        return _frequency.empirical_px(ranks=ranks)
 
     @staticmethod
     def weibull_px(ranks):
-        """
-        Get the Weibull exceedance probability P(X)
-
-        :param ranks: vector of ranks
-        :type ranks: class:`numpy.array`
-        :return: Weibull exceedance probability P(X)
-        :rtype: class:`numpy.array`
-        """
-        return ranks / (len(ranks) + 1)
+        """Weibull P(X). See :func:`plans.stochastic.frequency.weibull_px`."""
+        return _frequency.weibull_px(ranks=ranks)
 
     @staticmethod
     def gringorten_px(ranks):
-        """
-        Get the Gringorten exceedance probability P(X)
-
-        :param ranks: vector of ranks
-        :type ranks: class:`numpy.array`
-        :return: Gringorten exceedance probability P(X)
-        :rtype: class:`numpy.array`
-        """
-        return (ranks - 0.44) / (len(ranks) + 0.12)
+        """See :func:`plans.stochastic.frequency.gringorten_px`."""
+        return _frequency.gringorten_px(ranks=ranks)
 
     @staticmethod
-    def sample_gamma(size, shape=3, scale=1, shape_mode=None, n_min=None, n_max=None):
-        """
-        Sample Gamma distribution
-
-        :param size: Sample size
-        :type size: int
-        :param shape: Shape parameter
-        :type shape: float
-        :param scale: Scale parameter
-        :type scale: float
-        :param shape_mode: Shape mode (overwrites shape value). See dict for options
-        :type shape_mode: str or None
-        :param n_min: Normalization lower value
-        :type n_min: float or None
-        :param n_max: Normalization upper value
-        :type n_max: float or None
-        :return: Sampled array
-        :rtype: :class:`numpy.ndarray`
-        """
-        from plans.geo import normalize
-
-        # set gamma shapes
-        dc_gamma_shapes = {
-            "decay": 1,
-            "asymmetrical_extra": 2,
-            "asymmetrical": 3,
-            "symmetrical": 20,
-        }
-        # handle shapemode
-        if shape_mode is not None:
-            shape = dc_gamma_shapes[shape_mode]
-
-        # sample
-        sample = np.random.gamma(shape=shape, scale=scale, size=size)
-
-        # handle normalization
-        if n_min is None:
-            n_min = np.min(sample)
-        if n_max is None:
-            n_max = np.max(sample)
-
-        # normalize
-        sample_norm = normalize(array=sample, min_value=n_min, max_value=n_max)
-
-        return sample_norm
+    def sample_gamma(
+        size, shape=3, scale=1, shape_mode=None, n_min=None, n_max=None, rng=None
+    ):
+        """Sample gamma. See :func:`plans.stochastic.sampling.sample_gamma`."""
+        return _sampling.sample_gamma(
+            size=size,
+            shape=shape,
+            scale=scale,
+            shape_mode=shape_mode,
+            n_min=n_min,
+            n_max=n_max,
+            rng=rng,
+        )
 
     @staticmethod
     def get_nbins_fd(data):
-        """
-        This function computes the number of bins for histograms using the Freedman-Diaconis rule, which takes into
-        account the interquartile range (IQR) of the sample, in addition to its range.
-
-        :param data: vector of data without nan values
-        :type data: :class:`numpy.ndarray`
-        :return: number of bins for histogram using the Freedman-Diaconis rule
-        :rtype: int
-        """
-        iqr = np.subtract(*np.percentile(data, [75, 25]))
-        binsize = 2 * iqr * len(data) ** (-1 / 3)
-        # hack for non infinite values
-        if binsize == 0:
-            binsize = 100
-        return int(np.ceil((max(data) - min(data)) / binsize))
+        """Freedman-Diaconis bins. See :func:`plans.stochastic.binning.get_nbins_fd`."""
+        return _binning.get_nbins_fd(data=data)
 
     @staticmethod
     def get_nbins_sturges(data):
-        """
-        This function computes the number of bins using the Sturges rule,
-        which assumes that the data follows a normal distribution and computes
-        the number of bins based on its data runsize.
-
-        :param data: vector of data without nan values
-        :type data: :class:`numpy.ndarray`
-        :return: number of bins using the Sturges rule
-        :rtype: int
-        """
-        return int(np.ceil(np.log2(len(data)) + 1))
+        """Sturges bins. See :func:`plans.stochastic.binning.get_nbins_sturges`."""
+        return _binning.get_nbins_sturges(data=data)
 
     @staticmethod
     def get_nbins_scott(data):
-        """
-        This function computes the number of bins using the Scott rule,
-        which is similar to the Freedman-Diaconis rule, but uses the standard deviation
-        of the data to compute the bin runsize.
-
-        :param data: vector of data without nan values
-        :type data: :class:`numpy.ndarray`
-        :return: number of bins using the Scott rule
-        :rtype: int
-        """
-        binsize = 3.5 * np.nanstd(data) * len(data) ** (-1 / 3)
-        return int(np.ceil((max(data) - min(data)) / binsize))
+        """Scott bins. See :func:`plans.stochastic.binning.get_nbins_scott`."""
+        return _binning.get_nbins_scott(data=data)
 
     @staticmethod
     def get_nbins_density(n_units, data_range):
-        # todo docstring
-        n_range = data_range[1] - data_range[0]
-        bins = int(n_range / n_units)
-        if bins < 1:
-            return 1
-        else:
-            return bins
+        """Bins by width. See :func:`plans.stochastic.binning.get_nbins_density`."""
+        return _binning.get_nbins_density(n_units=n_units, data_range=data_range)
 
     @staticmethod
     def get_nbins_by_rule(data, rule=None):
-        """
-        Util function for rule-based nbins computation
-
-        :param data: vector of data without nan values
-        :type data: :class:`numpy.ndarray`
-        :param rule: rule code (sturges, fd, scott)
-        :type rule: str
-        :return: number of bins for histogram
-        :rtype: int
-        """
-        bins = 10
-        if rule is None:
-            pass
-        else:
-            if rule.lower() == "sturges":
-                bins = Univar.get_nbins_sturges()
-            elif rule.lower() == "fd":
-                bins = Univar.get_nbins_fd()
-            elif rule.lower() == "scott":
-                bins = Univar.get_nbins_scott()
-            else:
-                pass
-        return bins
+        """Bins by rule. See :func:`plans.stochastic.binning.get_nbins_by_rule`."""
+        return _binning.get_nbins_by_rule(data=data, rule=rule)
 
     @staticmethod
     def get_histogram(data, bins=100, rule=None):
-        """
-        Compute the histogram of the sample
-
-        :param data: vector of data without nan values
-        :type data: :class:`numpy.ndarray`
-        :param bins: number of bins
-        :type bins: int
-        :param rule: rule to define the number of bins. If 'none', uses bins parameters.
-        :type rule: str
-        :return: dataframe of histogram
-        :rtype: :class:`pandas.DataFrame`
-        """
-
-        if bins is None:
-            if rule is None:
-                pass
-            else:
-                bins = Univar.get_nbins_by_rule(rule=rule)
-        # compute histogram
-        vct_hist, vct_bins = np.histogram(data, bins=bins)
-        # get dataframe
-        df_hist = pd.DataFrame({"Upper value": vct_bins[1:], "Count": vct_hist})
-        return df_hist
+        """Histogram. See :func:`plans.stochastic.binning.get_histogram`."""
+        return _binning.get_histogram(data=data, bins=bins, rule=rule)
 
     @staticmethod
     def qqplot(data):
-        """
-        Calculate the QQ-plot of data against normal distribution
-
-        :param data: vector of data without nan values
-        :type data: :class:`numpy.ndarray`
-        :return: dataframe of QQ plot
-        :rtype: :class:`pandas.DataFrame`
-        """
-        from scipy.stats import norm
-
-        # process quantiles
-        _df = pd.DataFrame(
-            {
-                "Data": np.sort(data),
-                "E-Quantiles": (np.arange(1, len(data) + 1) - 0.5) / len(data),
-            }
-        )
-        # get theoretical
-        _df["T-Quantiles"] = norm.ppf(_df["E-Quantiles"])
-        return _df
+        """QQ-plot data. See :func:`plans.stochastic.descriptive.qqplot`."""
+        return _descriptive.qqplot(data=data)
 
     @staticmethod
     def trace_variance(data):
-        """
-        Trace the mean variance from sample
-
-        :param data: vector of data without nan values
-        :type data: :class:`numpy.ndarray`
-        :return: dataframe of accumulated variance
-        :rtype: :class:`pandas.DataFrame`
-        """
-        vct_variance_mean = np.zeros(len(data))
-        for i in range(2, len(data)):
-            vct_variance_mean[i] = np.var(data[:i])
-
-        # process quantiles
-        _df = pd.DataFrame(
-            {
-                "Data": data,
-                "Variance": vct_variance_mean,
-            }
-        )
-
-        return _df
+        """See :func:`plans.stochastic.descriptive.trace_variance`."""
+        return _descriptive.trace_variance(data=data)
 
     @staticmethod
     def get_bins(data, n_bins=5, scheme="equal"):
-        # todo [docstring]
-        dc = {
-            "linear": Univar.bins_equal,
-            "equal": Univar.bins_equal,
-            "quantiles": Univar.bins_quantiles,
-            "quantile": Univar.bins_quantiles,
-        }
-        v = dc[scheme](data=data, n_bins=n_bins)
-        return v
+        """Class boundaries. See :func:`plans.stochastic.binning.get_bins`."""
+        return _binning.get_bins(data=data, n_bins=n_bins, scheme=scheme)
 
     @staticmethod
     def bins_equal(data, n_bins):
-        """
-        Calculates equally spaced (linear) bins for a 1D NumPy array.
-
-        :param data: The 1D NumPy array to analyze.
-        :type data: numpy.ndarray
-        :param n_bins: The desired number of bins/intervals.
-        :type n_bins: int
-        :returns: A NumPy array containing the linear bin boundary values.
-        :rtype: numpy.ndarray
-        """
-        min_val = np.min(data)
-        max_val = np.max(data)
-
-        # np.linspace creates 'n_classes + 1' points to define 'n_classes' intervals
-        linear_bins = np.linspace(min_val, max_val, n_bins + 1)
-        return linear_bins
+        """Equal bins. See :func:`plans.stochastic.binning.bins_equal`."""
+        return _binning.bins_equal(data=data, n_bins=n_bins)
 
     @staticmethod
     def bins_quantiles(data, n_bins=5):
-        """
-        Calculates the numerical quantile boundaries (bins) for a 1D NumPy array.
-
-        :param data: The 1D NumPy array to analyze.
-        :type data: numpy.ndarray
-        :param n_bins: The number of quantile classes.
-        :type n_bins: int
-        :returns: A NumPy array containing the quantile boundary values.
-        :rtype: numpy.ndarray
-        """
-        # pd.qcut with retbins=True returns (labels, bins)
-        _, bins = pd.qcut(
-            data,
-            q=n_bins,
-            retbins=True,
-            duplicates="drop",  # Essential for handling non-unique quantiles
-        )
-        return bins
+        """Quantile bins. See :func:`plans.stochastic.binning.bins_quantiles`."""
+        return _binning.bins_quantiles(data=data, n_bins=n_bins)
 
     @staticmethod
     def classify(data, bins=None, n_classes=5, scheme="equal"):
-        """
-        Classifies a 1D NumPy array into 0-indexed bins based on provided bin boundaries.
-
-        Values `x` are assigned to class `i` if `bins[i] < x <= bins[i+1]`.
-        Values less than or equal to `bins[0]` are assigned to class 0.
-        Values greater than `bins[-1]` are assigned to the last class (`len(bins) - 2`).
-
-        :param data: The 1D NumPy array to classify.
-        :type data: numpy.ndarray
-        :param bins: A 1D NumPy array specifying the sorted bin edges.
-                     E.g., `[min_val, boundary1, boundary2, ..., max_val]`.
-                     Must contain at least two elements.
-        :type bins: numpy.ndarray
-        :returns: A 1D NumPy array of integers representing the 0-indexed class for
-                  each element in `data_array`.
-        :rtype: numpy.ndarray
-        """
-        # handle bins
-        if bins is None:
-            bins = Univar.get_bins(data=data, n_bins=n_classes, scheme=scheme)
-
-        # Number of intervals (classes) will be one less than the number of bins
-        num_classes = len(bins) - 1
-
-        # np.searchsorted(a, v, side='right') returns index 'i' such that all v in a[0:i] <= v
-        # This means `bins[i-1] < x <= bins[i]`.
-        # For example, if bins = [0, 10, 20]:
-        # x=5   => searchsorted returns 1 (meaning it's after bins[0])
-        # x=10  => searchsorted returns 1 (meaning it's after bins[0])
-        # x=15  => searchsorted returns 2 (meaning it's after bins[1])
-        # x=20  => searchsorted returns 2 (meaning it's after bins[1])
-        # Subtracting 1 yields the 0-indexed class for [bins[i-1], bins[i]] like intervals.
-
-        # `classes` will be 0 for x <= bins[0], 1 for x in (bins[0], bins[1]], etc.
-        # For x > bins[-1], it will be `num_classes` (len(bins) - 1).
-        classes = np.searchsorted(bins, data, side="right") - 1
-
-        # Clamp the results to ensure they fall within the valid 0 to num_classes-1 range.
-        # This handles values outside the `bins` range by assigning them to the
-        # first (0) or last (num_classes-1) available class.
-        classified_array = np.clip(classes, 0, num_classes - 1)
-
-        return classified_array
+        """Classify data. See :func:`plans.stochastic.binning.classify`."""
+        return _binning.classify(
+            data=data, bins=bins, n_classes=n_classes, scheme=scheme
+        )
 
     @staticmethod
     def quantiles_classify(data, n_classes=5):
-        """
-        Classifies a 1D NumPy array into quantile classes.
-
-        :param data: The 1D NumPy array to classify.
-        :type data: numpy.ndarray
-        :param n_classes: The number of quantile classes.
-        :type n_classes: int
-        :returns: A 1D NumPy array containing the quantile class (0 to n_classes-1) for each element.
-        :rtype: numpy.ndarray
-        """
-
-        bins = Univar.get_bins(data=data, n_bins=n_classes, scheme="quantiles")
-
-        values = Univar.classify(data, bins=bins)
-
-        """
-        # Use pandas qcut, which is efficient and handles duplicates well
-        # labels=False ensures integer class labels (0 to n_classes-1)
-        # duplicates='drop' handles cases where fewer unique quantiles than n_classes exist
-        quantile_classes = pd.qcut(
-            data,
-            q=n_classes,
-            labels=False,
-            duplicates='drop'
-        )#.to_numpy()  # Convert the pandas Series back to a NumPy array
-        """
-
-        return quantile_classes
+        """See :func:`plans.stochastic.binning.quantiles_classify`."""
+        return _binning.quantiles_classify(data=data, n_classes=n_classes)
 
 
 class GeoUnivar(Univar):
@@ -1999,7 +1323,7 @@ class GeoUnivar(Univar):
             # handle scheme
             if specs["colorize_map"]:
 
-                color_data = Univar.classify(
+                color_data = _binning.classify(
                     data=data[column].values, n_classes=5, scheme=specs["scheme_cmap"]
                 )
                 color_cmap = viewer.get_discrete_cmap(
@@ -2291,15 +1615,12 @@ class Bivar(DataSet):
         :return: None
         :rtype: None
         """
-        from scipy.optimize import curve_fit
-
-        popt, pcov = curve_fit(
-            f=self.models[model_type]["Function"],
-            xdata=self.data[self.xfield].values,
-            ydata=self.data[self.yfield].values,
+        popt, pstd = _curves.fit_curve(
+            func=self.models[model_type]["Function"],
+            x=self.data[self.xfield].values,
+            y=self.data[self.yfield].values,
             p0=self.models[model_type]["Setup"]["Mean"].values,
         )
-        pstd = np.sqrt(np.diag(pcov))
         # update model
         self.update_model(params_mean=popt, params_sd=pstd, model_type=model_type)
         return None
@@ -2325,7 +1646,7 @@ class Bivar(DataSet):
         self._update_model_data(model_type=model_type)
         # update model metrics
         df = self.models[model_type]["Data"]
-        self.models[model_type]["Metrics"] = Bivar.get_metrics(
+        self.models[model_type]["Metrics"] = _metrics.get_metrics(
             observed=df[self.yfield].values,
             predicted=df[f"{self.yfield}_Mean"].values,
         )
@@ -2522,7 +1843,7 @@ class Bivar(DataSet):
         # -------------------------------------------------------------------
         bins_x = specs["bins"]
         if bins_x is None:
-            bins_x = Univar.get_nbins_fd(data=vct_x)
+            bins_x = _binning.get_nbins_fd(data=vct_x)
         ax_histx.hist(
             vct_x,
             bins=bins_x,
@@ -2606,7 +1927,7 @@ class Bivar(DataSet):
 
         # PLOT VARIANCE TRACING
         # -------------------------------------------------------------------
-        vct_var = Univar.trace_variance(data=vct_e)["Variance"].values
+        vct_var = _descriptive.trace_variance(data=vct_e)["Variance"].values
         ax_var.plot(vct_x, vct_var, color=specs["color_variance"])
         if specs["subtitle_variance"] is not None:
             ax_var.set_title(specs["subtitle_variance"], loc="left")
@@ -2653,7 +1974,7 @@ class Bivar(DataSet):
 
         # PLOT ERROR QQ
         # -------------------------------------------------------------------
-        df_qq = Univar.qqplot(data=vct_e)
+        df_qq = _descriptive.qqplot(data=vct_e)
         ax_qq.scatter(
             df_qq["T-Quantiles"],
             df_qq["Data"],
@@ -2680,7 +2001,7 @@ class Bivar(DataSet):
         specs_h["ylabel"] = None
         specs_h["plot_mean_label"] = False
         if specs_h["bins"] is None:
-            specs_h["bins"] = Univar.get_nbins_fd(data=data)
+            specs_h["bins"] = _binning.get_nbins_fd(data=data)
         return specs_h
 
     def view(self, show=True, return_fig=False):
@@ -2722,130 +2043,38 @@ class Bivar(DataSet):
 
     @staticmethod
     def get_metrics(observed, predicted):
-        """
-        Get all fit metrics between observed and predicted sample.
-
-        :param observed: vector of observed values
-        :type observed: :class:`numpy.ndarray`
-        :param predicted: vector of predicted values
-        :type predicted: :class:`numpy.ndarray`
-        :return: dictionary of metrics (r, rho, R2, RMSE, MAE, Bias)
-        :rtype: dict
-        """
-        # correlations
-        dc_metrics = {
-            "r": Bivar.pearson(x=observed, y=predicted),
-            "rho": Bivar.spearman(x=observed, y=predicted),
-        }
-        # agreement
-        dc_funcs = {
-            "R2": Bivar.rsq,
-            "RMSE": Bivar.rmse,
-            "MAE": Bivar.mae,
-            "Bias": Bivar.bias,
-        }
-        for k in dc_funcs:
-            dc_metrics[k] = dc_funcs[k](observed=observed, predicted=predicted)
-        return {k: float(dc_metrics[k]) for k in dc_metrics}
+        """Get all fit metrics. See :func:`plans.stochastic.metrics.get_metrics`."""
+        return _metrics.get_metrics(observed=observed, predicted=predicted)
 
     @staticmethod
     def pearson(x, y):
-        """
-        Compute the Pearson correlation coefficient (r), a measure of linear association.
-        Symmetric: swapping ``x`` and ``y`` gives the same value.
-
-        :param x: vector of x values
-        :type x: :class:`numpy.ndarray`
-        :param y: vector of y values
-        :type y: :class:`numpy.ndarray`
-        :return: r value, from -1 to 1
-        :rtype: float
-        """
-        return np.corrcoef(x, y)[0, 1]
+        """Compute Pearson r. See :func:`plans.stochastic.metrics.pearson`."""
+        return _metrics.pearson(x=x, y=y)
 
     @staticmethod
     def spearman(x, y):
-        """
-        Compute the Spearman rank correlation coefficient (rho), a measure of
-        monotonic association. It is the Pearson r of the ranks (ties averaged).
-        Symmetric: swapping ``x`` and ``y`` gives the same value.
-
-        :param x: vector of x values
-        :type x: :class:`numpy.ndarray`
-        :param y: vector of y values
-        :type y: :class:`numpy.ndarray`
-        :return: rho value, from -1 to 1
-        :rtype: float
-        """
-        from scipy.stats import rankdata
-
-        return Bivar.pearson(x=rankdata(x), y=rankdata(y))
+        """Compute Spearman rho. See :func:`plans.stochastic.metrics.spearman`."""
+        return _metrics.spearman(x=x, y=y)
 
     @staticmethod
     def rsq(observed, predicted):
-        """
-        Compute the coefficient of determination (R2), as the fraction of
-        observed variance explained: ``1 - SS_res / SS_tot``.
-
-        .. note::
-
-            Equals r squared only for least-squares linear models with intercept.
-            For other models it can differ, and is negative when the model is worse
-            than the observed mean.
-
-        :param observed: vector of observed values
-        :type observed: :class:`numpy.ndarray`
-        :param predicted: vector of predicted values
-        :type predicted: :class:`numpy.ndarray`
-        :return: R2 value
-        :rtype: float
-        """
-        return 1 - (
-            np.sum(np.power(predicted - observed, 2))
-            / np.sum(np.power(observed - np.mean(observed), 2))
-        )
+        """Compute R2. See :func:`plans.stochastic.metrics.rsq`."""
+        return _metrics.rsq(observed=observed, predicted=predicted)
 
     @staticmethod
     def rmse(observed, predicted):
-        """
-        Compute the Root Mean Squared Error (RMSE).
-
-        :param observed: vector of observed values
-        :type observed: :class:`numpy.ndarray`
-        :param predicted: vector of predicted values
-        :type predicted: :class:`numpy.ndarray`
-        :return: RMSE value
-        :rtype: float
-        """
-        return np.sqrt(np.sum(np.power(predicted - observed, 2)) / len(predicted))
+        """Compute RMSE. See :func:`plans.stochastic.metrics.rmse`."""
+        return _metrics.rmse(observed=observed, predicted=predicted)
 
     @staticmethod
     def mae(observed, predicted):
-        """
-        Compute the Mean Absolute Error (MAE).
-
-        :param observed: vector of observed values
-        :type observed: :class:`numpy.ndarray`
-        :param predicted: vector of predicted values
-        :type predicted: :class:`numpy.ndarray`
-        :return: MAE value
-        :rtype: float
-        """
-        return np.sum(np.abs(predicted - observed)) / len(predicted)
+        """Compute MAE. See :func:`plans.stochastic.metrics.mae`."""
+        return _metrics.mae(observed=observed, predicted=predicted)
 
     @staticmethod
     def bias(observed, predicted):
-        """
-        Compute the Bias (%), positive when predicted overestimates observed.
-
-        :param observed: vector of observed values
-        :type observed: :class:`numpy.ndarray`
-        :param predicted: vector of predicted values
-        :type predicted: :class:`numpy.ndarray`
-        :return: Bias value
-        :rtype: float
-        """
-        return 100 * np.sum(predicted - observed) / np.sum(observed)
+        """Compute Bias (%). See :func:`plans.stochastic.metrics.bias`."""
+        return _metrics.bias(observed=observed, predicted=predicted)
 
 
 # todo [upgrade] make it a child of some MbaE class
@@ -2941,22 +2170,12 @@ class Bayes:
         :return: None
         :rtype: none
         """
-        lst_labels1 = [self.sprior, self.slike, self.spost]
         for h in self.hypotheses["Name"].values:
-            for i in range(len(lst_labels1)):
-                s_field0 = lst_labels1[i]
-                s_field1 = "{}_acc".format(lst_labels1[i])
-                self.steps[n_step]["Omega"][h][s_field1] = 0.0
-                for j in range(len(self.steps[n_step]["Omega"][h])):
-                    if j == 0:
-                        self.steps[n_step]["Omega"][h][s_field1].values[j] = self.steps[
-                            n_step
-                        ]["Omega"][h][s_field0].values[j]
-                    else:
-                        self.steps[n_step]["Omega"][h][s_field1].values[j] = (
-                            self.steps[n_step]["Omega"][h][s_field1].values[j - 1]
-                            + self.steps[n_step]["Omega"][h][s_field0].values[j]
-                        )
+            df_omega = self.steps[n_step]["Omega"][h]
+            for s in [self.sprior, self.slike, self.spost]:
+                df_omega["{}_acc".format(s)] = _bayes.get_accumulated(
+                    probabilities=df_omega[s].values
+                )
         return None
 
     def conditionalize(self, dct_evidence, s_varfield="E", s_weightfield="W"):
@@ -2979,51 +2198,48 @@ class Bayes:
 
         # main loop
         for h in self.hypotheses["Name"].values:
+            df_omega = self.steps[n_step]["Omega"][h]
+            grid = df_omega[self.shyp].values
+
             # get prior from last step
             if n_step > 1:
-                self.steps[n_step]["Omega"][h][self.sprior] = self.steps[n_step - 1][
-                    "Omega"
-                ][h][self.spost].values
+                df_omega[self.sprior] = self.steps[n_step - 1]["Omega"][h][
+                    self.spost
+                ].values
+
             # get likelihood
-            hist, edges = np.histogram(
-                a=dct_evidence[h][s_varfield],
-                bins=self.steps[n_step]["Omega"][h][self.shyp],
+            df_omega[self.slike] = _bayes.get_likelihood(
+                evidence=dct_evidence[h][s_varfield],
                 weights=dct_evidence[h][s_weightfield],
+                grid=grid,
+                baseline=self.zero,
             )
-            hist = hist / np.sum(hist)
-            hist = list(hist)
-            hist.append(0)
-            self.steps[n_step]["Omega"][h][self.slike] = hist
-            # insert baseline and normalize
-            v_like = self.steps[n_step]["Omega"][h][self.slike].values
-            v_like = v_like + self.zero
-            self.steps[n_step]["Omega"][h][self.slike] = v_like / np.sum(v_like)
 
             # get posterior with Bayes Theorem
-            v_prior = self.steps[n_step]["Omega"][h][self.sprior].values
-            v_like = self.steps[n_step]["Omega"][h][self.slike].values
-            v_posterior = (v_prior * v_like) / np.sum(v_prior * v_like)
-            self.steps[n_step]["Omega"][h][self.spost] = v_posterior
+            df_omega[self.spost] = _bayes.get_posterior(
+                prior=df_omega[self.sprior].values,
+                likelihood=df_omega[self.slike].values,
+            )
 
             # get accumulated values
             self._accumulate(n_step)
 
+            # get 90% and 50% bands of accumulated
             self.steps[n_step]["Bands"][h] = dict()
-
-            # get percentiles of accumulated
-            lst_aux = [self.sprior, self.slike, self.spost]
-            for s in lst_aux:
-                self.steps[n_step]["Bands"][h][s] = dict()
-                # 90% band
-                s_query = "`{}` > 0.05 and `{}` <= 0.95".format(s + "_acc", s + "_acc")
-                df_aux = self.steps[n_step]["Omega"][h].query(s_query)
-                self.steps[n_step]["Bands"][h][s]["p05"] = df_aux[self.shyp].min()
-                self.steps[n_step]["Bands"][h][s]["p95"] = df_aux[self.shyp].max()
-                # 50% band
-                s_query = "`{}` > 0.25 and `{}` <= 0.75".format(s + "_acc", s + "_acc")
-                df_aux = self.steps[n_step]["Omega"][h].query(s_query)
-                self.steps[n_step]["Bands"][h][s]["p25"] = df_aux[self.shyp].min()
-                self.steps[n_step]["Bands"][h][s]["p75"] = df_aux[self.shyp].max()
+            for s in [self.sprior, self.slike, self.spost]:
+                acc = df_omega[s + "_acc"].values
+                p05, p95 = _bayes.get_band(
+                    grid=grid, accumulated=acc, lower=0.05, upper=0.95
+                )
+                p25, p75 = _bayes.get_band(
+                    grid=grid, accumulated=acc, lower=0.25, upper=0.75
+                )
+                self.steps[n_step]["Bands"][h][s] = {
+                    "p05": p05,
+                    "p95": p95,
+                    "p25": p25,
+                    "p75": p75,
+                }
 
         # return
         return None

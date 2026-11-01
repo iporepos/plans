@@ -24,6 +24,7 @@ import pandas as pd
 
 # Project-level imports
 # =======================================================================
+from plans.stochastic import metrics as _metrics
 from .core import Model
 
 # ... {develop}
@@ -361,9 +362,9 @@ class LinearStorage(Model):
         vc_obs = df["{}_obs".format(self.var_eval)].values
 
         # compute evaluation metrics
-        self.rmse = Bivar.rmse(observed=vc_obs, predicted=vc_pred)
-        self.rsq = Bivar.rsq(observed=vc_obs, predicted=vc_pred)
-        self.bias = Bivar.bias(observed=vc_obs, predicted=vc_pred)
+        self.rmse = _metrics.rmse(observed=vc_obs, predicted=vc_pred)
+        self.rsq = _metrics.rsq(observed=vc_obs, predicted=vc_pred)
+        self.bias = _metrics.bias(observed=vc_obs, predicted=vc_pred)
 
         return None
 

@@ -35,6 +35,8 @@ import rasterio
 # =======================================================================
 from plans.root import Collection, DataSet
 from plans.datasets.analyst import Univar, GeoUnivar
+from plans.stochastic import binning as _binning
+from plans.stochastic import metrics as _metrics
 from plans import viewer
 from plans import geo
 
@@ -1765,7 +1767,7 @@ class TimeSeries(Univar):
                 data = self.eva["Data"][self.varfield].values
                 ax2.hist(
                     data,
-                    bins=Univar.get_nbins_fd(data=data),
+                    bins=_binning.get_nbins_fd(data=data),
                     color=specs["color_eva"],
                     alpha=0.5,
                     orientation="horizontal",
@@ -3488,9 +3490,7 @@ class TimeSeriesCluster(TimeSeriesCollection):
         :return: square correlation matrix, indexed by series names
         :rtype: :class:`pandas.DataFrame`
         """
-        from plans.datasets.analyst import Bivar
-
-        dc_funcs = {"pearson": Bivar.pearson, "spearman": Bivar.spearman}
+        dc_funcs = {"pearson": _metrics.pearson, "spearman": _metrics.spearman}
         func = dc_funcs[method.lower()]
 
         # merged columns follow catalog order

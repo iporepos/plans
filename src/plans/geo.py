@@ -27,7 +27,8 @@ import geopandas as gpd
 
 # Project-level imports
 # =======================================================================
-# import {module}
+from plans.stochastic.sampling import normalize
+
 # ... {develop}
 
 
@@ -367,33 +368,6 @@ def classify(array, upvalues, classes):
                 (array > upvalues[i - 1]) * (array <= upvalues[i]) * classes[i]
             )
     return new
-
-
-def normalize(array, min_value=0, max_value=100):
-    """
-    Normalize array between min and max values
-
-    :param array: Input array or float
-    :type array: float or :class:`numpy.ndarray`
-    :param min_value: minimum vale
-    :type min_value: float
-    :param max_value: maximum value
-    :type max_value: float
-    :return: Output array or float
-    :rtype: :class:`numpy.ndarray`
-    """
-    # Find the minimum and maximum values in the original array
-    old_min = np.min(array)
-    old_max = np.max(array)
-
-    # Calculate the range of the original array
-    old_range = old_max - old_min
-    # Calculate the range of the desired new scale
-    new_range = max_value - min_value
-
-    # Apply the normalization formula using NumPy's broadcasting capabilities
-    normalized = min_value + ((array - old_min) * new_range) / old_range
-    return normalized
 
 
 def fuzzify(array, min_value=None, max_value=None):
