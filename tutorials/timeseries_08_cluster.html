@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Time Series - Clusters &#8212; plans 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/timeseries_08_cluster';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Time Series - Large Clusters" href="timeseries_09_cluster_large.html" />
+    <link rel="prev" title="Time Series - Collections" href="timeseries_07_collection.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-light" alt=""/>
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">plans</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../files.html">Files</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../files.html">Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_structures.html">Data Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../files_index.html">Files Index</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Projects</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="project_01.html">Projects - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="univar_01.html">Univariate data - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="univar_02_plots.html">Univariate data - Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bivar_01.html">Bivariate data - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bivar_02_models.html">Bivariate data - Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time Series - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_05_compare.html">Time Series - Comparing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_02_upscale.html">Time Series - Upscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_06_downscale.html">Time Series - Downscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_03_gaps.html">Time Series - Gaps and epochs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_04_standardize.html">Time Series - Standardizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_07_collection.html">Time Series - Collections</a></li>
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Time Series - Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_09_cluster_large.html">Time Series - Large Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_10_ensemble.html">Time Series - Ensembles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="raster_01.html">Raster data - Basics</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../userguide.html" class="nav-link">User Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../examples.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Time Series - Clusters</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="time-series-clusters">
+<h1>Time Series - Clusters<a class="headerlink" href="#time-series-clusters" title="Link to this heading">#</a></h1>
+<p>A <code class="docutils literal notranslate"><span class="pre">TimeSeriesCluster</span></code> holds series of the <strong>same variable from different sites</strong>, like a network of weather stations or rain gauges. Unlike a <code class="docutils literal notranslate"><span class="pre">TimeSeriesCollection</span></code>, which accepts miscellaneous data, a cluster can compare its series against each other: how correlated the sites are, and how one site can fill the gaps of another.</p>
+<p>This tutorial builds a synthetic network of five temperature stations in two sub-regions:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Station</p></th>
+<th class="head"><p>Sub-region</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Gaps</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">S1</span></code></p></td>
+<td><p>west</p></td>
+<td><p>full year</p></td>
+<td><p>1 large (30d)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">S2</span></code></p></td>
+<td><p>west</p></td>
+<td><p>full year</p></td>
+<td><p>none</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">S3</span></code></p></td>
+<td><p>west</p></td>
+<td><p>full year</p></td>
+<td><p>none</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">S4</span></code></p></td>
+<td><p>east</p></td>
+<td><p>Mar-Dec (shorter)</p></td>
+<td><p>none</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">S5</span></code></p></td>
+<td><p>east</p></td>
+<td><p>full year</p></td>
+<td><p>1 small (3d)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Covered here:</p>
+<ul class="simple">
+<li><p>Loading the stations into a <code class="docutils literal notranslate"><span class="pre">TemperatureSeriesCluster</span></code></p></li>
+<li><p>Viewing data availability and all series together</p></li>
+<li><p>Correlation between stations via <code class="docutils literal notranslate"><span class="pre">get_correlation()</span></code></p></li>
+<li><p>Gap filling from other stations via <code class="docutils literal notranslate"><span class="pre">regionalize()</span></code>, comparing uniform and inverse-distance weights</p></li>
+</ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>Check out the <a class="reference internal" href="timeseries_07_collection.html"><span class="doc">Time Series - Collections</span></a> tutorial first.</p>
+</div>
+<section id="notebook-setup">
+<h2>Notebook setup<a class="headerlink" href="#notebook-setup" title="Link to this heading">#</a></h2>
+<p>For users running this tutorial as a Jupyter Notebook, this cell must be executed first:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># Install `plans` in `google.colab`.</span>
+<span class="c1"># Use `pip install plans` for other environments.</span>
+
+<span class="k">if</span> <span class="s2">"google.colab"</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="si">}</span><span class="s2"> -m pip install -q plans"</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemperatureSeriesCluster</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plans.analyst</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bivar</span>
+
+<span class="c1"># This avoids warnings related to uninstalled fonts</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">'matplotlib.font_manager'</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+
+<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"outputs/time-series-cluster"</span><span class="p">)</span>
+<span class="n">OUTPUT_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Outputs will be saved to: ./</span><span class="si">{</span><span class="n">OUTPUT_DIR</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>  <span class="c1"># ensure reproducibility</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Outputs will be saved to: ./outputs/time-series-cluster
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="build-a-synthetic-station-network">
+<h2>Build a synthetic station network<a class="headerlink" href="#build-a-synthetic-station-network" title="Link to this heading">#</a></h2>
+<p>Each station gets the same seasonal cycle, a weather anomaly common to the whole region, a weather anomaly of its own sub-region, and some local noise. The anomalies have memory (an autoregressive process), so warm or cold spells last for some days. Stations in the same sub-region share more signal, so they should correlate more.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">365</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_anomaly</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">sd</span><span class="p">):</span>
+    <span class="c1"># autoregressive anomaly: a[t] = phi * a[t-1] + noise</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">sd</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">phi</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">e</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">a</span>
+
+<span class="n">seasonal</span> <span class="o">=</span> <span class="mi">18</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">100</span><span class="p">)</span> <span class="o">/</span> <span class="mi">365</span><span class="p">)</span>
+<span class="n">anomaly_region</span> <span class="o">=</span> <span class="n">make_anomaly</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">sd</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">anomaly_subregion</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"west"</span><span class="p">:</span> <span class="n">make_anomaly</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">sd</span><span class="o">=</span><span class="mf">1.2</span><span class="p">),</span>
+    <span class="s2">"east"</span><span class="p">:</span> <span class="n">make_anomaly</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">sd</span><span class="o">=</span><span class="mf">1.2</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="c1"># stations: sub-region and coordinates (km)</span>
+<span class="n">stations</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">"Name"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"S1"</span><span class="p">,</span> <span class="s2">"S2"</span><span class="p">,</span> <span class="s2">"S3"</span><span class="p">,</span> <span class="s2">"S4"</span><span class="p">,</span> <span class="s2">"S5"</span><span class="p">],</span>
+    <span class="s2">"Subregion"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"west"</span><span class="p">,</span> <span class="s2">"west"</span><span class="p">,</span> <span class="s2">"west"</span><span class="p">,</span> <span class="s2">"east"</span><span class="p">,</span> <span class="s2">"east"</span><span class="p">],</span>
+    <span class="s2">"X"</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">],</span>
+    <span class="s2">"Y"</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+<span class="p">})</span>
+
+<span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"2021-01-01"</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">)</span>
+<span class="n">dc_series</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">stations</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="n">dc_series</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">"Name"</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">seasonal</span>
+        <span class="o">+</span> <span class="n">anomaly_region</span>
+        <span class="o">+</span> <span class="n">anomaly_subregion</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">"Subregion"</span><span class="p">]]</span>
+        <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Lets look at where the stations are:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"west"</span><span class="p">:</span> <span class="s2">"tab:blue"</span><span class="p">,</span> <span class="s2">"east"</span><span class="p">:</span> <span class="s2">"tab:orange"</span><span class="p">}</span>
+<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">stations</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">"X"</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">"Subregion"</span><span class="p">]],</span> <span class="n">s</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">"Name"</span><span class="p">],</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">"X"</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">]),</span> <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">textcoords</span><span class="o">=</span><span class="s2">"offset points"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">"equal"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"X (km)"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Y (km)"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/730fe5e652f21d42a030747c94ef2c0cfeb56b0ff721356b70578c33f632757e.png" src="../_images/730fe5e652f21d42a030747c94ef2c0cfeb56b0ff721356b70578c33f632757e.png" />
+</div>
+</div>
+<p>Now add the gaps. Before removing the values of the large gap in <code class="docutils literal notranslate"><span class="pre">S1</span></code>, keep them as the <strong>truth</strong>, so we can later check how well the gap was filled:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># large gap in S1 -- keep the truth</span>
+<span class="n">GAP</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">180</span><span class="p">)</span>
+<span class="n">truth</span> <span class="o">=</span> <span class="n">dc_series</span><span class="p">[</span><span class="s2">"S1"</span><span class="p">][</span><span class="n">GAP</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">dc_series</span><span class="p">[</span><span class="s2">"S1"</span><span class="p">][</span><span class="n">GAP</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+<span class="c1"># small gap in S5</span>
+<span class="n">dc_series</span><span class="p">[</span><span class="s2">"S5"</span><span class="p">][</span><span class="mi">200</span><span class="p">:</span><span class="mi">203</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+<span class="c1"># save files -- S4 starts later</span>
+<span class="n">ls_files</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">dc_series</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"datetime"</span><span class="p">:</span> <span class="n">dates</span><span class="p">,</span> <span class="s2">"T"</span><span class="p">:</span> <span class="n">values</span><span class="p">})</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">"S4"</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">60</span><span class="p">:]</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.csv"</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ls_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ls_files</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>['outputs/time-series-cluster/S1.csv', 'outputs/time-series-cluster/S2.csv', 'outputs/time-series-cluster/S3.csv', 'outputs/time-series-cluster/S4.csv', 'outputs/time-series-cluster/S5.csv']
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="load-into-a-time-series-cluster">
+<h2>Load into a Time Series Cluster<a class="headerlink" href="#load-into-a-time-series-cluster" title="Link to this heading">#</a></h2>
+<p>Like a collection, a cluster is loaded from an info table. The <code class="docutils literal notranslate"><span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">Y</span></code> columns are the station coordinates, used later for inverse-distance weights. Here we use <code class="docutils literal notranslate"><span class="pre">TemperatureSeriesCluster</span></code>, a cluster ready for temperature series:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">info</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">"Name"</span><span class="p">:</span> <span class="n">stations</span><span class="p">[</span><span class="s2">"Name"</span><span class="p">],</span>
+    <span class="s2">"Alias"</span><span class="p">:</span> <span class="n">stations</span><span class="p">[</span><span class="s2">"Name"</span><span class="p">],</span>
+    <span class="s2">"File"</span><span class="p">:</span> <span class="n">ls_files</span><span class="p">,</span>
+    <span class="s2">"VarField"</span><span class="p">:</span> <span class="s2">"T"</span><span class="p">,</span>
+    <span class="s2">"DtField"</span><span class="p">:</span> <span class="s2">"datetime"</span><span class="p">,</span>
+    <span class="s2">"Units"</span><span class="p">:</span> <span class="s2">"C"</span><span class="p">,</span>
+    <span class="s2">"X"</span><span class="p">:</span> <span class="n">stations</span><span class="p">[</span><span class="s2">"X"</span><span class="p">],</span>
+    <span class="s2">"Y"</span><span class="p">:</span> <span class="n">stations</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">],</span>
+    <span class="s2">"Code"</span><span class="p">:</span> <span class="n">stations</span><span class="p">[</span><span class="s2">"Name"</span><span class="p">],</span>
+    <span class="s2">"Source"</span><span class="p">:</span> <span class="s2">"synthetic"</span><span class="p">,</span>
+    <span class="s2">"Description"</span><span class="p">:</span> <span class="s2">"daily air temperature, "</span> <span class="o">+</span> <span class="n">stations</span><span class="p">[</span><span class="s2">"Subregion"</span><span class="p">]</span> <span class="o">+</span> <span class="s2">" sub-region"</span><span class="p">,</span>
+    <span class="s2">"Color"</span><span class="p">:</span> <span class="s2">"tab:red"</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="n">info_file</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"info.csv"</span>
+<span class="n">info</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">info_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">tsc</span> <span class="o">=</span> <span class="n">TemperatureSeriesCluster</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Network"</span><span class="p">)</span>
+<span class="n">tsc</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">table_file</span><span class="o">=</span><span class="n">info_file</span><span class="p">)</span>
+<span class="n">tsc</span><span class="o">.</span><span class="n">catalog</span><span class="p">[[</span><span class="s2">"name"</span><span class="p">,</span> <span class="s2">"x"</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">,</span> <span class="s2">"start"</span><span class="p">,</span> <span class="s2">"end"</span><span class="p">,</span> <span class="s2">"variable_min"</span><span class="p">,</span> <span class="s2">"variable_max"</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>x</th>
+      <th>y</th>
+      <th>start</th>
+      <th>end</th>
+      <th>variable_min</th>
+      <th>variable_max</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>S1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>2021-01-01</td>
+      <td>2021-12-31</td>
+      <td>7.014798</td>
+      <td>27.477313</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>S2</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2021-01-01</td>
+      <td>2021-12-31</td>
+      <td>8.057301</td>
+      <td>27.454874</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>S3</td>
+      <td>1</td>
+      <td>3</td>
+      <td>2021-01-01</td>
+      <td>2021-12-31</td>
+      <td>8.387260</td>
+      <td>26.842874</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>S4</td>
+      <td>10</td>
+      <td>2</td>
+      <td>2021-03-02</td>
+      <td>2021-12-31</td>
+      <td>8.225353</td>
+      <td>26.716260</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>S5</td>
+      <td>11</td>
+      <td>0</td>
+      <td>2021-01-01</td>
+      <td>2021-12-31</td>
+      <td>7.162614</td>
+      <td>25.622818</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="data-availability">
+<h2>Data availability<a class="headerlink" href="#data-availability" title="Link to this heading">#</a></h2>
+<p>The default <code class="docutils literal notranslate"><span class="pre">.view()</span></code> is inherited from the collection: the Gantt chart of each series epochs, the overlapping data across series, and the series prevalence. Note the gap in <code class="docutils literal notranslate"><span class="pre">S1</span></code> and the late start of <code class="docutils literal notranslate"><span class="pre">S4</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tsc</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/35ae6fc89ccec8cb2ef00da0259f57f4b7919325b3d9a92c2345d7a3f1ec1e55.png" src="../_images/35ae6fc89ccec8cb2ef00da0259f57f4b7919325b3d9a92c2345d7a3f1ec1e55.png" />
+</div>
+</div>
+</section>
+<section id="all-series-together">
+<h2>All series together<a class="headerlink" href="#all-series-together" title="Link to this heading">#</a></h2>
+<p>Since all series are the same variable, they can share the same axes. The <code class="docutils literal notranslate"><span class="pre">series</span></code> layout mirrors the single <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> view, overlaying every station: the series, their histograms (with common bins) and their CDFs, with dashed lines for the means:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tsc</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"series"</span>
+<span class="n">tsc</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/d998ccd4c67ab20ed128bc221d428553bb81d35efd70cc570d79a90ba9f2a389.png" src="../_images/d998ccd4c67ab20ed128bc221d428553bb81d35efd70cc570d79a90ba9f2a389.png" />
+</div>
+</div>
+<p>The seasonal cycle dominates, but the two sub-regions drift apart during warm and cold spells. Note also that <code class="docutils literal notranslate"><span class="pre">S4</span></code> has a higher mean: its record starts in March, missing the coldest months. Comparing statistics between sites requires a common period.</p>
+<p>For the series only, use the <code class="docutils literal notranslate"><span class="pre">series-simple</span></code> layout:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tsc</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"series-simple"</span>
+<span class="n">tsc</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/947741b5cfc6030dfe3965d4f90b0763749c5bbd456659df80c1fb60fa9f81a8.png" src="../_images/947741b5cfc6030dfe3965d4f90b0763749c5bbd456659df80c1fb60fa9f81a8.png" />
+</div>
+</div>
+</section>
+<section id="correlation-between-stations">
+<h2>Correlation between stations<a class="headerlink" href="#correlation-between-stations" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">.get_correlation()</span></code> method computes the correlation matrix between all stations, using only the time steps where both have data. Pairs with fewer overlapping steps than <code class="docutils literal notranslate"><span class="pre">min_overlap</span></code> are set to <code class="docutils literal notranslate"><span class="pre">NaN</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_corr</span> <span class="o">=</span> <span class="n">tsc</span><span class="o">.</span><span class="n">get_correlation</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"pearson"</span><span class="p">,</span> <span class="n">min_overlap</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">df_corr</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>S1</th>
+      <th>S2</th>
+      <th>S3</th>
+      <th>S4</th>
+      <th>S5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>S1</th>
+      <td>1.000</td>
+      <td>0.952</td>
+      <td>0.952</td>
+      <td>0.644</td>
+      <td>0.690</td>
+    </tr>
+    <tr>
+      <th>S2</th>
+      <td>0.952</td>
+      <td>1.000</td>
+      <td>0.953</td>
+      <td>0.607</td>
+      <td>0.673</td>
+    </tr>
+    <tr>
+      <th>S3</th>
+      <td>0.952</td>
+      <td>0.953</td>
+      <td>1.000</td>
+      <td>0.617</td>
+      <td>0.685</td>
+    </tr>
+    <tr>
+      <th>S4</th>
+      <td>0.644</td>
+      <td>0.607</td>
+      <td>0.617</td>
+      <td>1.000</td>
+      <td>0.961</td>
+    </tr>
+    <tr>
+      <th>S5</th>
+      <td>0.690</td>
+      <td>0.673</td>
+      <td>0.685</td>
+      <td>0.961</td>
+      <td>1.000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">correlation</span></code> layout to see it as a heatmap:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tsc</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"correlation"</span>
+<span class="n">tsc</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/095317266c84e66529ce7875b75ce2d1f06d497cbd0b6a228f0a2152ce518b61.png" src="../_images/095317266c84e66529ce7875b75ce2d1f06d497cbd0b6a228f0a2152ce518b61.png" />
+</div>
+</div>
+<p>The two sub-regions show up as two blocks: stations of the same sub-region correlate around 0.95, while stations of different sub-regions stay around 0.7. Spearman correlation is also available with <code class="docutils literal notranslate"><span class="pre">method=&quot;spearman&quot;</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>With strong seasonality, correlation is partly driven by the shared seasonal cycle itself. Even unrelated sites under the same climate correlate well.</p>
+</div>
+</section>
+<section id="filling-gaps-from-other-stations">
+<h2>Filling gaps from other stations<a class="headerlink" href="#filling-gaps-from-other-stations" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">.regionalize()</span></code> method fills the gaps of every station with a weighted average of the other stations, on the time steps where they have data. Observed values are never changed. Two weighting methods are available:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">average</span></code>: all other stations get the same weight.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">idw</span></code>: inverse distance weighting, closer stations get more weight.</p></li>
+</ul>
+<p>Check the share of each station in the weights for <code class="docutils literal notranslate"><span class="pre">S1</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_weights</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span><span class="n">method</span><span class="p">:</span> <span class="n">tsc</span><span class="o">.</span><span class="n">get_weights_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"S1"</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"average"</span><span class="p">,</span> <span class="s2">"idw"</span><span class="p">]},</span>
+    <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">"S2"</span><span class="p">,</span> <span class="s2">"S3"</span><span class="p">,</span> <span class="s2">"S4"</span><span class="p">,</span> <span class="s2">"S5"</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">df_weights</span> <span class="o">=</span> <span class="n">df_weights</span> <span class="o">/</span> <span class="n">df_weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">df_weights</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>average</th>
+      <th>idw</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>S2</th>
+      <td>0.25</td>
+      <td>0.47</td>
+    </tr>
+    <tr>
+      <th>S3</th>
+      <td>0.25</td>
+      <td>0.33</td>
+    </tr>
+    <tr>
+      <th>S4</th>
+      <td>0.25</td>
+      <td>0.10</td>
+    </tr>
+    <tr>
+      <th>S5</th>
+      <td>0.25</td>
+      <td>0.10</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Since <code class="docutils literal notranslate"><span class="pre">.regionalize()</span></code> changes the data in place, lets run each method on a copy of the cluster:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc_clusters</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"average"</span><span class="p">,</span> <span class="s2">"idw"</span><span class="p">]:</span>
+    <span class="n">dc_clusters</span><span class="p">[</span><span class="n">method</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">tsc</span><span class="p">)</span>
+    <span class="n">dc_clusters</span><span class="p">[</span><span class="n">method</span><span class="p">]</span><span class="o">.</span><span class="n">regionalize</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The gap in <code class="docutils literal notranslate"><span class="pre">S1</span></code> is now closed:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tsc_idw</span> <span class="o">=</span> <span class="n">dc_clusters</span><span class="p">[</span><span class="s2">"idw"</span><span class="p">]</span>
+<span class="n">tsc_idw</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"full"</span>
+<span class="n">tsc_idw</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/adb04a5e098c5a136a0c683140203278746135f3e7894aca13a545e2231d510f.png" src="../_images/adb04a5e098c5a136a0c683140203278746135f3e7894aca13a545e2231d510f.png" />
+</div>
+</div>
+<section id="how-good-is-the-filling">
+<h3>How good is the filling?<a class="headerlink" href="#how-good-is-the-filling" title="Link to this heading">#</a></h3>
+<p>Since we kept the truth, we can compare the filled values against it using the <code class="docutils literal notranslate"><span class="pre">Bivar</span></code> metrics:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gap_dates</span> <span class="o">=</span> <span class="n">dates</span><span class="p">[</span><span class="n">GAP</span><span class="p">]</span>
+<span class="n">dc_filled</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">method</span><span class="p">,</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="n">dc_clusters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="s2">"S1"</span><span class="p">]</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">dtfield</span><span class="p">)[</span><span class="n">ts</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span>
+    <span class="n">dc_filled</span><span class="p">[</span><span class="n">method</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">gap_dates</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+<span class="n">df_metrics</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span><span class="n">method</span><span class="p">:</span> <span class="n">Bivar</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span><span class="n">observed</span><span class="o">=</span><span class="n">truth</span><span class="p">,</span> <span class="n">predicted</span><span class="o">=</span><span class="n">filled</span><span class="p">)</span> <span class="k">for</span> <span class="n">method</span><span class="p">,</span> <span class="n">filled</span> <span class="ow">in</span> <span class="n">dc_filled</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+<span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="n">df_metrics</span><span class="p">[[</span><span class="s2">"RMSE"</span><span class="p">,</span> <span class="s2">"MAE"</span><span class="p">,</span> <span class="s2">"Bias"</span><span class="p">,</span> <span class="s2">"R2"</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>RMSE</th>
+      <th>MAE</th>
+      <th>Bias</th>
+      <th>R2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>average</th>
+      <td>1.952558</td>
+      <td>1.547067</td>
+      <td>7.487313</td>
+      <td>0.022263</td>
+    </tr>
+    <tr>
+      <th>idw</th>
+      <td>1.040685</td>
+      <td>0.824099</td>
+      <td>2.649993</td>
+      <td>0.722251</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>And see it on the gap window:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">gap_dates</span><span class="p">,</span> <span class="n">truth</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"truth"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">gap_dates</span><span class="p">,</span> <span class="n">dc_filled</span><span class="p">[</span><span class="s2">"average"</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"tab:gray"</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"average"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">gap_dates</span><span class="p">,</span> <span class="n">dc_filled</span><span class="p">[</span><span class="s2">"idw"</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"tab:blue"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"idw"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Temperature (C)"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/80c3b37d341aab1861805781531524b6f1eabc65237fa3a87af390e40e68ad63.png" src="../_images/80c3b37d341aab1861805781531524b6f1eabc65237fa3a87af390e40e68ad63.png" />
+</div>
+</div>
+<p>Inverse distance weighting follows the truth much closer, since it relies mostly on <code class="docutils literal notranslate"><span class="pre">S2</span></code> and <code class="docutils literal notranslate"><span class="pre">S3</span></code>, which share the west sub-region weather. The uniform average gives half of the weight to the east stations, which have their own weather.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">.regionalize()</span></code> takes the other stations values as they are. Stations with systematically different levels (e.g., temperature at different elevations) will bias the filling.</p>
+</div>
+</section>
+</section>
+<section id="recap">
+<h2>Recap<a class="headerlink" href="#recap" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>A <code class="docutils literal notranslate"><span class="pre">TimeSeriesCluster</span></code> holds same-variable series from different sites, loaded from an info table with station coordinates.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">series</span></code> and <code class="docutils literal notranslate"><span class="pre">correlation</span></code> layouts show the series together and the correlation between sites; the default layout shows data availability.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_correlation()</span></code> compares sites on their overlapping time steps.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">regionalize()</span></code> fills gaps from other sites, with uniform or inverse-distance weights.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="timeseries_07_collection.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Time Series - Collections</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="timeseries_09_cluster_large.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Time Series - Large Clusters</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notebook-setup">Notebook setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-a-synthetic-station-network">Build a synthetic station network</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-into-a-time-series-cluster">Load into a Time Series Cluster</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-availability">Data availability</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#all-series-together">All series together</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#correlation-between-stations">Correlation between stations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filling-gaps-from-other-stations">Filling gaps from other stations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-good-is-the-filling">How good is the filling?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#recap">Recap</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/tutorials/timeseries_08_cluster.ipynb.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Iporã Possantti.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

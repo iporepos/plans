@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Bivariate data - the basics &#8212; plans 1.0.0 documentation</title>
+    <title>Bivariate data - Basics &#8212; plans 1.0.0 documentation</title>
   
   
   
@@ -46,13 +46,15 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/bivar_01';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Time Series - the basics" href="timeseries_01.html" />
-    <link rel="prev" title="Univariate data - the basics" href="univar_01.html" />
+    <link rel="next" title="Bivariate data - Models" href="bivar_02_models.html" />
+    <link rel="prev" title="Univariate data - Plots" href="univar_02_plots.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
@@ -373,18 +375,23 @@
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../projects.html">Projects</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="project_01.html">Projects - basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="univar_01.html">Univariate data - the basics</a></li>
-<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Bivariate data - the basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time Series - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project_01.html">Projects - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="univar_01.html">Univariate data - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="univar_02_plots.html">Univariate data - Plots</a></li>
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Bivariate data - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bivar_02_models.html">Bivariate data - Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time Series - Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_05_compare.html">Time Series - Comparing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_02_upscale.html">Time Series - Upscaling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_06_downscale.html">Time Series - Downscaling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_03_gaps.html">Time Series - Gaps and epochs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_04_standardize.html">Time Series - Standardizing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_07_collection.html">Time Series - Collections</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - the basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="raster_01.html">Raster data - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_08_cluster.html">Time Series - Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_09_cluster_large.html">Time Series - Large Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_10_ensemble.html">Time Series - Ensembles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="raster_01.html">Raster data - Basics</a></li>
 </ul>
 </details></li>
 </ul>
@@ -433,7 +440,7 @@
     
     <li class="breadcrumb-item"><a href="../examples.html" class="nav-link">Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Bivariate data - the basics</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Bivariate data - Basics</span></li>
   </ul>
 </nav>
 </div>
@@ -450,9 +457,9 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="bivariate-data-the-basics">
-<h1>Bivariate data - the basics<a class="headerlink" href="#bivariate-data-the-basics" title="Link to this heading">#</a></h1>
-<p>This tutorial focuses on working with paired (bivariate) data using <code class="docutils literal notranslate"><span class="pre">plans</span></code>: loading <code class="docutils literal notranslate"><span class="pre">x</span></code>/<code class="docutils literal notranslate"><span class="pre">y</span></code> samples, inspecting their joint distribution, fitting simple regression models and assessing the model errors.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="bivariate-data-basics">
+<h1>Bivariate data - Basics<a class="headerlink" href="#bivariate-data-basics" title="Link to this heading">#</a></h1>
+<p>This tutorial focuses on working with paired (bivariate) data using <code class="docutils literal notranslate"><span class="pre">plans</span></code>: loading <code class="docutils literal notranslate"><span class="pre">x</span></code>/<code class="docutils literal notranslate"><span class="pre">y</span></code> samples, visualizing their joint distribution and measuring their agreement with standard metrics.</p>
 <section id="notebook-setup">
 <h2>Notebook setup<a class="headerlink" href="#notebook-setup" title="Link to this heading">#</a></h2>
 <p>For users running this tutorial as a Jupyter Notebook, this cell must be executed first:</p>
@@ -494,7 +501,7 @@
 <p>The <code class="docutils literal notranslate"><span class="pre">Bivar</span></code> object lives under the <code class="docutils literal notranslate"><span class="pre">plans.analyst</span></code> module. Like <code class="docutils literal notranslate"><span class="pre">Univar</span></code>, it is a child of the <code class="docutils literal notranslate"><span class="pre">DataSet</span></code> object from <code class="docutils literal notranslate"><span class="pre">plans.root</span></code>, so it shares the same lifecycle: create the object, feed it data, and let <code class="docutils literal notranslate"><span class="pre">.update()</span></code> refresh the derived attributes.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>Check out the <a class="reference internal" href="univar_01.html"><span class="doc">Univariate data - the basics</span></a> tutorial first.</p>
+<p>Check out the <a class="reference internal" href="univar_01.html"><span class="doc">Univariate data - Basics</span></a> tutorial first.</p>
 </div>
 <p>Import <code class="docutils literal notranslate"><span class="pre">Bivar</span></code> object:</p>
 <div class="cell docutils container">
@@ -507,7 +514,7 @@
 <p>Create an instance of the <code class="docutils literal notranslate"><span class="pre">Bivar</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bv</span> <span class="o">=</span> <span class="n">Bivar</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Rating Curve"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"RC"</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bv</span> <span class="o">=</span> <span class="n">Bivar</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Discharge"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"Q"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -531,10 +538,10 @@
 <p>Columns are named by <code class="docutils literal notranslate"><span class="pre">.xfield</span></code> and <code class="docutils literal notranslate"><span class="pre">.yfield</span></code>, while <code class="docutils literal notranslate"><span class="pre">.xname</span></code>, <code class="docutils literal notranslate"><span class="pre">.yname</span></code>, <code class="docutils literal notranslate"><span class="pre">.xunits</span></code> and <code class="docutils literal notranslate"><span class="pre">.yunits</span></code> are only used as labels in visuals and metadata. Set labels <strong>before</strong> loading data, so the axis labels are built from them:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bv</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">"Stage-discharge pairs for a tutorial"</span>
-<span class="n">bv</span><span class="o">.</span><span class="n">xname</span> <span class="o">=</span> <span class="s2">"Stage"</span>
-<span class="n">bv</span><span class="o">.</span><span class="n">xunits</span> <span class="o">=</span> <span class="s2">"m"</span>
-<span class="n">bv</span><span class="o">.</span><span class="n">yname</span> <span class="o">=</span> <span class="s2">"Discharge"</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bv</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">"Observed and simulated daily discharge for a tutorial"</span>
+<span class="n">bv</span><span class="o">.</span><span class="n">xname</span> <span class="o">=</span> <span class="s2">"Observed"</span>
+<span class="n">bv</span><span class="o">.</span><span class="n">xunits</span> <span class="o">=</span> <span class="s2">"m3/s"</span>
+<span class="n">bv</span><span class="o">.</span><span class="n">yname</span> <span class="o">=</span> <span class="s2">"Simulated"</span>
 <span class="n">bv</span><span class="o">.</span><span class="n">yunits</span> <span class="o">=</span> <span class="s2">"m3/s"</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"x column: </span><span class="si">{</span><span class="n">bv</span><span class="o">.</span><span class="n">xfield</span><span class="si">}</span><span class="s2"> | y column: </span><span class="si">{</span><span class="n">bv</span><span class="o">.</span><span class="n">yfield</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
@@ -549,23 +556,21 @@
 </section>
 <section id="working-with-data">
 <h2>Working with data<a class="headerlink" href="#working-with-data" title="Link to this heading">#</a></h2>
-<section id="create-synthetic-power-law-dataset">
-<h3>Create synthetic power-law dataset<a class="headerlink" href="#create-synthetic-power-law-dataset" title="Link to this heading">#</a></h3>
-<p>Stage-discharge relations (rating curves) are a classic bivariate case in hydrology. Lets make a synthetic one following a power law plus gaussian noise, shuffle the rows and add a couple of missing values, then save it to a CSV file.</p>
+<section id="create-synthetic-dataset">
+<h3>Create synthetic dataset<a class="headerlink" href="#create-synthetic-dataset" title="Link to this heading">#</a></h3>
+<p>A common bivariate case in hydrology is comparing observed against simulated discharge. Lets make one year of skewed daily observations and a simulation that slightly overestimates them with some noise. A couple of values are missing.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make synthetic power-law data</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make synthetic data</span>
 <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>  <span class="c1"># ensure reproducibility</span>
-<span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
-<span class="n">q</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">)</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">h</span><span class="p">))</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"stage"</span><span class="p">:</span> <span class="n">h</span><span class="p">,</span> <span class="s2">"discharge"</span><span class="p">:</span> <span class="n">q</span><span class="p">})</span>
-
-<span class="c1"># shuffle rows and add missing values</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="s2">"discharge"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="n">q_obs</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">gamma</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">365</span><span class="p">)</span>
+<span class="n">q_sim</span> <span class="o">=</span> <span class="mf">1.05</span> <span class="o">*</span> <span class="n">q_obs</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">q_obs</span><span class="p">))</span>
+<span class="n">q_sim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">q_sim</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"q_obs"</span><span class="p">:</span> <span class="n">q_obs</span><span class="p">,</span> <span class="s2">"q_sim"</span><span class="p">:</span> <span class="n">q_sim</span><span class="p">})</span>
+<span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="s2">"q_sim"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
 <span class="c1"># Export CSV file</span>
-<span class="n">file_csv</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"bivariate_rating.csv"</span>
+<span class="n">file_csv</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"bivariate_discharge.csv"</span>
 <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_csv</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Saved to: </span><span class="si">{</span><span class="n">file_csv</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
@@ -573,7 +578,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Saved to: outputs/bivariate/bivariate_rating.csv
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Saved to: outputs/bivariate/bivariate_discharge.csv
 </pre></div>
 </div>
 <div class="output text_html"><div>
@@ -594,35 +599,35 @@
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>stage</th>
-      <th>discharge</th>
+      <th>q_obs</th>
+      <th>q_sim</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>1.693467</td>
-      <td>10.167719</td>
+      <td>20.918173</td>
+      <td>15.121868</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>0.688442</td>
-      <td>1.892135</td>
+      <td>28.353456</td>
+      <td>25.281213</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>0.876884</td>
-      <td>6.193725</td>
+      <td>18.372156</td>
+      <td>16.522104</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>2.484925</td>
+      <td>16.450704</td>
       <td>NaN</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>2.108040</td>
-      <td>15.848562</td>
+      <td>30.792553</td>
+      <td>33.179942</td>
     </tr>
   </tbody>
 </table>
@@ -636,8 +641,8 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bv</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
     <span class="n">file_data</span><span class="o">=</span><span class="n">file_csv</span><span class="p">,</span>  <span class="c1"># file path</span>
-    <span class="n">input_xfield</span><span class="o">=</span><span class="s2">"stage"</span><span class="p">,</span>  <span class="c1"># name of x column</span>
-    <span class="n">input_yfield</span><span class="o">=</span><span class="s2">"discharge"</span><span class="p">,</span>  <span class="c1"># name of y column</span>
+    <span class="n">input_xfield</span><span class="o">=</span><span class="s2">"q_obs"</span><span class="p">,</span>  <span class="c1"># name of x column</span>
+    <span class="n">input_yfield</span><span class="o">=</span><span class="s2">"q_sim"</span><span class="p">,</span>  <span class="c1"># name of y column</span>
     <span class="n">in_sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span>  <span class="c1"># input separator</span>
 <span class="p">)</span>
 </pre></div>
@@ -677,28 +682,28 @@
   <tbody>
     <tr>
       <th>0</th>
-      <td>0.500000</td>
-      <td>1.954102</td>
+      <td>0.927625</td>
+      <td>4.918430</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>0.512563</td>
-      <td>0.676206</td>
+      <td>1.046498</td>
+      <td>0.402015</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>0.525126</td>
-      <td>2.534436</td>
+      <td>1.073776</td>
+      <td>0.000000</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>0.537688</td>
-      <td>2.793325</td>
+      <td>1.474360</td>
+      <td>7.263258</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>0.550251</td>
-      <td>-0.028529</td>
+      <td>1.513774</td>
+      <td>3.123128</td>
     </tr>
     <tr>
       <th>...</th>
@@ -706,33 +711,33 @@
       <td>...</td>
     </tr>
     <tr>
-      <th>193</th>
-      <td>2.949749</td>
-      <td>27.329759</td>
+      <th>358</th>
+      <td>68.394419</td>
+      <td>73.005240</td>
     </tr>
     <tr>
-      <th>194</th>
-      <td>2.962312</td>
-      <td>29.060389</td>
+      <th>359</th>
+      <td>70.228886</td>
+      <td>71.807229</td>
     </tr>
     <tr>
-      <th>195</th>
-      <td>2.974874</td>
-      <td>28.215524</td>
+      <th>360</th>
+      <td>71.510124</td>
+      <td>73.848619</td>
     </tr>
     <tr>
-      <th>196</th>
-      <td>2.987437</td>
-      <td>28.798563</td>
+      <th>361</th>
+      <td>74.869975</td>
+      <td>75.930436</td>
     </tr>
     <tr>
-      <th>197</th>
-      <td>3.000000</td>
-      <td>28.834288</td>
+      <th>362</th>
+      <td>89.335951</td>
+      <td>96.356605</td>
     </tr>
   </tbody>
 </table>
-<p>198 rows × 2 columns</p>
+<p>363 rows × 2 columns</p>
 </div></div></div>
 </div>
 <div class="admonition tip">
@@ -748,15 +753,13 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Size: </span><span class="si">{</span><span class="n">bv</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"x range: </span><span class="si">{</span><span class="n">bv</span><span class="o">.</span><span class="n">x_min</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">bv</span><span class="o">.</span><span class="n">x_max</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"y range: </span><span class="si">{</span><span class="n">bv</span><span class="o">.</span><span class="n">y_min</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">bv</span><span class="o">.</span><span class="n">y_max</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Pearson R: </span><span class="si">{</span><span class="n">bv</span><span class="o">.</span><span class="n">corr</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Size: 198
-x range: 0.50 to 3.00
-y range: -0.03 to 29.30
-Pearson R: 0.986
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Size: 363
+x range: 0.93 to 89.34
+y range: 0.00 to 96.36
 </pre></div>
 </div>
 </div>
@@ -769,15 +772,15 @@ Pearson R: 0.986
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'name': 'Rating Curve',
- 'alias': 'RC',
- 'size': 198,
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'name': 'Discharge',
+ 'alias': 'Q',
+ 'size': 363,
  'color': 'blue',
  'source': None,
- 'description': 'Stage-discharge pairs for a tutorial',
- 'xunits': 'm',
+ 'description': 'Observed and simulated daily discharge for a tutorial',
+ 'xunits': 'm3/s',
  'yunits': 'm3/s',
- 'file_data': '/home/runner/work/plans/plans/docs/tutorials/outputs/bivariate/bivariate_rating.csv'}
+ 'file_data': '/home/runner/work/plans/plans/docs/tutorials/outputs/bivariate/bivariate_discharge.csv'}
 </pre></div>
 </div>
 </div>
@@ -796,57 +799,109 @@ Pearson R: 0.986
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9e2cf6ecfe5c6d1fb232f4012a3ed701f55fe3534b14325e6c9036d5032fee96.png" src="../_images/9e2cf6ecfe5c6d1fb232f4012a3ed701f55fe3534b14325e6c9036d5032fee96.png" />
+<img alt="../_images/6dae97895a62372728ed71d0d9abfb833ca3f828859af15ec665c811ef8c81b0.png" src="../_images/6dae97895a62372728ed71d0d9abfb833ca3f828859af15ec665c811ef8c81b0.png" />
 </div>
 </div>
 </section>
 <section id="fine-tuning-visuals">
 <h3>Fine-tuning visuals<a class="headerlink" href="#fine-tuning-visuals" title="Link to this heading">#</a></h3>
-<p>Like other <code class="docutils literal notranslate"><span class="pre">plans</span></code> objects, use the <code class="docutils literal notranslate"><span class="pre">.view_specs</span></code> keys for fine tuning:</p>
+<p>Like other <code class="docutils literal notranslate"><span class="pre">plans</span></code> objects, use the <code class="docutils literal notranslate"><span class="pre">.view_specs</span></code> keys for fine tuning. When comparing the same variable, equal axis ranges make the plot easier to read:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"color"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"tab:blue"</span>
-<span class="n">bv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"bins"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">15</span>  <span class="c1"># default None uses the Freedman-Diaconis rule</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">q_max</span> <span class="o">=</span> <span class="mf">1.1</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">bv</span><span class="o">.</span><span class="n">x_max</span><span class="p">,</span> <span class="n">bv</span><span class="o">.</span><span class="n">y_max</span><span class="p">)</span>
+<span class="n">bv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range_x"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">q_max</span><span class="p">]</span>
+<span class="n">bv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">q_max</span><span class="p">]</span>
+<span class="n">bv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"color"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"tab:blue"</span>
+<span class="n">bv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"bins"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span>  <span class="c1"># default None uses the Freedman-Diaconis rule</span>
 <span class="n">bv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"plot_mean"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">bv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Hello! This is a tutorial!"</span>
+<span class="n">bv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Observed vs Simulated"</span>
 <span class="n">bv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8cf71ce1799c781bfae5b1a902e085937abe3d9fd2cb78d8e4465d0886062765.png" src="../_images/8cf71ce1799c781bfae5b1a902e085937abe3d9fd2cb78d8e4465d0886062765.png" />
+<img alt="../_images/335749fd276af01ee760a3ccedd15e3cd99c44ec15442bb57d1ae8b49f72f3a1.png" src="../_images/335749fd276af01ee760a3ccedd15e3cd99c44ec15442bb57d1ae8b49f72f3a1.png" />
 </div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">model</span></code> layout for model assessment is covered in the <a class="reference internal" href="bivar_02_models.html"><span class="doc">Bivariate data - Models</span></a> tutorial.</p>
 </div>
 </section>
 </section>
-<section id="fitting-models">
-<h2>Fitting models<a class="headerlink" href="#fitting-models" title="Link to this heading">#</a></h2>
-<section id="available-models">
-<h3>Available models<a class="headerlink" href="#available-models" title="Link to this heading">#</a></h3>
-<p>Models are stored in the <code class="docutils literal notranslate"><span class="pre">.models</span></code> dictionary. Each entry holds the function, its formula, a <code class="docutils literal notranslate"><span class="pre">Setup</span></code> table of parameters and, once computed, the model <code class="docutils literal notranslate"><span class="pre">Data</span></code> and the <code class="docutils literal notranslate"><span class="pre">RMSE</span></code>:</p>
+<section id="metrics">
+<h2>Metrics<a class="headerlink" href="#metrics" title="Link to this heading">#</a></h2>
+<p>All metrics are static methods, so they can be used on any pair of arrays. Correlations are symmetric and take any two variables <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code>:</p>
+<ul class="simple">
+<li><p><strong>Pearson</strong> <span class="math notranslate nohighlight">\(r\)</span> measures <em>linear</em> association.</p></li>
+<li><p><strong>Spearman</strong> <span class="math notranslate nohighlight">\(\rho\)</span> is the Pearson <span class="math notranslate nohighlight">\(r\)</span> of the ranks, so it measures <em>monotonic</em> association. It reaches 1 for any increasing relation, linear or not.</p></li>
+</ul>
+<p>Agreement metrics are not symmetric and take an <code class="docutils literal notranslate"><span class="pre">observed</span></code> and a <code class="docutils literal notranslate"><span class="pre">predicted</span></code> series of the same variable:</p>
+<ul class="simple">
+<li><p><strong>Coefficient of determination</strong> <span class="math notranslate nohighlight">\(R^2 = 1 - SS_{res} / SS_{tot}\)</span> is the fraction of observed variance explained by the predictions. It is negative when the predictions are worse than the observed mean.</p></li>
+<li><p><strong>RMSE</strong>, <strong>MAE</strong> and <strong>Bias</strong> (%) measure the error magnitude and its direction. Bias is positive when the predictions overestimate.</p></li>
+</ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">model_type</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">bv</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">model_type</span><span class="si">:</span><span class="s2">&lt;12</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">model</span><span class="p">[</span><span class="s1">'Formula'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">obs</span> <span class="o">=</span> <span class="n">bv</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">bv</span><span class="o">.</span><span class="n">xfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bv</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">bv</span><span class="o">.</span><span class="n">yfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"r: </span><span class="si">{</span><span class="n">Bivar</span><span class="o">.</span><span class="n">pearson</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">obs</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="n">sim</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"rho: </span><span class="si">{</span><span class="n">Bivar</span><span class="o">.</span><span class="n">spearman</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">obs</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="n">sim</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"R2: </span><span class="si">{</span><span class="n">Bivar</span><span class="o">.</span><span class="n">rsq</span><span class="p">(</span><span class="n">observed</span><span class="o">=</span><span class="n">obs</span><span class="p">,</span><span class="w"> </span><span class="n">predicted</span><span class="o">=</span><span class="n">sim</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"RMSE: </span><span class="si">{</span><span class="n">Bivar</span><span class="o">.</span><span class="n">rmse</span><span class="p">(</span><span class="n">observed</span><span class="o">=</span><span class="n">obs</span><span class="p">,</span><span class="w"> </span><span class="n">predicted</span><span class="o">=</span><span class="n">sim</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"MAE: </span><span class="si">{</span><span class="n">Bivar</span><span class="o">.</span><span class="n">mae</span><span class="p">(</span><span class="n">observed</span><span class="o">=</span><span class="n">obs</span><span class="p">,</span><span class="w"> </span><span class="n">predicted</span><span class="o">=</span><span class="n">sim</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Bias (%): </span><span class="si">{</span><span class="n">Bivar</span><span class="o">.</span><span class="n">bias</span><span class="p">(</span><span class="n">observed</span><span class="o">=</span><span class="n">obs</span><span class="p">,</span><span class="w"> </span><span class="n">predicted</span><span class="o">=</span><span class="n">sim</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Linear       f(x) = c0 + c1 * x
-Power        f(x) =  c2 * ((x + c0)^c1)
-Power_zero   f(x) =  c1 * (x^c0)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>r: 0.981
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>rho: 0.963
+R2: 0.951
+RMSE: 3.138
+MAE: 2.506
+Bias (%): 5.187
 </pre></div>
 </div>
 </div>
 </div>
-</section>
-<section id="fit-a-model">
-<h3>Fit a model<a class="headerlink" href="#fit-a-model" title="Link to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">.fit()</span></code> method runs a least squares fit and stores the mean and standard deviation of parameters in the <code class="docutils literal notranslate"><span class="pre">Setup</span></code> table:</p>
+<p>Or get them all at once with <code class="docutils literal notranslate"><span class="pre">Bivar.get_metrics()</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s2">"Power"</span><span class="p">)</span>
-<span class="n">bv</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="s2">"Power"</span><span class="p">][</span><span class="s2">"Setup"</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Bivar</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span><span class="n">observed</span><span class="o">=</span><span class="n">obs</span><span class="p">,</span> <span class="n">predicted</span><span class="o">=</span><span class="n">sim</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'r': 0.9806092604096887,
+ 'rho': 0.9631908543435195,
+ 'R2': 0.9511562724941502,
+ 'RMSE': 3.138448669315695,
+ 'MAE': 2.5062203403528733,
+ 'Bias': 5.18716362862958}
+</pre></div>
+</div>
+</div>
+</div>
+<section id="association-versus-agreement">
+<h3>Association versus agreement<a class="headerlink" href="#association-versus-agreement" title="Link to this heading">#</a></h3>
+<p>To see how metrics differ, compare our simulation with two noiseless but distorted ones: a <em>doubled</em> series (<span class="math notranslate nohighlight">\(2 \cdot obs\)</span>) and a <em>curved</em> series, still increasing but no longer a straight line:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sim_doubled</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">obs</span>
+<span class="n">sim_curved</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">obs</span> <span class="o">/</span> <span class="mi">20</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
+
+<span class="n">df_metrics</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">"simulated"</span><span class="p">:</span> <span class="n">Bivar</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span><span class="n">observed</span><span class="o">=</span><span class="n">obs</span><span class="p">,</span> <span class="n">predicted</span><span class="o">=</span><span class="n">sim</span><span class="p">),</span>
+        <span class="s2">"doubled"</span><span class="p">:</span> <span class="n">Bivar</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span><span class="n">observed</span><span class="o">=</span><span class="n">obs</span><span class="p">,</span> <span class="n">predicted</span><span class="o">=</span><span class="n">sim_doubled</span><span class="p">),</span>
+        <span class="s2">"curved"</span><span class="p">:</span> <span class="n">Bivar</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span><span class="n">observed</span><span class="o">=</span><span class="n">obs</span><span class="p">,</span> <span class="n">predicted</span><span class="o">=</span><span class="n">sim_curved</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="n">df_metrics</span>
 </pre></div>
 </div>
 </div>
@@ -869,256 +924,47 @@ Power_zero   f(x) =  c1 * (x^c0)
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>Parameters</th>
-      <th>Mean</th>
-      <th>SD</th>
+      <th>r</th>
+      <th>rho</th>
+      <th>R2</th>
+      <th>RMSE</th>
+      <th>MAE</th>
+      <th>Bias</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th>0</th>
-      <td>c0</td>
-      <td>0.094287</td>
-      <td>0.091403</td>
+      <th>simulated</th>
+      <td>0.980609</td>
+      <td>0.963191</td>
+      <td>0.951156</td>
+      <td>3.138449</td>
+      <td>2.506220</td>
+      <td>5.187164</td>
     </tr>
     <tr>
-      <th>1</th>
-      <td>c1</td>
-      <td>1.700409</td>
-      <td>0.082639</td>
+      <th>doubled</th>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>-1.980150</td>
+      <td>24.514875</td>
+      <td>19.982952</td>
+      <td>100.000000</td>
     </tr>
     <tr>
-      <th>2</th>
-      <td>c2</td>
-      <td>4.279182</td>
-      <td>0.593650</td>
+      <th>curved</th>
+      <td>0.980011</td>
+      <td>1.000000</td>
+      <td>0.216667</td>
+      <td>12.568511</td>
+      <td>6.040198</td>
+      <td>17.567995</td>
     </tr>
   </tbody>
 </table>
 </div></div></div>
 </div>
-<p>The model <code class="docutils literal notranslate"><span class="pre">Data</span></code> holds the predictions (<code class="docutils literal notranslate"><span class="pre">y_Mean</span></code>) and the errors (<code class="docutils literal notranslate"><span class="pre">e_Mean</span></code>, model minus observed):</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bv</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="s2">"Power"</span><span class="p">][</span><span class="s2">"Data"</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_html"><div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>x</th>
-      <th>y</th>
-      <th>y_Mean</th>
-      <th>e_Mean</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0.500000</td>
-      <td>1.954102</td>
-      <td>1.766291</td>
-      <td>-0.187811</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>0.512563</td>
-      <td>0.676206</td>
-      <td>1.830250</td>
-      <td>1.154044</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>0.525126</td>
-      <td>2.534436</td>
-      <td>1.895143</td>
-      <td>-0.639293</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>0.537688</td>
-      <td>2.793325</td>
-      <td>1.960965</td>
-      <td>-0.832359</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>0.550251</td>
-      <td>-0.028529</td>
-      <td>2.027710</td>
-      <td>2.056239</td>
-    </tr>
-  </tbody>
-</table>
-</div></div></div>
-</div>
-</section>
-<section id="compare-models">
-<h3>Compare models<a class="headerlink" href="#compare-models" title="Link to this heading">#</a></h3>
-<p>Fit all models and compare their RMSE:</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="n">bv</span><span class="o">.</span><span class="n">models</span><span class="p">:</span>
-    <span class="n">bv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="n">model_type</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">model_type</span><span class="si">:</span><span class="s2">&lt;12</span><span class="si">}</span><span class="s2"> RMSE = </span><span class="si">{</span><span class="n">bv</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s1">'RMSE'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Linear       RMSE = 1.337
-Power        RMSE = 0.878
-Power_zero   RMSE = 0.881
-</pre></div>
-</div>
-</div>
-</div>
-</section>
-<section id="set-parameters-manually">
-<h3>Set parameters manually<a class="headerlink" href="#set-parameters-manually" title="Link to this heading">#</a></h3>
-<p>Parameters can also be set by hand with <code class="docutils literal notranslate"><span class="pre">.update_model()</span></code>, for instance to test a known reference curve:</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bv</span><span class="o">.</span><span class="n">update_model</span><span class="p">(</span><span class="n">params_mean</span><span class="o">=</span><span class="p">[</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">"Power_zero"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"RMSE = </span><span class="si">{</span><span class="n">bv</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="s1">'Power_zero'</span><span class="p">][</span><span class="s1">'RMSE'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>RMSE = 1.589
-</pre></div>
-</div>
-</div>
-</div>
-</section>
-</section>
-<section id="model-assessment">
-<h2>Model assessment<a class="headerlink" href="#model-assessment" title="Link to this heading">#</a></h2>
-<section id="model-panel">
-<h3>Model panel<a class="headerlink" href="#model-panel" title="Link to this heading">#</a></h3>
-<p>Set the <code class="docutils literal notranslate"><span class="pre">model</span></code> layout and the <code class="docutils literal notranslate"><span class="pre">model_type</span></code> key to get the model panel. It shows the fitted curve, how the error variance evolves along <code class="docutils literal notranslate"><span class="pre">x</span></code>, the errors, their histogram and a Q-Q plot against the normal distribution:</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s2">"Power"</span><span class="p">)</span>
-<span class="n">bv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"model"</span>
-<span class="n">bv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"model_type"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Power"</span>
-<span class="n">bv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Power model"</span>
-<span class="n">bv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../_images/a50685595cf282405e9d6153d7a9b0644b88815aae8c10887e62a2081b1f18db.png" src="../_images/a50685595cf282405e9d6153d7a9b0644b88815aae8c10887e62a2081b1f18db.png" />
-</div>
-</div>
-</section>
-<section id="error-normality">
-<h3>Error normality<a class="headerlink" href="#error-normality" title="Link to this heading">#</a></h3>
-<p>Assess if model errors are normal via the <code class="docutils literal notranslate"><span class="pre">.get_error_normality()</span></code> method:</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">bv</span><span class="o">.</span><span class="n">get_error_normality</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s2">"Power"</span><span class="p">,</span> <span class="n">clevel</span><span class="o">=</span><span class="mf">0.95</span><span class="p">)</span>
-<span class="n">df</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_html"><div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Test</th>
-      <th>Statistic</th>
-      <th>p-value</th>
-      <th>is_normal</th>
-      <th>Confidence</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>Kolmogorov-Smirnov</td>
-      <td>0.041331</td>
-      <td>0.873566</td>
-      <td>True</td>
-      <td>0.95</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>Shapiro-Wilk</td>
-      <td>0.992896</td>
-      <td>0.454820</td>
-      <td>True</td>
-      <td>0.95</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>D'Agostino-Pearson</td>
-      <td>2.084696</td>
-      <td>0.352626</td>
-      <td>True</td>
-      <td>0.95</td>
-    </tr>
-  </tbody>
-</table>
-</div></div></div>
-</div>
-</section>
-<section id="goodness-of-fit-metrics">
-<h3>Goodness-of-fit metrics<a class="headerlink" href="#goodness-of-fit-metrics" title="Link to this heading">#</a></h3>
-<p>Static methods are available for common metrics between predicted and observed values:</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_model</span> <span class="o">=</span> <span class="n">bv</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="s2">"Power"</span><span class="p">][</span><span class="s2">"Data"</span><span class="p">]</span>
-<span class="n">pred</span> <span class="o">=</span> <span class="n">df_model</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bv</span><span class="o">.</span><span class="n">yfield</span><span class="si">}</span><span class="s2">_Mean"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-<span class="n">obs</span> <span class="o">=</span> <span class="n">df_model</span><span class="p">[</span><span class="n">bv</span><span class="o">.</span><span class="n">yfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"RMSE: </span><span class="si">{</span><span class="n">Bivar</span><span class="o">.</span><span class="n">rmse</span><span class="p">(</span><span class="n">pred</span><span class="o">=</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="o">=</span><span class="n">obs</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"MAE: </span><span class="si">{</span><span class="n">Bivar</span><span class="o">.</span><span class="n">mae</span><span class="p">(</span><span class="n">pred</span><span class="o">=</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="o">=</span><span class="n">obs</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"R2: </span><span class="si">{</span><span class="n">Bivar</span><span class="o">.</span><span class="n">rsq</span><span class="p">(</span><span class="n">pred</span><span class="o">=</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="o">=</span><span class="n">obs</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Bias (%): </span><span class="si">{</span><span class="n">Bivar</span><span class="o">.</span><span class="n">bias</span><span class="p">(</span><span class="n">pred</span><span class="o">=</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="o">=</span><span class="n">obs</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>RMSE: 0.878
-MAE: 0.709
-R2: 0.988
-Bias (%): 0.008
-</pre></div>
-</div>
-</div>
-</div>
+<p>Both distortions keep the ranks, so <span class="math notranslate nohighlight">\(\rho = 1\)</span>. The doubled series is still a straight line, so <span class="math notranslate nohighlight">\(r = 1\)</span> as well, and the curved one stays close to it. Yet both have a much lower <span class="math notranslate nohighlight">\(R^2\)</span> than the noisy simulation: correlations measure <em>association</em> (how well some line or curve relates the series), while <span class="math notranslate nohighlight">\(R^2\)</span> and the error metrics measure <em>agreement</em> with the 1:1 line.</p>
 </section>
 </section>
 </section>
@@ -1134,20 +980,20 @@ Bias (%): 0.008
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="univar_01.html"
+       href="univar_02_plots.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Univariate data - the basics</p>
+        <p class="prev-next-title">Univariate data - Plots</p>
       </div>
     </a>
     <a class="right-next"
-       href="timeseries_01.html"
+       href="bivar_02_models.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Time Series - the basics</p>
+        <p class="prev-next-title">Bivariate data - Models</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1174,7 +1020,7 @@ Bias (%): 0.008
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bivar-object">The <code class="docutils literal notranslate"><span class="pre">Bivar</span></code> object</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#handle-data-attributes">Handle data attributes</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#working-with-data">Working with data</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-synthetic-power-law-dataset">Create synthetic power-law dataset</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-synthetic-dataset">Create synthetic dataset</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-data-from-the-csv-file">Loading data from the CSV file</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#access-computed-attributes">Access computed attributes</a></li>
 </ul>
@@ -1184,17 +1030,8 @@ Bias (%): 0.008
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fine-tuning-visuals">Fine-tuning visuals</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fitting-models">Fitting models</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#available-models">Available models</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fit-a-model">Fit a model</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-models">Compare models</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#set-parameters-manually">Set parameters manually</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-assessment">Model assessment</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-panel">Model panel</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-normality">Error normality</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#goodness-of-fit-metrics">Goodness-of-fit metrics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metrics">Metrics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#association-versus-agreement">Association versus agreement</a></li>
 </ul>
 </li>
 </ul>

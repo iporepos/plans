@@ -1250,7 +1250,10 @@
         <span class="n">end_std</span> <span class="o">=</span> <span class="n">end_std</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
 
         <span class="c1"># Get a standard date range for all periods</span>
-        <span class="n">dt_index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start_std</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end_std</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfreq</span><span class="p">)</span>
+        <span class="c1"># next day is excluded: grid ends at the last slot of the last day</span>
+        <span class="n">dt_index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span>
+            <span class="n">start</span><span class="o">=</span><span class="n">start_std</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end_std</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfreq</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">"left"</span>
+        <span class="p">)</span>
 
         <span class="c1"># Set standarnd dataframe</span>
         <span class="n">df_data_std</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">:</span> <span class="n">dt_index</span><span class="p">})</span>
@@ -1357,8 +1360,9 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">skip_arr</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="n">skip_arr</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">epoch_v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">counter</span>
+        <span class="c1"># last row (not covered by the loop)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">skip_arr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">epoch_v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">counter</span>
         <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">epochs_id_field</span><span class="p">]</span> <span class="o">=</span> <span class="n">epoch_v</span>
 
         <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"CumSum"</span><span class="p">,</span> <span class="s2">"Skip"</span><span class="p">])</span>
@@ -2442,6 +2446,7 @@
                 <span class="n">marker</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"marker"</span><span class="p">],</span>
                 <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"color"</span><span class="p">],</span>
                 <span class="n">alpha</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"alpha"</span><span class="p">],</span>
+                <span class="n">linewidth</span><span class="o">=</span><span class="n">specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"linewidth"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
                 <span class="n">drawstyle</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"drawstyle"</span><span class="p">],</span>
                 <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
                 <span class="n">zorder</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"zorder_data"</span><span class="p">],</span>
@@ -2681,7 +2686,7 @@
 <span class="sd">    </span>
 <span class="sd">    This method allows further montecarlo analysis features, like fitting the </span>
 <span class="sd">    specs parameters based on the current data.</span>
-<span class="sd">    Even then a generate_ensamble() method -&gt; TimeSeriesCluster()</span>
+<span class="sd">    Even then a generate_ensamble() method -&gt; TimeSeriesEnsemble()</span>
 <span class="sd">    </span>
 <span class="sd">        </span>
 <span class="sd">    """</span>
@@ -3208,7 +3213,9 @@
             <span class="s2">"color_over"</span><span class="p">:</span> <span class="s2">"tab:blue"</span><span class="p">,</span>
             <span class="s2">"alpha_over"</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
             <span class="s2">"color_prev"</span><span class="p">:</span> <span class="s2">"tab:gray"</span><span class="p">,</span>
-            <span class="s2">"gantt_linewidth"</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+            <span class="s2">"gantt_linewidth"</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>  <span class="c1"># max width, shrinks to fit many series</span>
+            <span class="c1"># above this many series, per-series labels are hidden</span>
+            <span class="s2">"n_series_max"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
             <span class="c1"># ranges (None = auto from self.start/self.end and data)</span>
             <span class="s2">"xmin"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s2">"xmax"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
@@ -3220,7 +3227,52 @@
             <span class="s2">"suff"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
             <span class="s2">"dpi"</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
             <span class="s2">"fig_format"</span><span class="p">:</span> <span class="s2">"jpg"</span><span class="p">,</span>
+            <span class="c1"># series layouts (registered by same-variable subclasses)</span>
+            <span class="s2">"series"</span><span class="p">:</span> <span class="s2">"Series"</span><span class="p">,</span>
+            <span class="s2">"subtitle_hist"</span><span class="p">:</span> <span class="s2">"Histogram"</span><span class="p">,</span>
+            <span class="s2">"subtitle_cdf"</span><span class="p">:</span> <span class="s2">"CDF"</span><span class="p">,</span>
+            <span class="s2">"ylabel"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">"range"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># common y range, None is auto</span>
+            <span class="s2">"cmap_series"</span><span class="p">:</span> <span class="s2">"tab10"</span><span class="p">,</span>  <span class="c1"># None uses each series color</span>
+            <span class="s2">"linewidth"</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+            <span class="s2">"alpha_hist"</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
+            <span class="s2">"histtype"</span><span class="p">:</span> <span class="s2">"bar"</span><span class="p">,</span>  <span class="c1"># "step" draws outlines only</span>
+            <span class="s2">"bins"</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>  <span class="c1"># common bins for all histograms</span>
+            <span class="s2">"plot_mean"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">"legend"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="c1"># background series (large collections or highlight mode)</span>
+            <span class="s2">"highlight"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># list of names drawn in color</span>
+            <span class="s2">"color_background"</span><span class="p">:</span> <span class="s2">"silver"</span><span class="p">,</span>
+            <span class="s2">"linewidth_background"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+            <span class="s2">"alpha_background"</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
+            <span class="s2">"alpha_hist_background"</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
         <span class="p">}</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="TimeSeriesCollection._set_series_layouts">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesCollection._set_series_layouts">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_series_layouts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Register the ``series`` layouts. Meant for same-variable subclasses only,</span>
+<span class="sd">        since series of different variables can not share axes.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layouts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"series"</span><span class="p">:</span> <span class="p">{</span>  <span class="c1"># series + histograms + CDFs</span>
+                    <span class="s2">"ncols"</span><span class="p">:</span> <span class="mi">34</span><span class="p">,</span>
+                    <span class="s2">"nrows"</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+                    <span class="s2">"width"</span><span class="p">:</span> <span class="n">viewer</span><span class="o">.</span><span class="n">FIG_SIZES</span><span class="p">[</span><span class="s2">"L"</span><span class="p">][</span><span class="s2">"w"</span><span class="p">],</span>
+                    <span class="s2">"height"</span><span class="p">:</span> <span class="n">viewer</span><span class="o">.</span><span class="n">FIG_SIZES</span><span class="p">[</span><span class="s2">"L"</span><span class="p">][</span><span class="s2">"h"</span><span class="p">],</span>
+                <span class="p">},</span>
+                <span class="s2">"series-simple"</span><span class="p">:</span> <span class="p">{</span>  <span class="c1"># series only</span>
+                    <span class="s2">"ncols"</span><span class="p">:</span> <span class="mi">34</span><span class="p">,</span>
+                    <span class="s2">"nrows"</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+                    <span class="s2">"width"</span><span class="p">:</span> <span class="n">viewer</span><span class="o">.</span><span class="n">FIG_SIZES</span><span class="p">[</span><span class="s2">"L2"</span><span class="p">][</span><span class="s2">"w"</span><span class="p">],</span>
+                    <span class="s2">"height"</span><span class="p">:</span> <span class="n">viewer</span><span class="o">.</span><span class="n">FIG_SIZES</span><span class="p">[</span><span class="s2">"L2"</span><span class="p">][</span><span class="s2">"h"</span><span class="p">],</span>
+                <span class="p">},</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
@@ -3248,7 +3300,13 @@
 <a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesCollection._build_axes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">_build_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">gs</span><span class="p">,</span> <span class="n">specs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Add the dashboard's Axes to ``fig`` according to ``layout``."""</span>
-        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"simple"</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"series"</span><span class="p">:</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">21</span><span class="p">])</span>  <span class="c1"># 0: series</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">23</span><span class="p">:</span><span class="mi">28</span><span class="p">])</span>  <span class="c1"># 1: histograms</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">29</span><span class="p">:])</span>  <span class="c1"># 2: CDFs</span>
+        <span class="k">elif</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"series-simple"</span><span class="p">:</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">14</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">27</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"simple"</span><span class="p">:</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">32</span><span class="p">])</span>  <span class="c1"># gantt</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">15</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">32</span><span class="p">])</span>  <span class="c1"># overlap</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># "full" / default</span>
@@ -3267,6 +3325,13 @@
 <span class="sd">        stateful ``plt.*`` calls, so this composes safely with other plots</span>
 <span class="sd">        and is safe to call more than once per session.</span>
 <span class="sd">        """</span>
+        <span class="c1"># series layouts</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"series"</span><span class="p">,</span> <span class="s2">"series-simple"</span><span class="p">]:</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_axes</span><span class="p">(</span><span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">gs</span><span class="o">=</span><span class="n">gs</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_series</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="n">fig</span><span class="o">.</span><span class="n">get_axes</span><span class="p">(),</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">fig</span>
+
         <span class="n">fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_axes</span><span class="p">(</span><span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">gs</span><span class="o">=</span><span class="n">gs</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
         <span class="n">axes</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">get_axes</span><span class="p">()</span>
 
@@ -3334,9 +3399,16 @@
             <span class="n">ticks</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="n">n_dates</span><span class="p">)</span>
         <span class="n">format_dates</span> <span class="o">=</span> <span class="n">specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"format_dates"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
+        <span class="c1"># large collections drop per-series labels</span>
+        <span class="n">n_series</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+        <span class="n">is_large</span> <span class="o">=</span> <span class="n">n_series</span> <span class="o">&gt;</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"n_series_max"</span><span class="p">]</span>
+
         <span class="c1"># --- a. Gantt chart ---</span>
         <span class="n">ax_gantt</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"a. </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"gantt"</span><span class="p">]),</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"left"</span><span class="p">)</span>
+        <span class="c1"># fit line width to row height (points), so rows never overlap</span>
+        <span class="n">row_pt</span> <span class="o">=</span> <span class="n">ax_gantt</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="mi">72</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span> <span class="o">/</span> <span class="n">n_series</span>
+        <span class="n">gantt_linewidth</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"gantt_linewidth"</span><span class="p">],</span> <span class="mf">0.7</span> <span class="o">*</span> <span class="n">row_pt</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)):</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="n">df_aux</span> <span class="o">=</span> <span class="n">local_epochs_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"</span><span class="si">{}</span><span class="s2"> == '</span><span class="si">{}</span><span class="s2">'"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
@@ -3347,12 +3419,16 @@
                     <span class="n">x_time</span><span class="p">,</span>
                     <span class="n">y_height</span><span class="p">,</span>
                     <span class="n">color</span><span class="o">=</span><span class="n">df_aux</span><span class="p">[</span><span class="s2">"color"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">j</span><span class="p">],</span>
-                    <span class="n">linewidth</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"gantt_linewidth"</span><span class="p">],</span>
+                    <span class="n">linewidth</span><span class="o">=</span><span class="n">gantt_linewidth</span><span class="p">,</span>
                     <span class="n">solid_capstyle</span><span class="o">=</span><span class="s2">"butt"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
-        <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">heights</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_large</span><span class="p">:</span>
+            <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+            <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"</span><span class="si">{}</span><span class="s2"> series"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_series</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">heights</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
         <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xlabel"</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">ticks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">ticks</span><span class="p">)</span>
@@ -3395,22 +3471,216 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">ax_prev</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
             <span class="n">ax_prev</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"c. </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"prev"</span><span class="p">]),</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"left"</span><span class="p">)</span>
-            <span class="n">ax_prev</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">preval</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"color_prev"</span><span class="p">])</span>
-            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">preval</span><span class="p">):</span>
-                <span class="n">ax_prev</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
-                    <span class="n">value</span><span class="p">,</span>
-                    <span class="n">index</span><span class="p">,</span>
-                    <span class="s2">" </span><span class="si">{:.1f}</span><span class="s2">%"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
-                    <span class="n">ha</span><span class="o">=</span><span class="s2">"left"</span><span class="p">,</span>
-                    <span class="n">va</span><span class="o">=</span><span class="s2">"center"</span><span class="p">,</span>
-                    <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
-                <span class="p">)</span>
+            <span class="c1"># rows aligned with the gantt chart</span>
+            <span class="n">ax_prev</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span>
+                <span class="n">heights</span><span class="p">,</span>
+                <span class="n">preval</span><span class="p">,</span>
+                <span class="n">height</span><span class="o">=</span><span class="mf">0.8</span> <span class="o">/</span> <span class="n">n_series</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"color_prev"</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">ax_prev</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_large</span><span class="p">:</span>
+                <span class="n">ax_prev</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># percentages as tick labels (names read across from the gantt)</span>
+                <span class="n">ax_prev</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">heights</span><span class="p">,</span> <span class="p">[</span><span class="s2">"</span><span class="si">{:.1f}</span><span class="s2">%"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">preval</span><span class="p">])</span>
             <span class="n">ax_prev</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
             <span class="n">ax_prev</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"x"</span><span class="p">)</span>
             <span class="n">ax_prev</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xlabel_prev"</span><span class="p">])</span>
 
         <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="TimeSeriesCollection._get_labels">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesCollection._get_labels">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">specs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get series labels (names or aliases), in catalog order.</span>
+<span class="sd">        """</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_alias</span> <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"usealias"</span><span class="p">]</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_name</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">[</span><span class="n">field</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeSeriesCollection._plot_series">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesCollection._plot_series">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_plot_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">specs</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_background</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Plot all series overlaid: series, and (if axes are given) horizontal</span>
+<span class="sd">        histograms and CDFs. Reuses the single ``TimeSeries`` plotters.</span>
+
+<span class="sd">        Series in ``highlight`` are drawn in color on top of the others, drawn</span>
+<span class="sd">        in background style. Above ``n_series_max`` series without highlights,</span>
+<span class="sd">        all series are background.</span>
+
+<span class="sd">        :param axes: axes to plot on (1 or 3)</span>
+<span class="sd">        :type axes: list</span>
+<span class="sd">        :param specs: plot specification dictionary</span>
+<span class="sd">        :type specs: dict</span>
+<span class="sd">        :param extra: [optional] foreground series that are not members</span>
+<span class="sd">            (e.g., ensemble reducers)</span>
+<span class="sd">        :type extra: list</span>
+<span class="sd">        :param force_background: option to draw all non-highlighted members</span>
+<span class="sd">            in background style</span>
+<span class="sd">        :type force_background: bool</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        """</span>
+        <span class="n">ls_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">dc_labels</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ls_names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_labels</span><span class="p">(</span><span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)))</span>
+        <span class="n">ls_extra</span> <span class="o">=</span> <span class="n">extra</span> <span class="k">if</span> <span class="n">extra</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+
+        <span class="c1"># FOREGROUND AND BACKGROUND</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
+        <span class="n">ls_highlight</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"highlight"</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ls_names</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ls_highlight</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ls_fore</span> <span class="o">=</span> <span class="n">ls_highlight</span>
+        <span class="k">elif</span> <span class="n">force_background</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">ls_names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"n_series_max"</span><span class="p">]:</span>
+            <span class="n">ls_fore</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ls_fore</span> <span class="o">=</span> <span class="n">ls_names</span>
+        <span class="c1"># (series, label, is foreground): background first, extras last</span>
+        <span class="n">ls_items</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">dc_labels</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ls_names</span>
+            <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ls_fore</span>
+        <span class="p">]</span>
+        <span class="n">ls_items</span> <span class="o">+=</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">dc_labels</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ls_fore</span><span class="p">]</span>
+        <span class="n">ls_items</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">ts</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">ls_extra</span><span class="p">]</span>
+        <span class="n">n_fore</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ls_fore</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ls_extra</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"cmap_series"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">n_fore</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">get_discrete_cmap</span><span class="p">(</span>
+                <span class="n">n_classes</span><span class="o">=</span><span class="n">n_fore</span><span class="p">,</span> <span class="n">base_cmap_name</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"cmap_series"</span><span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="c1"># COMMON RANGES</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
+        <span class="n">xmin</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span> <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
+        <span class="n">xmax</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">]</span> <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span>
+        <span class="n">range_y</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">range_y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">vmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ls_names</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">vmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ls_names</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">margin</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="p">(</span><span class="n">vmax</span> <span class="o">-</span> <span class="n">vmin</span><span class="p">)</span>
+            <span class="n">range_y</span> <span class="o">=</span> <span class="p">[</span><span class="n">vmin</span> <span class="o">-</span> <span class="n">margin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">+</span> <span class="n">margin</span><span class="p">]</span>
+        <span class="c1"># common bin edges, so histograms are comparable</span>
+        <span class="n">vct_bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">range_y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">range_y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"bins"</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">ylabel</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"ylabel"</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">ylabel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ylabel</span> <span class="o">=</span> <span class="s2">"</span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">[</span><span class="s2">"units"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># PLOT EACH SERIES</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
+        <span class="n">hist_max</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">i_fore</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">is_fore</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ls_items</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_fore</span><span class="p">:</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"color_background"</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"cmap_series"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">color</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="n">cmap</span><span class="p">(</span><span class="n">i_fore</span><span class="p">)</span>
+            <span class="n">i_fore</span> <span class="o">=</span> <span class="n">i_fore</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">is_fore</span> <span class="k">else</span> <span class="n">i_fore</span>
+
+            <span class="c1"># series specs from the single series, with cluster overrides</span>
+            <span class="n">sp</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">view_specs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">sp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">"color"</span><span class="p">:</span> <span class="n">color</span><span class="p">,</span>
+                    <span class="s2">"color_hist"</span><span class="p">:</span> <span class="n">color</span><span class="p">,</span>
+                    <span class="s2">"color_cdf"</span><span class="p">:</span> <span class="n">color</span><span class="p">,</span>
+                    <span class="s2">"color_mean"</span><span class="p">:</span> <span class="n">color</span><span class="p">,</span>
+                    <span class="s2">"data_label"</span><span class="p">:</span> <span class="n">label</span> <span class="k">if</span> <span class="n">is_fore</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">"data_legend"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="s2">"linewidth"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"linewidth"</span><span class="p">],</span>
+                    <span class="s2">"range"</span><span class="p">:</span> <span class="n">range_y</span><span class="p">,</span>
+                    <span class="s2">"range_x"</span><span class="p">:</span> <span class="p">[</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">],</span>
+                    <span class="s2">"n_dates"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">"xlabel"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xlabel"</span><span class="p">],</span>
+                    <span class="s2">"ylabel"</span><span class="p">:</span> <span class="n">ylabel</span><span class="p">,</span>
+                    <span class="c1"># subtitles only once</span>
+                    <span class="s2">"subtitle_data"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"series"</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">"subtitle_hist"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"subtitle_hist"</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">"subtitle_cdf"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"subtitle_cdf"</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="c1"># histograms</span>
+                    <span class="s2">"bins"</span><span class="p">:</span> <span class="n">vct_bins</span><span class="p">,</span>
+                    <span class="s2">"bins_density"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="s2">"alpha_hist"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"alpha_hist"</span><span class="p">],</span>
+                    <span class="s2">"histtype"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"histtype"</span><span class="p">],</span>
+                    <span class="s2">"alpha_cdf"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="c1"># mean lines without labels</span>
+                    <span class="s2">"plot_mean"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"plot_mean"</span><span class="p">],</span>
+                    <span class="s2">"plot_mean_label"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="s2">"linestyle_mean"</span><span class="p">:</span> <span class="s2">"dashed"</span><span class="p">,</span>
+                    <span class="c1"># foreground above anything else (e.g., bands)</span>
+                    <span class="s2">"zorder_data"</span><span class="p">:</span> <span class="mi">3</span> <span class="k">if</span> <span class="n">is_fore</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s2">"zorder_histh"</span><span class="p">:</span> <span class="mi">3</span> <span class="k">if</span> <span class="n">is_fore</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s2">"zorder_cdf"</span><span class="p">:</span> <span class="mi">3</span> <span class="k">if</span> <span class="n">is_fore</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_fore</span><span class="p">:</span>
+                <span class="n">sp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">"linewidth"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"linewidth_background"</span><span class="p">],</span>
+                        <span class="s2">"alpha"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"alpha_background"</span><span class="p">],</span>
+                        <span class="s2">"alpha_hist"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"alpha_hist_background"</span><span class="p">],</span>
+                        <span class="s2">"alpha_cdf"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"alpha_background"</span><span class="p">],</span>
+                        <span class="s2">"plot_mean"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+            <span class="n">TimeSeries</span><span class="o">.</span><span class="n">plot_series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">specs</span><span class="o">=</span><span class="n">sp</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">vct_data</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="n">Univar</span><span class="o">.</span><span class="n">plot_histh</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">vct_data</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">specs</span><span class="o">=</span><span class="n">sp</span><span class="p">)</span>
+                <span class="n">hist_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">hist_max</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                <span class="n">Univar</span><span class="o">.</span><span class="n">plot_cdf</span><span class="p">(</span><span class="n">cdf_df</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">get_cdf_weibull</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">specs</span><span class="o">=</span><span class="n">sp</span><span class="p">)</span>
+
+        <span class="c1"># DECORATIONS</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">AutoDateLocator</span><span class="p">(</span><span class="n">minticks</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">maxticks</span><span class="o">=</span><span class="mi">6</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># histograms share the series axis</span>
+            <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.1</span> <span class="o">*</span> <span class="n">hist_max</span><span class="p">)</span>
+            <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_series_legend</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="TimeSeriesCollection._set_series_legend">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesCollection._set_series_legend">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_series_legend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">specs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Set the legend of labeled (foreground) artists of the series panel.</span>
+<span class="sd">        """</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">ls_labels</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"legend"</span><span class="p">]</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">ls_labels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># above the series panel, beside its title</span>
+            <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
+                <span class="n">loc</span><span class="o">=</span><span class="s2">"lower right"</span><span class="p">,</span>
+                <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="n">ncol</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ls_labels</span><span class="p">),</span> <span class="mi">6</span><span class="p">),</span>
+                <span class="n">fontsize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+                <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.01</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesCollection.view">
@@ -3721,8 +3991,18 @@
 <a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesCluster">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TimeSeriesCluster</span><span class="p">(</span><span class="n">TimeSeriesCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    The ``TimeSeriesCluster`` instance is desgined for holding a collection</span>
-<span class="sd">    of same variable time series. That is, no miscellaneus data is allowed.</span>
+<span class="sd">    Collection of same-variable time series from different sites</span>
+<span class="sd">    (e.g., a network of rain gauges). No miscellaneous data is allowed.</span>
+
+<span class="sd">    Supports cross-site analysis: correlation between sites via</span>
+<span class="sd">    :meth:`get_correlation` and gap filling from neighboring sites via</span>
+<span class="sd">    :meth:`regionalize`. Site coordinates are read from the ``x`` and ``y``</span>
+<span class="sd">    attributes of each series.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        See ``TimeSeriesEnsemble`` for many realizations of the same series</span>
+<span class="sd">        (same site and time).</span>
 
 <span class="sd">    """</span>
 
@@ -3733,45 +4013,324 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">base_object</span><span class="o">=</span><span class="n">base_object</span><span class="p">)</span>
 
         <span class="c1"># Set extra specific attributes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="n">base_object</span><span class="p">()</span><span class="o">.</span><span class="n">varname</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="n">base_object</span><span class="p">()</span><span class="o">.</span><span class="n">varalias</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseobject</span><span class="p">()</span><span class="o">.</span><span class="n">varname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseobject</span><span class="p">()</span><span class="o">.</span><span class="n">varalias</span>
 
         <span class="c1"># Overwrite parent attributes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">"Time Series Cluster"</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">"Time Series Cluster"</span>
+
+        <span class="c1"># Cluster layouts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_series_layouts</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layouts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"correlation"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"ncols"</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
+                    <span class="s2">"nrows"</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
+                    <span class="s2">"width"</span><span class="p">:</span> <span class="n">viewer</span><span class="o">.</span><span class="n">FIG_SIZES</span><span class="p">[</span><span class="s2">"S"</span><span class="p">][</span><span class="s2">"w"</span><span class="p">],</span>
+                    <span class="s2">"height"</span><span class="p">:</span> <span class="n">viewer</span><span class="o">.</span><span class="n">FIG_SIZES</span><span class="p">[</span><span class="s2">"S"</span><span class="p">][</span><span class="s2">"h"</span><span class="p">],</span>
+                <span class="p">},</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="c1"># reload view specs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span></div>
+
+
+    <span class="c1"># Data methods</span>
+    <span class="c1"># -------------------------------------------------------------------</span>
+<div class="viewcode-block" id="TimeSeriesCluster._get_names_others">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesCluster._get_names_others">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_names_others</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get names of all series except ``name``, in catalog order.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="n">name</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="TimeSeriesCluster.get_correlation">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesCluster.get_correlation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"pearson"</span><span class="p">,</span> <span class="n">min_overlap</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get the correlation matrix between all series, on their overlapping time steps.</span>
+
+<span class="sd">        :param method: correlation method. Options: ``pearson`` or ``spearman``</span>
+<span class="sd">        :type method: str</span>
+<span class="sd">        :param min_overlap: minimum number of overlapping time steps.</span>
+<span class="sd">            Pairs with less overlap are set to NaN.</span>
+<span class="sd">        :type min_overlap: int</span>
+<span class="sd">        :return: square correlation matrix, indexed by series names</span>
+<span class="sd">        :rtype: :class:`pandas.DataFrame`</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">plans.analyst</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bivar</span>
+
+        <span class="n">dc_funcs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"pearson"</span><span class="p">:</span> <span class="n">Bivar</span><span class="o">.</span><span class="n">pearson</span><span class="p">,</span> <span class="s2">"spearman"</span><span class="p">:</span> <span class="n">Bivar</span><span class="o">.</span><span class="n">spearman</span><span class="p">}</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">dc_funcs</span><span class="p">[</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+
+        <span class="c1"># merged columns follow catalog order</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge_data</span><span class="p">()</span>
+        <span class="n">ls_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">grd</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ls_names</span><span class="p">)</span>
+        <span class="n">grd_corr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+                <span class="c1"># overlapping steps only</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">grd</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">grd</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">min_overlap</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">grd</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">grd</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
+                <span class="n">grd_corr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+                <span class="n">grd_corr</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">grd_corr</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">ls_names</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">ls_names</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeSeriesCluster.get_weights_by_name">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesCluster.get_weights_by_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_weights_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"average"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Compute interpolation weights of all other series relative to a named series.</span>
+
+<span class="sd">        :param name: name of the target series (excluded from the weight set)</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param method: weighting scheme: ``average`` (uniform) or ``idw``</span>
+<span class="sd">            (inverse-distance). Default is ``average``.</span>
+<span class="sd">        :type method: str</span>
+<span class="sd">        :return: weights for the other series, in catalog order</span>
+<span class="sd">        :rtype: :class:`numpy.ndarray`</span>
+<span class="sd">        """</span>
+        <span class="n">ls_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_names_others</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ls_names</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"idw"</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">x</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">y</span>
+            <span class="n">x_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ls_names</span><span class="p">])</span>
+            <span class="n">y_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">y</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ls_names</span><span class="p">])</span>
+            <span class="n">d_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x_i</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">y_i</span><span class="p">))</span>
+            <span class="c1"># small offset handles zero distance</span>
+            <span class="n">idw_i</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">d_i</span> <span class="o">+</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">d_i</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10000</span><span class="p">))</span>
+            <span class="c1"># normalize to [0-100] range</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">idw_i</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">idw_i</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">w</span></div>
+
+
+<div class="viewcode-block" id="TimeSeriesCluster.regionalize">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesCluster.regionalize">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">regionalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"average"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Fill gaps of every series with a weighted average of the other series.</span>
+
+<span class="sd">        :param method: weighting scheme: ``average`` (uniform) or ``idw``</span>
+<span class="sd">            (inverse-distance). Default is ``average``.</span>
+<span class="sd">        :type method: str</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+
+<span class="sd">        **Notes**</span>
+
+<span class="sd">        - Series are standardized first, if not yet.</span>
+<span class="sd">        - Only gaps are filled; observed values are never changed.</span>
+<span class="sd">        - Values are taken as they are, so sites with different levels</span>
+<span class="sd">          (e.g., temperature at different elevations) will bias the filling.</span>
+<span class="sd">        - All fillings use the original data, so filled values do not cascade.</span>
+
+<span class="sd">        """</span>
+        <span class="c1"># Handle standardization</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isstandard</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">standardize</span><span class="p">()</span>
+
+        <span class="c1"># merged columns follow catalog order</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge_data</span><span class="p">()</span>
+        <span class="n">ls_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">ls_columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">ls_names</span><span class="p">:</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+            <span class="c1"># sources</span>
+            <span class="n">ls_src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_names_others</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">ls_src_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">ls_columns</span><span class="p">[</span><span class="n">ls_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ls_src</span><span class="p">]</span>
+            <span class="n">grd_src</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">ls_src_columns</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+            <span class="c1"># weighted average over available sources</span>
+            <span class="n">vct_w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weights_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
+            <span class="n">grd_w</span> <span class="o">=</span> <span class="n">vct_w</span> <span class="o">*</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">grd_src</span><span class="p">)</span>
+            <span class="n">vct_w_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">grd_w</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">vct_w_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">vct_w_sum</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">vct_w_sum</span><span class="p">)</span>
+            <span class="n">vct_o</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">grd_src</span> <span class="o">*</span> <span class="n">grd_w</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">vct_w_sum</span>
+
+            <span class="c1"># align merged grid to the series own grid</span>
+            <span class="n">vct_o</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">vct_o</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">])</span>
+                <span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">values</span>
+            <span class="p">)</span>
+
+            <span class="c1"># fill gaps only</span>
+            <span class="n">vct_dst</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">vct_dst</span><span class="p">),</span> <span class="n">vct_o</span><span class="p">,</span> <span class="n">vct_dst</span><span class="p">)</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">update_epochs_stats</span><span class="p">()</span>
+
+        <span class="c1"># Update the collection catalog with details</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">details</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+    <span class="c1"># View internal methods</span>
+    <span class="c1"># -------------------------------------------------------------------</span>
+<div class="viewcode-block" id="TimeSeriesCluster._set_view_specs">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesCluster._set_view_specs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_view_specs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Set view specifications. Expected to increment superior methods.</span>
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="c1"># correlation layout</span>
+                <span class="s2">"correlation"</span><span class="p">:</span> <span class="s2">"Correlation"</span><span class="p">,</span>
+                <span class="s2">"corr_method"</span><span class="p">:</span> <span class="s2">"pearson"</span><span class="p">,</span>
+                <span class="s2">"corr_min_overlap"</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+                <span class="s2">"cmap_corr"</span><span class="p">:</span> <span class="s2">"RdBu_r"</span><span class="p">,</span>
+                <span class="s2">"range_corr"</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>  <span class="c1"># narrow it to reveal structure</span>
+                <span class="s2">"annotate"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="TimeSeriesCluster._build_axes">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesCluster._build_axes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">gs</span><span class="p">,</span> <span class="n">specs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Add axes to figure based on layout.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"correlation"</span><span class="p">:</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span><span class="mi">20</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_build_axes</span><span class="p">(</span><span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">gs</span><span class="o">=</span><span class="n">gs</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="TimeSeriesCluster._plot">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesCluster._plot">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">gs</span><span class="p">,</span> <span class="n">specs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Plot on figure based on layout.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"correlation"</span><span class="p">:</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_axes</span><span class="p">(</span><span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">gs</span><span class="o">=</span><span class="n">gs</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_correlation</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">fig</span><span class="o">.</span><span class="n">get_axes</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_plot</span><span class="p">(</span><span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">gs</span><span class="o">=</span><span class="n">gs</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="TimeSeriesCluster._plot_correlation">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesCluster._plot_correlation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_plot_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">specs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Plot the correlation matrix as an annotated heatmap.</span>
+<span class="sd">        """</span>
+        <span class="n">df_corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_correlation</span><span class="p">(</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"corr_method"</span><span class="p">],</span> <span class="n">min_overlap</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"corr_min_overlap"</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">ls_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_labels</span><span class="p">(</span><span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
+        <span class="n">grd</span> <span class="o">=</span> <span class="n">df_corr</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ls_labels</span><span class="p">)</span>
+
+        <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+            <span class="n">grd</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"cmap_corr"</span><span class="p">],</span>
+            <span class="n">vmin</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"range_corr"</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">vmax</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"range_corr"</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="c1"># annotations are unreadable on large clusters</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"annotate"</span><span class="p">]</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"n_series_max"</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="s2">"-"</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">grd</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span> <span class="k">else</span> <span class="s2">"</span><span class="si">{:.2f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">grd</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
+                    <span class="c1"># white text on strong colors</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="s2">"white"</span> <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">grd</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]))</span> <span class="o">&gt;</span> <span class="mf">0.6</span> <span class="k">else</span> <span class="s2">"black"</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">"center"</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">"center"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"n_series_max"</span><span class="p">]:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">ls_labels</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">ls_labels</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"</span><span class="si">{}</span><span class="s2"> series"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"</span><span class="si">{}</span><span class="s2"> series"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+            <span class="s2">"</span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"correlation"</span><span class="p">],</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"corr_method"</span><span class="p">]),</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"left"</span>
+        <span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">fraction</span><span class="o">=</span><span class="mf">0.046</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mf">0.04</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 </div>
 
 
 
-<div class="viewcode-block" id="TimeSeriesSamples">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesSamples">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">TimeSeriesSamples</span><span class="p">(</span><span class="n">TimeSeriesCluster</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeSeriesEnsemble">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeSeriesEnsemble</span><span class="p">(</span><span class="n">TimeSeriesCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Collection of same-variable time series from the same underlying process,</span>
-<span class="sd">    treated as statistical samples. Supports ensemble reduction via :meth:`reducer`.</span>
+<span class="sd">    Collection of same-variable time series as realizations of the same</span>
+<span class="sd">    series (same site and time), e.g., stochastic draws or model runs.</span>
+
+<span class="sd">    Supports ensemble reduction across members at each time step via</span>
+<span class="sd">    :meth:`reducer` and its shortcuts (:meth:`mean`, :meth:`percentiles`,</span>
+<span class="sd">    :meth:`stats`, etc.). Reducers ignore missing values. The ``series``</span>
+<span class="sd">    view draws members in background style, with reducers and percentile</span>
+<span class="sd">    bands on top.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        See ``TimeSeriesCluster`` for same-variable series from different sites.</span>
+
 <span class="sd">    """</span>
 
-<div class="viewcode-block" id="TimeSeriesSamples.__init__">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesSamples.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"myTimeSeriesSamples"</span><span class="p">,</span> <span class="n">base_object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeSeriesEnsemble.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"myTimeSeriesEnsemble"</span><span class="p">,</span> <span class="n">base_object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># initialize parent</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">base_object</span><span class="o">=</span><span class="n">base_object</span><span class="p">)</span>
+
+        <span class="c1"># Set extra specific attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseobject</span><span class="p">()</span><span class="o">.</span><span class="n">varname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseobject</span><span class="p">()</span><span class="o">.</span><span class="n">varalias</span>
+
         <span class="c1"># Overwrite parent attributes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">"Time Series Samples"</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">"Time Series Ensemble"</span>
+
+        <span class="c1"># Ensemble layouts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_series_layouts</span><span class="p">()</span>
+
+        <span class="c1"># reload view specs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="TimeSeriesSamples.reducer">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesSamples.reducer">[docs]</a>
+    <span class="c1"># Reducer methods</span>
+    <span class="c1"># -------------------------------------------------------------------</span>
+<div class="viewcode-block" id="TimeSeriesEnsemble.reducer">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble.reducer">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">reducer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reducer_funcs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stepwise</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Apply row-wise reducer functions across all merged sample data.</span>
+<span class="sd">        Apply reducer functions across all members at each time step.</span>
 
-<span class="sd">        :param reducer_funcs: Mapping of output column name to a dict with</span>
+<span class="sd">        :param reducer_funcs: mapping of output name to a dict with</span>
 <span class="sd">            ``"Func"`` (callable) and ``"Args"`` (extra scalar argument or None).</span>
 <span class="sd">        :type reducer_funcs: dict</span>
-<span class="sd">        :param stepwise: If True, apply each function row-by-row rather than</span>
+<span class="sd">        :param stepwise: if True, apply each function row-by-row rather than</span>
 <span class="sd">            vectorized along axis 1. Default is False.</span>
 <span class="sd">        :type stepwise: bool</span>
-<span class="sd">        :return: DataFrame with datetime and one column per reducer function.</span>
+<span class="sd">        :return: DataFrame with datetime and one column per reducer function,</span>
+<span class="sd">            named ``"{varalias}_{name}"``</span>
 <span class="sd">        :rtype: :class:`pandas.DataFrame`</span>
 <span class="sd">        """</span>
         <span class="n">df_merged</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge_data</span><span class="p">()</span>
@@ -3808,245 +4367,233 @@
         <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="TimeSeriesSamples.mean">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesSamples.mean">[docs]</a>
+<div class="viewcode-block" id="TimeSeriesEnsemble.mean">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble.mean">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Return the time-step-wise mean across all samples."""</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">(</span><span class="n">reducer_funcs</span><span class="o">=</span><span class="p">{</span><span class="s2">"mean"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}})</span>
-        <span class="k">return</span> <span class="n">df</span></div>
+<span class="w">        </span><span class="sd">"""Return the time-step-wise mean across all members."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">(</span><span class="n">reducer_funcs</span><span class="o">=</span><span class="p">{</span><span class="s2">"mean"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}})</span></div>
 
 
-<div class="viewcode-block" id="TimeSeriesSamples.rng">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesSamples.rng">[docs]</a>
+<div class="viewcode-block" id="TimeSeriesEnsemble.median">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble.median">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">median</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return the time-step-wise median across all members."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">(</span>
+            <span class="n">reducer_funcs</span><span class="o">=</span><span class="p">{</span><span class="s2">"median"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}}</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeSeriesEnsemble.rng">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble.rng">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">rng</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Return the time-step-wise range across all samples."""</span>
-        <span class="c1"># todo [revise] -- np.r is an array concatenator, not a range function.</span>
-        <span class="c1">#  Intended behaviour is likely max - min per row; replace with</span>
-        <span class="c1">#  lambda x, axis=None: np.max(x, axis=axis) - np.min(x, axis=axis)</span>
-        <span class="c1">#  Note: np.ptp (peak-to-peak) is deprecated since NumPy 1.25.</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">(</span><span class="n">reducer_funcs</span><span class="o">=</span><span class="p">{</span><span class="s2">"rng"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}})</span>
-        <span class="k">return</span> <span class="n">df</span></div>
+<span class="w">        </span><span class="sd">"""Return the time-step-wise range (max - min) across all members."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">(</span>
+            <span class="n">reducer_funcs</span><span class="o">=</span><span class="p">{</span><span class="s2">"rng"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">TimeSeriesEnsemble</span><span class="o">.</span><span class="n">_nanrange</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}}</span>
+        <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TimeSeriesSamples.std">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesSamples.std">[docs]</a>
+<div class="viewcode-block" id="TimeSeriesEnsemble.std">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble.std">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">std</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Return the time-step-wise standard deviation across all samples."""</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">(</span><span class="n">reducer_funcs</span><span class="o">=</span><span class="p">{</span><span class="s2">"std"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}})</span>
-        <span class="k">return</span> <span class="n">df</span></div>
+<span class="w">        </span><span class="sd">"""Return the time-step-wise standard deviation across all members."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">(</span><span class="n">reducer_funcs</span><span class="o">=</span><span class="p">{</span><span class="s2">"std"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}})</span></div>
 
 
-<div class="viewcode-block" id="TimeSeriesSamples.min">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesSamples.min">[docs]</a>
+<div class="viewcode-block" id="TimeSeriesEnsemble.min">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble.min">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Return the time-step-wise minimum across all samples."""</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">(</span><span class="n">reducer_funcs</span><span class="o">=</span><span class="p">{</span><span class="s2">"min"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}})</span>
-        <span class="k">return</span> <span class="n">df</span></div>
+<span class="w">        </span><span class="sd">"""Return the time-step-wise minimum across all members."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">(</span><span class="n">reducer_funcs</span><span class="o">=</span><span class="p">{</span><span class="s2">"min"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}})</span></div>
 
 
-<div class="viewcode-block" id="TimeSeriesSamples.max">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesSamples.max">[docs]</a>
+<div class="viewcode-block" id="TimeSeriesEnsemble.max">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble.max">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Return the time-step-wise maximum across all samples."""</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">(</span><span class="n">reducer_funcs</span><span class="o">=</span><span class="p">{</span><span class="s2">"max"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}})</span>
-        <span class="k">return</span> <span class="n">df</span></div>
+<span class="w">        </span><span class="sd">"""Return the time-step-wise maximum across all members."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">(</span><span class="n">reducer_funcs</span><span class="o">=</span><span class="p">{</span><span class="s2">"max"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}})</span></div>
 
 
-<div class="viewcode-block" id="TimeSeriesSamples.percentile">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesSamples.percentile">[docs]</a>
+<div class="viewcode-block" id="TimeSeriesEnsemble.percentile">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble.percentile">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">percentile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">90</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Return the time-step-wise p-th percentile across all samples.</span>
+<span class="sd">        Return the time-step-wise p-th percentile across all members.</span>
 
-<span class="sd">        :param p: Percentile value (0–100). Default is 90.</span>
-<span class="sd">        :type p: int</span>
+<span class="sd">        :param p: percentile value (0-100). Default is 90.</span>
+<span class="sd">        :type p: float</span>
+<span class="sd">        :return: DataFrame with datetime and the ``"{varalias}_p{p}"`` column</span>
+<span class="sd">        :rtype: :class:`pandas.DataFrame`</span>
 <span class="sd">        """</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">(</span><span class="n">reducer_funcs</span><span class="o">=</span><span class="p">{</span><span class="s2">"max"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="n">p</span><span class="p">}})</span>
-        <span class="k">return</span> <span class="n">df</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">percentiles</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="n">p</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="TimeSeriesSamples.percentiles">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesSamples.percentiles">[docs]</a>
+<div class="viewcode-block" id="TimeSeriesEnsemble.percentiles">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble.percentiles">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">percentiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Return time-step-wise percentiles across all samples.</span>
+<span class="sd">        Return time-step-wise percentiles across all members.</span>
 
-<span class="sd">        :param values: List of percentile values to compute. Default is</span>
+<span class="sd">        :param values: percentile values to compute. Default is</span>
 <span class="sd">            ``[1, 5, 10, 25, 50, 75, 90, 95, 99]``.</span>
-<span class="sd">        :type values: list or None</span>
+<span class="sd">        :type values: list</span>
+<span class="sd">        :return: DataFrame with datetime and one ``"{varalias}_p{p}"`` column</span>
+<span class="sd">            per value (e.g., ``p05``, ``p50``)</span>
+<span class="sd">        :rtype: :class:`pandas.DataFrame`</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">95</span><span class="p">,</span> <span class="mi">99</span><span class="p">]</span>
-        <span class="n">dict_funcs</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
-                <span class="n">dict_funcs</span><span class="p">[</span><span class="s2">"p0</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="n">v</span><span class="p">}</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">dict_funcs</span><span class="p">[</span><span class="s2">"p0</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="n">v</span><span class="p">}</span>
+        <span class="n">dict_funcs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">TimeSeriesEnsemble</span><span class="o">.</span><span class="n">_get_percentile_name</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">v</span><span class="p">):</span> <span class="p">{</span>
+                <span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">,</span>
+                <span class="s2">"Args"</span><span class="p">:</span> <span class="n">v</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">(</span><span class="n">reducer_funcs</span><span class="o">=</span><span class="n">dict_funcs</span><span class="p">)</span></div>
 
-        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">(</span><span class="n">reducer_funcs</span><span class="o">=</span><span class="n">dict_funcs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">df</span></div>
 
-
-<div class="viewcode-block" id="TimeSeriesSamples.stats">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesSamples.stats">[docs]</a>
+<div class="viewcode-block" id="TimeSeriesEnsemble.stats">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble.stats">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">basic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Return a combined DataFrame of common statistics and percentiles across all samples.</span>
+<span class="sd">        Return a combined DataFrame of common statistics and percentiles across all members.</span>
 
-<span class="sd">        :param basic: If True, compute only quartile percentiles (25, 50, 75).</span>
+<span class="sd">        :param basic: if True, compute only quartile percentiles (25, 50, 75).</span>
 <span class="sd">        :type basic: bool</span>
+<span class="sd">        :return: DataFrame with datetime, sum, mean, std, min, max and percentiles</span>
+<span class="sd">        :rtype: :class:`pandas.DataFrame`</span>
 <span class="sd">        """</span>
         <span class="n">df_stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">(</span>
             <span class="n">reducer_funcs</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">"sum"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
-                <span class="s2">"mean"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
-                <span class="s2">"std"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
-                <span class="s2">"min"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
-                <span class="s2">"max"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+                <span class="s2">"sum"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+                <span class="s2">"mean"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+                <span class="s2">"std"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+                <span class="s2">"min"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+                <span class="s2">"max"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Func"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">,</span> <span class="s2">"Args"</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
             <span class="p">}</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">basic</span><span class="p">:</span>
-            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">]</span>
-        <span class="c1"># get percentiles</span>
-        <span class="n">df_per</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">percentiles</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-        <span class="c1"># join dataframes</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">]</span> <span class="k">if</span> <span class="n">basic</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">df_per</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">percentiles</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">df_stats</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="n">df_per</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">)</span>
-
         <span class="k">return</span> <span class="n">df</span></div>
-</div>
 
 
-
-<div class="viewcode-block" id="TimeSeriesSpatialSamples">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesSpatialSamples">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">TimeSeriesSpatialSamples</span><span class="p">(</span><span class="n">TimeSeriesSamples</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Spatial extension of :class:`TimeSeriesSamples` for geolocated station data.</span>
-<span class="sd">    Supports spatial interpolation via :meth:`regionalize` and distance-based weighting.</span>
-<span class="sd">    """</span>
-
-<div class="viewcode-block" id="TimeSeriesSpatialSamples.__init__">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesSpatialSamples.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"myTimeSeriesSpatialSample"</span><span class="p">,</span> <span class="n">base_object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># initialize parent</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">base_object</span><span class="o">=</span><span class="n">base_object</span><span class="p">)</span>
-        <span class="c1"># Overwrite parent attributes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">"Time Series Spatial"</span></div>
-
-
-<div class="viewcode-block" id="TimeSeriesSpatialSamples.get_weights_by_name">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesSpatialSamples.get_weights_by_name">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_weights_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"average"</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeSeriesEnsemble.get_reducer_series">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble.get_reducer_series">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_reducer_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Compute interpolation weights for all stations relative to a named station.</span>
+<span class="sd">        Get a reducer as a series object of the ensemble base type.</span>
 
-<span class="sd">        :param name: Name of the target station (excluded from the weight set).</span>
+<span class="sd">        :param name: reducer name: ``mean``, ``median``, ``min``, ``max`` or a</span>
+<span class="sd">            percentile such as ``p90``</span>
 <span class="sd">        :type name: str</span>
-<span class="sd">        :param method: Weighting scheme: ``"average"`` (uniform) or ``"idw"``</span>
-<span class="sd">            (inverse-distance). Default is ``"average"``.</span>
-<span class="sd">        :type method: str</span>
-<span class="sd">        :return: Weight array for the remaining stations.</span>
-<span class="sd">        :rtype: :class:`numpy.ndarray`</span>
+<span class="sd">        :return: series holding the reducer values</span>
+<span class="sd">        :rtype: :class:`TimeSeries`</span>
 <span class="sd">        """</span>
-        <span class="c1"># remaining names</span>
-        <span class="n">df_remain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"Name != '</span><span class="si">{}</span><span class="s2">'"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
-        <span class="n">list_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df_remain</span><span class="p">[</span><span class="s2">"Name"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-
-        <span class="c1"># w array</span>
-        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_names</span><span class="p">))</span>
-
-        <span class="c1"># handle methods</span>
-        <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"average"</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">w</span>
-        <span class="k">elif</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"idw"</span><span class="p">:</span>
-            <span class="c1"># Get x,y</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">x</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">y</span>
-            <span class="c1"># Get distances</span>
-            <span class="n">x_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">_</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">list_names</span><span class="p">])</span>
-            <span class="n">y_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">_</span><span class="p">]</span><span class="o">.</span><span class="n">y</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">list_names</span><span class="p">])</span>
-            <span class="n">d_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x_i</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">y_i</span><span class="p">))</span>
-            <span class="c1"># Compute IDW</span>
-            <span class="n">idw_i</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">d_i</span> <span class="o">+</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">d_i</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10000</span><span class="p">))</span>  <span class="c1"># handle zero distance</span>
-            <span class="c1"># Normaliza to [0-100] range</span>
-            <span class="n">w</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">idw_i</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">idw_i</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">w</span>
+        <span class="n">dc_funcs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"mean"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span>
+            <span class="s2">"median"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">median</span><span class="p">,</span>
+            <span class="s2">"min"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">min</span><span class="p">,</span>
+            <span class="s2">"max"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">dc_funcs</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">dc_funcs</span><span class="p">[</span><span class="n">name</span><span class="p">]()</span>
+        <span class="k">elif</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"p"</span><span class="p">):</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">name</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">w</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown reducer: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+        <span class="n">ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseobject</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span>
+            <span class="n">input_df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">input_dtfield</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">,</span> <span class="n">input_varfield</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">ts</span></div>
 
 
-    <span class="c1"># docs ok</span>
-<div class="viewcode-block" id="TimeSeriesSpatialSamples.regionalize">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesSpatialSamples.regionalize">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">regionalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"average"</span><span class="p">):</span>
+    <span class="c1"># View internal methods</span>
+    <span class="c1"># -------------------------------------------------------------------</span>
+<div class="viewcode-block" id="TimeSeriesEnsemble._set_view_specs">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble._set_view_specs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_view_specs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Regionalize the time series data using a specified method.</span>
-
-<span class="sd">        :param method: Method for regionalization, default is "average".</span>
-<span class="sd">        :type method: str</span>
-
-<span class="sd">        **Notes**</span>
-
-<span class="sd">        - This method handles standardization. If the time series data is not standardized, it applies standardization.</span>
-<span class="sd">        - Computes epochs for the time series data.</span>
-<span class="sd">        - Iterates through each time series in the collection and performs regionalization.</span>
-<span class="sd">        - For each time series, sets up source and destination vectors, computes weights, and calculates regionalized values.</span>
-<span class="sd">        - Updates the destination column in-place with the regionalized values and updates epochs statistics.</span>
-<span class="sd">        - Updates the collection catalog with details.</span>
-
-
+<span class="sd">        Set view specifications. Expected to increment superior methods.</span>
 <span class="sd">        """</span>
-        <span class="c1"># Handle stardardization</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isstandard</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">standardize</span><span class="p">()</span>
-        <span class="c1"># Compute Epochs</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_epochs</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"layout"</span><span class="p">:</span> <span class="s2">"series"</span><span class="p">,</span>
+                <span class="c1"># reducers drawn in color, members in background</span>
+                <span class="s2">"reducers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"mean"</span><span class="p">],</span>
+                <span class="c1"># percentile bands, as [low, high] pairs</span>
+                <span class="s2">"bands"</span><span class="p">:</span> <span class="p">[[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">95</span><span class="p">]],</span>
+                <span class="s2">"color_band"</span><span class="p">:</span> <span class="s2">"tab:blue"</span><span class="p">,</span>
+                <span class="s2">"alpha_band"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">)):</span>
 
-            <span class="n">varfield</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">[</span><span class="s2">"VarField"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span>
-                <span class="n">i</span>
-            <span class="p">]</span>  <span class="c1"># todo refactor fields (avoid hardcoded)</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">[</span><span class="s2">"Name"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">df_src_catalog</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"Name != '</span><span class="si">{}</span><span class="s2">'"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+<div class="viewcode-block" id="TimeSeriesEnsemble._plot_series">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble._plot_series">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_plot_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">specs</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_background</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Plot members in background style, with reducers and bands on top.</span>
+<span class="sd">        """</span>
+        <span class="n">ls_reducers</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"reducers"</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">ls_bands</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"bands"</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">ls_extra</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_reducer_series</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ls_reducers</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_plot_series</span><span class="p">(</span>
+            <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span>
+            <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">,</span>
+            <span class="n">extra</span><span class="o">=</span><span class="n">ls_extra</span><span class="p">,</span>
+            <span class="n">force_background</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">ls_reducers</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ls_bands</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
 
-            <span class="c1"># Get destination vector</span>
-            <span class="n">dst_vct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-            <span class="n">dst_mask</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">dst_vct</span><span class="p">)</span>
+        <span class="c1"># BANDS</span>
+        <span class="c1"># -------------------------------------------------------------------</span>
+        <span class="c1"># between background members and foreground lines</span>
+        <span class="k">for</span> <span class="n">p_lo</span><span class="p">,</span> <span class="n">p_hi</span> <span class="ow">in</span> <span class="n">ls_bands</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">percentiles</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="n">p_lo</span><span class="p">,</span> <span class="n">p_hi</span><span class="p">])</span>
+            <span class="n">s_lo</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="o">.</span><span class="n">_get_percentile_name</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p_lo</span><span class="p">)</span>
+            <span class="n">s_hi</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="o">.</span><span class="n">_get_percentile_name</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p_hi</span><span class="p">)</span>
+            <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+                <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">],</span>
+                <span class="n">df</span><span class="p">[</span><span class="s2">"</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">varalias</span><span class="p">,</span> <span class="n">s_lo</span><span class="p">)],</span>
+                <span class="n">df</span><span class="p">[</span><span class="s2">"</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">varalias</span><span class="p">,</span> <span class="n">s_hi</span><span class="p">)],</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"color_band"</span><span class="p">],</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"alpha_band"</span><span class="p">],</span>
+                <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s2">"</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s_lo</span><span class="p">,</span> <span class="n">s_hi</span><span class="p">),</span>
+            <span class="p">)</span>
 
-            <span class="c1"># Set up source</span>
-            <span class="n">src_vars</span> <span class="o">=</span> <span class="n">df_src_catalog</span><span class="p">[</span><span class="s2">"VarField"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-            <span class="n">src_names</span> <span class="o">=</span> <span class="n">df_src_catalog</span><span class="p">[</span><span class="s2">"Name"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-            <span class="n">src_alias</span> <span class="o">=</span> <span class="n">df_src_catalog</span><span class="p">[</span><span class="s2">"Alias"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-            <span class="n">src_columns</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="s2">"</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">src_vars</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">src_alias</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_src_catalog</span><span class="p">))</span>
-            <span class="p">]</span>
-            <span class="n">df_src</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">src_columns</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># ensure name order</span>
+        <span class="c1"># legend again, now including bands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_series_legend</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
-            <span class="c1"># Set up weights</span>
-            <span class="n">vct_w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weights_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 
-            <span class="c1"># get product w * values</span>
-            <span class="n">w_v</span> <span class="o">=</span> <span class="n">vct_w</span> <span class="o">*</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">df_src</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-            <span class="c1"># horizontal weights sum</span>
-            <span class="n">w_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">w_v</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">w_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">w_sum</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">w_sum</span><span class="p">)</span>
-            <span class="c1"># output sum</span>
-            <span class="n">o_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">df_src</span><span class="o">.</span><span class="n">values</span> <span class="o">*</span> <span class="n">w_v</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="c1"># output average</span>
-            <span class="n">o</span> <span class="o">=</span> <span class="n">o_sum</span> <span class="o">/</span> <span class="n">w_sum</span>
+    <span class="c1"># Static methods</span>
+    <span class="c1"># -------------------------------------------------------------------</span>
+<div class="viewcode-block" id="TimeSeriesEnsemble._nanrange">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble._nanrange">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_nanrange</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Range (max - min) ignoring missing values.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span></div>
 
-            <span class="c1"># set destination column inplace</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">varfield</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dst_mask</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">dst_vct</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">update_epochs_stats</span><span class="p">()</span>
 
-        <span class="c1"># Update the collection catalog with details</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">details</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+<div class="viewcode-block" id="TimeSeriesEnsemble._get_percentile_name">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble._get_percentile_name">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_percentile_name</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get the percentile name, zero padded (e.g., ``p05``, ``p50``, ``p2.5``).</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">is_integer</span><span class="p">():</span>
+            <span class="k">return</span> <span class="s2">"p</span><span class="si">{:02d}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">"p</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">)</span></div>
 </div>
 
 

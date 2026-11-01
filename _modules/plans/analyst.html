@@ -688,8 +688,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">freq_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_frequency</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">weibull_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cdf_weibull</span><span class="p">()</span>
 
-            <span class="c1"># view specs</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">var_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_max</span><span class="p">]</span>
+            <span class="c1"># view specs -- 5% margin keeps extremes off the panel edges</span>
+            <span class="n">margin</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">var_max</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_min</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">var_min</span> <span class="o">-</span> <span class="n">margin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_max</span> <span class="o">+</span> <span class="n">margin</span><span class="p">]</span>
 
         <span class="c1"># ... continues in downstream objects ... #</span>
         <span class="k">return</span> <span class="kc">None</span></div>
@@ -1129,12 +1130,20 @@
 
         <span class="c1"># PLOT DATA</span>
         <span class="c1"># -------------------------------------------------------------------</span>
-        <span class="n">Univar</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
-            <span class="n">ax</span><span class="o">=</span><span class="n">ax_data</span><span class="p">,</span>
-            <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">,</span>
-            <span class="n">formatter</span><span class="o">=</span><span class="n">formatter</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"data_plot"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"boxplot"</span><span class="p">:</span>
+            <span class="n">Univar</span><span class="o">.</span><span class="n">plot_boxplot</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">ax</span><span class="o">=</span><span class="n">ax_data</span><span class="p">,</span>
+                <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">,</span>
+                <span class="n">formatter</span><span class="o">=</span><span class="n">formatter</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Univar</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">ax</span><span class="o">=</span><span class="n">ax_data</span><span class="p">,</span>
+                <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">,</span>
+                <span class="n">formatter</span><span class="o">=</span><span class="n">formatter</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="c1"># PLOT HIST</span>
         <span class="c1"># -------------------------------------------------------------------</span>
@@ -1242,8 +1251,11 @@
                 <span class="c1"># layout</span>
                 <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"wien"</span><span class="p">,</span>
                 <span class="s2">"layout"</span><span class="p">:</span> <span class="s2">"full"</span><span class="p">,</span>
+                <span class="c1"># data plot: "scatter" or "boxplot"</span>
+                <span class="s2">"data_plot"</span><span class="p">:</span> <span class="s2">"scatter"</span><span class="p">,</span>
                 <span class="c1"># titles</span>
                 <span class="s2">"subtitle_data"</span><span class="p">:</span> <span class="s2">"Data Points"</span><span class="p">,</span>
+                <span class="s2">"subtitle_box"</span><span class="p">:</span> <span class="s2">"Boxplot"</span><span class="p">,</span>
                 <span class="s2">"subtitle_hist"</span><span class="p">:</span> <span class="s2">"Histogram"</span><span class="p">,</span>
                 <span class="s2">"subtitle_cdf"</span><span class="p">:</span> <span class="s2">"CDF"</span><span class="p">,</span>
                 <span class="c1"># fields</span>
@@ -1298,6 +1310,9 @@
                 <span class="c1"># scatter</span>
                 <span class="s2">"scatter_factor"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
                 <span class="s2">"colorize_scatter"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="c1"># boxplot</span>
+                <span class="s2">"box_width"</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
+                <span class="s2">"box_showfliers"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -1455,6 +1470,65 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">x_low</span><span class="p">,</span> <span class="n">x_hi</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Univar.plot_boxplot">
+<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.plot_boxplot">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_boxplot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">specs</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Plot a vertical boxplot of the data, sharing the y range of the other panels.</span>
+
+<span class="sd">        :param data: vector of data without nan values</span>
+<span class="sd">        :type data: :class:`numpy.ndarray`</span>
+<span class="sd">        :param ax: target axes. If False, nothing is plotted.</span>
+<span class="sd">        :type ax: :class:`matplotlib.axes.Axes`</span>
+<span class="sd">        :param specs: plot specification dictionary (from ``view_specs``)</span>
+<span class="sd">        :type specs: dict</span>
+<span class="sd">        :param formatter: [optional] y axis tick formatter</span>
+<span class="sd">        :type formatter: :class:`matplotlib.ticker.Formatter`</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ax</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># box at x = 0, whiskers at 1.5 IQR</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span>
+            <span class="n">positions</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">widths</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"box_width"</span><span class="p">],</span>
+            <span class="n">showfliers</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"box_showfliers"</span><span class="p">],</span>
+            <span class="n">patch_artist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">boxprops</span><span class="o">=</span><span class="p">{</span><span class="s2">"facecolor"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"color"</span><span class="p">],</span> <span class="s2">"alpha"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"alpha"</span><span class="p">]},</span>
+            <span class="n">medianprops</span><span class="o">=</span><span class="p">{</span><span class="s2">"color"</span><span class="p">:</span> <span class="s2">"black"</span><span class="p">},</span>
+            <span class="n">flierprops</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">"marker"</span><span class="p">:</span> <span class="s2">"."</span><span class="p">,</span>
+                <span class="s2">"markersize"</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+                <span class="s2">"markerfacecolor"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"color"</span><span class="p">],</span>
+                <span class="s2">"markeredgecolor"</span><span class="p">:</span> <span class="s2">"none"</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">zorder</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"zorder_data"</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"subtitle_box"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"subtitle_box"</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"left"</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xlabel"</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"ylabel"</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">formatter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+
+        <span class="c1"># mean line</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"plot_mean_data"</span><span class="p">]:</span>
+            <span class="n">Univar</span><span class="o">.</span><span class="n">plot_mean</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">y_mu</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">xmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
 <div class="viewcode-block" id="Univar.plot_histh">
 <a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Univar.plot_histh">[docs]</a>
     <span class="nd">@staticmethod</span>
@@ -1498,6 +1572,7 @@
             <span class="n">bins</span><span class="o">=</span><span class="n">n_bins</span><span class="p">,</span>
             <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"color_hist"</span><span class="p">],</span>
             <span class="n">alpha</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"alpha_hist"</span><span class="p">],</span>
+            <span class="n">histtype</span><span class="o">=</span><span class="n">specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"histtype"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">),</span>
             <span class="n">orientation</span><span class="o">=</span><span class="s2">"horizontal"</span><span class="p">,</span>
             <span class="n">weights</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
             <span class="n">zorder</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"zorder_histh"</span><span class="p">],</span>
@@ -2617,7 +2692,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">x_max</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y_min</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y_max</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">corr</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># models setup</span>
         <span class="c1"># note: "Parameters" must match the function argument names</span>
@@ -2629,7 +2703,7 @@
                     <span class="p">{</span><span class="s2">"Parameters"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"c0"</span><span class="p">,</span> <span class="s2">"c1"</span><span class="p">],</span> <span class="s2">"Mean"</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="s2">"SD"</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]}</span>
                 <span class="p">),</span>
                 <span class="s2">"Data"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">"RMSE"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">"Metrics"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="s2">"Power"</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s2">"Function"</span><span class="p">:</span> <span class="n">power</span><span class="p">,</span>
@@ -2642,7 +2716,7 @@
                     <span class="p">}</span>
                 <span class="p">),</span>
                 <span class="s2">"Data"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">"RMSE"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">"Metrics"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="s2">"Power_zero"</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s2">"Function"</span><span class="p">:</span> <span class="n">power_zero</span><span class="p">,</span>
@@ -2651,7 +2725,7 @@
                     <span class="p">{</span><span class="s2">"Parameters"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"c0"</span><span class="p">,</span> <span class="s2">"c1"</span><span class="p">],</span> <span class="s2">"Mean"</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="s2">"SD"</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]}</span>
                 <span class="p">),</span>
                 <span class="s2">"Data"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">"RMSE"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">"Metrics"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">}</span>
         <span class="c1"># todo [dev] Gumbel model: f(x) = exp(-exp(-((x-a)/b)))</span>
@@ -2663,11 +2737,11 @@
                 <span class="s2">"width"</span><span class="p">:</span> <span class="n">viewer</span><span class="o">.</span><span class="n">FIG_SIZES</span><span class="p">[</span><span class="s2">"S"</span><span class="p">][</span><span class="s2">"w"</span><span class="p">],</span>
                 <span class="s2">"height"</span><span class="p">:</span> <span class="n">viewer</span><span class="o">.</span><span class="n">FIG_SIZES</span><span class="p">[</span><span class="s2">"S"</span><span class="p">][</span><span class="s2">"h"</span><span class="p">],</span>
             <span class="p">},</span>
-            <span class="s2">"model"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"model"</span><span class="p">:</span> <span class="p">{</span>  <span class="c1"># square: three stacked panels</span>
                 <span class="s2">"ncols"</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
                 <span class="s2">"nrows"</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
                 <span class="s2">"width"</span><span class="p">:</span> <span class="n">viewer</span><span class="o">.</span><span class="n">FIG_SIZES</span><span class="p">[</span><span class="s2">"M"</span><span class="p">][</span><span class="s2">"w"</span><span class="p">],</span>
-                <span class="s2">"height"</span><span class="p">:</span> <span class="n">viewer</span><span class="o">.</span><span class="n">FIG_SIZES</span><span class="p">[</span><span class="s2">"M"</span><span class="p">][</span><span class="s2">"h"</span><span class="p">],</span>
+                <span class="s2">"height"</span><span class="p">:</span> <span class="n">viewer</span><span class="o">.</span><span class="n">FIG_SIZES</span><span class="p">[</span><span class="s2">"M"</span><span class="p">][</span><span class="s2">"w"</span><span class="p">],</span>
             <span class="p">},</span>
             <span class="s2">"default"</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s2">"ncols"</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
@@ -2813,7 +2887,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">x_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">xfield</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">y_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">yfield</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">y_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">yfield</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_correlation</span><span class="p">()</span>
 
             <span class="c1"># view specs</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range_x"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_max</span><span class="p">]</span>
@@ -2873,8 +2946,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_model_data</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="n">model_type</span><span class="p">)</span>
         <span class="c1"># update model metrics</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">"Data"</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">"RMSE"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Bivar</span><span class="o">.</span><span class="n">rmse</span><span class="p">(</span>
-            <span class="n">pred</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">yfield</span><span class="si">}</span><span class="s2">_Mean"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">obs</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">yfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">"Metrics"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Bivar</span><span class="o">.</span><span class="n">get_metrics</span><span class="p">(</span>
+            <span class="n">observed</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">yfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="n">predicted</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">yfield</span><span class="si">}</span><span class="s2">_Mean"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
@@ -2904,18 +2978,6 @@
 
     <span class="c1"># GET METHODS</span>
     <span class="c1"># ===================================================================</span>
-
-<div class="viewcode-block" id="Bivar.get_correlation">
-<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Bivar.get_correlation">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Get the Pearson correlation coefficient between x and y.</span>
-
-<span class="sd">        :return: R correlation coefficient</span>
-<span class="sd">        :rtype: float</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">xfield</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">yfield</span><span class="p">])</span></div>
-
 
 <div class="viewcode-block" id="Bivar.get_error_normality">
 <a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Bivar.get_error_normality">[docs]</a>
@@ -3031,11 +3093,13 @@
 <span class="sd">        Add subplots to figure based on layout.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"model"</span><span class="p">:</span>
-            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">11</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">13</span><span class="p">])</span>  <span class="c1"># 0: model</span>
-            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">11</span><span class="p">,</span> <span class="mi">16</span><span class="p">:</span><span class="mi">23</span><span class="p">])</span>  <span class="c1"># 1: error variance</span>
-            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">15</span><span class="p">:</span><span class="mi">21</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">13</span><span class="p">])</span>  <span class="c1"># 2: error</span>
-            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">15</span><span class="p">:</span><span class="mi">21</span><span class="p">,</span> <span class="mi">14</span><span class="p">:</span><span class="mi">17</span><span class="p">])</span>  <span class="c1"># 3: error hist</span>
-            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">15</span><span class="p">:</span><span class="mi">21</span><span class="p">,</span> <span class="mi">19</span><span class="p">:</span><span class="mi">23</span><span class="p">])</span>  <span class="c1"># 4: error qq</span>
+            <span class="c1"># left column stacked: model, error, variance (shared x)</span>
+            <span class="c1"># 3-row gaps keep titles clear of the x labels above</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">9</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">14</span><span class="p">])</span>  <span class="c1"># 0: model</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">19</span><span class="p">:</span><span class="mi">23</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">14</span><span class="p">])</span>  <span class="c1"># 1: error variance</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">14</span><span class="p">])</span>  <span class="c1"># 2: error</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">:</span><span class="mi">19</span><span class="p">])</span>  <span class="c1"># 3: error hist</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">16</span><span class="p">,</span> <span class="mi">21</span><span class="p">:</span><span class="mi">24</span><span class="p">])</span>  <span class="c1"># 4: error qq</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">21</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">18</span><span class="p">])</span>  <span class="c1"># 0: scatter</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">18</span><span class="p">])</span>  <span class="c1"># 1: x hist</span>
@@ -3111,6 +3175,13 @@
         <span class="n">ax_histx</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mticker</span><span class="o">.</span><span class="n">PercentFormatter</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
         <span class="n">ax_histx</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"range_x"</span><span class="p">])</span>
         <span class="n">ax_histx</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"plot_mean"</span><span class="p">]:</span>
+            <span class="n">ax_histx</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">vct_x</span><span class="p">),</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"color_mean"</span><span class="p">],</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"linestyle_mean"</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="c1"># todo [DRY] consider a Univar.plot_histv counterpart of plot_histh</span>
 
         <span class="c1"># PLOT Y HIST</span>
         <span class="c1"># -------------------------------------------------------------------</span>
@@ -3146,6 +3217,11 @@
             <span class="n">e_max</span> <span class="o">=</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vct_e</span><span class="p">))</span>
             <span class="n">specs</span><span class="p">[</span><span class="s2">"range_e"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">e_max</span><span class="p">,</span> <span class="n">e_max</span><span class="p">]</span>
 
+        <span class="c1"># error ticks with explicit sign (e.g., +2)</span>
+        <span class="n">fmt_sign</span> <span class="o">=</span> <span class="n">mticker</span><span class="o">.</span><span class="n">FuncFormatter</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">v</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="s2">"0"</span> <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">"</span><span class="si">{:+g}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="p">)</span>
+
         <span class="c1"># PLOT MODEL</span>
         <span class="c1"># -------------------------------------------------------------------</span>
         <span class="n">ax_model</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
@@ -3170,8 +3246,8 @@
             <span class="p">)</span>
         <span class="n">ax_model</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"range_x"</span><span class="p">])</span>
         <span class="n">ax_model</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">])</span>
+        <span class="n">ax_model</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xlabel"</span><span class="p">])</span>
         <span class="n">ax_model</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"ylabel"</span><span class="p">])</span>
-        <span class="n">ax_model</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># PLOT VARIANCE TRACING</span>
         <span class="c1"># -------------------------------------------------------------------</span>
@@ -3201,6 +3277,7 @@
         <span class="n">ax_error</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"range_e"</span><span class="p">])</span>
         <span class="n">ax_error</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xlabel"</span><span class="p">])</span>
         <span class="n">ax_error</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"$\epsilon$"</span><span class="p">)</span>
+        <span class="n">ax_error</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">fmt_sign</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"plot_mean"</span><span class="p">]:</span>
             <span class="n">Univar</span><span class="o">.</span><span class="n">plot_mean</span><span class="p">(</span>
                 <span class="n">ax</span><span class="o">=</span><span class="n">ax_error</span><span class="p">,</span>
@@ -3215,8 +3292,9 @@
         <span class="n">specs_ehist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_histh_specs</span><span class="p">(</span><span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">vct_e</span><span class="p">)</span>
         <span class="n">specs_ehist</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"range_e"</span><span class="p">]</span>
         <span class="n">specs_ehist</span><span class="p">[</span><span class="s2">"plot_mean_label"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">Univar</span><span class="o">.</span><span class="n">plot_histh</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">vct_e</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_ehist</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs_ehist</span><span class="p">)</span>
-        <span class="n">ax_ehist</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">Univar</span><span class="o">.</span><span class="n">plot_histh</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">vct_e</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_ehist</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs_ehist</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="n">fmt_sign</span>
+        <span class="p">)</span>
 
         <span class="c1"># PLOT ERROR QQ</span>
         <span class="c1"># -------------------------------------------------------------------</span>
@@ -3233,7 +3311,7 @@
             <span class="n">ax_qq</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"subtitle_qq"</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"left"</span><span class="p">)</span>
         <span class="n">ax_qq</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"range_e"</span><span class="p">])</span>
         <span class="n">ax_qq</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Normal quantiles"</span><span class="p">)</span>
-        <span class="n">ax_qq</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax_qq</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">fmt_sign</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="kc">None</span></div>
 
@@ -3294,74 +3372,152 @@
     <span class="c1"># STATIC METHODS</span>
     <span class="c1"># ===================================================================</span>
 
-<div class="viewcode-block" id="Bivar.bias">
-<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Bivar.bias">[docs]</a>
+<div class="viewcode-block" id="Bivar.get_metrics">
+<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Bivar.get_metrics">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">bias</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_metrics</span><span class="p">(</span><span class="n">observed</span><span class="p">,</span> <span class="n">predicted</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Compute the Bias (%) between predicted and observed sample.</span>
+<span class="sd">        Get all fit metrics between observed and predicted sample.</span>
 
-<span class="sd">        :param pred: vector of predicted values</span>
-<span class="sd">        :type pred: :class:`numpy.ndarray`</span>
-<span class="sd">        :param obs: vector of observed values</span>
-<span class="sd">        :type obs: :class:`numpy.ndarray`</span>
-<span class="sd">        :return: Bias value</span>
+<span class="sd">        :param observed: vector of observed values</span>
+<span class="sd">        :type observed: :class:`numpy.ndarray`</span>
+<span class="sd">        :param predicted: vector of predicted values</span>
+<span class="sd">        :type predicted: :class:`numpy.ndarray`</span>
+<span class="sd">        :return: dictionary of metrics (r, rho, R2, RMSE, MAE, Bias)</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        """</span>
+        <span class="c1"># correlations</span>
+        <span class="n">dc_metrics</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"r"</span><span class="p">:</span> <span class="n">Bivar</span><span class="o">.</span><span class="n">pearson</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">observed</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">predicted</span><span class="p">),</span>
+            <span class="s2">"rho"</span><span class="p">:</span> <span class="n">Bivar</span><span class="o">.</span><span class="n">spearman</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">observed</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">predicted</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="c1"># agreement</span>
+        <span class="n">dc_funcs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"R2"</span><span class="p">:</span> <span class="n">Bivar</span><span class="o">.</span><span class="n">rsq</span><span class="p">,</span>
+            <span class="s2">"RMSE"</span><span class="p">:</span> <span class="n">Bivar</span><span class="o">.</span><span class="n">rmse</span><span class="p">,</span>
+            <span class="s2">"MAE"</span><span class="p">:</span> <span class="n">Bivar</span><span class="o">.</span><span class="n">mae</span><span class="p">,</span>
+            <span class="s2">"Bias"</span><span class="p">:</span> <span class="n">Bivar</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">dc_funcs</span><span class="p">:</span>
+            <span class="n">dc_metrics</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">dc_funcs</span><span class="p">[</span><span class="n">k</span><span class="p">](</span><span class="n">observed</span><span class="o">=</span><span class="n">observed</span><span class="p">,</span> <span class="n">predicted</span><span class="o">=</span><span class="n">predicted</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">dc_metrics</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">dc_metrics</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="Bivar.pearson">
+<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Bivar.pearson">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pearson</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Compute the Pearson correlation coefficient (r), a measure of linear association.</span>
+<span class="sd">        Symmetric: swapping ``x`` and ``y`` gives the same value.</span>
+
+<span class="sd">        :param x: vector of x values</span>
+<span class="sd">        :type x: :class:`numpy.ndarray`</span>
+<span class="sd">        :param y: vector of y values</span>
+<span class="sd">        :type y: :class:`numpy.ndarray`</span>
+<span class="sd">        :return: r value, from -1 to 1</span>
 <span class="sd">        :rtype: float</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pred</span> <span class="o">-</span> <span class="n">obs</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="Bivar.rmse">
-<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Bivar.rmse">[docs]</a>
+<div class="viewcode-block" id="Bivar.spearman">
+<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Bivar.spearman">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rmse</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">spearman</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Compute the Root Mean Squared Error (RMSE) between predicted and observed sample.</span>
+<span class="sd">        Compute the Spearman rank correlation coefficient (rho), a measure of</span>
+<span class="sd">        monotonic association. It is the Pearson r of the ranks (ties averaged).</span>
+<span class="sd">        Symmetric: swapping ``x`` and ``y`` gives the same value.</span>
 
-<span class="sd">        :param pred: vector of predicted values</span>
-<span class="sd">        :type pred: :class:`numpy.ndarray`</span>
-<span class="sd">        :param obs: vector of observed values</span>
-<span class="sd">        :type obs: :class:`numpy.ndarray`</span>
-<span class="sd">        :return: RMSE value</span>
+<span class="sd">        :param x: vector of x values</span>
+<span class="sd">        :type x: :class:`numpy.ndarray`</span>
+<span class="sd">        :param y: vector of y values</span>
+<span class="sd">        :type y: :class:`numpy.ndarray`</span>
+<span class="sd">        :return: rho value, from -1 to 1</span>
 <span class="sd">        :rtype: float</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">pred</span> <span class="o">-</span> <span class="n">obs</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">pred</span><span class="p">))</span></div>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">rankdata</span>
 
-
-<div class="viewcode-block" id="Bivar.mae">
-<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Bivar.mae">[docs]</a>
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">mae</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Compute the Mean Absolute Error (MAE) between predicted and observed sample.</span>
-
-<span class="sd">        :param pred: vector of predicted values</span>
-<span class="sd">        :type pred: :class:`numpy.ndarray`</span>
-<span class="sd">        :param obs: vector of observed values</span>
-<span class="sd">        :type obs: :class:`numpy.ndarray`</span>
-<span class="sd">        :return: MAE value</span>
-<span class="sd">        :rtype: float</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pred</span> <span class="o">-</span> <span class="n">obs</span><span class="p">))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">Bivar</span><span class="o">.</span><span class="n">pearson</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">rankdata</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">rankdata</span><span class="p">(</span><span class="n">y</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="Bivar.rsq">
 <a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Bivar.rsq">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rsq</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rsq</span><span class="p">(</span><span class="n">observed</span><span class="p">,</span> <span class="n">predicted</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Compute the R-square between predicted and observed sample.</span>
+<span class="sd">        Compute the coefficient of determination (R2), as the fraction of</span>
+<span class="sd">        observed variance explained: ``1 - SS_res / SS_tot``.</span>
 
-<span class="sd">        :param pred: vector of predicted values</span>
-<span class="sd">        :type pred: :class:`numpy.ndarray`</span>
-<span class="sd">        :param obs: vector of observed values</span>
-<span class="sd">        :type obs: :class:`numpy.ndarray`</span>
-<span class="sd">        :return: R-square value</span>
+<span class="sd">        .. note::</span>
+
+<span class="sd">            Equals r squared only for least-squares linear models with intercept.</span>
+<span class="sd">            For other models it can differ, and is negative when the model is worse</span>
+<span class="sd">            than the observed mean.</span>
+
+<span class="sd">        :param observed: vector of observed values</span>
+<span class="sd">        :type observed: :class:`numpy.ndarray`</span>
+<span class="sd">        :param predicted: vector of predicted values</span>
+<span class="sd">        :type predicted: :class:`numpy.ndarray`</span>
+<span class="sd">        :return: R2 value</span>
 <span class="sd">        :rtype: float</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">pred</span> <span class="o">-</span> <span class="n">obs</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">obs</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">obs</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">predicted</span> <span class="o">-</span> <span class="n">observed</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">observed</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">observed</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
         <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Bivar.rmse">
+<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Bivar.rmse">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rmse</span><span class="p">(</span><span class="n">observed</span><span class="p">,</span> <span class="n">predicted</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Compute the Root Mean Squared Error (RMSE).</span>
+
+<span class="sd">        :param observed: vector of observed values</span>
+<span class="sd">        :type observed: :class:`numpy.ndarray`</span>
+<span class="sd">        :param predicted: vector of predicted values</span>
+<span class="sd">        :type predicted: :class:`numpy.ndarray`</span>
+<span class="sd">        :return: RMSE value</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">predicted</span> <span class="o">-</span> <span class="n">observed</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">predicted</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Bivar.mae">
+<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Bivar.mae">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mae</span><span class="p">(</span><span class="n">observed</span><span class="p">,</span> <span class="n">predicted</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Compute the Mean Absolute Error (MAE).</span>
+
+<span class="sd">        :param observed: vector of observed values</span>
+<span class="sd">        :type observed: :class:`numpy.ndarray`</span>
+<span class="sd">        :param predicted: vector of predicted values</span>
+<span class="sd">        :type predicted: :class:`numpy.ndarray`</span>
+<span class="sd">        :return: MAE value</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">predicted</span> <span class="o">-</span> <span class="n">observed</span><span class="p">))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">predicted</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Bivar.bias">
+<a class="viewcode-back" href="../../generated/plans.analyst.html#plans.analyst.Bivar.bias">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bias</span><span class="p">(</span><span class="n">observed</span><span class="p">,</span> <span class="n">predicted</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Compute the Bias (%), positive when predicted overestimates observed.</span>
+
+<span class="sd">        :param observed: vector of observed values</span>
+<span class="sd">        :type observed: :class:`numpy.ndarray`</span>
+<span class="sd">        :param predicted: vector of predicted values</span>
+<span class="sd">        :type predicted: :class:`numpy.ndarray`</span>
+<span class="sd">        :return: Bias value</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">predicted</span> <span class="o">-</span> <span class="n">observed</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">observed</span><span class="p">)</span></div>
 </div>
 
 

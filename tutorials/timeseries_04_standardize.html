@@ -373,18 +373,23 @@
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../projects.html">Projects</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="project_01.html">Projects - basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="univar_01.html">Univariate data - the basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bivar_01.html">Bivariate data - the basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time Series - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project_01.html">Projects - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="univar_01.html">Univariate data - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="univar_02_plots.html">Univariate data - Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bivar_01.html">Bivariate data - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bivar_02_models.html">Bivariate data - Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time Series - Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_05_compare.html">Time Series - Comparing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_02_upscale.html">Time Series - Upscaling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_06_downscale.html">Time Series - Downscaling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_03_gaps.html">Time Series - Gaps and epochs</a></li>
 <li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Time Series - Standardizing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_07_collection.html">Time Series - Collections</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - the basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="raster_01.html">Raster data - the basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_08_cluster.html">Time Series - Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_09_cluster_large.html">Time Series - Large Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_10_ensemble.html">Time Series - Ensembles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="raster_01.html">Raster data - Basics</a></li>
 </ul>
 </details></li>
 </ul>
@@ -450,7 +455,7 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="time-series-standardizing">
+  <section class="tex2jax_ignore mathjax_ignore" id="time-series-standardizing">
 <h1>Time Series - Standardizing<a class="headerlink" href="#time-series-standardizing" title="Link to this heading">#</a></h1>
 <p>Real time series data doesn’t always land on a clean, evenly-spaced grid: a sensor logger can skip a reading, drift by a few minutes, or simply have missing rows rather than explicit nulls. The <code class="docutils literal notranslate"><span class="pre">.standardize()</span></code> method forces the series onto a regular grid at its detected frequency – inserting <strong>null rows</strong> wherever a timestamp is missing from that grid.</p>
 <p>This is a foundational step: many other methods (<code class="docutils literal notranslate"><span class="pre">.get_epochs()</span></code>, <code class="docutils literal notranslate"><span class="pre">.interpolate_gaps()</span></code>, <code class="docutils literal notranslate"><span class="pre">.scale_up()</span></code>) assume a regular grid and call <code class="docutils literal notranslate"><span class="pre">.standardize()</span></code> internally if the series isn’t already standard. Understanding what <code class="docutils literal notranslate"><span class="pre">.standardize()</span></code> does – and where it can surprise you – makes those methods much easier to reason about.</p>
@@ -699,8 +704,8 @@ Null records: 0
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Rows before standardize: 311
-Rows after standardize:  361
-Null records introduced: 50
+Rows after standardize:  360
+Null records introduced: 49
 Is standard now: True
 </pre></div>
 </div>
@@ -716,7 +721,7 @@ Is standard now: True
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>datetime
-0 days 01:00:00    360
+0 days 01:00:00    359
 Name: count, dtype: int64
 </pre></div>
 </div>
@@ -783,7 +788,7 @@ Name: count, dtype: int64
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Rows before standardize: 49
-Rows after standardize:  73
+Rows after standardize:  72
 </pre></div>
 </div>
 <div class="output text_html"><div>
@@ -880,7 +885,7 @@ Rows after standardize:  73
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Distinct values per hour under a forced 20min grid (expect &gt;1 -- slots bucket independently, no collapse):
 v
 2    49
-1    48
+1    23
 Name: count, dtype: int64
 </pre></div>
 </div>
