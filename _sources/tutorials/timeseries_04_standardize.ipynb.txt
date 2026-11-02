@@ -13,7 +13,7 @@
    "source": [
     "Real time series data doesn't always land on a clean, evenly-spaced grid: a sensor logger can skip a reading, drift by a few minutes, or simply have missing rows rather than explicit nulls. The `.standardize()` method forces the series onto a regular grid at its detected frequency -- inserting **null rows** wherever a timestamp is missing from that grid.\n",
     "\n",
-    "This is a foundational step: many other methods (`.get_epochs()`, `.interpolate_gaps()`, `.scale_up()`) assume a regular grid and call `.standardize()` internally if the series isn't already standard. Understanding what `.standardize()` does -- and where it can surprise you -- makes those methods much easier to reason about.\n",
+    "This is a foundational step: methods like `.get_epochs()` and `.interpolate_gaps()` need a regular grid, and work on a regular copy if the series isn't already standard, leaving the series as it is. Understanding what `.standardize()` does -- and where it can surprise you -- makes those methods much easier to reason about.\n",
     "\n",
     "Covered here:\n",
     "\n",
@@ -358,7 +358,7 @@
     "## Recap\n",
     "\n",
     "- `.standardize()` forces the series onto a regular grid at `.dtfreq`, inserting `NaN` rows for any missing timestamp.\n",
-    "- `.is_standard` tracks whether this has been done; many other methods (`.get_epochs()`, `.interpolate_gaps()`, `.scale_up()`) call `.standardize()` internally if needed.\n",
+    "- `.is_standard` tracks whether this has been done; methods like `.get_epochs()` and `.interpolate_gaps()` work on a regular copy while it is `False`.\n",
     "- Irregular data (missing rows) doesn't show up as nulls until standardized -- check timestamp deltas or row count against the expected range to catch it beforehand.\n",
     "- Frequency detection (mode of consecutive deltas) and epoch bucketing (`.dt.floor()`) are both robust to a handful of jittered timestamps -- a small minority of off-grid rows won't flip the whole series onto the wrong frequency or silently collapse values within a slot."
    ]

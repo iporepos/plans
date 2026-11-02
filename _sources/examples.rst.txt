@@ -25,6 +25,7 @@ Available tutorials
    tutorials/project_01
    tutorials/univar_01
    tutorials/univar_02_plots
+   tutorials/univar_03_geo
    tutorials/bivar_01
    tutorials/bivar_02_models
    tutorials/stochastic_01_arma
@@ -39,6 +40,7 @@ Available tutorials
    tutorials/timeseries_09_cluster_large
    tutorials/timeseries_10_ensemble
    tutorials/timeseries_11_seasonal
+   tutorials/timeseries_12_collection_views
    tutorials/visuals_01
    tutorials/raster_01
 

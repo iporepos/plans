@@ -102,7 +102,7 @@
     "from plans.datasets import DischargeSeries, ETSeries, RainSeries, TemperatureSeries\n",
     "\n",
     "df_p = RainSeries(name=\"Rain\").generate(start=\"2019-01-01\", end=\"2019-12-31\", freq=\"D\", seed=1)\n",
-    "df_p.loc[20:22, \"ppt\"] = np.nan     # small gap (3d) -> interpolate_gaps should close this\n",
+    "df_p.loc[20:22, \"ppt\"] = np.nan     # small gap (3d)\n",
     "df_p.loc[150:169, \"ppt\"] = np.nan   # large gap (20d) -> a real Epoch 0 gap\n",
     "\n",
     "df_q = DischargeSeries(name=\"Flow\").generate(start=\"2019-03-01\", end=\"2019-11-30\", freq=\"D\", seed=2)\n",
@@ -292,7 +292,7 @@
    "source": [
     "## Standardize collection\n",
     "\n",
-    "Regularizes each series onto its own regular time step and closes small gaps (`interpolate_gaps`), then merges all series onto one shared table:"
+    "Regularizes each series onto its own regular time step. Gaps stay as they are, since filling them is a separate decision (`interpolate_gaps`):"
    ],
    "id": "43706b5e"
   },
