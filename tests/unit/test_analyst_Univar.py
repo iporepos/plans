@@ -15,6 +15,9 @@ The test suite verifies that:
 
 * Figures are built for both data panel options (scatter and boxplot).
 * Figures are built for every layout, and bad layouts or missing data raise.
+* The ``GeoUnivar`` map panel is square and aligned, for any extent of the data.
+* ``GeoUnivar`` sets data without changing the input, and views leave it untouched.
+* The map draws other layers below the points, and all panels follow the classes.
 
 """
 # IMPORTS
@@ -30,10 +33,13 @@ import unittest
 # External imports
 # =======================================================================
 import numpy as np
+import geopandas as gpd
+from shapely.geometry import box
 import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.collections import PolyCollection
 
 # ... {develop}
 
@@ -52,6 +58,17 @@ from plans.datasets.analyst import GeoUnivar, Univar
 
 # FUNCTIONS
 # ***********************************************************************
+
+
+def make_points(x, y):
+    """
+    Make points with the x coordinate as the value, in the ``soc`` column.
+    """
+    return gpd.GeoDataFrame(
+        data={"soc": x},
+        geometry=gpd.points_from_xy(x=x, y=y),
+        crs="EPSG:4674",
+    )
 
 
 # CLASSES
@@ -126,6 +143,103 @@ class TestUnivar(unittest.TestCase):
                 gv.view_specs["layout"] = layout
                 with self.assertRaisesRegex(ValueError, layout):
                     gv._get_fig_specs()
+
+    def test_geo_map_panel(self):
+        # the panel does not depend on the extent of the data
+        ls_left = []
+        for layout in ["full", "mini"]:
+            for dx, dy in [(1.0, 0.1), (0.1, 1.0)]:
+                with self.subTest(layout=layout, dx=dx, dy=dy):
+                    gv = GeoUnivar(name="Geo")
+                    gv.view_specs["layout"] = layout
+                    vct_x = np.linspace(start=-51, stop=-51 + dx, num=20)
+                    vct_y = np.linspace(start=-30, stop=-30 + dy, num=20)
+                    gv.set_data(
+                        input_df=make_points(x=vct_x, y=vct_y), input_varfield="soc"
+                    )
+                    fig = gv.view(show=False, return_fig=True)
+                    fig.canvas.draw()
+                    ax_map, ax_data = fig.get_axes()[:2]
+                    box_map = ax_map.get_window_extent()
+                    self.assertAlmostEqual(box_map.width, box_map.height, places=3)
+                    self.assertAlmostEqual(
+                        box_map.y1, ax_data.get_window_extent().y1, places=3
+                    )
+                    ls_left.append(box_map.x0)
+                    # all points stay in view
+                    self.assertLessEqual(ax_map.get_xlim()[0], vct_x.min())
+                    self.assertGreaterEqual(ax_map.get_xlim()[1], vct_x.max())
+                    self.assertLessEqual(ax_map.get_ylim()[0], vct_y.min())
+                    self.assertGreaterEqual(ax_map.get_ylim()[1], vct_y.max())
+                    plt.close(fig)
+        self.assertAlmostEqual(min(ls_left), max(ls_left), places=3)
+
+    def test_geo_set_data(self):
+        vct_x = np.linspace(start=-51, stop=-50, num=10)
+        gdf = make_points(x=vct_x, y=vct_x + 21)
+        gdf["other"] = 1.0
+        gdf.loc[0, "soc"] = np.nan
+        ls_columns = list(gdf.columns)
+
+        gv = GeoUnivar(name="Geo")
+        gv.set_data(input_df=gdf, input_varfield="soc")
+        self.assertListEqual(list(gv.data.columns), [gv.varfield, gv.field_geometry])
+        self.assertEqual(gv.size, 9)
+        self.assertEqual(gv.data.crs, gdf.crs)
+
+        # the view leaves all data untouched
+        ls_data = list(gv.data.columns)
+        fig = gv.view(show=False, return_fig=True)
+        plt.close(fig)
+        self.assertListEqual(list(gv.data.columns), ls_data)
+        self.assertListEqual(list(gdf.columns), ls_columns)
+
+    def test_geo_layers(self):
+        vct_x = np.linspace(start=-51, stop=-50, num=10)
+        gv = GeoUnivar(name="Geo")
+        gv.set_data(input_df=make_points(x=vct_x, y=vct_x + 21), input_varfield="soc")
+        # the layer goes beyond the points
+        layer = gpd.GeoDataFrame(geometry=[box(-52, -31, -49, -28)], crs="EPSG:4674")
+        gv.view_specs["layers_map"] = [
+            {"data": layer, "facecolor": "silver", "edgecolor": "black"}
+        ]
+        fig = gv.view(show=False, return_fig=True)
+        fig.canvas.draw()
+        ax = fig.get_axes()[0]
+        coll_layer, coll_points = ax.collections
+        self.assertLess(coll_layer.get_zorder(), coll_points.get_zorder())
+        self.assertLessEqual(ax.get_xlim()[0], -52)
+        self.assertGreaterEqual(ax.get_xlim()[1], -49)
+        plt.close(fig)
+        # the spec keeps its keys for the next view
+        self.assertIn("data", gv.view_specs["layers_map"][0])
+
+    def count_bars(self, ax):
+        # pieces of a color bar, apart from scatters and mean lines
+        return sum(isinstance(c, PolyCollection) for c in ax.collections)
+
+    def test_n_classes(self):
+        vct_x = np.linspace(start=-51, stop=-50, num=50)
+        gv = GeoUnivar(name="Geo")
+        gv.set_data(input_df=make_points(x=vct_x, y=vct_x + 21), input_varfield="soc")
+        gv.view_specs["n_classes_cmap"] = 3
+        fig = gv.view(show=False, return_fig=True)
+        ax_map, ax_data, ax_hist = fig.get_axes()[:3]
+        # colors in the map and pieces of the bars
+        vct_colors = ax_map.collections[0].get_facecolor()
+        self.assertEqual(len(np.unique(vct_colors, axis=0)), 3)
+        self.assertEqual(self.count_bars(ax=ax_data), 3)
+        self.assertEqual(self.count_bars(ax=ax_hist), 3)
+        plt.close(fig)
+
+        # colorized scatter of the parent class
+        self.uv.view_specs["colorize_scatter"] = True
+        self.uv.view_specs["n_classes_cmap"] = 3
+        fig = self.uv.view(show=False, return_fig=True)
+        ax_data = fig.get_axes()[0]
+        self.assertEqual(len(np.unique(ax_data.collections[0].get_array())), 3)
+        self.assertEqual(self.count_bars(ax=ax_data), 3)
+        plt.close(fig)
 
 
 # ... {develop}

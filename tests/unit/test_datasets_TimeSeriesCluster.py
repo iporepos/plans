@@ -19,6 +19,7 @@ The test suite verifies that:
 * Interpolation weights are uniform or inverse-distance as requested.
 * Gaps are filled from other sites, aligned by datetime, without touching observed values.
 * Figures are built for the cluster layouts without writing files.
+* The stacked layout of a collection follows its panels, and bad panels raise.
 
 """
 # IMPORTS
@@ -28,6 +29,7 @@ The test suite verifies that:
 # Native imports
 # =======================================================================
 import unittest
+import warnings
 
 # ... {develop}
 
@@ -45,6 +47,7 @@ import matplotlib.pyplot as plt
 # Project-level imports
 # =======================================================================
 from plans.datasets import (
+    RainSeries,
     TimeSeries,
     TimeSeriesCollection,
     TimeSeriesCluster,
@@ -176,6 +179,20 @@ class TestTimeSeriesCluster(unittest.TestCase):
         # second half of gap: B and C averaged
         self.assertTrue((s.loc[dates[25 : GAP[1]]] == 20.0).all())
 
+    def test_regionalize_fills_small_gaps_from_others(self):
+        # no interpolation first: a 2-day gap takes the value of the other series
+        vct_a = np.full(N_SIZE, 5.0)
+        vct_a[10:12] = np.nan
+        tsc = make_cluster(
+            ls_series=[
+                make_series(name="A", values=vct_a),
+                make_series(name="B", values=np.full(N_SIZE, 10.0)),
+            ]
+        )
+        tsc.regionalize(method="average")
+        s = get_values(tsc=tsc, name="A")
+        self.assertTrue((s.iloc[10:12] == 10.0).all())
+
     def test_regionalize_idw(self):
         vct_a = np.full(N_SIZE, 5.0)
         vct_a[GAP[0] : GAP[1]] = np.nan
@@ -232,6 +249,251 @@ class TestTimeSeriesCluster(unittest.TestCase):
                 fig = tsc.view(show=False, return_fig=True)
                 self.assertEqual(len(fig.get_axes()[0].get_yticks()), 0)
                 plt.close(fig)
+
+
+class TestSeriesLegend(unittest.TestCase):
+
+    def test_legend_clear_of_titles(self):
+        # long names in a narrow panel, and many names in a wide one
+        ls_cases = [
+            ("series", "Long name of series {}", 4),
+            ("series-simple", "Gauge {}", 10),
+            ("series-simple", "Long name of series {}", 8),
+        ]
+        for layout, s_name, n_series in ls_cases:
+            with self.subTest(layout=layout, name=s_name, n_series=n_series):
+                tsc = make_cluster(
+                    ls_series=[
+                        make_series(name=s_name.format(i), values=np.arange(N_SIZE))
+                        for i in range(n_series)
+                    ]
+                )
+                tsc.view_specs["layout"] = layout
+                fig = tsc.view(show=False, return_fig=True)
+                self.addCleanup(plt.close, fig)
+                fig.canvas.draw()
+                axes = fig.get_axes()
+                legend = axes[0].get_legend()
+                self.assertEqual(len(legend.get_texts()), n_series)
+                box_legend = legend.get_window_extent()
+                self.assertGreater(
+                    box_legend.x0, axes[0]._left_title.get_window_extent().x1
+                )
+                box_title = fig._suptitle.get_window_extent()
+                self.assertLessEqual(box_legend.y1, box_title.y0 + 0.01)
+                # all panels stay aligned
+                for ax in axes:
+                    self.assertAlmostEqual(
+                        ax.get_position().y1, axes[0].get_position().y1, places=6
+                    )
+
+
+class TestStackedLayout(unittest.TestCase):
+
+    def setUp(self):
+        self.tsc = TimeSeriesCollection(name="Basin", base_object=TimeSeries)
+        rng = np.random.default_rng(seed=1)
+        for name, units in [("A", "mm"), ("B", "mm"), ("C", "m3/s")]:
+            ts = make_series(name=name, values=rng.normal(size=N_SIZE))
+            ts.units = units
+            self.tsc.append(new_object=ts)
+        self.tsc.update(details=True)
+        self.tsc.view_specs["layout"] = "stacked-simple"
+
+    def get_fig(self):
+        fig = self.tsc.view(show=False, return_fig=True)
+        fig.canvas.draw()
+        self.addCleanup(plt.close, fig)
+        return fig
+
+    def test_default_panels(self):
+        # one series per panel, in catalog order
+        fig = self.get_fig()
+        axes = fig.get_axes()
+        self.assertEqual(len(axes), 3)
+        self.assertListEqual([ax.get_title(loc="left") for ax in axes], ["A", "B", "C"])
+
+    def test_panels(self):
+        self.tsc.collection["A"].view_specs["color"] = "tab:red"
+        self.tsc.view_specs["panels"] = [["A", "B"], ["C"]]
+        ax_first, ax_last = self.get_fig().get_axes()
+        self.assertEqual(len(ax_first.get_lines()), 2)
+        # legend only where there is more than one series
+        legend = ax_first.get_legend()
+        self.assertListEqual([t.get_text() for t in legend.get_texts()], ["A", "B"])
+        self.assertIsNone(ax_last.get_legend())
+        # the range covers all series of the panel
+        vmax = max(self.tsc.collection[n].data["v"].max() for n in ["A", "B"])
+        self.assertGreaterEqual(ax_first.get_ylim()[1], vmax)
+        # own color first, and repeated colors are replaced
+        line_a, line_b = ax_first.get_lines()
+        self.assertEqual(line_a.get_color(), "tab:red")
+        self.assertNotEqual(line_b.get_color(), "tab:red")
+        ax_lone = ax_last.get_lines()[0]
+        self.assertEqual(ax_lone.get_color(), self.tsc.collection["C"].rawcolor)
+
+    def test_standardize_keeps_gaps(self):
+        ts = make_series(name="D", values=np.arange(1.0, N_SIZE + 1))
+        ts.data.loc[10:11, ts.varfield] = np.nan
+        self.tsc.append(new_object=ts)
+        self.tsc.update(details=True)
+        self.tsc.standardize()
+        ts_d = self.tsc.collection["D"]
+        self.assertEqual(ts_d.data[ts_d.varfield].isna().sum(), 2)
+
+    def test_repeated_color_is_distinct(self):
+        for name in ["A", "B"]:
+            self.tsc.collection[name].view_specs["color"] = "blue"
+        self.tsc.view_specs["panels"] = [["A", "B"], ["C"]]
+        line_a, line_b = self.get_fig().get_axes()[0].get_lines()
+        vct_a = matplotlib.colors.to_rgb(line_a.get_color())
+        vct_b = matplotlib.colors.to_rgb(line_b.get_color())
+        # tab:blue would be the next color of the map, at about 0.63
+        self.assertGreater(np.linalg.norm(np.subtract(vct_a, vct_b)), 1)
+
+    def test_view_leaves_series(self):
+        ts = make_series(name="D", values=np.arange(1.0, N_SIZE + 1))
+        vct_gap = ts.data[ts.varfield].values.copy()
+        vct_gap[10:30] = np.nan
+        ts.data[ts.varfield] = vct_gap
+        self.tsc.append(new_object=ts)
+        self.tsc.update(details=True)
+        ts_d = self.tsc.collection["D"]
+        ts_d.view_specs["color"] = "tab:green"
+        df_before = ts_d.data.copy()
+        for layout in ["full", "simple"]:
+            with self.subTest(layout=layout):
+                self.tsc.view_specs["layout"] = layout
+                self.get_fig()
+                pd.testing.assert_frame_equal(ts_d.data, df_before)
+                self.assertEqual(ts_d.view_specs["color"], "tab:green")
+                self.assertFalse(ts_d.is_standard)
+
+    def test_view_shows_gaps_of_sums(self):
+        vct_dates = pd.date_range(start="2020-01-01", periods=100, freq="D")
+        vct_values = np.ones(100)
+        vct_values[40:60] = np.nan
+        tsc = TimeSeriesCollection(name="Sums", base_object=RainSeries)
+        ts = RainSeries(name="Rain")
+        ts.set_data(
+            input_df=pd.DataFrame({"datetime": vct_dates, "x": vct_values}),
+            input_dtfield="datetime",
+            input_varfield="x",
+            dropnan=False,
+        )
+        tsc.append(new_object=ts)
+        tsc.update(details=True)
+        fig = tsc.view(show=False, return_fig=True)
+        self.addCleanup(plt.close, fig)
+        ls_labels = [t.get_text() for t in fig.get_axes()[2].get_yticklabels()]
+        self.assertListEqual(ls_labels, ["80.0%"])
+
+    def test_epochs_see_missing_timestamps(self):
+        # rows dropped on loading: the overlap still finds the gap
+        vct_dates = pd.date_range(start="2020-01-01", periods=100, freq="D")
+        vct_values = np.ones(100)
+        vct_values[40:60] = np.nan
+        ts = TimeSeries(name="Dropped")
+        ts.set_data(
+            input_df=pd.DataFrame({"datetime": vct_dates, "x": vct_values}),
+            input_dtfield="datetime",
+            input_varfield="x",
+            dropnan=True,
+        )
+        tsc = TimeSeriesCollection(name="Dropped", base_object=TimeSeries)
+        tsc.append(new_object=ts)
+        tsc.update(details=True)
+        df = tsc.get_epochs()
+        self.assertEqual(len(df), 100)
+        self.assertEqual((df[ts.epochs_id_field] == 0).sum(), 20)
+        self.assertEqual(len(tsc.collection["Dropped"].data), 80)
+
+    def test_no_date_warning(self):
+        # records of nearly 3 years, the worst case for the date ticks
+        ts = TimeSeries(name="Long")
+        ts.generate(start="2019-01-01", end="2021-12-31", seed=1, inplace=True)
+        tsc = TimeSeriesCollection(name="Long", base_object=TimeSeries)
+        tsc.append(new_object=ts)
+        tsc.update(details=True)
+        tsc.view_specs["layout"] = "stacked-simple"
+        fig = tsc.view(show=False, return_fig=True)
+        self.addCleanup(plt.close, fig)
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            fig.canvas.draw()
+
+    def test_shared_time_axis(self):
+        ax_first, _, ax_last = self.get_fig().get_axes()
+        self.assertEqual(ax_first.get_xlim(), ax_last.get_xlim())
+        self.assertEqual(ax_first.get_xlabel(), "")
+        self.assertEqual(ax_last.get_xlabel(), "Date")
+        self.assertFalse(ax_first.xaxis.get_tick_params()["labelbottom"])
+        self.assertTrue(ax_last.xaxis.get_tick_params()["labelbottom"])
+
+    def test_lateral_panels(self):
+        self.tsc.view_specs["layout"] = "stacked"
+        self.tsc.view_specs["panels"] = [["A", "B"], ["C"]]
+        axes = self.get_fig().get_axes()
+        self.assertEqual(len(axes), 6)
+        ax_series, ax_hist, ax_cdf = axes[:3]
+        # titles once, and aligned with the series panel
+        self.assertEqual(ax_hist.get_title(loc="left"), "Histogram")
+        self.assertEqual(ax_cdf.get_title(loc="left"), "CDF")
+        self.assertEqual(axes[4].get_title(loc="left"), "")
+        self.assertEqual(ax_hist.get_ylim(), ax_series.get_ylim())
+        self.assertEqual(ax_cdf.get_ylim(), ax_series.get_ylim())
+        # shared panel: overlaid in the colors of the series
+        line_a = ax_series.get_lines()[0]
+        self.assertEqual(ax_cdf.get_lines()[0].get_color(), line_a.get_color())
+        self.assertEqual(len(ax_hist.containers), 2)
+        # lone series: colors of its own view specs
+        ts = self.tsc.collection["C"]
+        self.assertEqual(axes[5].get_lines()[0].get_color(), ts.view_specs["color_cdf"])
+        # x labels only below the last panel
+        self.assertEqual(ax_hist.get_xlabel(), "")
+        self.assertEqual(axes[4].get_xlabel(), "%")
+        self.assertEqual(ax_series.get_xlabel(), "")
+        self.assertEqual(axes[3].get_xlabel(), "Date")
+
+    def test_title_near_own_panel(self):
+        self.tsc.view_specs["panels"] = [["A"], ["B"]]
+        fig = self.get_fig()
+        ax_first, ax_last = fig.get_axes()
+        box_title = ax_last._left_title.get_window_extent()
+        gap_own = box_title.y0 - ax_last.get_window_extent().y1
+        gap_other = ax_first.get_window_extent().y0 - box_title.y1
+        self.assertLess(gap_own, gap_other)
+
+    def test_panel_heights(self):
+        self.tsc.view_specs["panels"] = [["A"], ["B"]]
+        self.tsc.view_specs["panel_heights"] = [3, 1]
+        ax_first, ax_last = self.get_fig().get_axes()
+        ratio = ax_first.get_position().height / ax_last.get_position().height
+        self.assertGreater(ratio, 2.5)
+
+    def test_figure_height(self):
+        self.tsc.view_specs["panels"] = [["A"], ["B"]]
+        h_two = self.get_fig().get_size_inches()[1]
+        self.tsc.view_specs["panels"] = [["A"], ["B"], ["C"]]
+        self.assertGreater(self.get_fig().get_size_inches()[1], h_two)
+
+    def test_errors(self):
+        ls_cases = [
+            ({"panels": [["A"], ["banana"]]}, "banana"),
+            ({"panels": [["A", "C"]]}, "same units"),
+            ({"panels": [["A"], []]}, "Empty panel"),
+            ({"panels": [["A"], ["B"]], "panel_heights": [1]}, "panel heights"),
+            ({"panels": [["A"]], "panel_heights": [0]}, "positive"),
+            ({"layout": "stacked-5"}, "stacked-5"),
+        ]
+        for dc_specs, regex in ls_cases:
+            with self.subTest(regex=regex):
+                self.tsc.view_specs.update(
+                    {"layout": "stacked", "panels": None, "panel_heights": None}
+                )
+                self.tsc.view_specs.update(dc_specs)
+                with self.assertRaisesRegex(ValueError, regex):
+                    self.tsc.view(show=False, return_fig=True)
 
 
 # ... {develop}

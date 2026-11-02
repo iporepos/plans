@@ -236,6 +236,8 @@ class TimeSeries(Univar):
         # call internals
         # ----------------------------------------------------------------
         self._set_view_specs()
+        # specs as last set by the object, to tell them from the user ones
+        self.view_specs_base = dict(self.view_specs)
 
         # ... continues in downstream objects ... #
         # ----------------------------------------------------------------
@@ -457,8 +459,17 @@ class TimeSeries(Univar):
         - Updates the ``var_min`` attribute with the minimum value of the variable field in the data.
         - Updates the ``var_max`` attribute with the maximum value of the variable field in the data.
         - Updates the ``data_size`` attribute with the length of the data.
+        - Refreshes the default ``view_specs``. Specs set by the user are kept.
 
         """
+        dc_user = {}
+        if self.data is not None:
+            dc_user = {
+                k: v
+                for k, v in self.view_specs.items()
+                if k not in self.view_specs_base or v != self.view_specs_base[k]
+            }
+
         super().update()
 
         if self.data is not None:
@@ -473,6 +484,8 @@ class TimeSeries(Univar):
             self.view_specs["ymax"] = self.data[self.varfield].max()
             self.view_specs["xmax"] = self.data[self.dtfield].max()
             self.view_specs["xmin"] = self.data[self.dtfield].min()
+            self.view_specs_base = dict(self.view_specs)
+            self.view_specs.update(dc_user)
 
         # ... continues in downstream objects ... #
         return None
@@ -519,7 +532,7 @@ class TimeSeries(Univar):
     # Data methods
     # -------------------------------------------------------------------
     def set_data(
-        self, input_df, input_dtfield, input_varfield, filter_dates=None, dropnan=True
+        self, input_df, input_dtfield, input_varfield, filter_dates=None, dropnan=False
     ):
         """
         Set time series data from an inputs DataFrame.
@@ -532,7 +545,7 @@ class TimeSeries(Univar):
         :type input_varfield: str
         :param filter_dates: List of [Start, End] used for filtering date range.
         :type dropnan: list
-        :param dropnan: If True, drop NaN values from the DataFrame. Default is True.
+        :param dropnan: If True, drop NaN values from the DataFrame. Default is False.
         :type dropnan: bool
 
         **Notes**
@@ -573,6 +586,7 @@ class TimeSeries(Univar):
 
         # Set the data attribute
         self.data = df.copy()
+        self.is_standard = False
 
         # update all
         self.update()
@@ -651,6 +665,7 @@ class TimeSeries(Univar):
 
         # Set the data attribute
         self.data = df.copy()
+        self.is_standard = False
 
         # ------------ update related attributes ------------ #
         self.file_data = file_data[:]
@@ -679,32 +694,7 @@ class TimeSeries(Univar):
 
         """
 
-        # get dataframe
-        in_df = self.data.copy()
-        def_len = len(in_df)
-
-        # drop first nan lines
-        drop_ids = list()
-
-        # loop to collect indexes in the start of series
-        for def_i in range(def_len):  # go forward
-            aux = in_df[self.varfield].isnull().iloc[def_i]
-            if aux:
-                drop_ids.append(def_i)
-            else:
-                break
-
-        # loop to collect indexes in the end of series
-        for def_i in range(def_len - 1, -1, -1):  # go backward
-            aux = in_df[self.varfield].isnull().iloc[def_i]
-            if aux:
-                drop_ids.append(def_i)
-            else:
-                break
-
-        # loop to drop rows:
-        for def_i in range(len(drop_ids)):
-            in_df.drop(drop_ids[def_i], inplace=True)
+        in_df = self._cut_edges(df=self.data)
 
         # output
         if inplace:
@@ -712,6 +702,22 @@ class TimeSeries(Univar):
             return None
         else:
             return in_df
+
+    def _cut_edges(self, df):
+        """
+        Get a dataframe without its initial and final NaN records.
+
+        :param df: dataframe with the variable field
+        :type df: :class:`pandas.DataFrame`
+        :return: copy of the dataframe, unchanged if all records are NaN
+        :rtype: :class:`pandas.DataFrame`
+        """
+        vct_valid = df[self.varfield].notna().values
+        if not vct_valid.any():
+            return df.copy()
+        n_start = np.argmax(vct_valid)
+        n_end = len(vct_valid) - np.argmax(vct_valid[::-1])
+        return df.iloc[n_start:n_end].copy()
 
     def standardize(self):
         """
@@ -740,9 +746,9 @@ class TimeSeries(Univar):
           flooring for calendar-variable grids (``MS``, ``YS``), so each
           timestamp is always bucketed independently based on its own value,
           never merged with unrelated timestamps in the same coarser unit.
-        - Sets ``self.is_standard = True`` on completion. Several other
-          methods (e.g. ``get_epochs``, ``interpolate_gaps``) check this flag
-          and call ``standardize()`` automatically if it's ``False``.
+        - Sets ``self.is_standard = True`` on completion. Methods that need
+          the regular grid (e.g. ``get_epochs``, ``interpolate_gaps``) work on
+          a regular copy while this flag is ``False``, leaving ``self.data`` as it is.
         - Calls ``self.update()`` at the end, refreshing derived statistics
           to reflect the new (possibly larger, possibly gap-containing) data.
 
@@ -777,6 +783,29 @@ class TimeSeries(Univar):
         >>> ts.data[ts.varfield].isna().sum()
         49
         """
+        self.data = self._get_standard_data()
+        self.is_standard = True
+
+        # Update all attributes
+        self.update()
+
+        return None
+
+    def _get_standard_data(self, cut=False):
+        """
+        Get a copy of the data on the regular grid. The series is not changed.
+
+        :param cut: If True, also cut off the initial and final NaN records.
+        :type cut: bool
+        :return: data on the regular grid
+        :rtype: :class:`pandas.DataFrame`
+        """
+        if self.is_standard:
+            return (
+                self._cut_edges(df=self.data).reset_index(drop=True)
+                if cut
+                else self.data.copy()
+            )
 
         def _insert_epochs(df):
             """
@@ -826,13 +855,13 @@ class TimeSeries(Univar):
         df_data = self.data.copy()
         # insert epochs based on data frequency
         df_data = _insert_epochs(df=df_data)
-        # aggregate by epoch
+        # aggregate by epoch. A plain sum would turn empty slots into zeros
+        dc_agg = {"min_count": 1} if self.agg == "sum" else {}
         df_data = (
             df_data.groupby(self.dtfield + "_epoch")[self.varfield]
-            .agg([self.agg])
+            .agg(self.agg, **dc_agg)
             .reset_index()
         )
-        df_data.rename(columns={self.agg: self.varfield}, inplace=True)
 
         # Standardize incoming start and end
         start_std = self.start.normalize()  # the start of day
@@ -853,18 +882,10 @@ class TimeSeries(Univar):
         df_data_std = pd.merge(left=df_data_std, right=df_data, on=on_st, how="left")
 
         # Clear extra column
-        self.data = df_data_std.drop(columns=on_st).copy()
-
-        # [removed] Cut off edges
-        # self.cut_edges(inplace=True)
-
-        # Set extra attributes
-        self.is_standard = True
-
-        # Update all attributes
-        self.update()
-
-        return None
+        df_data_std = df_data_std.drop(columns=on_st)
+        if cut:
+            df_data_std = self._cut_edges(df=df_data_std).reset_index(drop=True)
+        return df_data_std
 
     def clear_outliers(self, inplace=False):
         """
@@ -906,10 +927,31 @@ class TimeSeries(Univar):
         **Notes**
 
         This function labels continuous chunks of data as Epochs, with Epoch 0
-        representing gaps in the time series.
+        representing gaps in the time series. Missing timestamps count as gaps,
+        since the labels are made on the regular grid.
+
+        With ``inplace=True``, the data becomes the labeled regular grid.
 
         """
-        df = self.data.copy()
+        df = self._label_epochs(df=self._get_standard_data())
+
+        if inplace:
+            self.data = df.copy()
+            self.is_standard = True
+            return None
+        else:
+            return df
+
+    def _label_epochs(self, df):
+        """
+        Label the records of a dataframe by epoch (0 = gap epoch).
+
+        :param df: dataframe with the variable field, one record per time step
+        :type df: :class:`pandas.DataFrame`
+        :return: copy of the dataframe with the epoch field
+        :rtype: :class:`pandas.DataFrame`
+        """
+        df = df.copy()
         # Create a helper column to label continuous chunks of data
         df["CumSum"] = (
             df[self.varfield]
@@ -949,13 +991,7 @@ class TimeSeries(Univar):
             epoch_v[-1] = counter
         df[self.epochs_id_field] = epoch_v
 
-        df = df.drop(columns=["CumSum", "Skip"])
-
-        if inplace:
-            self.data = df.copy()
-            return None
-        else:
-            return df
+        return df.drop(columns=["CumSum", "Skip"])
 
     def update_epochs_stats(self):
         """
@@ -964,7 +1000,7 @@ class TimeSeries(Univar):
         **Notes**
 
         - This function updates statistics for all epochs in the time series.
-        - Ensures that the data is standardized by calling the ``standardize`` method if it's not already standardized.
+        - Works on a regular copy of the data without its NaN edges. The data itself is not changed.
         - Removes epoch 0 from the statistics since it typically represents non-standardized or invalid data.
         - Groups the data by and calculates statistics such as count, start, and end timestamps for each epoch.
         - Generates random colors for each epoch using the ``get_random_colors`` function with a specified colormap (`cmap`` attribute).
@@ -974,14 +1010,8 @@ class TimeSeries(Univar):
 
         """
 
-        # Ensure data is standardized
-        if not self.is_standard:
-            self.standardize()
-            # drop trailing
-            self.cut_edges(inplace=True)
-
         # Get epochs
-        df = self.get_epochs(inplace=False)
+        df = self._label_epochs(df=self._get_standard_data(cut=True))
 
         # Remove epoch = 0
         df.drop(df[df[self.epochs_id_field] == 0].index, inplace=True)
@@ -1043,7 +1073,7 @@ class TimeSeries(Univar):
 
         **Notes**
 
-        This function handles time series data, standardizing it if necessary before performing interpolation.
+        The interpolation runs on the regular grid. The series is only standardized if ``inplace`` is True.
         The process is applied to each unique epoch within the series.
 
          - ``linear``: linear interpolation
@@ -1056,10 +1086,6 @@ class TimeSeries(Univar):
 
         """
         from scipy.interpolate import interp1d
-
-        # Ensure data is standardized
-        if not self.is_standard:
-            self.standardize()
 
         # Get epochs for interpolation
         df = self.get_epochs(inplace=False)
@@ -1099,6 +1125,8 @@ class TimeSeries(Univar):
         df_new = df_new.sort_values(by=self.dtfield).reset_index(drop=True)
 
         if inplace:
+            if not self.is_standard:
+                self.standardize()
             self.data[self.varfield] = df_new[
                 "{}_interpolation".format(self.varfield)
             ].values
@@ -1160,9 +1188,17 @@ class TimeSeries(Univar):
                 agg_funcs[f"p{p}"] = lambda x, p=p: np.percentile(x, p)
             """
 
-        # set list of tuples
+        # set list of tuples. A plain sum would turn empty periods into zeros
         agg_funcs_list = [
-            ("{}_{}".format(self.varfield, f), agg_funcs[f]) for f in agg_funcs
+            (
+                "{}_{}".format(self.varfield, f),
+                (
+                    (lambda x: x.sum(min_count=1))
+                    if agg_funcs[f] == "sum"
+                    else agg_funcs[f]
+                ),
+            )
+            for f in agg_funcs
         ]
 
         # get data
@@ -2393,7 +2429,7 @@ class TimeSeries(Univar):
         if self.data is None:
             raise ValueError("There is no data to fit")
 
-        df = self.data.sort_values(by=self.dtfield)
+        df = self.data.dropna(subset=[self.varfield]).sort_values(by=self.dtfield)
         deltas = df[self.dtfield].diff().dropna()
         if len(deltas) == 0:
             raise ValueError("There is not enough data to fit")
@@ -2441,6 +2477,12 @@ class TimeSeriesCollection(Collection):
 
 
     """
+
+    # stacked layouts: grid rows of an average panel, rows between panels (a
+    # title stays closer to its own panel), and height of a row in mm
+    PANEL_ROWS = 5
+    PANEL_GAP_ROWS = 2
+    ROW_HEIGHT = 5
 
     # Dunder methods
     # -------------------------------------------------------------------
@@ -2498,6 +2540,15 @@ class TimeSeriesCollection(Collection):
                 "nrows": 16,
                 "width": viewer.FIG_SIZES["L"]["w"],
                 "height": viewer.FIG_SIZES["L"]["h"],
+            },
+            # one panel per row. Rows and height come from the panels
+            "stacked": {  # series + histograms + CDFs
+                "ncols": 34,
+                "width": viewer.FIG_SIZES["L"]["w"],
+            },
+            "stacked-simple": {  # series only
+                "ncols": 34,
+                "width": viewer.FIG_SIZES["L"]["w"],
             },
         }
 
@@ -2621,11 +2672,14 @@ class TimeSeriesCollection(Collection):
             self.collection[name].clear_outliers(inplace=True)
         return None
 
-    def merge_data(self):
+    def merge_data(self, standard=False):
         """
         Merge data from every series in the collection into one DataFrame,
         aligned by an outer join on the datetime field.
 
+        :param standard: If True, merge the data of each series on its regular
+            grid, so missing timestamps show up. The series are not changed.
+        :type standard: bool
         :return: A merged DataFrame with one datetime column and one value
             column per series (named ``"{variable_field}_{alias}"``).
         :rtype: pandas.DataFrame
@@ -2655,7 +2709,9 @@ class TimeSeriesCollection(Collection):
             varfield = self.catalog["variable_field"].values[i]
             dtfield = self.catalog["datetime_field"].values[i]
 
-            df_right = self.collection[name].data[[dtfield, varfield]].copy()
+            ts = self.collection[name]
+            df_right = ts._get_standard_data(cut=True) if standard else ts.data
+            df_right = df_right[[dtfield, varfield]].copy()
             df_right = df_right.rename(
                 columns={
                     varfield: "{}_{}".format(varfield, alias),
@@ -2682,8 +2738,9 @@ class TimeSeriesCollection(Collection):
 
         This is deliberately just a batched per-series operation: each
         member calls its own :meth:`TimeSeries.standardize` (regularize onto
-        *its own* native time step) and :meth:`TimeSeries.interpolate_gaps`
-        (close its own small gaps), and its own epoch stats are refreshed.
+        *its own* native time step), and its own epoch stats are refreshed.
+        Gaps stay as they are. Filling them is a separate decision, see
+        :meth:`TimeSeries.interpolate_gaps`.
 
         No cross-series merge happens here, and no series' ``.data`` is
         touched by any other series. A collection is explicitly allowed to
@@ -2698,7 +2755,6 @@ class TimeSeriesCollection(Collection):
         """
         for name in self.collection:
             self.collection[name].standardize()
-            self.collection[name].interpolate_gaps(inplace=True)
             self.collection[name].update_epochs_stats()
 
         # Update the collection catalog with details
@@ -2762,7 +2818,7 @@ class TimeSeriesCollection(Collection):
 
         """
         # Merge data to create a working DataFrame
-        df = self.merge_data()
+        df = self.merge_data(standard=True)
 
         # Create a copy for nan-value calculation
         df_nan = df.copy()
@@ -2791,9 +2847,9 @@ class TimeSeriesCollection(Collection):
             dropnan=False,
         )
 
-        # Calculate epochs and update the original DataFrame
-        ts_aux.get_epochs(inplace=True)
-        df[ts_aux.epochs_id_field] = ts_aux.data[ts_aux.epochs_id_field].values
+        # Calculate epochs on the merged grid and update the original DataFrame
+        df_labels = ts_aux._label_epochs(df=ts_aux.data)
+        df[ts_aux.epochs_id_field] = df_labels[ts_aux.epochs_id_field].values
 
         return df
 
@@ -2808,8 +2864,9 @@ class TimeSeriesCollection(Collection):
         consumed by :meth:`_get_fig_specs` / :meth:`_plot`.
         """
         self.view_specs = {
-            # layout: "full" (gantt + overlap + prevalence) or
-            # "simple" (gantt + overlap only)
+            # layout: "full" (gantt + overlap + prevalence),
+            # "simple" (gantt + overlap only), "stacked" (panels of series,
+            # histograms and CDFs) or "stacked-simple" (panels of series)
             "layout": "full",
             "style": "wien",
             # titles
@@ -2859,10 +2916,14 @@ class TimeSeriesCollection(Collection):
             "legend": True,
             # background series (large collections or highlight mode)
             "highlight": None,  # list of names drawn in color
+            "plot_background": True,  # False hides background lines
             "color_background": "silver",
             "linewidth_background": 0.5,
             "alpha_background": 0.6,
             "alpha_hist_background": 0.1,
+            # stacked layouts
+            "panels": None,  # list of lists of names. None is one series per panel
+            "panel_heights": None,  # relative heights, like [3, 1]. None is equal
         }
         return None
 
@@ -2898,17 +2959,103 @@ class TimeSeriesCollection(Collection):
 
         layout = specs["layout"]
         if layout not in self.layouts:
-            layout = "default"
+            raise ValueError(
+                f"Unknown layout '{layout}'. Options: {list(self.layouts.keys())}"
+            )
         specs_aux = self.layouts[layout].copy()
 
         specs.update(specs_aux)
         specs.update(viewer.GRID_SPECS)
 
+        if layout in ["stacked", "stacked-simple"]:
+            specs["panels"] = self._get_panels(specs=specs)
+            specs["panel_rows"] = self._get_panel_rows(specs=specs)
+            # title and header rows + panel rows + rows between panels + date row
+            n_gaps = (len(specs["panels"]) - 1) * TimeSeriesCollection.PANEL_GAP_ROWS
+            n_rows = 2 + sum(specs["panel_rows"]) + n_gaps + 1
+            specs["nrows"] = n_rows
+            specs["height"] = n_rows * TimeSeriesCollection.ROW_HEIGHT
+
         return specs
+
+    def _get_panels(self, specs):
+        """
+        Get the names of series in each panel, checking them. Series in a panel
+        share an axis, so they must have the same units.
+
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :return: names of series, for each panel
+        :rtype: list
+        """
+        ls_panels = specs["panels"]
+        if ls_panels is None:
+            ls_panels = [[n] for n in self.catalog[self.field_name].values]
+        if len(ls_panels) == 0:
+            raise ValueError("No panels to view. Set the series first")
+
+        for ls_names in ls_panels:
+            if len(ls_names) == 0:
+                raise ValueError("Empty panel in view_specs['panels']")
+            for name in ls_names:
+                if name not in self.collection:
+                    raise ValueError(
+                        f"Unknown series '{name}'. "
+                        f"Options: {list(self.collection.keys())}"
+                    )
+            ls_units = [self.collection[n].units for n in ls_names]
+            if len(set(ls_units)) > 1:
+                raise ValueError(
+                    f"Series of a panel must have the same units. "
+                    f"Got {dict(zip(ls_names, ls_units))}"
+                )
+
+        ls_heights = specs["panel_heights"]
+        if ls_heights is not None:
+            if len(ls_heights) != len(ls_panels):
+                raise ValueError(
+                    f"Got {len(ls_heights)} panel heights "
+                    f"for {len(ls_panels)} panels"
+                )
+            if min(ls_heights) <= 0:
+                raise ValueError("Panel heights must be positive")
+        return ls_panels
+
+    def _get_panel_rows(self, specs):
+        """
+        Get the grid rows of each panel, by share of the total height.
+
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :return: number of rows, for each panel
+        :rtype: list
+        """
+        n_panels = len(specs["panels"])
+        ls_heights = specs["panel_heights"] or [1] * n_panels
+        n_rows = TimeSeriesCollection.PANEL_ROWS * n_panels
+        # at least two rows, so a small panel still shows its y axis
+        return [max(2, round(n_rows * h / sum(ls_heights))) for h in ls_heights]
 
     def _build_axes(self, fig, gs, specs):
         """Add the dashboard's Axes to ``fig`` according to ``layout``."""
-        if specs["layout"] == "series":
+        if specs["layout"] in ["stacked", "stacked-simple"]:
+            is_simple = specs["layout"] == "stacked-simple"
+            ax_series = None
+            ax_cdf = None
+            i_row = 2
+            for n_rows in specs["panel_rows"]:
+                rows = slice(i_row, i_row + n_rows)
+                # series and CDFs share their x axis across panels
+                ax = fig.add_subplot(
+                    gs[rows, 3:] if is_simple else gs[rows, 3:21], sharex=ax_series
+                )
+                ax_series = ax if ax_series is None else ax_series
+                if not is_simple:
+                    fig.add_subplot(gs[rows, 23:28])
+                    ax = fig.add_subplot(gs[rows, 29:], sharex=ax_cdf)
+                    ax_cdf = ax if ax_cdf is None else ax_cdf
+                i_row = i_row + n_rows + TimeSeriesCollection.PANEL_GAP_ROWS
+        elif specs["layout"] == "series":
             fig.add_subplot(gs[2:10, 3:21])  # 0: series
             fig.add_subplot(gs[2:10, 23:28])  # 1: histograms
             fig.add_subplot(gs[2:10, 29:])  # 2: CDFs
@@ -2935,6 +3082,12 @@ class TimeSeriesCollection(Collection):
         if specs["layout"] in ["series", "series-simple"]:
             fig = self._build_axes(fig=fig, gs=gs, specs=specs)
             self._plot_series(axes=fig.get_axes(), specs=specs)
+            self._clear_title(fig=fig, title=fig.suptitle(specs["title"]))
+            return fig
+
+        if specs["layout"] in ["stacked", "stacked-simple"]:
+            fig = self._build_axes(fig=fig, gs=gs, specs=specs)
+            self._plot_stacked(axes=fig.get_axes(), specs=specs)
             fig.suptitle(specs["title"])
             return fig
 
@@ -3111,7 +3264,11 @@ class TimeSeriesCollection(Collection):
 
         Series in ``highlight`` are drawn in color on top of the others, drawn
         in background style. Above ``n_series_max`` series without highlights,
-        all series are background.
+        all series are background. With ``plot_background`` off, background
+        series leave the series panel, but stay in the histograms and CDFs.
+
+        Layers, from the bottom: background, bands (from the ensemble), extras
+        and members in color.
 
         :param axes: axes to plot on (1 or 3)
         :type axes: list
@@ -3139,14 +3296,12 @@ class TimeSeriesCollection(Collection):
             ls_fore = []
         else:
             ls_fore = ls_names
-        # (series, label, is foreground): background first, extras last
+        # (series, label, zorder): background first, extras last
         ls_items = [
-            (self.collection[n], dc_labels[n], False)
-            for n in ls_names
-            if n not in ls_fore
+            (self.collection[n], dc_labels[n], 1) for n in ls_names if n not in ls_fore
         ]
-        ls_items += [(self.collection[n], dc_labels[n], True) for n in ls_fore]
-        ls_items += [(ts, ts.name, True) for ts in ls_extra]
+        ls_items += [(self.collection[n], dc_labels[n], 4) for n in ls_fore]
+        ls_items += [(ts, ts.name, 3) for ts in ls_extra]
         n_fore = len(ls_fore) + len(ls_extra)
         if specs["cmap_series"] is not None and n_fore > 0:
             cmap = viewer.get_discrete_cmap(
@@ -3184,7 +3339,8 @@ class TimeSeriesCollection(Collection):
         # -------------------------------------------------------------------
         hist_max = 0
         i_fore = 0
-        for i, (ts, label, is_fore) in enumerate(ls_items):
+        for i, (ts, label, zorder) in enumerate(ls_items):
+            is_fore = zorder > 1
             if not is_fore:
                 color = specs["color_background"]
             elif specs["cmap_series"] is None:
@@ -3223,10 +3379,9 @@ class TimeSeriesCollection(Collection):
                     "plot_mean": specs["plot_mean"],
                     "plot_mean_label": False,
                     "linestyle_mean": "dashed",
-                    # foreground above anything else (e.g., bands)
-                    "zorder_data": 3 if is_fore else 1,
-                    "zorder_histh": 3 if is_fore else 1,
-                    "zorder_cdf": 3 if is_fore else 1,
+                    "zorder_data": zorder,
+                    "zorder_histh": zorder,
+                    "zorder_cdf": zorder,
                 }
             )
             if not is_fore:
@@ -3239,7 +3394,10 @@ class TimeSeriesCollection(Collection):
                         "plot_mean": False,
                     }
                 )
-            TimeSeries.plot_series(data=ts.data, ax=axes[0], specs=sp)
+            # no rows: the panel is still set up, but without the line
+            is_hidden = not is_fore and not specs["plot_background"]
+            df_series = ts.data.iloc[:0] if is_hidden else ts.data
+            TimeSeries.plot_series(data=df_series, ax=axes[0], specs=sp)
 
             if len(axes) > 1:
                 vct_data = ts.data[ts.varfield].dropna().values
@@ -3249,7 +3407,7 @@ class TimeSeriesCollection(Collection):
 
         # DECORATIONS
         # -------------------------------------------------------------------
-        axes[0].xaxis.set_major_locator(mdates.AutoDateLocator(minticks=3, maxticks=6))
+        axes[0].xaxis.set_major_locator(mdates.AutoDateLocator(minticks=3, maxticks=7))
         if len(axes) > 1:
             # histograms share the series axis
             axes[1].set_xlim(0, 1.1 * hist_max)
@@ -3267,21 +3425,190 @@ class TimeSeriesCollection(Collection):
         _, ls_labels = axes[0].get_legend_handles_labels()
         if not specs["legend"] or len(ls_labels) == 0:
             return None
-        # above the series panel, beside its title
-        axes[0].legend(
-            loc="lower right",
-            bbox_to_anchor=(1, 1),
-            ncol=min(len(ls_labels), 6),
-            fontsize=7,
-            frameon=False,
-        )
+        # above the series panel, beside its title. Fewer columns if too wide
+        width_free = axes[0].get_window_extent().width
+        width_free = width_free - axes[0]._left_title.get_window_extent().width
+        for ncol in range(len(ls_labels), 0, -1):
+            legend = axes[0].legend(
+                loc="lower right",
+                bbox_to_anchor=(1, 1),
+                ncol=ncol,
+                fontsize=7,
+                frameon=False,
+                handlelength=1.5,
+                columnspacing=1,
+            )
+            if legend.get_window_extent().width < width_free:
+                break
         return None
+
+    def _clear_title(self, fig, title):
+        """
+        Lower the top of all panels if legend rows reach the figure title.
+
+        :param fig: figure with the panels, the first one having the legend
+        :type fig: :class:`matplotlib.figure.Figure`
+        :param title: figure title
+        :type title: :class:`matplotlib.text.Text`
+        :return: None
+        :rtype: None
+        """
+        axes = fig.get_axes()
+        legend = axes[0].get_legend()
+        if legend is None:
+            return None
+        overlap = legend.get_window_extent().y1 - title.get_window_extent().y0
+        if overlap > 0:
+            for ax in axes:
+                box = ax.get_position()
+                height = box.height - overlap / fig.bbox.height
+                ax.set_position([box.x0, box.y0, box.width, height])
+        return None
+
+    def _plot_stacked(self, axes, specs):
+        """
+        Plot series on stacked panels with a shared time axis, and (if axes are
+        given) their histograms and CDFs. A lone series looks as in its own
+        view, from its ``view_specs``. Series sharing a panel have overlaid
+        histograms and CDFs in the color of the series. Colors repeated in a
+        panel are replaced, and the y range covers all series of the panel.
+
+        :param axes: axes to plot on, by panel: series, or series, histogram and CDF
+        :type axes: list
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :return: None
+        :rtype: None
+        """
+        dc_labels = dict(
+            zip(self.catalog[self.field_name].values, self._get_labels(specs=specs))
+        )
+        xmin = specs["xmin"] if specs["xmin"] is not None else self.start
+        xmax = specs["xmax"] if specs["xmax"] is not None else self.end
+        n_panels = len(specs["panels"])
+        n_axes = len(axes) // n_panels
+
+        for i, ls_names in enumerate(specs["panels"]):
+            ax_series, *ls_lateral = axes[i * n_axes : (i + 1) * n_axes]
+            is_single = len(ls_names) == 1
+            is_last = i == n_panels - 1
+            ls_series = [self.collection[n] for n in ls_names]
+            ls_colors = self._get_panel_colors(ls_series=ls_series, specs=specs)
+
+            # y range and label common to the panel
+            ls_ranges = [ts.view_specs["range"] for ts in ls_series]
+            range_y = [min(r[0] for r in ls_ranges), max(r[1] for r in ls_ranges)]
+            vct_bins = np.linspace(range_y[0], range_y[1], specs["bins"] + 1)
+            s_units = ls_series[0].units
+            ylabel = s_units
+            if len(set(ts.varname for ts in ls_series)) == 1:
+                ylabel = "{} ({})".format(ls_series[0].varname, s_units)
+
+            hist_max = 0
+            for name, ts, color in zip(ls_names, ls_series, ls_colors):
+                sp = ts.view_specs.copy()
+                sp.update(
+                    {
+                        "color": color,
+                        "data_label": dc_labels[name],
+                        "data_legend": False,
+                        "range": range_y,
+                        "range_x": [xmin, xmax],
+                        "n_dates": None,
+                        "xlabel": None,
+                        "ylabel": ylabel,
+                        # names of lone series are in the title
+                        "subtitle_data": dc_labels[name] if is_single else None,
+                        # lateral titles only once
+                        "subtitle_hist": specs["subtitle_hist"] if i == 0 else None,
+                        "subtitle_cdf": specs["subtitle_cdf"] if i == 0 else None,
+                    }
+                )
+                if not is_single:
+                    sp.update(
+                        {
+                            "color_hist": color,
+                            "color_cdf": color,
+                            "color_mean": color,
+                            "bins": vct_bins,
+                            "bins_density": False,
+                            "alpha_hist": specs["alpha_hist"],
+                            "histtype": specs["histtype"],
+                            "plot_mean": specs["plot_mean"],
+                            "plot_mean_label": False,
+                            "linestyle_mean": "dashed",
+                        }
+                    )
+                TimeSeries.plot_series(data=ts.data, ax=ax_series, specs=sp)
+
+                if len(ls_lateral) > 0:
+                    vct_data = ts.data[ts.varfield].dropna().values
+                    h = Univar.plot_histh(data=vct_data, ax=ls_lateral[0], specs=sp)
+                    hist_max = max(hist_max, np.max(h[0]))
+                    Univar.plot_cdf(
+                        cdf_df=ts.get_cdf_weibull(), ax=ls_lateral[1], specs=sp
+                    )
+
+            if len(ls_lateral) > 0:
+                ax_hist, ax_cdf = ls_lateral
+                ax_hist.set_xlim(0, 1.1 * hist_max)
+                ax_hist.set_ylabel(None)
+                ax_hist.tick_params(labelleft=False)
+                # histograms keep their own scale, and CDFs share one
+                ax_cdf.tick_params(labelbottom=is_last)
+                if not is_last:
+                    ax_hist.set_xlabel(None)
+                    ax_cdf.set_xlabel(None)
+
+            viewer.clear_xticks(axes=[ax_series] + ls_lateral)
+            if not is_single:
+                self._set_series_legend(axes=[ax_series], specs=specs)
+            # dates only below the last panel
+            ax_series.tick_params(labelbottom=is_last)
+
+        axes[0].xaxis.set_major_locator(mdates.AutoDateLocator(minticks=3, maxticks=7))
+        axes[(n_panels - 1) * n_axes].set_xlabel(specs["xlabel"])
+        return None
+
+    @staticmethod
+    def _get_panel_colors(ls_series, specs):
+        """
+        Get the color of each series in a panel. A series with a color already
+        in use takes the color of ``cmap_series`` farthest from those in use.
+
+        :param ls_series: series of the panel
+        :type ls_series: list
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :return: colors, for each series
+        :rtype: list
+        """
+        cmap = viewer.get_discrete_cmap(
+            n_classes=10, base_cmap_name=specs["cmap_series"] or "tab10"
+        )
+        ls_free = [mcolors.to_rgba(cmap(i)) for i in range(10)]
+        ls_rgba = []
+        ls_colors = []
+        for ts in ls_series:
+            color = ts.view_specs["color"]
+            if mcolors.to_rgba(color) in ls_rgba:
+                color = max(
+                    ls_free,
+                    key=lambda c: min(
+                        np.linalg.norm(np.subtract(c, u)) for u in ls_rgba
+                    ),
+                )
+            ls_rgba.append(mcolors.to_rgba(color))
+            ls_colors.append(color)
+        return ls_colors
 
     def view(self, show=True, return_fig=False):
         """
         Visualize the time series collection: a Gantt chart of each
         series' own epochs, the cross-series overlap over time, and (in
-        the ``"full"`` layout) each series' data prevalence.
+        the ``"full"`` layout) each series' data prevalence. The ``"stacked"``
+        and ``"stacked-simple"`` layouts draw series on panels instead, set by
+        ``view_specs["panels"]`` and ``view_specs["panel_heights"]``.
 
         Every knob previously passed as a loose keyword (``folder``,
         ``filename``, ``dpi``, ``fig_format``, ``usealias``, colors,
@@ -4035,8 +4362,8 @@ class TimeSeriesEnsemble(TimeSeriesCollection):
                 "reducers": ["mean"],
                 # percentile bands, as [low, high] pairs
                 "bands": [[5, 95]],
-                "color_band": "tab:blue",
-                "alpha_band": 0.2,
+                "color_band": "#8db4dc",  # light, so lines stay readable on top
+                "alpha_band": 0.6,
             }
         )
         return None

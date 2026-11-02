@@ -1,5 +1,38 @@
 # Memory Log
 
+## 2026-11-02 — Series only change when asked: `dropnan=False` by default, reads work on a regular copy, specs survive `update()`, `tsc.standardize()` no longer fills gaps
+User decisions. `update()` keeps specs the user changed, `get_epochs`/`interpolate_gaps(inplace=False)`/`update_epochs_stats` use `_get_standard_data()`. `get_epochs()` now sees missing timestamps. The fill in `tsc.standardize()` dated from the first commit, but only `regionalize()` and tutorial 07 used it, so `regionalize()` now fills small gaps from other series instead of interpolating or zeroing them.
+
+## 2026-11-02 — Fixed: sums no longer invent zeros in gaps; `full`/`simple` views leave the series untouched; smaller plot fixes
+`standardize()` and `aggregate()` use `min_count=1` for sums, so results change where gaps used to read as 0, including empty periods in `scale_up()` with default data. The Gantt views work on a deep copy. Also: `maxticks=7` for date ticks, legend drops columns to clear the panel title and panels lower to clear the figure title, repeated panel colors take the farthest color of the map, `Celsius` spelling.
+
+## 2026-11-02 — New tutorial `timeseries_12_collection_views` on collection visuals; found gap bug in `standardize()`, not fixed
+Tutorial is organized by the question each layout answers. `standardize()` turns all-NaN groups into 0 for `agg="sum"` series (pandas sum), reached with `dropnan=False` through the `full`/`simple` views; those views also reset member `view_specs`. Left for the user to decide, and the tutorial uses the default `dropnan=True`.
+
+## 2026-11-02 — `stacked` layout now has histogram and CDF panels; series-only version is `stacked-simple`; two rows between panels
+User decision. A lone series keeps the look of its own view, and series sharing a panel overlay in their own colors. The wider gap keeps each title closer to its own panel.
+
+## 2026-11-02 — New `stacked` layout in `TimeSeriesCollection`, with `panels` and `panel_heights` specs
+User decision. One layout, with the panel count from `panels`, rather than `stacked-2/3/4`. Series keep their own `view_specs`; mixed units in a panel raise. Inverted hyetographs and similar special cases go to dedicated classes later. Unknown collection layouts now raise instead of falling back to the Gantt view.
+
+## 2026-11-02 — `GeoUnivar`: `set_data()`, `layers_map` and `n_classes_cmap` specs; `view()` no longer adds a column; `mini` gap closed
+User decision. `zorder_map` default went from 0 to 3, so layers stay below points. `load_data` gets `input_varfield` and now renames that column to `varfield`, as in `Univar`. `n_classes_cmap` lives in `Univar`, so the colorized scatter follows it too.
+
+## 2026-11-02 — `univar_03_geo` fine-tuning now compares the `scheme_cmap` options
+User decision. Replaces the marker and grid example. Shows `equal` and `quantiles` with their bin edges, then `cmap`.
+
+## 2026-11-02 — `GeoUnivar` map panel always square, at the top left of its cell
+User decision. Geopandas shrank the panel to the map aspect, so it floated in its cell. Now the view limits widen instead (`adjustable="datalim"`), which also keeps layers added later in view. `mini` map moved to column 1, the same left side as `full`.
+
+## 2026-11-02 — New tutorial `univar_03_geo`: `GeoUnivar` from scratch with points and a catchment
+User decision. Source code untouched: the catchment is drawn on the map axes from `view(return_fig=True)`, since `GeoUnivar` has no setter or spec for extra layers.
+
+## 2026-11-01 — Ensemble bands more solid: `color_band` `#8db4dc`, `alpha_band` 0.6
+User decision. Keeping `tab:blue` at a higher alpha hid the highlight and mean lines, which share that blue, so the color got lighter too. A lighter color at 0.8 lost nested bands. Y range stays as is when background lines are hidden, also by user decision.
+
+## 2026-11-01 — Ensemble layers fixed as background, bands, reducers, highlight; new `plot_background` view spec
+User decision. Bands were already above background members, only translucent. The real fault was reducers drawn over highlights. `plot_background=False` hides background lines in the series panel only, and keeps the y range from all members so it stays aligned with the histogram.
+
 ## 2026-11-01 — Series legends always on top; `series-simple` panel to the figure side; new `viewer.clear_xticks`
 User decision. Inward ticks stay, so `clear_xticks` lowers the y limit slightly when a y grid line would cross the x ticks. Applied in `TimeSeries.view`, the compare view and the collection series panel. `Univar` figures are not covered.
 

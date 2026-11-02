@@ -75,6 +75,101 @@ def make_series(dates):
 
 class TestTimeSeries(unittest.TestCase):
 
+    def get_gap_series(self, cls, dropnan):
+        # daily series without values in March
+        vct_dates = pd.date_range(start="2020-01-01", end="2020-06-30", freq="D")
+        vct_values = np.ones(len(vct_dates))
+        is_march = (vct_dates >= "2020-03-01") & (vct_dates <= "2020-03-31")
+        vct_values[is_march] = np.nan
+        ts = cls(name="Gap")
+        ts.set_data(
+            input_df=pd.DataFrame({"datetime": vct_dates, "x": vct_values}),
+            input_dtfield="datetime",
+            input_varfield="x",
+            dropnan=dropnan,
+        )
+        return ts
+
+    def test_standardize_keeps_gaps(self):
+        for cls in [RainSeries, TemperatureSeries]:
+            for dropnan in [True, False]:
+                with self.subTest(cls=cls.__name__, dropnan=dropnan):
+                    ts = self.get_gap_series(cls=cls, dropnan=dropnan)
+                    ts.standardize()
+                    vct = ts.data[ts.varfield]
+                    self.assertEqual(vct.isna().sum(), 31)
+                    self.assertEqual((vct == 0).sum(), 0)
+
+    def test_scale_up_keeps_gaps(self):
+        for dropnan in [True, False]:
+            for bad_max in [0, 100]:
+                with self.subTest(dropnan=dropnan, bad_max=bad_max):
+                    ts = self.get_gap_series(cls=RainSeries, dropnan=dropnan)
+                    ts.scale_up(freq="MS", bad_max=bad_max, inplace=True)
+                    vct = ts.data[ts.varfield].values
+                    self.assertTrue(np.isnan(vct[2]))
+                    self.assertEqual(vct[0], 31)
+
+    def test_gaps_stay_after_set_data(self):
+        ts = self.get_gap_series(cls=TimeSeries, dropnan=False)
+        ts_default = TimeSeries(name="Default")
+        ts_default.set_data(
+            input_df=ts.data, input_dtfield=ts.dtfield, input_varfield=ts.varfield
+        )
+        self.assertEqual(ts_default.data[ts.varfield].isna().sum(), 31)
+
+    def test_reads_leave_series(self):
+        # missing timestamps, and the gaps still found
+        ts = self.get_gap_series(cls=TimeSeries, dropnan=True)
+        ts.view_specs["color"] = "tab:green"
+        df_before = ts.data.copy()
+        df_epochs = ts.get_epochs()
+        df_interp = ts.interpolate_gaps(inplace=False)
+        ts.update_epochs_stats()
+        pd.testing.assert_frame_equal(ts.data, df_before)
+        self.assertFalse(ts.is_standard)
+        self.assertEqual(ts.view_specs["color"], "tab:green")
+        self.assertEqual((df_epochs[ts.epochs_id_field] == 0).sum(), 31)
+        self.assertEqual(len(df_interp), len(df_epochs))
+        self.assertEqual(ts.epochs_n, 2)
+
+    def test_update_keeps_user_specs(self):
+        ts = self.get_gap_series(cls=RainSeries, dropnan=False)
+        s_title = ts.view_specs["title"]
+        ts.view_specs["color"] = "tab:green"
+        ts.view_specs["range"] = [0, 5]
+        ts.name = "Other"
+        ts.standardize()
+        self.assertEqual(ts.view_specs["color"], "tab:green")
+        self.assertEqual(ts.view_specs["range"], [0, 5])
+        # the defaults still follow the object
+        self.assertNotEqual(ts.view_specs["title"], s_title)
+
+    def test_update_refreshes_default_limits(self):
+        ts = self.get_gap_series(cls=TimeSeries, dropnan=False)
+        ts.data[ts.varfield] = ts.data[ts.varfield] * 10
+        ts.update()
+        self.assertEqual(ts.view_specs["ymax"], 10)
+
+    def test_interpolate_inplace_standardizes(self):
+        ts = self.get_gap_series(cls=TimeSeries, dropnan=True)
+        n_size = len(ts.data)
+        ts.interpolate_gaps(inplace=True)
+        self.assertTrue(ts.is_standard)
+        self.assertEqual(len(ts.data), n_size + 31)
+
+    def test_set_data_resets_standard(self):
+        ts = self.get_gap_series(cls=TimeSeries, dropnan=False)
+        ts.standardize()
+        df = ts.data.copy()
+        ts.set_data(input_df=df, input_dtfield=ts.dtfield, input_varfield=ts.varfield)
+        self.assertFalse(ts.is_standard)
+
+    def test_fit_rejects_gaps(self):
+        ts = self.get_gap_series(cls=TimeSeries, dropnan=False)
+        with self.assertRaises(ValueError):
+            ts.fit()
+
     def test_generate_returns_dataframe(self):
         ts = TemperatureSeries(name="Sim")
         df = ts.generate(start="2000-01-01", end="2000-12-31", seed=1)

@@ -541,6 +541,7 @@ class Univar(DataSet):
                 "color_mean_text": None,
                 # cmaps
                 "scheme_cmap": "equal",
+                "n_classes_cmap": 5,
                 "cmap": "viridis",
                 # alphas
                 "alpha": 0.8,
@@ -694,10 +695,12 @@ class Univar(DataSet):
         # handle scheme
         if specs["colorize_scatter"]:
             color_data = _binning.classify(
-                data=data, n_classes=5, scheme=specs["scheme_cmap"]
+                data=data,
+                n_classes=specs["n_classes_cmap"],
+                scheme=specs["scheme_cmap"],
             )
             color_cmap = viewer.get_discrete_cmap(
-                n_classes=5, base_cmap_name=specs["cmap"]
+                n_classes=specs["n_classes_cmap"], base_cmap_name=specs["cmap"]
             )
             # plot
             ax.scatter(
@@ -747,6 +750,7 @@ class Univar(DataSet):
                 ax=ax,
                 scheme=specs["scheme_cmap"],
                 cmap=specs["cmap"],
+                n_classes=specs["n_classes_cmap"],
                 side="right",
             )
 
@@ -1303,6 +1307,10 @@ class Univar(DataSet):
 
 
 class GeoUnivar(Univar):
+    """
+    Univariate data with locations, held in a ``GeoDataFrame``. Adds a map panel
+    to the visuals of :class:`Univar`.
+    """
 
     def __init__(self, name="MyGeoUnivar", alias="GV0"):
         # call super
@@ -1342,7 +1350,8 @@ class GeoUnivar(Univar):
                 "ax_hist": 2,
                 "ax_cdf": 3,
                 "x_stats": 0.55,
-                "zorder_map": 0,
+                "zorder_map": 3,  # above polygons and lines of other layers
+                "layers_map": None,  # list of other layers, see plot_map
                 "empty_map": False,
                 "grid_map": False,
                 "marker_map": "o",
@@ -1355,14 +1364,17 @@ class GeoUnivar(Univar):
         )
         return None
 
-    def load_data(self, file_data, layer_name):
+    def load_data(self, file_data, layer_name, input_varfield=None):
         """
         Load data from file. Expected to overwrite superior methods.
 
         :param file_data: file path to data.
         :type file_data: str
-        :param layer_name:
+        :param layer_name: name of the layer in the file
         :type layer_name: str
+        :param input_varfield: [optional] name of the column of values.
+            Default is the ``varfield`` attribute.
+        :type input_varfield: str
         :return: None
         :rtype: None
         """
@@ -1373,25 +1385,48 @@ class GeoUnivar(Univar):
         self.file_data = os.path.abspath(file_data)
         self.layer_name = layer_name
 
-        # -------------- implement loading logic -------------- #
-        default_columns = {
-            #'DateTime': 'datetime64[1s]',
-            self.varfield: float,
-        }
-        ls_cols = [self.varfield, self.field_geometry]
         # -------------- call loading function -------------- #
-
-        # handle data formats
-        self.data = gpd.read_file(self.file_data, layer=layer_name, columns=ls_cols)
+        s_key = self.varfield if input_varfield is None else input_varfield
+        gdf = gpd.read_file(
+            self.file_data, layer=layer_name, columns=[s_key, self.field_geometry]
+        )
 
         # -------------- post-loading logic -------------- #
-        self.data.dropna(inplace=True)
-
-        # -------------- update other mutables -------------- #
-        self.update()
+        self.set_data(input_df=gdf, input_varfield=s_key)
 
         # ... continues in downstream objects ... #
 
+        return None
+
+    def set_data(self, input_df, input_varfield=None):
+        """
+        Set data from a ``GeoDataFrame``, which is left untouched. Keeps only the
+        values, as the ``varfield`` column, and the geometry. Rows with missing
+        values are dropped.
+
+        :param input_df: data with values and locations
+        :type input_df: :class:`geopandas.GeoDataFrame`
+        :param input_varfield: [optional] name of the column of values.
+            Default is the ``varfield`` attribute.
+        :type input_varfield: str
+        :return: None
+        :rtype: None
+        """
+        # include geopandas
+        import geopandas as gpd
+
+        s_key = self.varfield if input_varfield is None else input_varfield
+        self.data = (
+            gpd.GeoDataFrame(
+                data={self.varfield: input_df[s_key].values},
+                geometry=input_df.geometry.values,
+                crs=input_df.crs,
+            )
+            .dropna()
+            .reset_index(drop=True)
+        )
+        self.view_specs["yvar_field"] = self.varfield
+        self.update()
         return None
 
     # todo [dev] -- export method
@@ -1406,10 +1441,10 @@ class GeoUnivar(Univar):
             fig.add_subplot(gs[2:10, 23:28])
             fig.add_subplot(gs[2:10, 29:])
         elif specs["layout"] == "mini":
-            fig.add_subplot(gs[2:10, 2:10])
-            fig.add_subplot(gs[2:10, 16:21])
-            fig.add_subplot(gs[2:10, 23:28])
-            fig.add_subplot(gs[2:10, 29:])
+            fig.add_subplot(gs[2:10, 1:9])
+            fig.add_subplot(gs[2:10, 12:19])
+            fig.add_subplot(gs[2:10, 21:27])
+            fig.add_subplot(gs[2:10, 28:])
         return fig
 
     def _plot(self, fig, gs, specs):
@@ -1433,6 +1468,7 @@ class GeoUnivar(Univar):
                 ax=all_axes[specs["ax_data"]],
                 scheme=specs["scheme_cmap"],
                 cmap=specs["cmap"],
+                n_classes=specs["n_classes_cmap"],
             )
 
         # ------------ hist cbar plot ------------
@@ -1442,12 +1478,44 @@ class GeoUnivar(Univar):
                 ax=all_axes[specs["ax_hist"]],
                 scheme=specs["scheme_cmap"],
                 cmap=specs["cmap"],
+                n_classes=specs["n_classes_cmap"],
             )
 
         return fig
 
     @staticmethod
     def plot_map(data, ax, column, specs, legend=False):
+        """
+        Plot the data and other layers on the map panel.
+
+        Other layers come from ``specs["layers_map"]``, as a list of dictionaries.
+        The ``data`` key holds the geometries, in the same CRS as the data, and
+        all other keys go to their ``plot`` method. For example,
+        ``{"data": catchment, "facecolor": "none", "edgecolor": "black"}``.
+
+        :param data: data to plot, left untouched
+        :type data: :class:`geopandas.GeoDataFrame`
+        :param ax: axis to plot on
+        :type ax: :class:`matplotlib.axes.Axes`
+        :param column: name of the column of values
+        :type column: str
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :param legend: option to add a legend
+        :type legend: bool
+        :return: None
+        :rtype: None
+        """
+        # square panel at the top left of its cell, for any map extent: the
+        # map aspect widens the view limits instead of shrinking the panel
+        ax.set_box_aspect(1)
+        ax.set_anchor("NW")
+        ax.set_adjustable("datalim")
+
+        # other layers
+        for dc_layer in specs["layers_map"] or []:
+            dc_kwargs = {k: v for k, v in dc_layer.items() if k != "data"}
+            dc_layer["data"].plot(ax=ax, **dc_kwargs)
 
         if not specs["empty_map"]:
 
@@ -1455,17 +1523,17 @@ class GeoUnivar(Univar):
             if specs["colorize_map"]:
 
                 color_data = _binning.classify(
-                    data=data[column].values, n_classes=5, scheme=specs["scheme_cmap"]
+                    data=data[column].values,
+                    n_classes=specs["n_classes_cmap"],
+                    scheme=specs["scheme_cmap"],
                 )
                 color_cmap = viewer.get_discrete_cmap(
-                    n_classes=5, base_cmap_name=specs["cmap"]
+                    n_classes=specs["n_classes_cmap"], base_cmap_name=specs["cmap"]
                 )
-                # set new column
-                data[f"{column}_plot"] = color_data
 
                 data.plot(
                     ax=ax,
-                    column=f"{column}_plot",
+                    column=color_data,
                     zorder=specs["zorder_map"],
                     cmap=color_cmap,
                     legend=legend,

@@ -18,6 +18,7 @@ The test suite verifies that:
 * Percentile outputs are named by their value (e.g., ``p05``).
 * Reducers can be retrieved as series objects.
 * The ``series`` view draws reducers and bands with their own legend entries.
+* The ``series`` view keeps its layers in order, and can hide background members.
 * ``SeasonalEnsemble`` splits a series by year onto one reference year, for any
   first month of the year and any step that repeats each year.
 * The ``SeasonalEnsemble`` view sets the x axis labels by mode.
@@ -184,6 +185,43 @@ class TestTimeSeriesEnsemble(unittest.TestCase):
                 self.assertGreaterEqual(box_legend.y0, box_ax.y1)
                 self.assertLessEqual(box_legend.x1, box_ax.x1)
                 plt.close(fig)
+
+    def test_view_layers(self):
+        # both in the foreground: the highlight stays above the reducer
+        self.tse.view_specs["highlight"] = ["M0"]
+        self.tse.view_specs["layout"] = "series-simple"
+        fig = self.tse.view(show=False, return_fig=True)
+        ax = fig.get_axes()[0]
+        dc_lines = {line.get_label(): line for line in ax.get_lines()}
+        band = [c for c in ax.collections if c.get_label() == "p05-p95"][0]
+        z_background = min(line.get_zorder() for line in ax.get_lines())
+        self.assertLess(z_background, band.get_zorder())
+        self.assertLess(band.get_zorder(), dc_lines["mean"].get_zorder())
+        self.assertLess(dc_lines["mean"].get_zorder(), dc_lines["M0"].get_zorder())
+        plt.close(fig)
+
+    def test_view_hide_background(self):
+        self.tse.view_specs["plot_background"] = False
+        self.tse.view_specs["highlight"] = ["M0"]
+        fig = self.tse.view(show=False, return_fig=True)
+        ax_series, ax_hist, _ = fig.get_axes()
+        ls_lines = [line for line in ax_series.get_lines() if len(line.get_xdata()) > 0]
+        self.assertSetEqual({line.get_label() for line in ls_lines}, {"M0", "mean"})
+        self.assertEqual(ax_series.get_title(loc="left"), "Series")
+        # histograms keep all members, and the mean
+        self.assertEqual(len(ax_hist.containers), N_MEMBERS + 1)
+        plt.close(fig)
+
+        # no line left: the panel still has its axes and bands
+        self.tse.view_specs["highlight"] = None
+        self.tse.view_specs["reducers"] = None
+        self.tse.view_specs["layout"] = "series-simple"
+        fig = self.tse.view(show=False, return_fig=True)
+        ax = fig.get_axes()[0]
+        self.assertEqual(ax.get_title(loc="left"), "Series")
+        self.assertEqual(len(ax.collections), 1)
+        self.assertGreater(ax.get_xlim()[1], ax.get_xlim()[0])
+        plt.close(fig)
 
 
 class TestSeasonalEnsemble(unittest.TestCase):

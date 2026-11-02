@@ -330,7 +330,7 @@ class TemperatureSeries(TimeSeries):
         self.varname = "Temperature"
         self.varalias = "TAS"
         self.varfield = "tas"
-        self.units = "Celcius"
+        self.units = "Celsius"
         # Overwrite attributes specific
         self.name_object = "Temperature Time Series"
         self.agg = "mean"  # Aggregation method,
