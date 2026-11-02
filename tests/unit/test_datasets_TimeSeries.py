@@ -38,6 +38,7 @@ import pandas as pd
 
 # Project-level imports
 # =======================================================================
+from plans import viewer
 from plans.datasets import (
     DischargeSeries,
     RainSeries,
@@ -224,6 +225,52 @@ class TestTimeSeries(unittest.TestCase):
                 self.assertEqual(len(df), len(late))
                 diff = df[f"{ts.varfield}_late"] - df[f"{ts.varfield}_long"]
                 self.assertLess(diff.abs().max(), delta)
+
+    def test_view_range(self):
+        ts = TimeSeries(name="Outlier")
+        ts.generate(start="2020-01-01", end="2021-12-31", seed=1, inplace=True)
+        ts.data.loc[100, ts.varfield] = 100.0
+        ts.update()
+
+        # all panels share the y limits and show the highest value
+        fig = ts.view(show=False, return_fig=True)
+        axes = fig.get_axes()
+        for ax in axes:
+            self.assertEqual(ax.get_ylim(), axes[0].get_ylim())
+            self.assertLessEqual(ax.get_ylim()[0], ts.view_specs["range"][0])
+            self.assertEqual(ax.get_ylim()[1], ts.view_specs["range"][1])
+            self.assertGreater(ax.get_ylim()[1], 100.0)
+        plt.close(fig)
+
+    def test_clear_xticks(self):
+        def get_gap(ax):
+            # distance in points of the lowest y grid line to the bottom
+            y0, y1 = ax.get_ylim()
+            px = ax.get_yaxis_transform().transform
+            ls = [px((0, y))[1] for y in ax.get_yticks() if y0 <= y < y1]
+            return (min(ls) - px((0, y0))[1]) * 72 / ax.figure.dpi
+
+        viewer.set_style(style="wien")
+        length = plt.rcParams["xtick.major.size"]
+
+        # a grid line across the ticks moves away, the others stay
+        fig, axes = plt.subplots(ncols=2)
+        for ax in axes:
+            ax.set_ylim(12.35, 33.6)
+        self.assertLess(get_gap(ax=axes[0]), length)
+        viewer.clear_xticks(axes=list(axes))
+        self.assertGreaterEqual(get_gap(ax=axes[0]), length)
+        self.assertEqual(axes[0].get_ylim(), axes[1].get_ylim())
+        self.assertEqual(axes[0].get_ylim()[1], 33.6)
+        plt.close(fig)
+
+        # far from the bottom or right at it: limits stay
+        for ylim in [(11.0, 33.6), (10.0, 35.0)]:
+            fig, ax = plt.subplots()
+            ax.set_ylim(ylim)
+            viewer.clear_xticks(axes=[ax])
+            self.assertEqual(ax.get_ylim(), ylim)
+            plt.close(fig)
 
     def test_compare_range(self):
         low, high = TimeSeries(name="Low"), TimeSeries(name="High")

@@ -1,5 +1,20 @@
 # Memory Log
 
+## 2026-11-01 — Series legends always on top; `series-simple` panel to the figure side; new `viewer.clear_xticks`
+User decision. Inward ticks stay, so `clear_xticks` lowers the y limit slightly when a y grid line would cross the x ticks. Applied in `TimeSeries.view`, the compare view and the collection series panel. `Univar` figures are not covered.
+
+## 2026-11-01 — `TimeSeries.get_seasonal_ensemble()`, seasonal unit tests and tutorial `timeseries_11_seasonal`
+User decision. Seasonal tests went into `test_datasets_TimeSeriesEnsemble.py` rather than a new test module. Inward ticks stay, deliberate for the `wien` style, so y grid lines can still cross x ticks near the bottom edge (matplotlib draws each axis grid and ticks together).
+
+## 2026-11-01 — New `SeasonalEnsemble`: years of one series as ensemble members
+User decision. Dates move onto a reference span holding a leap February, so the parent reducers and views work unchanged. `year_start` gives water years. Incomplete years stay in. Reducers return placeholder dates (option A), noted in the docstring. Steps that do not repeat each year raise `ValueError`, and monthly steps move to the first of the month. Unit tests and tutorial wait for the user's soft test.
+
+## 2026-11-01 — `TimeSeries` panels share a y range; `GeoUnivar` limited to `full` and `mini`; stochastic tutorial uses `viewer` style
+User decision. `TimeSeries.update()` keeps the parent range across its specs reset, so outliers show on every panel. `GeoUnivar` now has its own `layouts` and drops its `_get_fig_specs`, so other layouts raise `ValueError`. The tutorial uses the `wien` style, `FIG_SIZES` and the library's plain colors, since `viewer` has no palette.
+
+## 2026-11-01 — `Univar` plotting goes through `view()` and layouts; new `qq` layout; `plot_qqplot` removed
+User decision. `_plot` dispatches to `_plot_full` or `_plot_qq`, like `Bivar`, with a new static `plot_qq`. Unknown layouts now raise `ValueError` in `Univar` and `Bivar`, and `view()` raises without data. `data_plot` stays a separate key. `TimeSeries.view()` is left for a separate step: its panels do not share a y range, because the data panel and the histogram and CDF get different specs.
+
 ## 2026-11-01 — `make_synthetic_tsn` removed, without a deprecation release
 User decision: the user deleted the method and its test was removed. Overrides the earlier plan of warning for one release; the warning never shipped, so callers of the pip package get an `AttributeError`.
 

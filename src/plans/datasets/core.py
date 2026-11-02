@@ -430,6 +430,19 @@ class TimeSeries(Univar):
         ls = [self.data[self.dtfield].min(), self.data[self.dtfield].max()]
         return ls[:]
 
+    def get_seasonal_ensemble(self, year_start=1):
+        """
+        Get an ensemble with one member per year of the series.
+
+        :param year_start: first month of the year, from 1 to 12. Default is 1.
+        :type year_start: int
+        :return: ensemble with members of the same type as this series
+        :rtype: :class:`SeasonalEnsemble`
+        """
+        se = SeasonalEnsemble(name=self.name, base_object=type(self))
+        se.set_series(ts=self, year_start=year_start)
+        return se
+
     # Core methods
     # -------------------------------------------------------------------
     def update(self):
@@ -452,7 +465,10 @@ class TimeSeries(Univar):
             self._set_frequency()
             self.start = self.data[self.dtfield].min()
             self.end = self.data[self.dtfield].max()
+            # keep the range from the parent, the reset below clears it
+            range_y = self.view_specs["range"]
             self._set_view_specs()
+            self.view_specs["range"] = range_y
             self.view_specs["xmax_aux"] = 1.2 * self.freq_df["Frequency"].max()
             self.view_specs["ymax"] = self.data[self.varfield].max()
             self.view_specs["xmax"] = self.data[self.dtfield].max()
@@ -1827,6 +1843,15 @@ class TimeSeries(Univar):
                 ax3.set_xscale("log")
                 ax3.set_xlabel("T(X)")
 
+        # keep y grid lines off the x ticks
+        # ----------------------------------------------
+        if specs["include_eva"] and self.eva is not None:
+            # the EVA model panel has its own y axis
+            viewer.clear_xticks(axes=axes[:2])
+            viewer.clear_xticks(axes=axes[2:])
+        else:
+            viewer.clear_xticks(axes=axes)
+
         # SHIP
         # ----------------------------------------------------------------
         # create path
@@ -2186,6 +2211,9 @@ class TimeSeries(Univar):
             ax=axes[ts2.view_specs["ax_cdf"]],
             specs=ts2.view_specs,
         )
+
+        # the second series resets the y limits
+        viewer.clear_xticks(axes=axes)
 
         # SHIP
         # ----------------------------------------------------------------
@@ -2885,7 +2913,8 @@ class TimeSeriesCollection(Collection):
             fig.add_subplot(gs[2:10, 23:28])  # 1: histograms
             fig.add_subplot(gs[2:10, 29:])  # 2: CDFs
         elif specs["layout"] == "series-simple":
-            fig.add_subplot(gs[2:14, 4:27])
+            # one row below the title, for the legend
+            fig.add_subplot(gs[3:14, 4:])
         elif specs["layout"] == "simple":
             fig.add_subplot(gs[2:7, 4:32])  # gantt
             fig.add_subplot(gs[10:15, 4:32])  # overlap
@@ -3227,6 +3256,7 @@ class TimeSeriesCollection(Collection):
             axes[1].set_ylabel(None)
             axes[1].tick_params(labelleft=False)
 
+        viewer.clear_xticks(axes=axes)
         self._set_series_legend(axes=axes, specs=specs)
         return None
 
@@ -3237,17 +3267,14 @@ class TimeSeriesCollection(Collection):
         _, ls_labels = axes[0].get_legend_handles_labels()
         if not specs["legend"] or len(ls_labels) == 0:
             return None
-        if len(axes) > 1:
-            # above the series panel, beside its title
-            axes[0].legend(
-                loc="lower right",
-                bbox_to_anchor=(1, 1),
-                ncol=min(len(ls_labels), 6),
-                fontsize=7,
-                frameon=False,
-            )
-        else:
-            axes[0].legend(loc="upper left", bbox_to_anchor=(1.01, 1), frameon=False)
+        # above the series panel, beside its title
+        axes[0].legend(
+            loc="lower right",
+            bbox_to_anchor=(1, 1),
+            ncol=min(len(ls_labels), 6),
+            fontsize=7,
+            frameon=False,
+        )
         return None
 
     def view(self, show=True, return_fig=False):
@@ -4067,6 +4094,205 @@ class TimeSeriesEnsemble(TimeSeriesCollection):
         if float(p).is_integer():
             return "p{:02d}".format(int(p))
         return "p{}".format(p)
+
+
+class SeasonalEnsemble(TimeSeriesEnsemble):
+    """
+    Ensemble of the years of a single series, for seasonal plots.
+
+    Each year becomes a member, with dates moved onto one reference year, so
+    reducers, bands and ``highlight`` work across years. Works with any time
+    step that repeats each year: sub-daily, daily or monthly.
+
+    .. note::
+
+        Dates in members and reducers are placeholders. The reference year
+        is a leap year, so 29 Feb has its own step, filled only by leap years.
+        To join reducers by calendar date, use the month and day, as in
+        ``df["datetime"].dt.strftime("%m-%d")``.
+
+    """
+
+    # short month names, independent of the machine language
+    MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
+
+    def __init__(self, name="mySeasonalEnsemble", base_object=None):
+        # initialize parent
+        super().__init__(name=name, base_object=base_object)
+
+        # Set extra specific attributes
+        self.year_start = 1
+
+        # Overwrite parent attributes
+        self.name_object = "Seasonal Ensemble"
+
+        # reload view specs
+        self._set_view_specs()
+
+    # Data methods
+    # -------------------------------------------------------------------
+    def set_series(self, ts, year_start=1):
+        """
+        Split a series into one member per year, replacing current members.
+
+        Members are named by year, like ``2021``. When the year does not start
+        in January (e.g., a water year), names hold both years, like ``2020-21``.
+        Incomplete years are kept, and count in the reducers.
+
+        :param ts: series to split
+        :type ts: :class:`TimeSeries`
+        :param year_start: first month of the year, from 1 to 12. Default is 1.
+        :type year_start: int
+        :return: None
+        :rtype: None
+        """
+        if year_start not in range(1, 13):
+            raise ValueError(f"year_start must be from 1 to 12, not {year_start}")
+        if ts.data is None:
+            raise ValueError("No data in the series. Set the data first")
+
+        self.year_start = year_start
+        self.varname = ts.varname
+        self.varalias = ts.varalias
+        for name in list(self.collection.keys()):
+            self.remove(name=name)
+
+        # ------------ align steps ------------
+        df = ts.data[[ts.dtfield, ts.varfield]].copy()
+        dates = SeasonalEnsemble._align_steps(dates=df[ts.dtfield])
+        before_start = dates.dt.month < year_start
+        vct_years = dates.dt.year - before_start.astype(int)
+        df[ts.dtfield] = pd.to_datetime(
+            {
+                "year": self._get_reference_start().year + before_start.astype(int),
+                "month": dates.dt.month,
+                "day": dates.dt.day,
+                "hour": dates.dt.hour,
+                "minute": dates.dt.minute,
+                "second": dates.dt.second,
+            }
+        )
+
+        # ------------ set members ------------
+        for year, df_year in df.groupby(vct_years):
+            name = str(year)
+            if year_start > 1:
+                name = "{}-{:02d}".format(year, (year + 1) % 100)
+            member = self.baseobject(name=name, alias=name)
+            member.units = ts.units
+            member.varname = ts.varname
+            member.varalias = ts.varalias
+            member.set_data(
+                input_df=df_year,
+                input_dtfield=ts.dtfield,
+                input_varfield=ts.varfield,
+            )
+            self.append(new_object=member)
+        self.update(details=True)
+        return None
+
+    # View internal methods
+    # -------------------------------------------------------------------
+    def _set_view_specs(self):
+        """
+        Set view specifications. Expected to increment superior methods.
+        """
+        super()._set_view_specs()
+        self.view_specs.update(
+            {
+                # x axis labels: "days", "month", "month-letter" or "month-alias"
+                "xaxis": "month-alias",
+                "xlabel": None,  # None is set by the x axis mode
+            }
+        )
+        return None
+
+    def _get_reference_start(self):
+        """
+        Get the first date of the reference year, chosen so it holds 29 Feb.
+        """
+        year = 2000 if self.year_start <= 2 else 1999
+        return pd.Timestamp(year=year, month=self.year_start, day=1)
+
+    def _plot_series(self, axes, specs, extra=None, force_background=False):
+        """
+        Plot as in the ensemble, with the x axis of the reference year.
+        """
+        dc_labels = {
+            "days": "Day",
+            "month": "Month",
+            "month-letter": "Month",
+            "month-alias": "Month",
+        }
+        if specs["xaxis"] not in dc_labels:
+            raise ValueError(
+                f"Unknown xaxis '{specs['xaxis']}'. Options: {list(dc_labels.keys())}"
+            )
+
+        # the x axis opens at the start of the year, even without complete members
+        if specs["xmin"] is None:
+            specs["xmin"] = self._get_reference_start()
+        if specs["xlabel"] is None:
+            specs["xlabel"] = dc_labels[specs["xaxis"]]
+
+        super()._plot_series(
+            axes=axes, specs=specs, extra=extra, force_background=force_background
+        )
+        self._set_xaxis(ax=axes[0], mode=specs["xaxis"])
+        return None
+
+    def _set_xaxis(self, ax, mode):
+        """
+        Set the ticks and labels of the x axis.
+        """
+        if mode == "days":
+            # counted from the start of the reference year
+            num_start = mdates.date2num(self._get_reference_start())
+            ax.xaxis.set_major_locator(
+                mticker.FixedLocator(
+                    [num_start] + [num_start + d - 1 for d in range(50, 367, 50)]
+                )
+            )
+            ax.xaxis.set_major_formatter(
+                mticker.FuncFormatter(lambda x, pos: str(round(x - num_start) + 1))
+            )
+            return None
+
+        dc_formats = {
+            "month": lambda i: str(i + 1),
+            "month-letter": lambda i: SeasonalEnsemble.MONTHS[i][0],
+            "month-alias": lambda i: SeasonalEnsemble.MONTHS[i],
+        }
+        func = dc_formats[mode]
+        ax.xaxis.set_major_locator(mdates.MonthLocator())
+        ax.xaxis.set_major_formatter(
+            mticker.FuncFormatter(lambda x, pos: func(mdates.num2date(x).month - 1))
+        )
+        return None
+
+    # Static methods
+    # -------------------------------------------------------------------
+    @staticmethod
+    def _align_steps(dates):
+        """
+        Check that time steps repeat each year, moving monthly steps to the
+        first day of the month.
+
+        :param dates: dates of the series
+        :type dates: :class:`pandas.Series`
+        :return: dates with repeating steps
+        :rtype: :class:`pandas.Series`
+        """
+        step = dates.sort_values().diff().dropna().mode()[0]
+        day = pd.Timedelta(days=1)
+        if 28 * day <= step <= 31 * day:
+            return dates.dt.to_period("M").dt.to_timestamp()
+        if step > day or day % step != pd.Timedelta(0):
+            raise ValueError(
+                f"Time step of {step} does not repeat each year. "
+                "Use a monthly, daily or shorter step"
+            )
+        return dates
 
 
 # Core spatial classes

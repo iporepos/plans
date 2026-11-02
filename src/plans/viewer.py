@@ -395,6 +395,41 @@ def ship_fig(fig, show=True, file_output=None, dpi=300):
         return None
 
 
+def clear_xticks(axes):
+    """
+    Lower the y axis when a y grid line would cross the inward x ticks.
+
+    Matplotlib draws each axis grid and ticks together, the y axis last, so a
+    y grid line close to the bottom always covers the x ticks. A grid line right
+    at the bottom is hidden by the frame, so it stays.
+
+    :param axes: axes with the same y limits and height
+    :type axes: list
+    :return: None
+    :rtype: None
+    """
+    ax = axes[0]
+    trans = ax.get_yaxis_transform()
+    pt_to_px = ax.figure.dpi / 72
+    px_clear = pt_to_px * (
+        plt.rcParams["xtick.major.size"] + 0.5 * plt.rcParams["grid.linewidth"]
+    )
+    px_frame = pt_to_px * 0.5 * plt.rcParams["axes.linewidth"]
+
+    # new limits may bring new ticks
+    for _ in range(3):
+        y0, y1 = ax.get_ylim()
+        px_bottom = trans.transform((0, y0))[1]
+        ls_px = [trans.transform((0, y))[1] for y in ax.get_yticks() if y0 < y < y1]
+        ls_close = [px for px in ls_px if px_frame < px - px_bottom < px_clear]
+        if len(ls_close) == 0:
+            break
+        y_new = trans.inverted().transform((0, max(ls_close) - px_clear))[1]
+        for a in axes:
+            a.set_ylim(bottom=y_new)
+    return None
+
+
 def get_discrete_cmap(n_classes, base_cmap_name="viridis"):
     """
     Creates a colormap suitable for plotting classification.

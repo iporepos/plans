@@ -175,6 +175,9 @@ class TestBivar(unittest.TestCase):
 
     def test_view(self):
         self.bv.update_model(params_mean=[C0, C1 * 1.01], model_type="Linear")
+        self.bv.view_specs["layout"] = "banana"
+        with self.assertRaisesRegex(ValueError, "banana"):
+            self.bv.view(show=False, return_fig=True)
         for layout in ["full", "model"]:
             with self.subTest(layout=layout):
                 self.bv.view_specs["layout"] = layout

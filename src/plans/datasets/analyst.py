@@ -90,12 +90,22 @@ class Univar(DataSet):
                 "nrows": 12,
                 "width": viewer.FIG_SIZES["S"]["w"],
                 "height": viewer.FIG_SIZES["S"]["h"],
+                "ax_hist": False,
+                "ax_cdf": False,
             },
             "simple-shallow": {
                 "ncols": 24,
                 "nrows": 12,
                 "width": viewer.FIG_SIZES["S2"]["w"],
                 "height": viewer.FIG_SIZES["S2"]["h"],
+                "ax_hist": False,
+                "ax_cdf": False,
+            },
+            "qq": {
+                "ncols": 24,
+                "nrows": 12,
+                "width": viewer.FIG_SIZES["S"]["w"],
+                "height": viewer.FIG_SIZES["S"]["h"],
             },
             "default": {
                 "ncols": 24,
@@ -197,7 +207,12 @@ class Univar(DataSet):
         return None
 
     def update(self):
-        # todo [docstring]
+        """
+        Refresh the attributes and statistics from the current data.
+
+        :return: None
+        :rtype: None
+        """
         # ------------ call super ----------- #
         super().update()
 
@@ -278,96 +293,26 @@ class Univar(DataSet):
     # PLOT METHODS
     # ===================================================================
     # Plotting methods
-    # todo [DRY] evaluate to discard or refactor for viewer styles
-
-    # todo [evaluate]
-    def plot_qqplot(
-        self, show=True, folder="C:/sample", filename="qqplot", specs=None, dpi=300
-    ):
-        """
-        Plot Q-Q Plot on Normal distribution
-
-        :param show: Boolean to show instead of saving
-        :type show: bool
-        :param folder: output folder
-        :type folder: str
-        :param filename: image file name
-        :type filename: str
-        :param specs: specification dictionary
-        :type specs: dct
-        :param dpi: image resolution (default = 300)
-        :type dpi: int
-        :return: None
-        :rtype: None
-        """
-        df_clean = self.data.dropna()
-        data = df_clean[self.varfield]
-        # get specs
-        default_specs = {
-            "color": "tab:grey",
-            "title": "Q-Q Plot of {}".format(self.name),
-            "width": 4 * 1.618,
-            "height": 4,
-            "xlabel": "value",
-            "range": (0.95 * np.min(data), 1.05 * np.max(data)),
-            "range_x": (-3, 3),
-            "subtitle": None,
-        }
-        # handle inputs specs
-        if specs is None:
-            pass
-        else:  # override default
-            for k in specs:
-                default_specs[k] = specs[k]
-        specs = default_specs
-
-        # process quantiles
-        _df = _descriptive.qqplot(data=data)
-        # plot
-        fig = plt.figure(figsize=(specs["width"], specs["height"]))  # Width, Height
-        # grid
-        gs = mpl.gridspec.GridSpec(
-            1, 1, wspace=0.4, hspace=0.5, left=0.1, bottom=0.15, top=0.9, right=0.95
-        )  # nrows, ncols
-        # scatter plot
-        ax = fig.add_subplot(gs[0, 0])
-        plt.title(specs["title"])
-        plt.scatter(_df["T-Quantiles"], _df["Data"], marker=".", color="tab:grey")
-        plt.ylim([_df["Data"].min(), _df["Data"].max()])
-        plt.xlim(specs["range_x"])
-        plt.xlabel("Normal Theoretical Quantiles")
-        plt.ylabel("Data Empirical Quantiles")
-        plt.gca().set_aspect(
-            (specs["range_x"][1] - specs["range_x"][0])
-            / (_df["Data"].max() - _df["Data"].min())
-        )
-
-        # show or save
-        if show:
-            plt.show()
-        else:
-            plt.savefig("{}/{}_{}.png".format(folder, self.name, filename), dpi=dpi)
-
     def _plot(self, fig, gs, specs):
-        # todo [docstring]
+        """
+        Plot on figure based on layout.
 
-        # from matplotlib.ticker import PercentFormatter  # Import PercentFormatter
+        :param fig: figure object
+        :type fig: :class:`matplotlib.figure.Figure`
+        :param gs: grid of the figure
+        :type gs: :class:`matplotlib.gridspec.GridSpec`
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :return: figure object
+        :rtype: :class:`matplotlib.figure.Figure`
+        """
         formatter = mticker.ScalarFormatter(useOffset=False, useMathText=False)
         formatter.set_scientific(False)  # Ensure scientific notation is off
 
-        # AUX DATA
+        # RANGE
         # -------------------------------------------------------------------
         if self.stats_df is None:
             self.stats_df = self.get_basic_stats()
-        if self.weibull_df is None:
-            self.weibull_df = self.get_cdf_weibull()
-        # get mean
-        plot_mean = specs["plot_mean"]
-        y_mu = np.nanmean(self.data[self.varfield])
-
-        # RANGE
-        # -------------------------------------------------------------------
-        range_data = specs["range"]
         # handle if none
         if specs["range"] is None:
             p_low = self.stats_df.loc[
@@ -378,8 +323,7 @@ class Univar(DataSet):
             ].values[0]
             rng = p_hi - p_low
             rng_margin = rng * 0.1
-            range_data = (p_low - rng_margin, p_hi + rng_margin)
-            specs["range"] = range_data
+            specs["range"] = (p_low - rng_margin, p_hi + rng_margin)
 
         # TITLE
         # -------------------------------------------------------------------
@@ -389,6 +333,32 @@ class Univar(DataSet):
         # AXES
         # -------------------------------------------------------------------
         fig = self._build_axes(fig=fig, gs=gs, specs=specs)
+
+        # PLOT
+        # -------------------------------------------------------------------
+        if specs["layout"] == "qq":
+            self._plot_qq(fig=fig, specs=specs, formatter=formatter)
+        else:
+            self._plot_full(fig=fig, specs=specs, formatter=formatter)
+
+        return fig
+
+    def _plot_full(self, fig, specs, formatter):
+        """
+        Plot the data, histogram and CDF panels, and the statistics table.
+
+        :param fig: figure object with the axes already built
+        :type fig: :class:`matplotlib.figure.Figure`
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :param formatter: formatter of the y axis
+        :type formatter: :class:`matplotlib.ticker.Formatter`
+        :return: None
+        :rtype: None
+        """
+        if self.weibull_df is None:
+            self.weibull_df = self.get_cdf_weibull()
+
         all_axes = fig.get_axes()
 
         # DATA
@@ -449,35 +419,54 @@ class Univar(DataSet):
         # PLOT STATS
         # -------------------------------------------------------------------
         if specs["layout"] == "full":
-
-            x_stats = specs["x_stats"]
-            x_stats_sep = specs["x_stats_sep"]
-            y_stats = specs["y_stats"]
-            fig = Univar.plot_stats(
-                fig=fig, stats_df=self.stats_df, x=x_stats, y=y_stats, sep=x_stats_sep
+            Univar.plot_stats(
+                fig=fig,
+                stats_df=self.stats_df,
+                x=specs["x_stats"],
+                y=specs["y_stats"],
+                sep=specs["x_stats_sep"],
             )
 
-        # RETURN FIG
-        # -------------------------------------------------------------------
-        return fig
+        return None
+
+    def _plot_qq(self, fig, specs, formatter):
+        """
+        Plot the Q-Q panel.
+
+        :param fig: figure object with the axes already built
+        :type fig: :class:`matplotlib.figure.Figure`
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :param formatter: formatter of the y axis
+        :type formatter: :class:`matplotlib.ticker.Formatter`
+        :return: None
+        :rtype: None
+        """
+        Univar.plot_qq(
+            data=self.data[self.varfield].dropna().values,
+            ax=fig.get_axes()[0],
+            specs=specs,
+            formatter=formatter,
+        )
+        return None
 
     def _build_axes(self, fig, gs, specs):
-        # todo [docstring]
-        # ------------ setup axes ------------
-        if specs["layout"] == "full":
-            fig.add_subplot(gs[2:10, 2:10])
-            fig.add_subplot(gs[2:10, 13:18])
-            fig.add_subplot(gs[2:10, 19:])
+        """
+        Add subplots to figure based on layout.
 
-        elif specs["layout"] == "mini":
-            fig.add_subplot(gs[2:10, 2:10])
-            fig.add_subplot(gs[2:10, 13:18])
-            fig.add_subplot(gs[2:10, 19:])
-
-        elif specs["layout"] == "simple":
+        :param fig: figure object
+        :type fig: :class:`matplotlib.figure.Figure`
+        :param gs: grid of the figure
+        :type gs: :class:`matplotlib.gridspec.GridSpec`
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :return: figure object
+        :rtype: :class:`matplotlib.figure.Figure`
+        """
+        if specs["layout"] == "simple":
             fig.add_subplot(gs[2:12, 4:])
 
-        elif specs["layout"] == "simple-shallow":
+        elif specs["layout"] in ["simple-shallow", "qq"]:
             fig.add_subplot(gs[2:10, 4:])
 
         else:
@@ -488,24 +477,23 @@ class Univar(DataSet):
         return fig
 
     def _get_fig_specs(self):
-        # todo [docstring]
-        # handle specs
+        """
+        Get figure specs by merging view specs, layout specs and grid specs.
+
+        :return: figure specs
+        :rtype: dict
+        """
         specs = self.view_specs.copy()
 
         # handle layout
         layout = specs["layout"]
-        if layout not in list(self.layouts.keys()):
-            layout = "default"
+        if layout not in self.layouts:
+            raise ValueError(
+                f"Unknown layout '{layout}'. Options: {list(self.layouts.keys())}"
+            )
 
-        # overwrite parameters
-        if "simple" in layout:
-            specs["ax_hist"] = False
-            specs["ax_cdf"] = False
-
-        specs_aux = self.layouts[layout].copy()
-
-        # update sizes
-        specs.update(specs_aux)
+        # update sizes and panels
+        specs.update(self.layouts[layout].copy())
 
         # update gridspecs
         specs.update(viewer.GRID_SPECS)
@@ -532,6 +520,7 @@ class Univar(DataSet):
                 "subtitle_box": "Boxplot",
                 "subtitle_hist": "Histogram",
                 "subtitle_cdf": "CDF",
+                "subtitle_qq": "Q-Q",
                 # fields
                 "yvar_field": self.varfield,
                 "xvar": "i",
@@ -539,6 +528,7 @@ class Univar(DataSet):
                 # axis labels
                 "xlabel": self.varname,
                 "xlabel_cdf": "P(X)",
+                "xlabel_qq": "Normal quantiles",
                 "ylabel": self.units,
                 # data labels
                 "data_label": self.name,
@@ -596,7 +586,19 @@ class Univar(DataSet):
         return None
 
     def view(self, show=True, return_fig=False):
-        # todo [docstring]
+        """
+        Get the visualization. Layout is set by ``view_specs["layout"]``. The
+        options are the keys of the ``layouts`` attribute.
+
+        :param show: option for showing instead of saving
+        :type show: bool
+        :param return_fig: option for returning the figure object
+        :type return_fig: bool
+        :return: figure object if ``return_fig`` is True, else None
+        :rtype: :class:`matplotlib.figure.Figure` or None
+        """
+        if self.data is None:
+            raise ValueError("No data to view. Set the data first")
 
         # SPECS
         # -------------------------------------------------------------------
@@ -627,7 +629,22 @@ class Univar(DataSet):
 
     @staticmethod
     def plot_mean(ax, y_mu, xmin, xmax, specs):
-        # todo [docstring]
+        """
+        Plot the mean as a horizontal line, with an optional label.
+
+        :param ax: axis to plot on. Nothing is plotted if False
+        :type ax: :class:`matplotlib.axes.Axes` or bool
+        :param y_mu: mean value
+        :type y_mu: float
+        :param xmin: start of the line
+        :type xmin: float
+        :param xmax: end of the line
+        :type xmax: float
+        :param specs: plot specification dictionary (from ``view_specs``)
+        :type specs: dict
+        :return: None
+        :rtype: None
+        """
         if not ax:
             return None
 
@@ -656,7 +673,20 @@ class Univar(DataSet):
 
     @staticmethod
     def plot_scatter(data, ax, specs, formatter=None):
-        # todo [docstring]
+        """
+        Plot the data points in their original order.
+
+        :param data: vector of data without nan values
+        :type data: :class:`numpy.ndarray`
+        :param ax: axis to plot on. Nothing is plotted if False
+        :type ax: :class:`matplotlib.axes.Axes` or bool
+        :param specs: plot specification dictionary (from ``view_specs``)
+        :type specs: dict
+        :param formatter: [optional] formatter of the y axis
+        :type formatter: :class:`matplotlib.ticker.Formatter`
+        :return: None
+        :rtype: None
+        """
         if not ax:
             return None
         x_values = np.arange(len(data))
@@ -792,7 +822,21 @@ class Univar(DataSet):
 
     @staticmethod
     def plot_histh(data, ax, specs, formatter=None):
-        # todo [docstring]
+        """
+        Plot a horizontal histogram.
+
+        :param data: vector of data without nan values
+        :type data: :class:`numpy.ndarray`
+        :param ax: axis to plot on. Nothing is plotted if False
+        :type ax: :class:`matplotlib.axes.Axes` or bool
+        :param specs: plot specification dictionary (from ``view_specs``)
+        :type specs: dict
+        :param formatter: [optional] formatter of the y axis
+        :type formatter: :class:`matplotlib.ticker.Formatter`
+        :return: output of the histogram, or None if there is no axis
+        :rtype: tuple or None
+        """
+
         # todo dry --- evaluate to remove the range_data parameter
         # ------- local functions --------
         def _get_max(std_values, data):
@@ -865,7 +909,24 @@ class Univar(DataSet):
 
     @staticmethod
     def plot_cdf(cdf_df, ax, specs, formatter=None, px_field="P(X)", var_field="Data"):
-        # todo [docstring]
+        """
+        Plot the CDF, as exceedance probability.
+
+        :param cdf_df: dataframe of the CDF
+        :type cdf_df: :class:`pandas.DataFrame`
+        :param ax: axis to plot on. Nothing is plotted if False
+        :type ax: :class:`matplotlib.axes.Axes` or bool
+        :param specs: plot specification dictionary (from ``view_specs``)
+        :type specs: dict
+        :param formatter: [optional] formatter of the y axis
+        :type formatter: :class:`matplotlib.ticker.Formatter`
+        :param px_field: name of the probability field
+        :type px_field: str
+        :param var_field: name of the variable field
+        :type var_field: str
+        :return: None
+        :rtype: None
+        """
 
         if not ax:
             return None
@@ -906,8 +967,72 @@ class Univar(DataSet):
         return None
 
     @staticmethod
+    def plot_qq(data, ax, specs, formatter=None):
+        """
+        Plot data quantiles against normal quantiles. The line is the normal
+        distribution with the mean and standard deviation of the data.
+
+        :param data: vector of data without nan values
+        :type data: :class:`numpy.ndarray`
+        :param ax: axis to plot on. Nothing is plotted if False
+        :type ax: :class:`matplotlib.axes.Axes` or bool
+        :param specs: plot specification dictionary (from ``view_specs``)
+        :type specs: dict
+        :param formatter: [optional] formatter of the y axis
+        :type formatter: :class:`matplotlib.ticker.Formatter`
+        :return: None
+        :rtype: None
+        """
+        if not ax:
+            return None
+
+        df_qq = _descriptive.qqplot(data=data)
+        vct_t = df_qq["T-Quantiles"].values
+        ax.plot(
+            vct_t,
+            np.mean(data) + np.std(data) * vct_t,
+            color=specs["color_mean"],
+            linestyle=specs["linestyle_mean"],
+            zorder=specs["zorder_data"],
+        )
+        ax.scatter(
+            vct_t,
+            df_qq["Data"],
+            marker=".",
+            color=specs["color"],
+            alpha=specs["alpha"],
+            s=0.8 * viewer.MM_TO_PT,
+            zorder=specs["zorder_data"],
+        )
+        if specs["subtitle_qq"] is not None:
+            ax.set_title(specs["subtitle_qq"], loc="left")
+        ax.set_xlabel(specs["xlabel_qq"])
+        ax.set_ylabel(specs["ylabel"])
+        ax.set_xlim(specs["range_x"])
+        ax.set_ylim(specs["range"])
+        if formatter is not None:
+            ax.yaxis.set_major_formatter(formatter)
+
+        return None
+
+    @staticmethod
     def plot_stats(fig, stats_df, x=0.5, y=0.4, sep=0.2):
-        # todo [docstring]
+        """
+        Plot two columns of basic statistics as text on the figure.
+
+        :param fig: figure object
+        :type fig: :class:`matplotlib.figure.Figure`
+        :param stats_df: dataframe of basic statistics
+        :type stats_df: :class:`pandas.DataFrame`
+        :param x: position of the first column, in figure fraction
+        :type x: float
+        :param y: position of the top of the columns, in figure fraction
+        :type y: float
+        :param sep: distance between the columns, in figure fraction
+        :type sep: float
+        :return: figure object
+        :rtype: :class:`matplotlib.figure.Figure`
+        """
 
         # Helper function to plot a single column of stats
         def _plot_column(x_position, stats_list, start_y):
@@ -975,7 +1100,26 @@ class Univar(DataSet):
     def plot_cbar(
         data, ax, scheme, cmap="viridis", n_classes=5, side="right", width_factor=16
     ):
-        # todo [docstring]
+        """
+        Plot a vertical color bar of the data classes, inside the axis.
+
+        :param data: vector of data
+        :type data: :class:`numpy.ndarray`
+        :param ax: axis to plot on
+        :type ax: :class:`matplotlib.axes.Axes`
+        :param scheme: classification scheme, such as ``equal`` or ``quantiles``
+        :type scheme: str
+        :param cmap: name of the color map
+        :type cmap: str
+        :param n_classes: number of classes
+        :type n_classes: int
+        :param side: side of the axis, ``left`` or ``right``
+        :type side: str
+        :param width_factor: width of the bar as a fraction of the axis (1 over this value)
+        :type width_factor: float
+        :return: None
+        :rtype: None
+        """
 
         # handle bins
         bins = _binning.get_bins(data=data, n_bins=n_classes, scheme=scheme)
@@ -1165,6 +1309,22 @@ class GeoUnivar(Univar):
         super().__init__(name=name, alias=alias)
         self.layer_name = None
 
+        # the map panel needs its own layouts
+        self.layouts = {
+            "full": {
+                "ncols": 34,
+                "nrows": 16,
+                "width": viewer.FIG_SIZES["L"]["w"],
+                "height": viewer.FIG_SIZES["L"]["h"],
+            },
+            "mini": {
+                "ncols": 34,
+                "nrows": 12,
+                "width": viewer.FIG_SIZES["L2"]["w"],
+                "height": viewer.FIG_SIZES["L2"]["h"],
+            },
+        }
+
     def _set_fields(self):
         # ------------ call super ----------- #
         super()._set_fields()
@@ -1251,35 +1411,6 @@ class GeoUnivar(Univar):
             fig.add_subplot(gs[2:10, 23:28])
             fig.add_subplot(gs[2:10, 29:])
         return fig
-
-    def _get_fig_specs(self):
-        # todo [docstring]
-        # handle specs
-        specs = self.view_specs.copy()
-
-        # handle mode
-        mode = specs["layout"]
-        if mode == "full":
-            specs_aux = {
-                "ncols": 34,
-                "nrows": 16,
-                "width": viewer.FIG_SIZES["L"]["w"],
-                "height": viewer.FIG_SIZES["L"]["h"],
-            }
-        else:
-            specs_aux = {
-                "ncols": 34,
-                "nrows": 12,
-                "width": viewer.FIG_SIZES["L2"]["w"],
-                "height": viewer.FIG_SIZES["L2"]["h"],
-            }
-        # update sizes
-        specs.update(specs_aux)
-
-        # update gridspecs
-        specs.update(viewer.GRID_SPECS)
-
-        return specs
 
     def _plot(self, fig, gs, specs):
         # todo [docstring]
@@ -1761,9 +1892,10 @@ class Bivar(DataSet):
 
         # handle layout
         layout = specs["layout"]
-        if layout not in list(self.layouts.keys()):
-            layout = "default"
-            specs["layout"] = layout
+        if layout not in self.layouts:
+            raise ValueError(
+                f"Unknown layout '{layout}'. Options: {list(self.layouts.keys())}"
+            )
 
         # update sizes
         specs.update(self.layouts[layout].copy())

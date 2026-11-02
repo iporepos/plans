@@ -14,6 +14,7 @@ Features
 The test suite verifies that:
 
 * Figures are built for both data panel options (scatter and boxplot).
+* Figures are built for every layout, and bad layouts or missing data raise.
 
 """
 # IMPORTS
@@ -38,7 +39,7 @@ import matplotlib.pyplot as plt
 
 # Project-level imports
 # =======================================================================
-from plans.datasets.analyst import Univar
+from plans.datasets.analyst import GeoUnivar, Univar
 
 # ... {develop}
 
@@ -76,6 +77,55 @@ class TestUnivar(unittest.TestCase):
                 else:
                     self.assertEqual(len(ax_data.collections), 1)
                 plt.close(fig)
+
+    def test_view_layouts(self):
+        # layout, number of axes, statistics table
+        ls_cases = [
+            ("full", 3, True),
+            ("mini", 3, False),
+            ("simple", 1, False),
+            ("simple-shallow", 1, False),
+            ("qq", 1, False),
+            ("default", 3, False),
+        ]
+        self.assertEqual(sorted(c[0] for c in ls_cases), sorted(self.uv.layouts))
+        for layout, n_axes, has_stats in ls_cases:
+            with self.subTest(layout=layout):
+                self.uv.view_specs["layout"] = layout
+                fig = self.uv.view(show=False, return_fig=True)
+                axes = fig.get_axes()
+                self.assertEqual(len(axes), n_axes)
+                ls_text = [t.get_text() for ax in axes for t in ax.texts]
+                self.assertEqual(any("mean:" in t for t in ls_text), has_stats)
+                plt.close(fig)
+
+    def test_view_qq(self):
+        self.uv.view_specs["layout"] = "qq"
+        fig = self.uv.view(show=False, return_fig=True)
+        ax = fig.get_axes()[0]
+        # sorted data against the normal reference line
+        vct_y = ax.collections[0].get_offsets()[:, 1]
+        self.assertEqual(len(vct_y), 200)
+        self.assertTrue(np.all(np.diff(vct_y) >= 0))
+        self.assertEqual(len(ax.lines), 1)
+        self.assertEqual(ax.get_title(loc="left"), "Q-Q")
+        plt.close(fig)
+
+    def test_view_errors(self):
+        self.uv.view_specs["layout"] = "banana"
+        with self.assertRaisesRegex(ValueError, "banana"):
+            self.uv.view(show=False, return_fig=True)
+        with self.assertRaisesRegex(ValueError, "No data"):
+            Univar(name="Empty").view(show=False, return_fig=True)
+
+    def test_geo_layouts(self):
+        gv = GeoUnivar(name="Geo")
+        self.assertEqual(sorted(gv.layouts), ["full", "mini"])
+        for layout in ["simple", "qq", "banana"]:
+            with self.subTest(layout=layout):
+                gv.view_specs["layout"] = layout
+                with self.assertRaisesRegex(ValueError, layout):
+                    gv._get_fig_specs()
 
 
 # ... {develop}
