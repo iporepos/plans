@@ -434,25 +434,28 @@ to built plots with <code class="docutils literal notranslate"><span class="pre"
 <tr class="row-odd"><td><p><a class="reference internal" href="#plans.viewer.build_fig" title="plans.viewer.build_fig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_fig</span></code></a>(specs)</p></td>
 <td><p>Builds a matplotlib figure and GridSpec object based on the given specifications.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#plans.viewer.get_discrete_cmap" title="plans.viewer.get_discrete_cmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_discrete_cmap</span></code></a>(n_classes[, base_cmap_name])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.viewer.clear_xticks" title="plans.viewer.clear_xticks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear_xticks</span></code></a>(axes)</p></td>
+<td><p>Lower the y axis when a y grid line would cross the inward x ticks.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.viewer.get_discrete_cmap" title="plans.viewer.get_discrete_cmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_discrete_cmap</span></code></a>(n_classes[, base_cmap_name])</p></td>
 <td><p>Creates a colormap suitable for plotting classification.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#plans.viewer.set_colors" title="plans.viewer.set_colors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_colors</span></code></a>([style])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.viewer.set_colors" title="plans.viewer.set_colors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_colors</span></code></a>([style])</p></td>
 <td><p>Sets the color scheme for the plot, including figure background, axes background, grid, lines, and text.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#plans.viewer.set_figsize" title="plans.viewer.set_figsize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_figsize</span></code></a>(width_mm, height_mm)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.viewer.set_figsize" title="plans.viewer.set_figsize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_figsize</span></code></a>(width_mm, height_mm)</p></td>
 <td><p>Sets the figure size in millimeters.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#plans.viewer.set_fonts" title="plans.viewer.set_fonts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_fonts</span></code></a>([style])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.viewer.set_fonts" title="plans.viewer.set_fonts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_fonts</span></code></a>([style])</p></td>
 <td><p>Sets the font styles and sizes for plots.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#plans.viewer.set_frame" title="plans.viewer.set_frame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_frame</span></code></a>([style])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.viewer.set_frame" title="plans.viewer.set_frame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_frame</span></code></a>([style])</p></td>
 <td><p>Sets the frame style, including ticks, tick labels, axes, and grid.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#plans.viewer.set_style" title="plans.viewer.set_style"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_style</span></code></a>([style])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.viewer.set_style" title="plans.viewer.set_style"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_style</span></code></a>([style])</p></td>
 <td><p>Sets the viwer style.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#plans.viewer.ship_fig" title="plans.viewer.ship_fig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ship_fig</span></code></a>(fig[, show, file_output, dpi])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.viewer.ship_fig" title="plans.viewer.ship_fig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ship_fig</span></code></a>(fig[, show, file_output, dpi])</p></td>
 <td><p>Handles the output of a matplotlib figure, either by showing it or saving it to a file.</p></td>
 </tr>
 </tbody>
@@ -558,6 +561,26 @@ It should include ‘width’, ‘height’, ‘nrows’, ‘ncols’, ‘gs_wsp
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="plans.viewer.clear_xticks">
+<span class="sig-prename descclassname"><span class="pre">plans.viewer.</span></span><span class="sig-name descname"><span class="pre">clear_xticks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/viewer.html#clear_xticks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.viewer.clear_xticks" title="Link to this definition">#</a></dt>
+<dd><p>Lower the y axis when a y grid line would cross the inward x ticks.</p>
+<p>Matplotlib draws each axis grid and ticks together, the y axis last, so a
+y grid line close to the bottom always covers the x ticks. A grid line right
+at the bottom is hidden by the frame, so it stays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>axes</strong> (<em>list</em>) – axes with the same y limits and height</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="plans.viewer.get_discrete_cmap">
 <span class="sig-prename descclassname"><span class="pre">plans.viewer.</span></span><span class="sig-name descname"><span class="pre">get_discrete_cmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_classes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_cmap_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/viewer.html#get_discrete_cmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.viewer.get_discrete_cmap" title="Link to this definition">#</a></dt>
 <dd><p>Creates a colormap suitable for plotting classification.</p>
@@ -633,6 +656,7 @@ It should include ‘width’, ‘height’, ‘nrows’, ‘ncols’, ‘gs_wsp
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.viewer.set_colors"><code class="docutils literal notranslate"><span class="pre">set_colors()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.viewer.build_fig"><code class="docutils literal notranslate"><span class="pre">build_fig()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.viewer.ship_fig"><code class="docutils literal notranslate"><span class="pre">ship_fig()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.viewer.clear_xticks"><code class="docutils literal notranslate"><span class="pre">clear_xticks()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.viewer.get_discrete_cmap"><code class="docutils literal notranslate"><span class="pre">get_discrete_cmap()</span></code></a></li>
 </ul>
   </nav></div>

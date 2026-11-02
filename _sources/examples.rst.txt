@@ -38,6 +38,7 @@ Available tutorials
    tutorials/timeseries_08_cluster
    tutorials/timeseries_09_cluster_large
    tutorials/timeseries_10_ensemble
+   tutorials/timeseries_11_seasonal
    tutorials/visuals_01
    tutorials/raster_01
 

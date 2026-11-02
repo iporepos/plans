@@ -820,6 +820,44 @@
 
 
 
+<div class="viewcode-block" id="clear_xticks">
+<a class="viewcode-back" href="../../generated/plans.viewer.html#plans.viewer.clear_xticks">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">clear_xticks</span><span class="p">(</span><span class="n">axes</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Lower the y axis when a y grid line would cross the inward x ticks.</span>
+
+<span class="sd">    Matplotlib draws each axis grid and ticks together, the y axis last, so a</span>
+<span class="sd">    y grid line close to the bottom always covers the x ticks. A grid line right</span>
+<span class="sd">    at the bottom is hidden by the frame, so it stays.</span>
+
+<span class="sd">    :param axes: axes with the same y limits and height</span>
+<span class="sd">    :type axes: list</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    :rtype: None</span>
+<span class="sd">    """</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">trans</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_yaxis_transform</span><span class="p">()</span>
+    <span class="n">pt_to_px</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">dpi</span> <span class="o">/</span> <span class="mi">72</span>
+    <span class="n">px_clear</span> <span class="o">=</span> <span class="n">pt_to_px</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"xtick.major.size"</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"grid.linewidth"</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">px_frame</span> <span class="o">=</span> <span class="n">pt_to_px</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"axes.linewidth"</span><span class="p">]</span>
+
+    <span class="c1"># new limits may bring new ticks</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+        <span class="n">px_bottom</span> <span class="o">=</span> <span class="n">trans</span><span class="o">.</span><span class="n">transform</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">y0</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ls_px</span> <span class="o">=</span> <span class="p">[</span><span class="n">trans</span><span class="o">.</span><span class="n">transform</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_yticks</span><span class="p">()</span> <span class="k">if</span> <span class="n">y0</span> <span class="o">&lt;</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">y1</span><span class="p">]</span>
+        <span class="n">ls_close</span> <span class="o">=</span> <span class="p">[</span><span class="n">px</span> <span class="k">for</span> <span class="n">px</span> <span class="ow">in</span> <span class="n">ls_px</span> <span class="k">if</span> <span class="n">px_frame</span> <span class="o">&lt;</span> <span class="n">px</span> <span class="o">-</span> <span class="n">px_bottom</span> <span class="o">&lt;</span> <span class="n">px_clear</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ls_close</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">y_new</span> <span class="o">=</span> <span class="n">trans</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span><span class="o">.</span><span class="n">transform</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">ls_close</span><span class="p">)</span> <span class="o">-</span> <span class="n">px_clear</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="n">y_new</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
 <div class="viewcode-block" id="get_discrete_cmap">
 <a class="viewcode-back" href="../../generated/plans.viewer.html#plans.viewer.get_discrete_cmap">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_discrete_cmap</span><span class="p">(</span><span class="n">n_classes</span><span class="p">,</span> <span class="n">base_cmap_name</span><span class="o">=</span><span class="s2">"viridis"</span><span class="p">):</span>

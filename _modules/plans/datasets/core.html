@@ -857,6 +857,22 @@
         <span class="k">return</span> <span class="n">ls</span><span class="p">[:]</span></div>
 
 
+<div class="viewcode-block" id="TimeSeries.get_seasonal_ensemble">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.get_seasonal_ensemble">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_seasonal_ensemble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year_start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get an ensemble with one member per year of the series.</span>
+
+<span class="sd">        :param year_start: first month of the year, from 1 to 12. Default is 1.</span>
+<span class="sd">        :type year_start: int</span>
+<span class="sd">        :return: ensemble with members of the same type as this series</span>
+<span class="sd">        :rtype: :class:`SeasonalEnsemble`</span>
+<span class="sd">        """</span>
+        <span class="n">se</span> <span class="o">=</span> <span class="n">SeasonalEnsemble</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">base_object</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">se</span><span class="o">.</span><span class="n">set_series</span><span class="p">(</span><span class="n">ts</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">year_start</span><span class="o">=</span><span class="n">year_start</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">se</span></div>
+
+
     <span class="c1"># Core methods</span>
     <span class="c1"># -------------------------------------------------------------------</span>
 <div class="viewcode-block" id="TimeSeries.update">
@@ -881,7 +897,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_frequency</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="c1"># keep the range from the parent, the reset below clears it</span>
+            <span class="n">range_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span> <span class="o">=</span> <span class="n">range_y</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"xmax_aux"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">freq_df</span><span class="p">[</span><span class="s2">"Frequency"</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"ymax"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
@@ -2307,6 +2326,15 @@
                 <span class="n">ax3</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">"log"</span><span class="p">)</span>
                 <span class="n">ax3</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"T(X)"</span><span class="p">)</span>
 
+        <span class="c1"># keep y grid lines off the x ticks</span>
+        <span class="c1"># ----------------------------------------------</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"include_eva"</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">eva</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># the EVA model panel has its own y axis</span>
+            <span class="n">viewer</span><span class="o">.</span><span class="n">clear_xticks</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">viewer</span><span class="o">.</span><span class="n">clear_xticks</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">viewer</span><span class="o">.</span><span class="n">clear_xticks</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+
         <span class="c1"># SHIP</span>
         <span class="c1"># ----------------------------------------------------------------</span>
         <span class="c1"># create path</span>
@@ -2678,6 +2706,9 @@
             <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"ax_cdf"</span><span class="p">]],</span>
             <span class="n">specs</span><span class="o">=</span><span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="c1"># the second series resets the y limits</span>
+        <span class="n">viewer</span><span class="o">.</span><span class="n">clear_xticks</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
 
         <span class="c1"># SHIP</span>
         <span class="c1"># ----------------------------------------------------------------</span>
@@ -3431,7 +3462,8 @@
             <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">23</span><span class="p">:</span><span class="mi">28</span><span class="p">])</span>  <span class="c1"># 1: histograms</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">29</span><span class="p">:])</span>  <span class="c1"># 2: CDFs</span>
         <span class="k">elif</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"series-simple"</span><span class="p">:</span>
-            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">14</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">27</span><span class="p">])</span>
+            <span class="c1"># one row below the title, for the legend</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">14</span><span class="p">,</span> <span class="mi">4</span><span class="p">:])</span>
         <span class="k">elif</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"simple"</span><span class="p">:</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">32</span><span class="p">])</span>  <span class="c1"># gantt</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">15</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">32</span><span class="p">])</span>  <span class="c1"># overlap</span>
@@ -3782,6 +3814,7 @@
             <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
             <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
+        <span class="n">viewer</span><span class="o">.</span><span class="n">clear_xticks</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_series_legend</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
@@ -3795,17 +3828,14 @@
         <span class="n">_</span><span class="p">,</span> <span class="n">ls_labels</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"legend"</span><span class="p">]</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">ls_labels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># above the series panel, beside its title</span>
-            <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
-                <span class="n">loc</span><span class="o">=</span><span class="s2">"lower right"</span><span class="p">,</span>
-                <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-                <span class="n">ncol</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ls_labels</span><span class="p">),</span> <span class="mi">6</span><span class="p">),</span>
-                <span class="n">fontsize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
-                <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.01</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># above the series panel, beside its title</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
+            <span class="n">loc</span><span class="o">=</span><span class="s2">"lower right"</span><span class="p">,</span>
+            <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">ncol</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ls_labels</span><span class="p">),</span> <span class="mi">6</span><span class="p">),</span>
+            <span class="n">fontsize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+            <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
@@ -4718,6 +4748,229 @@
         <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">is_integer</span><span class="p">():</span>
             <span class="k">return</span> <span class="s2">"p</span><span class="si">{:02d}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
         <span class="k">return</span> <span class="s2">"p</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SeasonalEnsemble">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.SeasonalEnsemble">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SeasonalEnsemble</span><span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Ensemble of the years of a single series, for seasonal plots.</span>
+
+<span class="sd">    Each year becomes a member, with dates moved onto one reference year, so</span>
+<span class="sd">    reducers, bands and ``highlight`` work across years. Works with any time</span>
+<span class="sd">    step that repeats each year: sub-daily, daily or monthly.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        Dates in members and reducers are placeholders. The reference year</span>
+<span class="sd">        is a leap year, so 29 Feb has its own step, filled only by leap years.</span>
+<span class="sd">        To join reducers by calendar date, use the month and day, as in</span>
+<span class="sd">        ``df["datetime"].dt.strftime("%m-%d")``.</span>
+
+<span class="sd">    """</span>
+
+    <span class="c1"># short month names, independent of the machine language</span>
+    <span class="n">MONTHS</span> <span class="o">=</span> <span class="s2">"Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec"</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SeasonalEnsemble.__init__">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.SeasonalEnsemble.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"mySeasonalEnsemble"</span><span class="p">,</span> <span class="n">base_object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># initialize parent</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">base_object</span><span class="o">=</span><span class="n">base_object</span><span class="p">)</span>
+
+        <span class="c1"># Set extra specific attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">year_start</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># Overwrite parent attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_object</span> <span class="o">=</span> <span class="s2">"Seasonal Ensemble"</span>
+
+        <span class="c1"># reload view specs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span></div>
+
+
+    <span class="c1"># Data methods</span>
+    <span class="c1"># -------------------------------------------------------------------</span>
+<div class="viewcode-block" id="SeasonalEnsemble.set_series">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.SeasonalEnsemble.set_series">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">year_start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Split a series into one member per year, replacing current members.</span>
+
+<span class="sd">        Members are named by year, like ``2021``. When the year does not start</span>
+<span class="sd">        in January (e.g., a water year), names hold both years, like ``2020-21``.</span>
+<span class="sd">        Incomplete years are kept, and count in the reducers.</span>
+
+<span class="sd">        :param ts: series to split</span>
+<span class="sd">        :type ts: :class:`TimeSeries`</span>
+<span class="sd">        :param year_start: first month of the year, from 1 to 12. Default is 1.</span>
+<span class="sd">        :type year_start: int</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">year_start</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"year_start must be from 1 to 12, not </span><span class="si">{</span><span class="n">year_start</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"No data in the series. Set the data first"</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">year_start</span> <span class="o">=</span> <span class="n">year_start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">varname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">varalias</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># ------------ align steps ------------</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">[[</span><span class="n">ts</span><span class="o">.</span><span class="n">dtfield</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">varfield</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">dates</span> <span class="o">=</span> <span class="n">SeasonalEnsemble</span><span class="o">.</span><span class="n">_align_steps</span><span class="p">(</span><span class="n">dates</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">ts</span><span class="o">.</span><span class="n">dtfield</span><span class="p">])</span>
+        <span class="n">before_start</span> <span class="o">=</span> <span class="n">dates</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">month</span> <span class="o">&lt;</span> <span class="n">year_start</span>
+        <span class="n">vct_years</span> <span class="o">=</span> <span class="n">dates</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="n">before_start</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">ts</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"year"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_reference_start</span><span class="p">()</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="n">before_start</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
+                <span class="s2">"month"</span><span class="p">:</span> <span class="n">dates</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                <span class="s2">"day"</span><span class="p">:</span> <span class="n">dates</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+                <span class="s2">"hour"</span><span class="p">:</span> <span class="n">dates</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+                <span class="s2">"minute"</span><span class="p">:</span> <span class="n">dates</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+                <span class="s2">"second"</span><span class="p">:</span> <span class="n">dates</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="c1"># ------------ set members ------------</span>
+        <span class="k">for</span> <span class="n">year</span><span class="p">,</span> <span class="n">df_year</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">vct_years</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">year_start</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">-</span><span class="si">{:02d}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="p">(</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">100</span><span class="p">)</span>
+            <span class="n">member</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseobject</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">member</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">units</span>
+            <span class="n">member</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">varname</span>
+            <span class="n">member</span><span class="o">.</span><span class="n">varalias</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">varalias</span>
+            <span class="n">member</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span>
+                <span class="n">input_df</span><span class="o">=</span><span class="n">df_year</span><span class="p">,</span>
+                <span class="n">input_dtfield</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dtfield</span><span class="p">,</span>
+                <span class="n">input_varfield</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">varfield</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_object</span><span class="o">=</span><span class="n">member</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">details</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+    <span class="c1"># View internal methods</span>
+    <span class="c1"># -------------------------------------------------------------------</span>
+<div class="viewcode-block" id="SeasonalEnsemble._set_view_specs">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.SeasonalEnsemble._set_view_specs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_view_specs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Set view specifications. Expected to increment superior methods.</span>
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_view_specs</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="c1"># x axis labels: "days", "month", "month-letter" or "month-alias"</span>
+                <span class="s2">"xaxis"</span><span class="p">:</span> <span class="s2">"month-alias"</span><span class="p">,</span>
+                <span class="s2">"xlabel"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># None is set by the x axis mode</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="SeasonalEnsemble._get_reference_start">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.SeasonalEnsemble._get_reference_start">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_reference_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get the first date of the reference year, chosen so it holds 29 Feb.</span>
+<span class="sd">        """</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="mi">2000</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">year_start</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="k">else</span> <span class="mi">1999</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">year_start</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SeasonalEnsemble._plot_series">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.SeasonalEnsemble._plot_series">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_plot_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">specs</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_background</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Plot as in the ensemble, with the x axis of the reference year.</span>
+<span class="sd">        """</span>
+        <span class="n">dc_labels</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"days"</span><span class="p">:</span> <span class="s2">"Day"</span><span class="p">,</span>
+            <span class="s2">"month"</span><span class="p">:</span> <span class="s2">"Month"</span><span class="p">,</span>
+            <span class="s2">"month-letter"</span><span class="p">:</span> <span class="s2">"Month"</span><span class="p">,</span>
+            <span class="s2">"month-alias"</span><span class="p">:</span> <span class="s2">"Month"</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xaxis"</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dc_labels</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Unknown xaxis '</span><span class="si">{</span><span class="n">specs</span><span class="p">[</span><span class="s1">'xaxis'</span><span class="p">]</span><span class="si">}</span><span class="s2">'. Options: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">dc_labels</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+
+        <span class="c1"># the x axis opens at the start of the year, even without complete members</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">specs</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_reference_start</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xlabel"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">specs</span><span class="p">[</span><span class="s2">"xlabel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">dc_labels</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xaxis"</span><span class="p">]]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_plot_series</span><span class="p">(</span>
+            <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="n">extra</span><span class="p">,</span> <span class="n">force_background</span><span class="o">=</span><span class="n">force_background</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_xaxis</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xaxis"</span><span class="p">])</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="SeasonalEnsemble._set_xaxis">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.SeasonalEnsemble._set_xaxis">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_xaxis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Set the ticks and labels of the x axis.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"days"</span><span class="p">:</span>
+            <span class="c1"># counted from the start of the reference year</span>
+            <span class="n">num_start</span> <span class="o">=</span> <span class="n">mdates</span><span class="o">.</span><span class="n">date2num</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_reference_start</span><span class="p">())</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span>
+                <span class="n">mticker</span><span class="o">.</span><span class="n">FixedLocator</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">num_start</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">num_start</span> <span class="o">+</span> <span class="n">d</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">367</span><span class="p">,</span> <span class="mi">50</span><span class="p">)]</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span>
+                <span class="n">mticker</span><span class="o">.</span><span class="n">FuncFormatter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">num_start</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">dc_formats</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"month"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="s2">"month-letter"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">SeasonalEnsemble</span><span class="o">.</span><span class="n">MONTHS</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">"month-alias"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">SeasonalEnsemble</span><span class="o">.</span><span class="n">MONTHS</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">dc_formats</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">MonthLocator</span><span class="p">())</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span>
+            <span class="n">mticker</span><span class="o">.</span><span class="n">FuncFormatter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="n">func</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">num2date</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">month</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+    <span class="c1"># Static methods</span>
+    <span class="c1"># -------------------------------------------------------------------</span>
+<div class="viewcode-block" id="SeasonalEnsemble._align_steps">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.SeasonalEnsemble._align_steps">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_align_steps</span><span class="p">(</span><span class="n">dates</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Check that time steps repeat each year, moving monthly steps to the</span>
+<span class="sd">        first day of the month.</span>
+
+<span class="sd">        :param dates: dates of the series</span>
+<span class="sd">        :type dates: :class:`pandas.Series`</span>
+<span class="sd">        :return: dates with repeating steps</span>
+<span class="sd">        :rtype: :class:`pandas.Series`</span>
+<span class="sd">        """</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="n">dates</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">mode</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">day</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="mi">28</span> <span class="o">*</span> <span class="n">day</span> <span class="o">&lt;=</span> <span class="n">step</span> <span class="o">&lt;=</span> <span class="mi">31</span> <span class="o">*</span> <span class="n">day</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dates</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">to_period</span><span class="p">(</span><span class="s2">"M"</span><span class="p">)</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">to_timestamp</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="n">day</span> <span class="ow">or</span> <span class="n">day</span> <span class="o">%</span> <span class="n">step</span> <span class="o">!=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Time step of </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2"> does not repeat each year. "</span>
+                <span class="s2">"Use a monthly, daily or shorter step"</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">dates</span></div>
 </div>
 
 

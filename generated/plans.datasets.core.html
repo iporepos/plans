@@ -467,19 +467,22 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.core.SciRaster" title="plans.datasets.core.SciRaster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SciRaster</span></code></a>([name, alias])</p></td>
 <td><p>Scientific (float32) raster dataset with a configurable nodata value and display range.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.core.TimeSeries" title="plans.datasets.core.TimeSeries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeries</span></code></a>([name, alias])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.core.SeasonalEnsemble" title="plans.datasets.core.SeasonalEnsemble"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SeasonalEnsemble</span></code></a>([name, base_object])</p></td>
+<td><p>Ensemble of the years of a single series, for seasonal plots.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.core.TimeSeries" title="plans.datasets.core.TimeSeries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeries</span></code></a>([name, alias])</p></td>
 <td><p>A time series dataset with a datetime-indexed variable.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.core.TimeSeriesCluster" title="plans.datasets.core.TimeSeriesCluster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCluster</span></code></a>([name, base_object])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.core.TimeSeriesCluster" title="plans.datasets.core.TimeSeriesCluster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCluster</span></code></a>([name, base_object])</p></td>
 <td><p>Collection of same-variable time series from different sites (e.g., a network of rain gauges).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.core.TimeSeriesCollection" title="plans.datasets.core.TimeSeriesCollection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection</span></code></a>([name, base_object])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.core.TimeSeriesCollection" title="plans.datasets.core.TimeSeriesCollection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection</span></code></a>([name, base_object])</p></td>
 <td><p>A collection of time series objects with associated metadata.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.core.TimeSeriesEnsemble" title="plans.datasets.core.TimeSeriesEnsemble"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code></a>([name, base_object])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.core.TimeSeriesEnsemble" title="plans.datasets.core.TimeSeriesEnsemble"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code></a>([name, base_object])</p></td>
 <td><p>Collection of same-variable time series as realizations of the same series (same site and time), e.g., stochastic draws or model runs.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#plans.datasets.core.Zones" title="plans.datasets.core.Zones"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Zones</span></code></a>([name])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.datasets.core.Zones" title="plans.datasets.core.Zones"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Zones</span></code></a>([name])</p></td>
 <td><p>Zones map dataset is a QualiRaster designed to handle large volume of positive integer numbers (ids of zones)</p></td>
 </tr>
 </tbody>
@@ -609,6 +612,23 @@ Expected to increment superior methods.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.core.TimeSeries.get_seasonal_ensemble">
+<span class="sig-name descname"><span class="pre">get_seasonal_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeries.get_seasonal_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeries.get_seasonal_ensemble" title="Link to this definition">#</a></dt>
+<dd><p>Get an ensemble with one member per year of the series.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>year_start</strong> (<em>int</em>) – first month of the year, from 1 to 12. Default is 1.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ensemble with members of the same type as this series</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#plans.datasets.core.SeasonalEnsemble" title="plans.datasets.core.SeasonalEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">SeasonalEnsemble</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1089,7 +1109,23 @@ downscaled data/derived stats.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.core.TimeSeries._plot">
 <span class="sig-name descname"><span class="pre">_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeries._plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeries._plot" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Plot on figure based on layout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fig</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code>) – figure object</p></li>
+<li><p><strong>gs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.gridspec.GridSpec</span></code>) – grid of the figure</p></li>
+<li><p><strong>specs</strong> (<em>dict</em>) – plot specification dictionary</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>figure object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.datasets.core.TimeSeries._set_view_specs">
@@ -2008,6 +2044,108 @@ percentile such as <code class="docutils literal notranslate"><span class="pre">
 <dt class="sig sig-object py" id="plans.datasets.core.TimeSeriesEnsemble._get_percentile_name">
 <span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_get_percentile_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#TimeSeriesEnsemble._get_percentile_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.TimeSeriesEnsemble._get_percentile_name" title="Link to this definition">#</a></dt>
 <dd><p>Get the percentile name, zero padded (e.g., <code class="docutils literal notranslate"><span class="pre">p05</span></code>, <code class="docutils literal notranslate"><span class="pre">p50</span></code>, <code class="docutils literal notranslate"><span class="pre">p2.5</span></code>).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.datasets.core.SeasonalEnsemble">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">plans.datasets.core.</span></span><span class="sig-name descname"><span class="pre">SeasonalEnsemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mySeasonalEnsemble'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_object</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#SeasonalEnsemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.SeasonalEnsemble" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#plans.datasets.core.TimeSeriesEnsemble" title="plans.datasets.core.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code></a></p>
+<p>Ensemble of the years of a single series, for seasonal plots.</p>
+<p>Each year becomes a member, with dates moved onto one reference year, so
+reducers, bands and <code class="docutils literal notranslate"><span class="pre">highlight</span></code> work across years. Works with any time
+step that repeats each year: sub-daily, daily or monthly.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Dates in members and reducers are placeholders. The reference year
+is a leap year, so 29 Feb has its own step, filled only by leap years.
+To join reducers by calendar date, use the month and day, as in
+<code class="docutils literal notranslate"><span class="pre">df[&quot;datetime&quot;].dt.strftime(&quot;%m-%d&quot;)</span></code>.</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.datasets.core.SeasonalEnsemble.MONTHS">
+<span class="sig-name descname"><span class="pre">MONTHS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['Jan',</span> <span class="pre">'Feb',</span> <span class="pre">'Mar',</span> <span class="pre">'Apr',</span> <span class="pre">'May',</span> <span class="pre">'Jun',</span> <span class="pre">'Jul',</span> <span class="pre">'Aug',</span> <span class="pre">'Sep',</span> <span class="pre">'Oct',</span> <span class="pre">'Nov',</span> <span class="pre">'Dec']</span></span><a class="headerlink" href="#plans.datasets.core.SeasonalEnsemble.MONTHS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.core.SeasonalEnsemble.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mySeasonalEnsemble'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_object</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#SeasonalEnsemble.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.SeasonalEnsemble.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize the <code class="docutils literal notranslate"><span class="pre">Collection</span></code> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_object</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">MbaE</span></code>) – <code class="docutils literal notranslate"><span class="pre">MbaE</span></code>-based object for collection</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – unique object name</p></li>
+<li><p><strong>alias</strong> (<em>str</em>) – unique object alias.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.core.SeasonalEnsemble.set_series">
+<span class="sig-name descname"><span class="pre">set_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#SeasonalEnsemble.set_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.SeasonalEnsemble.set_series" title="Link to this definition">#</a></dt>
+<dd><p>Split a series into one member per year, replacing current members.</p>
+<p>Members are named by year, like <code class="docutils literal notranslate"><span class="pre">2021</span></code>. When the year does not start
+in January (e.g., a water year), names hold both years, like <code class="docutils literal notranslate"><span class="pre">2020-21</span></code>.
+Incomplete years are kept, and count in the reducers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ts</strong> (<a class="reference internal" href="#plans.datasets.core.TimeSeries" title="plans.datasets.core.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a>) – series to split</p></li>
+<li><p><strong>year_start</strong> (<em>int</em>) – first month of the year, from 1 to 12. Default is 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.core.SeasonalEnsemble._set_view_specs">
+<span class="sig-name descname"><span class="pre">_set_view_specs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#SeasonalEnsemble._set_view_specs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.SeasonalEnsemble._set_view_specs" title="Link to this definition">#</a></dt>
+<dd><p>Set view specifications. Expected to increment superior methods.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.core.SeasonalEnsemble._get_reference_start">
+<span class="sig-name descname"><span class="pre">_get_reference_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#SeasonalEnsemble._get_reference_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.SeasonalEnsemble._get_reference_start" title="Link to this definition">#</a></dt>
+<dd><p>Get the first date of the reference year, chosen so it holds 29 Feb.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.core.SeasonalEnsemble._plot_series">
+<span class="sig-name descname"><span class="pre">_plot_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_background</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#SeasonalEnsemble._plot_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.SeasonalEnsemble._plot_series" title="Link to this definition">#</a></dt>
+<dd><p>Plot as in the ensemble, with the x axis of the reference year.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.core.SeasonalEnsemble._set_xaxis">
+<span class="sig-name descname"><span class="pre">_set_xaxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#SeasonalEnsemble._set_xaxis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.SeasonalEnsemble._set_xaxis" title="Link to this definition">#</a></dt>
+<dd><p>Set the ticks and labels of the x axis.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.datasets.core.SeasonalEnsemble._align_steps">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_align_steps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dates</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/datasets/core.html#SeasonalEnsemble._align_steps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.datasets.core.SeasonalEnsemble._align_steps" title="Link to this definition">#</a></dt>
+<dd><p>Check that time steps repeat each year, moving monthly steps to the
+first day of the month.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dates</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Series</span></code>) – dates of the series</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dates with repeating steps</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Series</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -3892,6 +4030,7 @@ returns a dictionary with metadata keys and values.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries._set_frequency"><code class="docutils literal notranslate"><span class="pre">TimeSeries._set_frequency()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries.get_metadata"><code class="docutils literal notranslate"><span class="pre">TimeSeries.get_metadata()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries.get_range_datetime"><code class="docutils literal notranslate"><span class="pre">TimeSeries.get_range_datetime()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries.get_seasonal_ensemble"><code class="docutils literal notranslate"><span class="pre">TimeSeries.get_seasonal_ensemble()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries.update"><code class="docutils literal notranslate"><span class="pre">TimeSeries.update()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries.setter"><code class="docutils literal notranslate"><span class="pre">TimeSeries.setter()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeries.set_data"><code class="docutils literal notranslate"><span class="pre">TimeSeries.set_data()</span></code></a></li>
@@ -3973,6 +4112,17 @@ returns a dictionary with metadata keys and values.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeriesEnsemble._plot_series"><code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble._plot_series()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeriesEnsemble._nanrange"><code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble._nanrange()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.TimeSeriesEnsemble._get_percentile_name"><code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble._get_percentile_name()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.SeasonalEnsemble"><code class="docutils literal notranslate"><span class="pre">SeasonalEnsemble</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.SeasonalEnsemble.MONTHS"><code class="docutils literal notranslate"><span class="pre">SeasonalEnsemble.MONTHS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.SeasonalEnsemble.__init__"><code class="docutils literal notranslate"><span class="pre">SeasonalEnsemble.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.SeasonalEnsemble.set_series"><code class="docutils literal notranslate"><span class="pre">SeasonalEnsemble.set_series()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.SeasonalEnsemble._set_view_specs"><code class="docutils literal notranslate"><span class="pre">SeasonalEnsemble._set_view_specs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.SeasonalEnsemble._get_reference_start"><code class="docutils literal notranslate"><span class="pre">SeasonalEnsemble._get_reference_start()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.SeasonalEnsemble._plot_series"><code class="docutils literal notranslate"><span class="pre">SeasonalEnsemble._plot_series()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.SeasonalEnsemble._set_xaxis"><code class="docutils literal notranslate"><span class="pre">SeasonalEnsemble._set_xaxis()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.SeasonalEnsemble._align_steps"><code class="docutils literal notranslate"><span class="pre">SeasonalEnsemble._align_steps()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.datasets.core.Raster"><code class="docutils literal notranslate"><span class="pre">Raster</span></code></a><ul class="nav section-nav flex-column">
