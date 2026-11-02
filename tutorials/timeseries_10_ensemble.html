@@ -392,6 +392,7 @@
 <li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Time Series - Ensembles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_11_seasonal.html">Time Series - Seasonal ensembles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_12_collection_views.html">Time Series - Collection visuals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_13_synthetic.html">Time Series - Synthetic series</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="raster_01.html">Raster data - Basics</a></li>
 </ul>
@@ -504,17 +505,17 @@
 </section>
 <section id="build-a-synthetic-ensemble">
 <h2>Build a synthetic ensemble<a class="headerlink" href="#build-a-synthetic-ensemble" title="Link to this heading">#</a></h2>
-<p>Fifty members of daily temperature over one year. Each member shares the seasonal cycle, but has its own bias and its own weather (an autoregressive anomaly), like runs of a model with uncertain inputs. Members are assembled in memory with <code class="docutils literal notranslate"><span class="pre">.set_data()</span></code> and <code class="docutils literal notranslate"><span class="pre">.append()</span></code>:</p>
+<p>Fifty members of daily temperature over one year. Each member shares the cycle, but has its own bias and its own weather (an autoregressive anomaly), like runs of a model with uncertain inputs. Members are assembled in memory with <code class="docutils literal notranslate"><span class="pre">.set_data()</span></code> and <code class="docutils literal notranslate"><span class="pre">.append()</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_members</span> <span class="o">=</span> <span class="mi">50</span>
 <span class="n">n</span> <span class="o">=</span> <span class="mi">365</span>
 <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 <span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"2021-01-01"</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">)</span>
-<span class="n">seasonal</span> <span class="o">=</span> <span class="mi">18</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">100</span><span class="p">)</span> <span class="o">/</span> <span class="mi">365</span><span class="p">)</span>
+<span class="n">cycle</span> <span class="o">=</span> <span class="mi">18</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">100</span><span class="p">)</span> <span class="o">/</span> <span class="mi">365</span><span class="p">)</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">make_anomaly</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">sd</span><span class="p">):</span>
-    <span class="c1"># autoregressive anomaly: a[t] = phi * a[t-1] + noise</span>
+    <span class="c1"># autoregressive anomaly: a[t] = phi * a[t-1] + shock</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
     <span class="n">e</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">sd</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
@@ -524,7 +525,7 @@
 <span class="n">tse</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Projections"</span><span class="p">,</span> <span class="n">base_object</span><span class="o">=</span><span class="n">TemperatureSeries</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_members</span><span class="p">):</span>
     <span class="n">bias</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
-    <span class="n">values</span> <span class="o">=</span> <span class="n">seasonal</span> <span class="o">+</span> <span class="n">bias</span> <span class="o">+</span> <span class="n">make_anomaly</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="mf">0.85</span><span class="p">,</span> <span class="n">sd</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">cycle</span> <span class="o">+</span> <span class="n">bias</span> <span class="o">+</span> <span class="n">make_anomaly</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="mf">0.85</span><span class="p">,</span> <span class="n">sd</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"R</span><span class="si">{</span><span class="n">k</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">"</span>
     <span class="n">ts</span> <span class="o">=</span> <span class="n">TemperatureSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
     <span class="n">ts</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span>
@@ -955,7 +956,7 @@
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class 'plans.datasets.chrono.TemperatureSeries'&gt;
 </pre></div>
 </div>
-<img alt="../_images/d66fde44d09e7c57a8d9ec4a2076772e27cc0bfa98b09796ba9a6adf57e53369.png" src="../_images/d66fde44d09e7c57a8d9ec4a2076772e27cc0bfa98b09796ba9a6adf57e53369.png" />
+<img alt="../_images/cad0f8c0a1fd6ec64f98bb50d84700f8f88aaace4c3c526555663162d5afd813.png" src="../_images/cad0f8c0a1fd6ec64f98bb50d84700f8f88aaace4c3c526555663162d5afd813.png" />
 </div>
 </div>
 </section>
@@ -970,7 +971,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1f45763ebaf559259982634fdbffa05d1e350a7e877efd9ad0d960744ef7661d.png" src="../_images/1f45763ebaf559259982634fdbffa05d1e350a7e877efd9ad0d960744ef7661d.png" />
+<img alt="../_images/5ed2921a37e91254ddb49dfb48d3fe3c91664eb5d8e7de9fb5b0ece645e6c24c.png" src="../_images/5ed2921a37e91254ddb49dfb48d3fe3c91664eb5d8e7de9fb5b0ece645e6c24c.png" />
 </div>
 </div>
 <p>Note how narrow the histogram and the CDF of the mean are, compared to any member. Averaging cancels out the weather of individual members, so the ensemble mean is a summary of the ensemble, not a realistic realization: it has far fewer warm and cold extremes than any member.</p>
@@ -986,7 +987,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/807bbb05eeb938ab8680800fde64bcb6dd23a6491ca00d4b875aa189e8f07727.png" src="../_images/807bbb05eeb938ab8680800fde64bcb6dd23a6491ca00d4b875aa189e8f07727.png" />
+<img alt="../_images/4fae7f9bfe218b343d06cd3e571cff6ad7e2f56395948876dd7c3e891a3d4f67.png" src="../_images/4fae7f9bfe218b343d06cd3e571cff6ad7e2f56395948876dd7c3e891a3d4f67.png" />
 </div>
 </div>
 </section>
@@ -1003,7 +1004,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8085e8ee595aba812d4d502b2be57d0cee28b02c302fc785f329ac5e09d1eaa8.png" src="../_images/8085e8ee595aba812d4d502b2be57d0cee28b02c302fc785f329ac5e09d1eaa8.png" />
+<img alt="../_images/4965a823f97e6877617051bd75e401b766ba61cf6e5aacf7e111cf4615ba7a68.png" src="../_images/4965a823f97e6877617051bd75e401b766ba61cf6e5aacf7e111cf4615ba7a68.png" />
 </div>
 </div>
 <p>For the series panel only, use the <code class="docutils literal notranslate"><span class="pre">series-simple</span></code> layout:</p>
@@ -1016,7 +1017,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/11da022f7c40f3e43cae0a51a77882aefe1818f82f15d94bd38e52b2ffac0e81.png" src="../_images/11da022f7c40f3e43cae0a51a77882aefe1818f82f15d94bd38e52b2ffac0e81.png" />
+<img alt="../_images/3943e4f7d78e0f2d1d149fa9afa2738fae9767095346eb4d60d128bd27901bd0.png" src="../_images/3943e4f7d78e0f2d1d149fa9afa2738fae9767095346eb4d60d128bd27901bd0.png" />
 </div>
 </div>
 <p>The background lines can clutter the panel, mainly with many members. Set <code class="docutils literal notranslate"><span class="pre">view_specs[&quot;plot_background&quot;]</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code> to hide them. This only affects the series panel, and highlighted members are still drawn:</p>
@@ -1028,7 +1029,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7974047008eb9881cae794b6a942c7c172bb34d015684063ad4703852fb0d758.png" src="../_images/7974047008eb9881cae794b6a942c7c172bb34d015684063ad4703852fb0d758.png" />
+<img alt="../_images/742c88229c229a2eb907cb948814f1fb2ae1370f1d04a9e33ef3e5958ce6b543.png" src="../_images/742c88229c229a2eb907cb948814f1fb2ae1370f1d04a9e33ef3e5958ce6b543.png" />
 </div>
 </div>
 </section>

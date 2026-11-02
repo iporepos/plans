@@ -557,6 +557,8 @@
 <span class="sd">    frequency detection, standardization, gap analysis, and scaling.</span>
 <span class="sd">    """</span>
 
+    <span class="n">EPOCHS_ROWS</span> <span class="o">=</span> <span class="mi">14</span>  <span class="c1"># rows of the list of epochs, by column</span>
+
     <span class="c1"># Dunder methods</span>
     <span class="c1"># -------------------------------------------------------------------</span>
 <div class="viewcode-block" id="TimeSeries.__init__">
@@ -610,7 +612,7 @@
             <span class="s2">"peak_day"</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
             <span class="s2">"power"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
             <span class="s2">"memory_days"</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
-            <span class="s2">"noise_sd"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="s2">"remainder_sd"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
             <span class="s2">"change_per_year"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="p">}</span>
 
@@ -638,6 +640,14 @@
                 <span class="s2">"nrows"</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
                 <span class="s2">"width"</span><span class="p">:</span> <span class="n">viewer</span><span class="o">.</span><span class="n">FIG_SIZES</span><span class="p">[</span><span class="s2">"M3"</span><span class="p">][</span><span class="s2">"w"</span><span class="p">],</span>
                 <span class="s2">"height"</span><span class="p">:</span> <span class="n">viewer</span><span class="o">.</span><span class="n">FIG_SIZES</span><span class="p">[</span><span class="s2">"M3"</span><span class="p">][</span><span class="s2">"h"</span><span class="p">],</span>
+            <span class="p">},</span>
+            <span class="s2">"epochs"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"ncols"</span><span class="p">:</span> <span class="mi">34</span><span class="p">,</span>
+                <span class="s2">"nrows"</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+                <span class="s2">"width"</span><span class="p">:</span> <span class="n">viewer</span><span class="o">.</span><span class="n">FIG_SIZES</span><span class="p">[</span><span class="s2">"L"</span><span class="p">][</span><span class="s2">"w"</span><span class="p">],</span>
+                <span class="s2">"height"</span><span class="p">:</span> <span class="n">viewer</span><span class="o">.</span><span class="n">FIG_SIZES</span><span class="p">[</span><span class="s2">"L"</span><span class="p">][</span><span class="s2">"h"</span><span class="p">],</span>
+                <span class="s2">"ax_hist"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">"ax_cdf"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="s2">"default"</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s2">"ncols"</span><span class="p">:</span> <span class="mi">34</span><span class="p">,</span>
@@ -2129,24 +2139,29 @@
 <span class="sd">        """</span>
         <span class="c1"># ------------ setup axes ------------</span>
         <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"full"</span><span class="p">:</span>
-            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">21</span><span class="p">])</span>
-            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">23</span><span class="p">:</span><span class="mi">28</span><span class="p">])</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">20</span><span class="p">])</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">22</span><span class="p">:</span><span class="mi">27</span><span class="p">])</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">29</span><span class="p">:])</span>
 
         <span class="k">elif</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"mini"</span><span class="p">:</span>
-            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">21</span><span class="p">])</span>
-            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">23</span><span class="p">:</span><span class="mi">28</span><span class="p">])</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">20</span><span class="p">])</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">22</span><span class="p">:</span><span class="mi">27</span><span class="p">])</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">29</span><span class="p">:])</span>
 
         <span class="k">elif</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"simple"</span><span class="p">:</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">34</span><span class="p">])</span>
 
         <span class="k">elif</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"simple-shallow"</span><span class="p">:</span>
-            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">34</span><span class="p">])</span>
+            <span class="c1"># lower top, so the panel title sits below the figure title</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">34</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"epochs"</span><span class="p">:</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">20</span><span class="p">])</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">22</span><span class="p">:])</span>  <span class="c1"># legend</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">21</span><span class="p">])</span>
-            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">23</span><span class="p">:</span><span class="mi">28</span><span class="p">])</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">20</span><span class="p">])</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">22</span><span class="p">:</span><span class="mi">27</span><span class="p">])</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">29</span><span class="p">:])</span>
 
         <span class="k">return</span> <span class="n">fig</span>
@@ -2206,6 +2221,7 @@
                 <span class="c1"># titles</span>
                 <span class="s2">"title"</span><span class="p">:</span> <span class="n">s_title</span><span class="p">,</span>
                 <span class="s2">"subtitle_data"</span><span class="p">:</span> <span class="s2">"Time Series"</span><span class="p">,</span>
+                <span class="s2">"subtitle_epochs"</span><span class="p">:</span> <span class="s2">"Epochs"</span><span class="p">,</span>
                 <span class="c1"># fields</span>
                 <span class="s2">"xvar"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">,</span>
                 <span class="s2">"yvar"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">,</span>
@@ -2224,19 +2240,22 @@
                 <span class="c1"># options</span>
                 <span class="s2">"fill"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="s2">"fill_only"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">"color_gaps"</span><span class="p">:</span> <span class="s2">"tab:red"</span><span class="p">,</span>
+                <span class="s2">"alpha_gaps"</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
                 <span class="c1"># ranges todo review</span>
                 <span class="s2">"xmin"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">"xmax"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">"xmax_aux"</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
                 <span class="s2">"ymin"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
                 <span class="s2">"ymax"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">"pad_x"</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>  <span class="c1"># share of the time span added on each side</span>
                 <span class="c1"># styles</span>
                 <span class="s2">"linestyle"</span><span class="p">:</span> <span class="s2">"solid"</span><span class="p">,</span>
                 <span class="s2">"marker"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">"marker_eva"</span><span class="p">:</span> <span class="s2">"."</span><span class="p">,</span>
                 <span class="s2">"drawstyle"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">"n_bins"</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
-                <span class="s2">"n_dates"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">"n_dates"</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
                 <span class="s2">"format_dates"</span><span class="p">:</span> <span class="s2">"%Y-%m-</span><span class="si">%d</span><span class="s2">"</span><span class="p">,</span>
                 <span class="s2">"include_eva"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="c1"># stats locators</span>
@@ -2262,6 +2281,108 @@
 
 <span class="sd">            Use values in the ``view_specs()`` attribute for plotting</span>
 
+<span class="sd">        **Layouts**, set by ``view_specs["layout"]``:</span>
+
+<span class="sd">        ==================  ================================================================================</span>
+<span class="sd">        Layout              Panels</span>
+<span class="sd">        ==================  ================================================================================</span>
+<span class="sd">        ``full``            Series, histogram and CDF, with the statistics table.</span>
+<span class="sd">        ``mini``            Series, histogram and CDF.</span>
+<span class="sd">        ``simple``          Series only.</span>
+<span class="sd">        ``simple-shallow``  Series only, in a shallow figure.</span>
+<span class="sd">        ``epochs``          Series with epochs in colors and gaps in the background, and the list of epochs.</span>
+<span class="sd">        ``default``         Same panels of ``mini``, in the figure of ``full``.</span>
+<span class="sd">        ==================  ================================================================================</span>
+
+<span class="sd">        **View specs**, set by ``view_specs[key] = value`` before the call:</span>
+
+<span class="sd">        ====================  ===================  =====================================================================================================================</span>
+<span class="sd">        Key                   Default              Description</span>
+<span class="sd">        ====================  ===================  =====================================================================================================================</span>
+<span class="sd">        ``style``             ``"wien"``           Name of the plot style. See :func:`plans.viewer.set_style`.</span>
+<span class="sd">        ``folder``            auto                 Folder of the saved figure.</span>
+<span class="sd">        ``filename``          auto                 Name of the saved figure, without extension.</span>
+<span class="sd">        ``fig_format``        ``"jpg"``            Format of the saved figure.</span>
+<span class="sd">        ``dpi``               ``300``              Resolution of the saved figure.</span>
+<span class="sd">        ``title``             auto                 Title of the figure.</span>
+<span class="sd">        ``xvar``              auto                 Internal. Column of dates.</span>
+<span class="sd">        ``yvar``              auto                 Internal. Column of values.</span>
+<span class="sd">        ``xlabel``            auto                 Label of the x axis.</span>
+<span class="sd">        ``ylabel``            auto                 Label of the y axis.</span>
+<span class="sd">        ``color``             ``"gray"``           Color of the line.</span>
+<span class="sd">        ``xmin``              None                 Not in use.</span>
+<span class="sd">        ``xmax``              None                 Not in use.</span>
+<span class="sd">        ``ymin``              ``0``                Bottom of the fill.</span>
+<span class="sd">        ``ymax``              None                 Not in use.</span>
+<span class="sd">        ``layout``            ``"full"``           Name of the layout. See the table of layouts.</span>
+<span class="sd">        ``data_plot``         ``"scatter"``        Plot of the data panel: ``"scatter"`` or ``"boxplot"``.</span>
+<span class="sd">        ``subtitle_data``     ``"Time Series"``    Title of the series panel. None hides it.</span>
+<span class="sd">        ``subtitle_box``      ``"Boxplot"``        Title of the data panel, if a boxplot.</span>
+<span class="sd">        ``subtitle_hist``     ``"Histogram"``      Title of the histogram. None hides it.</span>
+<span class="sd">        ``subtitle_cdf``      ``"CDF"``            Title of the CDF. None hides it.</span>
+<span class="sd">        ``subtitle_qq``       ``"Q-Q"``            Title of the Q-Q panel. None hides it.</span>
+<span class="sd">        ``yvar_field``        auto                 Column of values. Set with the data.</span>
+<span class="sd">        ``xlabel_cdf``        ``"P(X)"``           Label of the x axis of the CDF.</span>
+<span class="sd">        ``xlabel_qq``         auto                 Label of the x axis of the Q-Q panel.</span>
+<span class="sd">        ``data_label``        auto                 Label of the data in the legend.</span>
+<span class="sd">        ``data_legend``       ``False``            Show the legend of the data panel.</span>
+<span class="sd">        ``color_hist``        ``"tab:grey"``       Color of the histogram.</span>
+<span class="sd">        ``color_cdf``         ``"black"``          Color of the CDF.</span>
+<span class="sd">        ``color_mean``        ``"red"``            Color of the mean line.</span>
+<span class="sd">        ``color_mean_text``   None                 Color of the mean label. None is black.</span>
+<span class="sd">        ``scheme_cmap``       ``"equal"``          Classes of the color map: ``"equal"``, ``"quantiles"`` or other schemes of :func:`plans.stochastic.binning.get_bins`.</span>
+<span class="sd">        ``n_classes_cmap``    ``5``                Number of classes of the color map.</span>
+<span class="sd">        ``cmap``              ``"viridis"``        Name of the color map.</span>
+<span class="sd">        ``alpha``             ``1``                Opacity of the line.</span>
+<span class="sd">        ``alpha_hist``        ``1``                Opacity of the histogram.</span>
+<span class="sd">        ``alpha_cdf``         ``1``                Opacity of the CDF.</span>
+<span class="sd">        ``range``             None                 Range of the y axis, as ``[low, high]``. None is set from the data.</span>
+<span class="sd">        ``range_x``           None                 Range of the x axis, as ``[low, high]``. None is the time span with ``pad_x``.</span>
+<span class="sd">        ``plot_mean``         ``True``             Show the mean line.</span>
+<span class="sd">        ``plot_mean_data``    ``False``            Show the mean line also on the data panel.</span>
+<span class="sd">        ``linestyle_mean``    ``"solid"``          Line style of the mean.</span>
+<span class="sd">        ``pad_mean``          ``1``                Spaces between the mean label and its line.</span>
+<span class="sd">        ``plot_mean_label``   ``True``             Show the mean label.</span>
+<span class="sd">        ``hist_density``      ``True``             Not in use.</span>
+<span class="sd">        ``bins``              ``20``               Number of histogram bins, or the width of the bins if ``bins_density``.</span>
+<span class="sd">        ``bins_density``      ``False``            Take ``bins`` as the width of the bins.</span>
+<span class="sd">        ``ax_data``           ``0``                Internal. Index of the data axis.</span>
+<span class="sd">        ``ax_hist``           ``1``                Internal. Index of the histogram axis. False has no histogram.</span>
+<span class="sd">        ``ax_cdf``            ``2``                Internal. Index of the CDF axis. False has no CDF.</span>
+<span class="sd">        ``x_stats``           ``0.73``             Horizontal position of the statistics table, as a share of the figure.</span>
+<span class="sd">        ``x_stats_sep``       ``0.12``             Space between columns of the statistics table.</span>
+<span class="sd">        ``y_stats``           ``0.28``             Vertical position of the statistics table, as a share of the figure.</span>
+<span class="sd">        ``zorder_data``       ``1``                Drawing order of the data.</span>
+<span class="sd">        ``zorder_histh``      ``1``                Drawing order of the histogram.</span>
+<span class="sd">        ``zorder_cdf``        ``1``                Drawing order of the CDF.</span>
+<span class="sd">        ``scatter_factor``    ``4``                Size of the scatter markers.</span>
+<span class="sd">        ``colorize_scatter``  ``False``            Color the scatter markers by the color map.</span>
+<span class="sd">        ``box_width``         ``0.4``              Width of the boxplot.</span>
+<span class="sd">        ``box_showfliers``    ``True``             Show the outliers of the boxplot.</span>
+<span class="sd">        ``subtitle_epochs``   ``"Epochs"``         Title of the list of epochs, in the ``epochs`` layout.</span>
+<span class="sd">        ``color_aux``         ``"gray"``           Not in use.</span>
+<span class="sd">        ``color_fill``        None                 Color of the fill. None is the color of the line.</span>
+<span class="sd">        ``color_eva``         ``"blue"``           Color of the annual maxima.</span>
+<span class="sd">        ``legend_eva``        ``"Annual Maxima"``  Label of the annual maxima.</span>
+<span class="sd">        ``alpha_aux``         ``1``                Not in use.</span>
+<span class="sd">        ``alpha_fill``        ``1``                Opacity of the fill.</span>
+<span class="sd">        ``fill``              ``False``            Fill below the line, down to ``ymin``.</span>
+<span class="sd">        ``fill_only``         ``False``            With ``fill``, hide the line.</span>
+<span class="sd">        ``color_gaps``        ``"tab:red"``        Color of the gaps, in the ``epochs`` layout.</span>
+<span class="sd">        ``alpha_gaps``        ``0.6``              Opacity of the gaps, in the ``epochs`` layout.</span>
+<span class="sd">        ``xmax_aux``          ``20``               Not in use.</span>
+<span class="sd">        ``pad_x``             ``0.05``             Share of the time span added on each side of the x axis, if ``range_x`` is None.</span>
+<span class="sd">        ``linestyle``         ``"solid"``          Line style.</span>
+<span class="sd">        ``marker``            None                 Marker of the line.</span>
+<span class="sd">        ``marker_eva``        ``"."``              Not in use.</span>
+<span class="sd">        ``drawstyle``         None                 Draw style of the line, such as ``"steps-mid"``.</span>
+<span class="sd">        ``n_bins``            ``100``              Not in use.</span>
+<span class="sd">        ``n_dates``           ``5``                Number of date ticks, evenly spaced in time. None chooses them automatically.</span>
+<span class="sd">        ``format_dates``      ``"%Y-%m-%d"``       Format of the date labels.</span>
+<span class="sd">        ``include_eva``       ``False``            Show the annual maxima and their model. Needs the extreme values analysis.</span>
+<span class="sd">        ``gs_*``              auto                 Internal. Replaced by the shared grid of :mod:`plans.viewer`.</span>
+<span class="sd">        ====================  ===================  =====================================================================================================================</span>
+
 <span class="sd">        :param show: option for showing instead of saving.</span>
 <span class="sd">        :type show: bool</span>
 <span class="sd">        :param return_fig: option for returning the figure object itself.</span>
@@ -2278,7 +2399,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"xlabel_b"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"p(X)"</span>
 
         <span class="c1"># handle mode specs</span>
-        <span class="k">if</span> <span class="s2">"simple"</span> <span class="ow">in</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="s2">"simple"</span> <span class="ow">in</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="ow">or</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"epochs"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"ax_hist"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"ax_cdf"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
@@ -2305,7 +2426,10 @@
         <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">"ax_data"</span><span class="p">]]</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 
-        <span class="n">TimeSeries</span><span class="o">.</span><span class="n">plot_series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"epochs"</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_epochs</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">ax_legend</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">TimeSeries</span><span class="o">.</span><span class="n">plot_series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
 
         <span class="c1"># handle eva</span>
         <span class="c1"># ----------------------------------------------</span>
@@ -2377,6 +2501,8 @@
             <span class="c1"># the EVA model panel has its own y axis</span>
             <span class="n">viewer</span><span class="o">.</span><span class="n">clear_xticks</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
             <span class="n">viewer</span><span class="o">.</span><span class="n">clear_xticks</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="k">elif</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"epochs"</span><span class="p">:</span>
+            <span class="n">viewer</span><span class="o">.</span><span class="n">clear_xticks</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="n">ax</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">viewer</span><span class="o">.</span><span class="n">clear_xticks</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
 
@@ -2392,100 +2518,145 @@
             <span class="n">viewer</span><span class="o">.</span><span class="n">ship_fig</span><span class="p">(</span><span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span> <span class="n">file_output</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"dpi"</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="TimeSeries.view_epochs">
-<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.view_epochs">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">view_epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeSeries._plot_epochs">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries._plot_epochs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_plot_epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ax_legend</span><span class="p">,</span> <span class="n">specs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Get a basic visualization.</span>
-<span class="sd">        Expected to overwrite superior methods.</span>
+<span class="sd">        Plot each epoch in its own color and the gaps in the background, with the</span>
+<span class="sd">        list of epochs on the side. The series is not changed.</span>
 
-<span class="sd">        :param show: option for showing instead of saving.</span>
-<span class="sd">        :type show: bool</span>
-
-<span class="sd">        **Notes**</span>
-
-<span class="sd">        - Uses values in the ``view_specs()`` attribute for plotting</span>
-
+<span class="sd">        :param ax: axis of the series</span>
+<span class="sd">        :type ax: :class:`matplotlib.axes.Axes`</span>
+<span class="sd">        :param ax_legend: axis of the legend</span>
+<span class="sd">        :type ax_legend: :class:`matplotlib.axes.Axes`</span>
+<span class="sd">        :param specs: plot specification dictionary</span>
+<span class="sd">        :type specs: dict</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
 <span class="sd">        """</span>
-        <span class="c1"># get specs</span>
-        <span class="n">specs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view_specs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="c1"># --------------------- pre-processing --------------------- #</span>
-        <span class="c1"># preprocessing</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs_stats</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">update_epochs_stats</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_epochs_stats</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_standard_data</span><span class="p">(</span><span class="n">cut</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">dates</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span>
 
-        <span class="c1"># --------------------- figure setup --------------------- #</span>
-        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>  <span class="c1"># Width, Height</span>
-
-        <span class="c1"># handle min max</span>
-        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">specs</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xvar"</span><span class="p">]]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"ymin"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">specs</span><span class="p">[</span><span class="s2">"ymin"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">"yvar"</span><span class="p">]]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">specs</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xvar"</span><span class="p">]]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"ymax"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">specs</span><span class="p">[</span><span class="s2">"ymax"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">"yvar"</span><span class="p">]]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-
-        <span class="c1"># --------------------- plotting --------------------- #</span>
-        <span class="n">gaps_c</span> <span class="o">=</span> <span class="s2">"tab:red"</span>
-        <span class="n">gaps_a</span> <span class="o">=</span> <span class="mf">0.6</span>
-        <span class="c1"># plot loop</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epochs_stats</span><span class="p">)):</span>
-            <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs_stats</span><span class="p">[</span><span class="s2">"start"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs_stats</span><span class="p">[</span><span class="s2">"end"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">df_aux</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
-                <span class="s2">"</span><span class="si">{}</span><span class="s2"> &gt;= '</span><span class="si">{}</span><span class="s2">' and </span><span class="si">{}</span><span class="s2"> &lt; '</span><span class="si">{}</span><span class="s2">'"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">,</span> <span class="n">end</span>
-                <span class="p">)</span>
+        <span class="c1"># all epochs under the same range and without their own ticks</span>
+        <span class="n">sp</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">specs</span><span class="p">,</span> <span class="n">data_legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_dates</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sp</span><span class="p">[</span><span class="s2">"range_x"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sp</span><span class="p">[</span><span class="s2">"range_x"</span><span class="p">]</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">get_range_x</span><span class="p">(</span>
+                <span class="n">xmin</span><span class="o">=</span><span class="n">dates</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">xmax</span><span class="o">=</span><span class="n">dates</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">pad</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"pad_x"</span><span class="p">]</span>
             <span class="p">)</span>
-            <span class="n">epoch_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs_stats</span><span class="p">[</span><span class="s2">"color"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">epoch_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs_stats</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">epochs_id_field</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-                <span class="n">df_aux</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">],</span>
-                <span class="n">df_aux</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">],</span>
-                <span class="n">linestyle</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"linestyle"</span><span class="p">],</span>
-                <span class="n">color</span><span class="o">=</span><span class="n">epoch_c</span><span class="p">,</span>
-                <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Epoch </span><span class="si">{</span><span class="n">epoch_id</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epochs_n</span><span class="p">):</span>
+            <span class="n">is_epoch</span> <span class="o">=</span> <span class="n">dates</span><span class="o">.</span><span class="n">between</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">epochs_stats</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">start_field</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">epochs_stats</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">end_field</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
             <span class="p">)</span>
-            <span class="c1"># Fill the space where there are missing values</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
-                <span class="n">df_aux</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">],</span>
-                <span class="n">y1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                <span class="n">y2</span><span class="o">=</span><span class="mf">1.2</span> <span class="o">*</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"ymax"</span><span class="p">],</span>
-                <span class="n">where</span><span class="o">=</span><span class="n">df_aux</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">(),</span>
-                <span class="n">color</span><span class="o">=</span><span class="n">gaps_c</span><span class="p">,</span>
-                <span class="n">alpha</span><span class="o">=</span><span class="n">gaps_a</span><span class="p">,</span>
+            <span class="n">sp</span><span class="p">[</span><span class="s2">"color"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs_stats</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_color</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">sp</span><span class="p">[</span><span class="s2">"data_label"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Epoch </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">epochs_stats</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">epochs_id_field</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="p">)</span>
-        <span class="c1"># Create a dummy plot for missing data symbol</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">color</span><span class="o">=</span><span class="n">gaps_c</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">gaps_a</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Gaps"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs_n</span> <span class="o">&lt;=</span> <span class="mi">12</span><span class="p">:</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+            <span class="n">TimeSeries</span><span class="o">.</span><span class="n">plot_series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">is_epoch</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">sp</span><span class="p">)</span>
 
-        <span class="c1"># --------------------- post-plotting --------------------- #</span>
-        <span class="c1"># set basic plotting stuff</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">])</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"ylabel"</span><span class="p">])</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xlabel"</span><span class="p">])</span>
+        <span class="c1"># the step keeps gaps of a single record visible</span>
+        <span class="n">vct_gaps</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">if</span> <span class="n">vct_gaps</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+                <span class="n">dates</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="mi">1</span><span class="p">,</span>
+                <span class="n">where</span><span class="o">=</span><span class="n">vct_gaps</span><span class="p">,</span>
+                <span class="n">step</span><span class="o">=</span><span class="s2">"mid"</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xaxis_transform</span><span class="p">(),</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"color_gaps"</span><span class="p">],</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"alpha_gaps"</span><span class="p">],</span>
+                <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s2">"Gaps"</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">TimeSeries</span><span class="o">.</span><span class="n">set_date_ticks</span><span class="p">(</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+            <span class="n">xmin</span><span class="o">=</span><span class="n">dates</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span>
+            <span class="n">xmax</span><span class="o">=</span><span class="n">dates</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
+            <span class="n">n_dates</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"n_dates"</span><span class="p">],</span>
+            <span class="n">format_dates</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"format_dates"</span><span class="p">],</span>
+        <span class="p">)</span>
 
-        <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">],</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">])</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"ymin"</span><span class="p">],</span> <span class="mf">1.2</span> <span class="o">*</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"ymax"</span><span class="p">])</span>
+        <span class="c1"># list up to what fits in the space, gaps first</span>
+        <span class="n">ls_handles</span><span class="p">,</span> <span class="n">ls_labels</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span>
+        <span class="n">n_rows</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">EPOCHS_ROWS</span>
+        <span class="k">if</span> <span class="n">vct_gaps</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">ls_handles</span> <span class="o">=</span> <span class="n">ls_handles</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="n">ls_handles</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">ls_labels</span> <span class="o">=</span> <span class="n">ls_labels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="n">ls_labels</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ls_handles</span> <span class="o">=</span> <span class="n">ls_handles</span><span class="p">[:</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n_rows</span><span class="p">]</span>
+        <span class="n">ls_labels</span> <span class="o">=</span> <span class="n">ls_labels</span><span class="p">[:</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n_rows</span><span class="p">]</span>
+        <span class="n">ax_legend</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
+        <span class="n">ax_legend</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+            <span class="s2">"</span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"subtitle_epochs"</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs_n</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"left"</span>
+        <span class="p">)</span>
+        <span class="n">ax_legend</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
+            <span class="n">ls_handles</span><span class="p">,</span>
+            <span class="n">ls_labels</span><span class="p">,</span>
+            <span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">,</span>
+            <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">ncol</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ls_labels</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_rows</span><span class="p">)),</span>
+            <span class="n">fontsize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+            <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">borderaxespad</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
-        <span class="c1"># Adjust layout to prevent cutoff</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 
-        <span class="c1"># --------------------- end --------------------- #</span>
-        <span class="c1"># show or save</span>
-        <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="viewcode-block" id="TimeSeries.get_range_x">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.get_range_x">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_range_x</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">pad</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get the range of a time axis with a padding on each side.</span>
+
+<span class="sd">        :param xmin: first date</span>
+<span class="sd">        :type xmin: :class:`pandas.Timestamp`</span>
+<span class="sd">        :param xmax: last date</span>
+<span class="sd">        :type xmax: :class:`pandas.Timestamp`</span>
+<span class="sd">        :param pad: share of the time span added on each side</span>
+<span class="sd">        :type pad: float</span>
+<span class="sd">        :return: first and last date of the range</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        """</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">pad</span> <span class="o">*</span> <span class="p">(</span><span class="n">xmax</span> <span class="o">-</span> <span class="n">xmin</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">xmin</span> <span class="o">-</span> <span class="n">delta</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">+</span> <span class="n">delta</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="TimeSeries.set_date_ticks">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.set_date_ticks">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_date_ticks</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">n_dates</span><span class="p">,</span> <span class="n">format_dates</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Set ticks evenly spaced in calendar time on a time axis, within its limits.</span>
+
+<span class="sd">        :param ax: target axis</span>
+<span class="sd">        :type ax: :class:`matplotlib.axes.Axes`</span>
+<span class="sd">        :param xmin: date of the first tick</span>
+<span class="sd">        :type xmin: :class:`pandas.Timestamp`</span>
+<span class="sd">        :param xmax: date of the last tick</span>
+<span class="sd">        :type xmax: :class:`pandas.Timestamp`</span>
+<span class="sd">        :param n_dates: number of ticks. If None, they are chosen automatically</span>
+<span class="sd">        :type n_dates: int</span>
+<span class="sd">        :param format_dates: format of the dates. If None, it is the current one</span>
+<span class="sd">        :type format_dates: str</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">n_dates</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">AutoDateLocator</span><span class="p">(</span><span class="n">minticks</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">maxticks</span><span class="o">=</span><span class="mi">7</span><span class="p">))</span>
             <span class="k">return</span> <span class="kc">None</span>
+        <span class="c1"># ticks out of the limits would widen the axis</span>
+        <span class="n">num_low</span><span class="p">,</span> <span class="n">num_high</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
+        <span class="n">num_start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">date2num</span><span class="p">(</span><span class="n">xmin</span><span class="p">),</span> <span class="n">num_low</span><span class="p">)</span>
+        <span class="n">num_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">date2num</span><span class="p">(</span><span class="n">xmax</span><span class="p">),</span> <span class="n">num_high</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_dates</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([</span><span class="n">num_start</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">file_path</span> <span class="o">=</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">specs</span><span class="p">[</span><span class="s2">"folder"</span><span class="p">],</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"filename"</span><span class="p">],</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"fig_format"</span><span class="p">]</span>
-            <span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"dpi"</span><span class="p">])</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">file_path</span></div>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">num_start</span><span class="p">,</span> <span class="n">num_end</span><span class="p">,</span> <span class="n">n_dates</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">format_dates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="n">format_dates</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="TimeSeries.plot_series">
@@ -2543,31 +2714,6 @@
                 <span class="n">zorder</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"zorder_data"</span><span class="p">],</span>
             <span class="p">)</span>
 
-        <span class="c1"># handle dates</span>
-        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"n_dates"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">n_dates</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"n_dates"</span><span class="p">]</span>
-            <span class="n">dates</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xvar"</span><span class="p">]]</span>
-
-            <span class="c1"># Handle n_dates dynamically</span>
-            <span class="k">if</span> <span class="n">n_dates</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="c1"># Just the first one</span>
-                <span class="n">tick_indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="n">n_dates</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="c1"># First and last</span>
-                <span class="n">tick_indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Evenly spaced positions across the dataset</span>
-                <span class="n">tick_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_dates</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-
-            <span class="c1"># Get the corresponding dates</span>
-            <span class="n">ticks</span> <span class="o">=</span> <span class="n">dates</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tick_indices</span><span class="p">]</span>
-
-            <span class="c1"># Apply to plot</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">ticks</span><span class="p">)</span>
-            <span class="n">format_dates</span> <span class="o">=</span> <span class="n">specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"format_dates"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">format_dates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="n">d</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">format_dates</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ticks</span><span class="p">])</span>
-
         <span class="c1"># handle subtitle</span>
         <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"subtitle_data"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"subtitle_data"</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"left"</span><span class="p">)</span>
@@ -2577,8 +2723,25 @@
             <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">])</span>
 
         <span class="c1"># handle range x</span>
+        <span class="n">dates</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xvar"</span><span class="p">]]</span>
         <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"range_x"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"range_x"</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span>
+                <span class="n">TimeSeries</span><span class="o">.</span><span class="n">get_range_x</span><span class="p">(</span>
+                    <span class="n">xmin</span><span class="o">=</span><span class="n">dates</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">xmax</span><span class="o">=</span><span class="n">dates</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">pad</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"pad_x"</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># handle dates</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"n_dates"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">TimeSeries</span><span class="o">.</span><span class="n">set_date_ticks</span><span class="p">(</span>
+                <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+                <span class="n">xmin</span><span class="o">=</span><span class="n">dates</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span>
+                <span class="n">xmax</span><span class="o">=</span><span class="n">dates</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
+                <span class="n">n_dates</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"n_dates"</span><span class="p">],</span>
+                <span class="n">format_dates</span><span class="o">=</span><span class="n">specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"format_dates"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"data_legend"</span><span class="p">]:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
@@ -2704,6 +2867,17 @@
         <span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span> <span class="o">=</span> <span class="n">range_y</span>
         <span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span> <span class="o">=</span> <span class="n">range_y</span>
 
+        <span class="c1"># shared time axis, from the first date to the last one of both</span>
+        <span class="n">xmin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ts1</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts1</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">ts2</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts2</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+        <span class="n">xmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ts1</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts1</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">ts2</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts2</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">range_x</span> <span class="o">=</span> <span class="n">specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"range_x"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">range_x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">range_x</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">get_range_x</span><span class="p">(</span>
+                <span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"pad_x"</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range_x"</span><span class="p">]</span> <span class="o">=</span> <span class="n">range_x</span>
+        <span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range_x"</span><span class="p">]</span> <span class="o">=</span> <span class="n">range_x</span>
+
         <span class="c1"># setup first series</span>
         <span class="c1"># ----------------------------------------------------------------</span>
         <span class="n">ts1</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">]</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">]</span>
@@ -2735,6 +2909,13 @@
         <span class="c1"># plot series</span>
         <span class="n">TimeSeries</span><span class="o">.</span><span class="n">plot_series</span><span class="p">(</span>
             <span class="n">data</span><span class="o">=</span><span class="n">ts2</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"ax_data"</span><span class="p">]],</span> <span class="n">specs</span><span class="o">=</span><span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span>
+        <span class="p">)</span>
+        <span class="n">TimeSeries</span><span class="o">.</span><span class="n">set_date_ticks</span><span class="p">(</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"ax_data"</span><span class="p">]],</span>
+            <span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span>
+            <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span>
+            <span class="n">n_dates</span><span class="o">=</span><span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"n_dates"</span><span class="p">],</span>
+            <span class="n">format_dates</span><span class="o">=</span><span class="n">ts2</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"format_dates"</span><span class="p">],</span>
         <span class="p">)</span>
 
         <span class="c1"># plot hist</span>
@@ -2837,7 +3018,7 @@
             <span class="n">phase</span><span class="o">=</span><span class="p">((</span><span class="n">specs</span><span class="p">[</span><span class="s2">"peak_day"</span><span class="p">]</span> <span class="o">-</span> <span class="n">start</span><span class="o">.</span><span class="n">dayofyear</span><span class="p">)</span> <span class="o">/</span> <span class="n">step_days</span><span class="p">)</span> <span class="o">%</span> <span class="n">period</span><span class="p">,</span>
             <span class="n">power</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"power"</span><span class="p">],</span>
             <span class="n">phi</span><span class="o">=</span><span class="n">phi</span><span class="p">,</span>
-            <span class="n">sigma</span><span class="o">=</span><span class="n">factor</span> <span class="o">*</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"noise_sd"</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">phi</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">sigma</span><span class="o">=</span><span class="n">factor</span> <span class="o">*</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"remainder_sd"</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">phi</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span>
         <span class="p">)</span></div>
 
 
@@ -2845,7 +3026,7 @@
 <a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.generate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Generate a synthetic series with trend, a yearly season and AR(1) memory.</span>
+<span class="sd">        Generate a synthetic series with trend, a yearly cycle and AR(1) memory.</span>
 
 <span class="sd">        Without ``params``, it uses the ``generator_specs`` attribute, which each child</span>
 <span class="sd">        class sets for its own variable and which can be edited. These specs are in</span>
@@ -2854,9 +3035,9 @@
 <span class="sd">        - ``baseline`` and ``topline``: lowest and highest points of the yearly cycle,</span>
 <span class="sd">          at the middle of the record. Per day if the object aggregates by sum.</span>
 <span class="sd">        - ``peak_day``: day of the year of the peak.</span>
-<span class="sd">        - ``power``: shape of the season. See :func:`plans.stochastic.arma.season_shape`.</span>
-<span class="sd">        - ``memory_days``: time for the noise memory to decay by a factor of e.</span>
-<span class="sd">        - ``noise_sd``: standard deviation of the noise. Per day if aggregated by sum.</span>
+<span class="sd">        - ``power``: shape of the cycle. See :func:`plans.stochastic.arma.cycle_shape`.</span>
+<span class="sd">        - ``memory_days``: time for the memory of the remainder to decay by a factor of e.</span>
+<span class="sd">        - ``remainder_sd``: standard deviation of the remainder. Per day if aggregated by sum.</span>
 <span class="sd">        - ``change_per_year``: change of the trend per year. Per day if aggregated by sum.</span>
 
 <span class="sd">        Values below ``generator_floor`` are pruned to it, if it is set.</span>
@@ -2874,7 +3055,7 @@
 <span class="sd">        :param freq: frequency alias. By default, it is the one in ``params`` or ``D``.</span>
 <span class="sd">        :type freq: str</span>
 <span class="sd">        :param params: parameters, usually from :meth:`fit`. Those from :meth:`fit` follow</span>
-<span class="sd">            the calendar, so the season and trend carry over to any ``start``.</span>
+<span class="sd">            the calendar, so the cycle and trend carry over to any ``start``.</span>
 <span class="sd">        :type params: dict</span>
 <span class="sd">        :param seed: random seed</span>
 <span class="sd">        :type seed: int</span>
@@ -2905,15 +3086,8 @@
         <span class="c1"># handle parameters</span>
         <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_generator_params</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">dates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">freq</span><span class="o">=</span><span class="n">freq</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="s2">"origin"</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
-            <span class="c1"># move step 0 from the origin to the new start</span>
-            <span class="n">delta</span> <span class="o">=</span> <span class="n">dates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">"origin"</span><span class="p">])</span>
-            <span class="n">shift</span> <span class="o">=</span> <span class="p">(</span><span class="n">delta</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="mi">86400</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">YEAR_DAYS</span> <span class="o">/</span> <span class="n">period</span><span class="p">)</span>
-            <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-                <span class="n">params</span><span class="p">,</span>
-                <span class="n">start</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"start"</span><span class="p">]</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="s2">"slope"</span><span class="p">]</span> <span class="o">*</span> <span class="n">shift</span><span class="p">,</span>
-                <span class="n">phase</span><span class="o">=</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">"phase"</span><span class="p">]</span> <span class="o">-</span> <span class="n">shift</span><span class="p">)</span> <span class="o">%</span> <span class="n">params</span><span class="p">[</span><span class="s2">"period"</span><span class="p">],</span>
-            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">_move_params</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">dates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="n">values</span> <span class="o">=</span> <span class="n">_arma</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator_floor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -2927,6 +3101,55 @@
             <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="TimeSeries._move_params">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries._move_params">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_move_params</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Move step 0 of the parameters from their origin, if any, to a new start.</span>
+
+<span class="sd">        :param params: parameters</span>
+<span class="sd">        :type params: dict</span>
+<span class="sd">        :param start: new first date</span>
+<span class="sd">        :type start: :class:`pandas.Timestamp`</span>
+<span class="sd">        :return: parameters that apply from the new start</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="s2">"origin"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">params</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">start</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">"origin"</span><span class="p">])</span>
+        <span class="n">shift</span> <span class="o">=</span> <span class="p">(</span><span class="n">delta</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="mi">86400</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">YEAR_DAYS</span> <span class="o">/</span> <span class="n">params</span><span class="p">[</span><span class="s2">"period"</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">params</span><span class="p">,</span>
+            <span class="n">start</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">"start"</span><span class="p">]</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="s2">"slope"</span><span class="p">]</span> <span class="o">*</span> <span class="n">shift</span><span class="p">,</span>
+            <span class="n">phase</span><span class="o">=</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">"phase"</span><span class="p">]</span> <span class="o">-</span> <span class="n">shift</span><span class="p">)</span> <span class="o">%</span> <span class="n">params</span><span class="p">[</span><span class="s2">"period"</span><span class="p">],</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeSeries.decompose">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeries.decompose">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decompose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Split the data into trend, cycle, remainder and shocks. The data is not</span>
+<span class="sd">        changed. The remainder holds the memory and the shocks, so that</span>
+<span class="sd">        ``trend + cycle + remainder`` rebuilds the data.</span>
+
+<span class="sd">        :param params: parameters. By default, they come from :meth:`fit`.</span>
+<span class="sd">        :type params: dict</span>
+<span class="sd">        :return: dates and components, in columns ``trend``, ``cycle``, ``remainder``</span>
+<span class="sd">            and ``shocks``</span>
+<span class="sd">        :rtype: :class:`pandas.DataFrame`</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"There are gaps in the data. Fill them to decompose"</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">_move_params</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">dc_parts</span> <span class="o">=</span> <span class="n">_arma</span><span class="o">.</span><span class="n">decompose</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="o">**</span><span class="n">dc_parts</span><span class="p">})</span></div>
 
 
 <div class="viewcode-block" id="TimeSeries.fit">
@@ -3444,6 +3667,7 @@
             <span class="s2">"xmax"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s2">"ymin"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s2">"ymax"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">"pad_x"</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>  <span class="c1"># share of the time span added on each side, if auto</span>
             <span class="c1"># export</span>
             <span class="s2">"folder"</span><span class="p">:</span> <span class="s2">"./output"</span><span class="p">,</span>
             <span class="s2">"filename"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
@@ -3611,17 +3835,17 @@
                 <span class="n">rows</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">i_row</span><span class="p">,</span> <span class="n">i_row</span> <span class="o">+</span> <span class="n">n_rows</span><span class="p">)</span>
                 <span class="c1"># series and CDFs share their x axis across panels</span>
                 <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span>
-                    <span class="n">gs</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="mi">3</span><span class="p">:]</span> <span class="k">if</span> <span class="n">is_simple</span> <span class="k">else</span> <span class="n">gs</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">21</span><span class="p">],</span> <span class="n">sharex</span><span class="o">=</span><span class="n">ax_series</span>
+                    <span class="n">gs</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="mi">3</span><span class="p">:]</span> <span class="k">if</span> <span class="n">is_simple</span> <span class="k">else</span> <span class="n">gs</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">20</span><span class="p">],</span> <span class="n">sharex</span><span class="o">=</span><span class="n">ax_series</span>
                 <span class="p">)</span>
                 <span class="n">ax_series</span> <span class="o">=</span> <span class="n">ax</span> <span class="k">if</span> <span class="n">ax_series</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">ax_series</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">is_simple</span><span class="p">:</span>
-                    <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="mi">23</span><span class="p">:</span><span class="mi">28</span><span class="p">])</span>
+                    <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="mi">22</span><span class="p">:</span><span class="mi">27</span><span class="p">])</span>
                     <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="mi">29</span><span class="p">:],</span> <span class="n">sharex</span><span class="o">=</span><span class="n">ax_cdf</span><span class="p">)</span>
                     <span class="n">ax_cdf</span> <span class="o">=</span> <span class="n">ax</span> <span class="k">if</span> <span class="n">ax_cdf</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">ax_cdf</span>
                 <span class="n">i_row</span> <span class="o">=</span> <span class="n">i_row</span> <span class="o">+</span> <span class="n">n_rows</span> <span class="o">+</span> <span class="n">TimeSeriesCollection</span><span class="o">.</span><span class="n">PANEL_GAP_ROWS</span>
         <span class="k">elif</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"series"</span><span class="p">:</span>
-            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">21</span><span class="p">])</span>  <span class="c1"># 0: series</span>
-            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">23</span><span class="p">:</span><span class="mi">28</span><span class="p">])</span>  <span class="c1"># 1: histograms</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">20</span><span class="p">])</span>  <span class="c1"># 0: series</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">22</span><span class="p">:</span><span class="mi">27</span><span class="p">])</span>  <span class="c1"># 1: histograms</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">29</span><span class="p">:])</span>  <span class="c1"># 2: CDFs</span>
         <span class="k">elif</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"series-simple"</span><span class="p">:</span>
             <span class="c1"># one row below the title, for the legend</span>
@@ -3704,34 +3928,15 @@
         <span class="c1"># cross-series overlap</span>
         <span class="n">epochs_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_epochs</span><span class="p">()</span>
 
-        <span class="n">xmin</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span> <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
-        <span class="n">xmax</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">]</span> <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span>
-
-        <span class="c1"># Evenly-spaced ticks in *calendar time*, not by row position.</span>
-        <span class="c1"># `epochs_df` can mix resolutions (e.g. hourly while one series is</span>
-        <span class="c1"># active, daily once it ends -- see merge_data()), so picking ticks</span>
-        <span class="c1"># by row index would bunch them together in the fine-resolution</span>
-        <span class="c1"># stretch and leave a big gap across the coarse one. Building the</span>
-        <span class="c1"># ticks directly from xmin/xmax (mirrors TimeSeries.plot_series'</span>
-        <span class="c1"># ``n_dates``/``format_dates``) keeps them evenly spaced regardless.</span>
-        <span class="n">n_dates</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"n_dates"</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">n_dates</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ticks</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">elif</span> <span class="n">n_dates</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">ticks</span> <span class="o">=</span> <span class="p">[</span><span class="n">xmin</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">n_dates</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">ticks</span> <span class="o">=</span> <span class="p">[</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">ticks</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="n">n_dates</span><span class="p">)</span>
-        <span class="n">format_dates</span> <span class="o">=</span> <span class="n">specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"format_dates"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">range_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_range_x</span><span class="p">(</span><span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
 
         <span class="c1"># large collections drop per-series labels</span>
         <span class="n">n_series</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
         <span class="n">is_large</span> <span class="o">=</span> <span class="n">n_series</span> <span class="o">&gt;</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"n_series_max"</span><span class="p">]</span>
 
-        <span class="c1"># --- a. Gantt chart ---</span>
+        <span class="c1"># --- Gantt chart ---</span>
         <span class="n">ax_gantt</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"a. </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"gantt"</span><span class="p">]),</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"left"</span><span class="p">)</span>
+        <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"gantt"</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"left"</span><span class="p">)</span>
         <span class="c1"># fit line width to row height (points), so rows never overlap</span>
         <span class="n">row_pt</span> <span class="o">=</span> <span class="n">ax_gantt</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="mi">72</span> <span class="o">/</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span> <span class="o">/</span> <span class="n">n_series</span>
         <span class="n">gantt_linewidth</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"gantt_linewidth"</span><span class="p">],</span> <span class="mf">0.7</span> <span class="o">*</span> <span class="n">row_pt</span><span class="p">)</span>
@@ -3749,25 +3954,26 @@
                     <span class="n">solid_capstyle</span><span class="o">=</span><span class="s2">"butt"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
+        <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">range_x</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">is_large</span><span class="p">:</span>
             <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
             <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"</span><span class="si">{}</span><span class="s2"> series"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_series</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">heights</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
         <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xlabel"</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">ticks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">ticks</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">format_dates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">ax_gantt</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span>
-                    <span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">format_dates</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ticks</span><span class="p">]</span>
-                <span class="p">)</span>
+        <span class="n">TimeSeries</span><span class="o">.</span><span class="n">set_date_ticks</span><span class="p">(</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">ax_gantt</span><span class="p">,</span>
+            <span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span>
+            <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span>
+            <span class="n">n_dates</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"n_dates"</span><span class="p">],</span>
+            <span class="n">format_dates</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"format_dates"</span><span class="p">],</span>
+        <span class="p">)</span>
         <span class="n">ax_gantt</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">labelrotation</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xtick_rotation"</span><span class="p">])</span>
         <span class="n">ax_gantt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"y"</span><span class="p">)</span>
 
-        <span class="c1"># --- b. Overlapping chart ---</span>
+        <span class="c1"># --- Overlapping chart ---</span>
         <span class="n">ax_over</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">ax_over</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"b. </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"over"</span><span class="p">]),</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"left"</span><span class="p">)</span>
+        <span class="n">ax_over</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"over"</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"left"</span><span class="p">)</span>
         <span class="n">ax_over</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
             <span class="n">epochs_df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtfield</span><span class="p">],</span>
             <span class="mi">100</span> <span class="o">*</span> <span class="n">epochs_df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">overfield</span><span class="p">],</span>
@@ -3782,21 +3988,22 @@
         <span class="n">ymin</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"ymin"</span><span class="p">]</span> <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"ymin"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="o">-</span><span class="mi">5</span>
         <span class="n">ymax</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"ymax"</span><span class="p">]</span> <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"ymax"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">105</span>
         <span class="n">ax_over</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
-        <span class="n">ax_over</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
+        <span class="n">ax_over</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">range_x</span><span class="p">)</span>
         <span class="n">ax_over</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xlabel"</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">ticks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ax_over</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">ticks</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">format_dates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">ax_over</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span>
-                    <span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">format_dates</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ticks</span><span class="p">]</span>
-                <span class="p">)</span>
+        <span class="n">TimeSeries</span><span class="o">.</span><span class="n">set_date_ticks</span><span class="p">(</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">ax_over</span><span class="p">,</span>
+            <span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span>
+            <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span>
+            <span class="n">n_dates</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"n_dates"</span><span class="p">],</span>
+            <span class="n">format_dates</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"format_dates"</span><span class="p">],</span>
+        <span class="p">)</span>
         <span class="n">ax_over</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">labelrotation</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xtick_rotation"</span><span class="p">])</span>
         <span class="n">ax_over</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"ylabel_over"</span><span class="p">])</span>
 
-        <span class="c1"># --- c. Prevalence chart (only in the "full" layout) ---</span>
+        <span class="c1"># --- Prevalence chart (only in the "full" layout) ---</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">ax_prev</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-            <span class="n">ax_prev</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"c. </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"prev"</span><span class="p">]),</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"left"</span><span class="p">)</span>
+            <span class="n">ax_prev</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"prev"</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"left"</span><span class="p">)</span>
             <span class="c1"># rows aligned with the gantt chart</span>
             <span class="n">ax_prev</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span>
                 <span class="n">heights</span><span class="p">,</span>
@@ -3816,6 +4023,28 @@
 
         <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="TimeSeriesCollection._get_range_x">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesCollection._get_range_x">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_range_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">specs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get the time axis: from the first date to the last one of all series,</span>
+<span class="sd">        with a padding on the sides not set by ``xmin`` and ``xmax``.</span>
+
+<span class="sd">        :param specs: plot specification dictionary</span>
+<span class="sd">        :type specs: dict</span>
+<span class="sd">        :return: first and last tick, and the range of the axis</span>
+<span class="sd">        :rtype: tuple</span>
+<span class="sd">        """</span>
+        <span class="n">xmin</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span> <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
+        <span class="n">xmax</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">]</span> <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span>
+        <span class="n">range_x</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">get_range_x</span><span class="p">(</span><span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"pad_x"</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">range_x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmin</span>
+        <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">range_x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmax</span>
+        <span class="k">return</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">range_x</span></div>
 
 
 <div class="viewcode-block" id="TimeSeriesCollection._get_labels">
@@ -3883,8 +4112,7 @@
 
         <span class="c1"># COMMON RANGES</span>
         <span class="c1"># -------------------------------------------------------------------</span>
-        <span class="n">xmin</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span> <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
-        <span class="n">xmax</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">]</span> <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span>
+        <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">range_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_range_x</span><span class="p">(</span><span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
         <span class="n">range_y</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">range_y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">vmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span>
@@ -3934,7 +4162,7 @@
                     <span class="s2">"data_legend"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
                     <span class="s2">"linewidth"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"linewidth"</span><span class="p">],</span>
                     <span class="s2">"range"</span><span class="p">:</span> <span class="n">range_y</span><span class="p">,</span>
-                    <span class="s2">"range_x"</span><span class="p">:</span> <span class="p">[</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">],</span>
+                    <span class="s2">"range_x"</span><span class="p">:</span> <span class="n">range_x</span><span class="p">,</span>
                     <span class="s2">"n_dates"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="s2">"xlabel"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xlabel"</span><span class="p">],</span>
                     <span class="s2">"ylabel"</span><span class="p">:</span> <span class="n">ylabel</span><span class="p">,</span>
@@ -3980,12 +4208,16 @@
 
         <span class="c1"># DECORATIONS</span>
         <span class="c1"># -------------------------------------------------------------------</span>
-        <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">AutoDateLocator</span><span class="p">(</span><span class="n">minticks</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">maxticks</span><span class="o">=</span><span class="mi">7</span><span class="p">))</span>
+        <span class="n">TimeSeries</span><span class="o">.</span><span class="n">set_date_ticks</span><span class="p">(</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span>
+            <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span>
+            <span class="n">n_dates</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"n_dates"</span><span class="p">],</span>
+            <span class="n">format_dates</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"format_dates"</span><span class="p">],</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># histograms share the series axis</span>
             <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.1</span> <span class="o">*</span> <span class="n">hist_max</span><span class="p">)</span>
-            <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-            <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">viewer</span><span class="o">.</span><span class="n">clear_xticks</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_series_legend</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
@@ -4065,8 +4297,7 @@
         <span class="n">dc_labels</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">catalog</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_labels</span><span class="p">(</span><span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">))</span>
         <span class="p">)</span>
-        <span class="n">xmin</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span> <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
-        <span class="n">xmax</span> <span class="o">=</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">]</span> <span class="k">if</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span>
+        <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">range_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_range_x</span><span class="p">(</span><span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
         <span class="n">n_panels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"panels"</span><span class="p">])</span>
         <span class="n">n_axes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">//</span> <span class="n">n_panels</span>
 
@@ -4095,7 +4326,7 @@
                         <span class="s2">"data_label"</span><span class="p">:</span> <span class="n">dc_labels</span><span class="p">[</span><span class="n">name</span><span class="p">],</span>
                         <span class="s2">"data_legend"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
                         <span class="s2">"range"</span><span class="p">:</span> <span class="n">range_y</span><span class="p">,</span>
-                        <span class="s2">"range_x"</span><span class="p">:</span> <span class="p">[</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">],</span>
+                        <span class="s2">"range_x"</span><span class="p">:</span> <span class="n">range_x</span><span class="p">,</span>
                         <span class="s2">"n_dates"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                         <span class="s2">"xlabel"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                         <span class="s2">"ylabel"</span><span class="p">:</span> <span class="n">ylabel</span><span class="p">,</span>
@@ -4134,10 +4365,7 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ls_lateral</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">ax_hist</span><span class="p">,</span> <span class="n">ax_cdf</span> <span class="o">=</span> <span class="n">ls_lateral</span>
                 <span class="n">ax_hist</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.1</span> <span class="o">*</span> <span class="n">hist_max</span><span class="p">)</span>
-                <span class="n">ax_hist</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-                <span class="n">ax_hist</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-                <span class="c1"># histograms keep their own scale, and CDFs share one</span>
-                <span class="n">ax_cdf</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelbottom</span><span class="o">=</span><span class="n">is_last</span><span class="p">)</span>
+                <span class="c1"># axis labels only below the last panel</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">is_last</span><span class="p">:</span>
                     <span class="n">ax_hist</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
                     <span class="n">ax_cdf</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
@@ -4145,10 +4373,14 @@
             <span class="n">viewer</span><span class="o">.</span><span class="n">clear_xticks</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="n">ax_series</span><span class="p">]</span> <span class="o">+</span> <span class="n">ls_lateral</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">is_single</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_set_series_legend</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="n">ax_series</span><span class="p">],</span> <span class="n">specs</span><span class="o">=</span><span class="n">specs</span><span class="p">)</span>
-            <span class="c1"># dates only below the last panel</span>
-            <span class="n">ax_series</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelbottom</span><span class="o">=</span><span class="n">is_last</span><span class="p">)</span>
 
-        <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">AutoDateLocator</span><span class="p">(</span><span class="n">minticks</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">maxticks</span><span class="o">=</span><span class="mi">7</span><span class="p">))</span>
+        <span class="n">TimeSeries</span><span class="o">.</span><span class="n">set_date_ticks</span><span class="p">(</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span>
+            <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span>
+            <span class="n">n_dates</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"n_dates"</span><span class="p">],</span>
+            <span class="n">format_dates</span><span class="o">=</span><span class="n">specs</span><span class="p">[</span><span class="s2">"format_dates"</span><span class="p">],</span>
+        <span class="p">)</span>
         <span class="n">axes</span><span class="p">[(</span><span class="n">n_panels</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_axes</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="s2">"xlabel"</span><span class="p">])</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
@@ -4203,6 +4435,73 @@
 <span class="sd">        titles, axis ranges, layout choice...) now lives in</span>
 <span class="sd">        ``self.view_specs`` -- set it before calling, exactly like</span>
 <span class="sd">        :meth:`TimeSeries.view`.</span>
+
+<span class="sd">        **Layouts**, set by ``view_specs["layout"]``:</span>
+
+<span class="sd">        ==================  ======================================================================================</span>
+<span class="sd">        Layout              Panels</span>
+<span class="sd">        ==================  ======================================================================================</span>
+<span class="sd">        ``full``            Gantt chart, overlap and prevalence.</span>
+<span class="sd">        ``simple``          Gantt chart and overlap.</span>
+<span class="sd">        ``default``         Same as ``full``.</span>
+<span class="sd">        ``stacked``         A panel for each entry of ``panels``, with histograms and CDFs, on a shared time axis.</span>
+<span class="sd">        ``stacked-simple``  A panel for each entry of ``panels``, on a shared time axis.</span>
+<span class="sd">        ==================  ======================================================================================</span>
+
+<span class="sd">        **View specs**, set by ``view_specs[key] = value`` before the call:</span>
+
+<span class="sd">        =========================  ===============  ===========================================================================================</span>
+<span class="sd">        Key                        Default          Description</span>
+<span class="sd">        =========================  ===============  ===========================================================================================</span>
+<span class="sd">        ``layout``                 ``"full"``       Name of the layout. See the table of layouts.</span>
+<span class="sd">        ``style``                  ``"wien"``       Name of the plot style. See :func:`plans.viewer.set_style`.</span>
+<span class="sd">        ``title``                  auto             Title of the figure.</span>
+<span class="sd">        ``gantt``                  auto             Title of the Gantt chart.</span>
+<span class="sd">        ``over``                   auto             Title of the overlap panel.</span>
+<span class="sd">        ``prev``                   auto             Title of the prevalence panel.</span>
+<span class="sd">        ``xlabel``                 auto             Label of the time axis.</span>
+<span class="sd">        ``ylabel_over``            ``"%"``          Label of the y axis of the overlap panel.</span>
+<span class="sd">        ``xlabel_prev``            ``"%"``          Label of the x axis of the prevalence panel.</span>
+<span class="sd">        ``usealias``               ``False``        Use aliases instead of names in labels.</span>
+<span class="sd">        ``n_dates``                ``5``            Number of date ticks, evenly spaced in time. None chooses them automatically.</span>
+<span class="sd">        ``format_dates``           ``"%Y-%m-%d"``   Format of the date labels.</span>
+<span class="sd">        ``xtick_rotation``         ``0``            Rotation of the date labels in the ``full`` and ``simple`` layouts.</span>
+<span class="sd">        ``color_over``             ``"tab:blue"``   Color of the overlap panel.</span>
+<span class="sd">        ``alpha_over``             ``0.4``          Opacity of the fill of the overlap panel.</span>
+<span class="sd">        ``color_prev``             ``"tab:gray"``   Color of the prevalence bars.</span>
+<span class="sd">        ``gantt_linewidth``        ``6``            Largest width of the Gantt lines. It shrinks to fit many series.</span>
+<span class="sd">        ``n_series_max``           ``10``           Above this many series, labels are hidden and series lines go to the background.</span>
+<span class="sd">        ``xmin``                   None             Start of the time axis. None is the first date of all series, with ``pad_x``.</span>
+<span class="sd">        ``xmax``                   None             End of the time axis. None is the last date of all series, with ``pad_x``.</span>
+<span class="sd">        ``ymin``                   None             Bottom of the overlap panel. None is automatic.</span>
+<span class="sd">        ``ymax``                   None             Top of the overlap panel. None is automatic.</span>
+<span class="sd">        ``pad_x``                  ``0.05``         Share of the time span added on each side of the time axis not set by ``xmin`` or ``xmax``.</span>
+<span class="sd">        ``folder``                 auto             Folder of the saved figure.</span>
+<span class="sd">        ``filename``               auto             Name of the saved figure, without extension. None is the name of the collection.</span>
+<span class="sd">        ``suff``                   ``""``           Suffix of the saved figure, if ``filename`` is None.</span>
+<span class="sd">        ``dpi``                    ``300``          Resolution of the saved figure.</span>
+<span class="sd">        ``fig_format``             ``"jpg"``        Format of the saved figure.</span>
+<span class="sd">        ``series``                 ``"Series"``     Title of the series panel, in the ``series`` layouts.</span>
+<span class="sd">        ``subtitle_hist``          ``"Histogram"``  Title of the histograms.</span>
+<span class="sd">        ``subtitle_cdf``           ``"CDF"``        Title of the CDFs.</span>
+<span class="sd">        ``ylabel``                 auto             Label of the y axis, in the ``series`` layouts. None comes from the variable.</span>
+<span class="sd">        ``range``                  None             Common y range, in the ``series`` layouts. None is set from the data.</span>
+<span class="sd">        ``cmap_series``            ``"tab10"``      Color map of the series. In ``series`` layouts, None uses the color of each series.</span>
+<span class="sd">        ``linewidth``              ``0.8``          Width of the series lines, in the ``series`` layouts.</span>
+<span class="sd">        ``alpha_hist``             ``0.4``          Opacity of overlaid histograms.</span>
+<span class="sd">        ``histtype``               ``"bar"``        Type of overlaid histograms. ``"step"`` draws outlines only.</span>
+<span class="sd">        ``bins``                   ``30``           Number of common bins of overlaid histograms.</span>
+<span class="sd">        ``plot_mean``              ``True``         Show mean lines on overlaid histograms and CDFs.</span>
+<span class="sd">        ``legend``                 ``True``         Show the legend of overlaid series.</span>
+<span class="sd">        ``highlight``              None             Names of the series drawn in color, in the ``series`` layouts.</span>
+<span class="sd">        ``plot_background``        ``True``         Show the background lines on the series panel.</span>
+<span class="sd">        ``color_background``       ``"silver"``     Color of the background series.</span>
+<span class="sd">        ``linewidth_background``   ``0.5``          Width of the background lines.</span>
+<span class="sd">        ``alpha_background``       ``0.6``          Opacity of the background lines.</span>
+<span class="sd">        ``alpha_hist_background``  ``0.1``          Opacity of the background histograms.</span>
+<span class="sd">        ``panels``                 None             Names of the series in each panel, as a list of lists. None is one series per panel.</span>
+<span class="sd">        ``panel_heights``          None             Relative heights of the panels, like ``[3, 1]``. None is equal.</span>
+<span class="sd">        =========================  ===============  ===========================================================================================</span>
 
 <span class="sd">        :param show: option for showing instead of saving.</span>
 <span class="sd">        :type show: bool</span>
@@ -4736,6 +5035,98 @@
         <span class="k">return</span> <span class="n">fig</span></div>
 
 
+<div class="viewcode-block" id="TimeSeriesCluster.view">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesCluster.view">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get the visualization, which also has the correlation between series.</span>
+
+<span class="sd">        **Layouts**, set by ``view_specs["layout"]``:</span>
+
+<span class="sd">        ==================  ======================================================================================</span>
+<span class="sd">        Layout              Panels</span>
+<span class="sd">        ==================  ======================================================================================</span>
+<span class="sd">        ``full``            Gantt chart, overlap and prevalence.</span>
+<span class="sd">        ``simple``          Gantt chart and overlap.</span>
+<span class="sd">        ``default``         Same as ``full``.</span>
+<span class="sd">        ``stacked``         A panel for each entry of ``panels``, with histograms and CDFs, on a shared time axis.</span>
+<span class="sd">        ``stacked-simple``  A panel for each entry of ``panels``, on a shared time axis.</span>
+<span class="sd">        ``series``          All series overlaid, with histograms and CDFs.</span>
+<span class="sd">        ``series-simple``   All series overlaid.</span>
+<span class="sd">        ``correlation``     Correlation matrix.</span>
+<span class="sd">        ==================  ======================================================================================</span>
+
+<span class="sd">        **View specs**, set by ``view_specs[key] = value`` before the call:</span>
+
+<span class="sd">        =========================  =================  ===========================================================================================</span>
+<span class="sd">        Key                        Default            Description</span>
+<span class="sd">        =========================  =================  ===========================================================================================</span>
+<span class="sd">        ``layout``                 ``"full"``         Name of the layout. See the table of layouts.</span>
+<span class="sd">        ``style``                  ``"wien"``         Name of the plot style. See :func:`plans.viewer.set_style`.</span>
+<span class="sd">        ``title``                  auto               Title of the figure.</span>
+<span class="sd">        ``gantt``                  auto               Title of the Gantt chart.</span>
+<span class="sd">        ``over``                   auto               Title of the overlap panel.</span>
+<span class="sd">        ``prev``                   auto               Title of the prevalence panel.</span>
+<span class="sd">        ``xlabel``                 auto               Label of the time axis.</span>
+<span class="sd">        ``ylabel_over``            ``"%"``            Label of the y axis of the overlap panel.</span>
+<span class="sd">        ``xlabel_prev``            ``"%"``            Label of the x axis of the prevalence panel.</span>
+<span class="sd">        ``usealias``               ``False``          Use aliases instead of names in labels.</span>
+<span class="sd">        ``n_dates``                ``5``              Number of date ticks, evenly spaced in time. None chooses them automatically.</span>
+<span class="sd">        ``format_dates``           ``"%Y-%m-%d"``     Format of the date labels.</span>
+<span class="sd">        ``xtick_rotation``         ``0``              Rotation of the date labels in the ``full`` and ``simple`` layouts.</span>
+<span class="sd">        ``color_over``             ``"tab:blue"``     Color of the overlap panel.</span>
+<span class="sd">        ``alpha_over``             ``0.4``            Opacity of the fill of the overlap panel.</span>
+<span class="sd">        ``color_prev``             ``"tab:gray"``     Color of the prevalence bars.</span>
+<span class="sd">        ``gantt_linewidth``        ``6``              Largest width of the Gantt lines. It shrinks to fit many series.</span>
+<span class="sd">        ``n_series_max``           ``10``             Above this many series, labels are hidden and series lines go to the background.</span>
+<span class="sd">        ``xmin``                   None               Start of the time axis. None is the first date of all series, with ``pad_x``.</span>
+<span class="sd">        ``xmax``                   None               End of the time axis. None is the last date of all series, with ``pad_x``.</span>
+<span class="sd">        ``ymin``                   None               Bottom of the overlap panel. None is automatic.</span>
+<span class="sd">        ``ymax``                   None               Top of the overlap panel. None is automatic.</span>
+<span class="sd">        ``pad_x``                  ``0.05``           Share of the time span added on each side of the time axis not set by ``xmin`` or ``xmax``.</span>
+<span class="sd">        ``folder``                 auto               Folder of the saved figure.</span>
+<span class="sd">        ``filename``               auto               Name of the saved figure, without extension. None is the name of the collection.</span>
+<span class="sd">        ``suff``                   ``""``             Suffix of the saved figure, if ``filename`` is None.</span>
+<span class="sd">        ``dpi``                    ``300``            Resolution of the saved figure.</span>
+<span class="sd">        ``fig_format``             ``"jpg"``          Format of the saved figure.</span>
+<span class="sd">        ``series``                 ``"Series"``       Title of the series panel, in the ``series`` layouts.</span>
+<span class="sd">        ``subtitle_hist``          ``"Histogram"``    Title of the histograms.</span>
+<span class="sd">        ``subtitle_cdf``           ``"CDF"``          Title of the CDFs.</span>
+<span class="sd">        ``ylabel``                 auto               Label of the y axis, in the ``series`` layouts. None comes from the variable.</span>
+<span class="sd">        ``range``                  None               Common y range, in the ``series`` layouts. None is set from the data.</span>
+<span class="sd">        ``cmap_series``            ``"tab10"``        Color map of the series. In ``series`` layouts, None uses the color of each series.</span>
+<span class="sd">        ``linewidth``              ``0.8``            Width of the series lines, in the ``series`` layouts.</span>
+<span class="sd">        ``alpha_hist``             ``0.4``            Opacity of overlaid histograms.</span>
+<span class="sd">        ``histtype``               ``"bar"``          Type of overlaid histograms. ``"step"`` draws outlines only.</span>
+<span class="sd">        ``bins``                   ``30``             Number of common bins of overlaid histograms.</span>
+<span class="sd">        ``plot_mean``              ``True``           Show mean lines on overlaid histograms and CDFs.</span>
+<span class="sd">        ``legend``                 ``True``           Show the legend of overlaid series.</span>
+<span class="sd">        ``highlight``              None               Names of the series drawn in color, in the ``series`` layouts.</span>
+<span class="sd">        ``plot_background``        ``True``           Show the background lines on the series panel.</span>
+<span class="sd">        ``color_background``       ``"silver"``       Color of the background series.</span>
+<span class="sd">        ``linewidth_background``   ``0.5``            Width of the background lines.</span>
+<span class="sd">        ``alpha_background``       ``0.6``            Opacity of the background lines.</span>
+<span class="sd">        ``alpha_hist_background``  ``0.1``            Opacity of the background histograms.</span>
+<span class="sd">        ``panels``                 None               Names of the series in each panel, as a list of lists. None is one series per panel.</span>
+<span class="sd">        ``panel_heights``          None               Relative heights of the panels, like ``[3, 1]``. None is equal.</span>
+<span class="sd">        ``correlation``            ``"Correlation"``  Title of the correlation panel.</span>
+<span class="sd">        ``corr_method``            ``"pearson"``      Correlation method: ``"pearson"``, ``"kendall"`` or ``"spearman"``.</span>
+<span class="sd">        ``corr_min_overlap``       ``30``             Fewest common records for a correlation.</span>
+<span class="sd">        ``cmap_corr``              ``"RdBu_r"``       Color map of the correlation.</span>
+<span class="sd">        ``range_corr``             ``[-1, 1]``        Range of the color map. Narrow it to reveal structure.</span>
+<span class="sd">        ``annotate``               ``True``           Show values on the correlation cells.</span>
+<span class="sd">        =========================  =================  ===========================================================================================</span>
+
+<span class="sd">        :param show: option for showing instead of saving</span>
+<span class="sd">        :type show: bool</span>
+<span class="sd">        :param return_fig: option for returning the figure object</span>
+<span class="sd">        :type return_fig: bool</span>
+<span class="sd">        :return: figure object if ``return_fig`` is True, else None</span>
+<span class="sd">        :rtype: :class:`matplotlib.figure.Figure` or None</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span> <span class="n">return_fig</span><span class="o">=</span><span class="n">return_fig</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="TimeSeriesCluster._plot_correlation">
 <a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesCluster._plot_correlation">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">_plot_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">specs</span><span class="p">):</span>
@@ -5077,6 +5468,95 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
+<div class="viewcode-block" id="TimeSeriesEnsemble.view">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.TimeSeriesEnsemble.view">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get the visualization, with members in the background and reducers and bands on top.</span>
+
+<span class="sd">        **Layouts**, set by ``view_specs["layout"]``:</span>
+
+<span class="sd">        ==================  ======================================================================================</span>
+<span class="sd">        Layout              Panels</span>
+<span class="sd">        ==================  ======================================================================================</span>
+<span class="sd">        ``full``            Gantt chart, overlap and prevalence.</span>
+<span class="sd">        ``simple``          Gantt chart and overlap.</span>
+<span class="sd">        ``default``         Same as ``full``.</span>
+<span class="sd">        ``stacked``         A panel for each entry of ``panels``, with histograms and CDFs, on a shared time axis.</span>
+<span class="sd">        ``stacked-simple``  A panel for each entry of ``panels``, on a shared time axis.</span>
+<span class="sd">        ``series``          All series overlaid, with histograms and CDFs.</span>
+<span class="sd">        ``series-simple``   All series overlaid.</span>
+<span class="sd">        ==================  ======================================================================================</span>
+
+<span class="sd">        **View specs**, set by ``view_specs[key] = value`` before the call:</span>
+
+<span class="sd">        =========================  ===============  ===========================================================================================</span>
+<span class="sd">        Key                        Default          Description</span>
+<span class="sd">        =========================  ===============  ===========================================================================================</span>
+<span class="sd">        ``layout``                 ``"series"``     Name of the layout. See the table of layouts.</span>
+<span class="sd">        ``style``                  ``"wien"``       Name of the plot style. See :func:`plans.viewer.set_style`.</span>
+<span class="sd">        ``title``                  auto             Title of the figure.</span>
+<span class="sd">        ``gantt``                  auto             Title of the Gantt chart.</span>
+<span class="sd">        ``over``                   auto             Title of the overlap panel.</span>
+<span class="sd">        ``prev``                   auto             Title of the prevalence panel.</span>
+<span class="sd">        ``xlabel``                 auto             Label of the time axis.</span>
+<span class="sd">        ``ylabel_over``            ``"%"``          Label of the y axis of the overlap panel.</span>
+<span class="sd">        ``xlabel_prev``            ``"%"``          Label of the x axis of the prevalence panel.</span>
+<span class="sd">        ``usealias``               ``False``        Use aliases instead of names in labels.</span>
+<span class="sd">        ``n_dates``                ``5``            Number of date ticks, evenly spaced in time. None chooses them automatically.</span>
+<span class="sd">        ``format_dates``           ``"%Y-%m-%d"``   Format of the date labels.</span>
+<span class="sd">        ``xtick_rotation``         ``0``            Rotation of the date labels in the ``full`` and ``simple`` layouts.</span>
+<span class="sd">        ``color_over``             ``"tab:blue"``   Color of the overlap panel.</span>
+<span class="sd">        ``alpha_over``             ``0.4``          Opacity of the fill of the overlap panel.</span>
+<span class="sd">        ``color_prev``             ``"tab:gray"``   Color of the prevalence bars.</span>
+<span class="sd">        ``gantt_linewidth``        ``6``            Largest width of the Gantt lines. It shrinks to fit many series.</span>
+<span class="sd">        ``n_series_max``           ``10``           Above this many series, labels are hidden and series lines go to the background.</span>
+<span class="sd">        ``xmin``                   None             Start of the time axis. None is the first date of all series, with ``pad_x``.</span>
+<span class="sd">        ``xmax``                   None             End of the time axis. None is the last date of all series, with ``pad_x``.</span>
+<span class="sd">        ``ymin``                   None             Bottom of the overlap panel. None is automatic.</span>
+<span class="sd">        ``ymax``                   None             Top of the overlap panel. None is automatic.</span>
+<span class="sd">        ``pad_x``                  ``0.05``         Share of the time span added on each side of the time axis not set by ``xmin`` or ``xmax``.</span>
+<span class="sd">        ``folder``                 auto             Folder of the saved figure.</span>
+<span class="sd">        ``filename``               auto             Name of the saved figure, without extension. None is the name of the collection.</span>
+<span class="sd">        ``suff``                   ``""``           Suffix of the saved figure, if ``filename`` is None.</span>
+<span class="sd">        ``dpi``                    ``300``          Resolution of the saved figure.</span>
+<span class="sd">        ``fig_format``             ``"jpg"``        Format of the saved figure.</span>
+<span class="sd">        ``series``                 ``"Series"``     Title of the series panel, in the ``series`` layouts.</span>
+<span class="sd">        ``subtitle_hist``          ``"Histogram"``  Title of the histograms.</span>
+<span class="sd">        ``subtitle_cdf``           ``"CDF"``        Title of the CDFs.</span>
+<span class="sd">        ``ylabel``                 auto             Label of the y axis, in the ``series`` layouts. None comes from the variable.</span>
+<span class="sd">        ``range``                  None             Common y range, in the ``series`` layouts. None is set from the data.</span>
+<span class="sd">        ``cmap_series``            ``"tab10"``      Color map of the series. In ``series`` layouts, None uses the color of each series.</span>
+<span class="sd">        ``linewidth``              ``0.8``          Width of the series lines, in the ``series`` layouts.</span>
+<span class="sd">        ``alpha_hist``             ``0.4``          Opacity of overlaid histograms.</span>
+<span class="sd">        ``histtype``               ``"bar"``        Type of overlaid histograms. ``"step"`` draws outlines only.</span>
+<span class="sd">        ``bins``                   ``30``           Number of common bins of overlaid histograms.</span>
+<span class="sd">        ``plot_mean``              ``True``         Show mean lines on overlaid histograms and CDFs.</span>
+<span class="sd">        ``legend``                 ``True``         Show the legend of overlaid series.</span>
+<span class="sd">        ``highlight``              None             Names of the series drawn in color, in the ``series`` layouts.</span>
+<span class="sd">        ``plot_background``        ``True``         Show the background lines on the series panel.</span>
+<span class="sd">        ``color_background``       ``"silver"``     Color of the background series.</span>
+<span class="sd">        ``linewidth_background``   ``0.5``          Width of the background lines.</span>
+<span class="sd">        ``alpha_background``       ``0.6``          Opacity of the background lines.</span>
+<span class="sd">        ``alpha_hist_background``  ``0.1``          Opacity of the background histograms.</span>
+<span class="sd">        ``panels``                 None             Names of the series in each panel, as a list of lists. None is one series per panel.</span>
+<span class="sd">        ``panel_heights``          None             Relative heights of the panels, like ``[3, 1]``. None is equal.</span>
+<span class="sd">        ``reducers``               ``["mean"]``     Names of the reducers drawn in color, such as ``mean``. None hides them.</span>
+<span class="sd">        ``bands``                  ``[[5, 95]]``    Percentile bands, as ``[low, high]`` pairs. None hides them.</span>
+<span class="sd">        ``color_band``             ``"#8db4dc"``    Color of the bands.</span>
+<span class="sd">        ``alpha_band``             ``0.6``          Opacity of the bands.</span>
+<span class="sd">        =========================  ===============  ===========================================================================================</span>
+
+<span class="sd">        :param show: option for showing instead of saving</span>
+<span class="sd">        :type show: bool</span>
+<span class="sd">        :param return_fig: option for returning the figure object</span>
+<span class="sd">        :type return_fig: bool</span>
+<span class="sd">        :return: figure object if ``return_fig`` is True, else None</span>
+<span class="sd">        :rtype: :class:`matplotlib.figure.Figure` or None</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span> <span class="n">return_fig</span><span class="o">=</span><span class="n">return_fig</span><span class="p">)</span></div>
+
+
     <span class="c1"># Static methods</span>
     <span class="c1"># -------------------------------------------------------------------</span>
 <div class="viewcode-block" id="TimeSeriesEnsemble._nanrange">
@@ -5220,6 +5700,7 @@
                 <span class="c1"># x axis labels: "days", "month", "month-letter" or "month-alias"</span>
                 <span class="s2">"xaxis"</span><span class="p">:</span> <span class="s2">"month-alias"</span><span class="p">,</span>
                 <span class="s2">"xlabel"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># None is set by the x axis mode</span>
+                <span class="s2">"pad_x"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># a padding would repeat months at the edges</span>
             <span class="p">}</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
@@ -5295,6 +5776,96 @@
             <span class="n">mticker</span><span class="o">.</span><span class="n">FuncFormatter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="n">func</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">num2date</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">month</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="SeasonalEnsemble.view">
+<a class="viewcode-back" href="../../../generated/plans.datasets.core.html#plans.datasets.core.SeasonalEnsemble.view">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get the visualization, with the years of the series on the same calendar.</span>
+
+<span class="sd">        **Layouts**, set by ``view_specs["layout"]``:</span>
+
+<span class="sd">        ==================  ======================================================================================</span>
+<span class="sd">        Layout              Panels</span>
+<span class="sd">        ==================  ======================================================================================</span>
+<span class="sd">        ``full``            Gantt chart, overlap and prevalence.</span>
+<span class="sd">        ``simple``          Gantt chart and overlap.</span>
+<span class="sd">        ``default``         Same as ``full``.</span>
+<span class="sd">        ``stacked``         A panel for each entry of ``panels``, with histograms and CDFs, on a shared time axis.</span>
+<span class="sd">        ``stacked-simple``  A panel for each entry of ``panels``, on a shared time axis.</span>
+<span class="sd">        ``series``          All series overlaid, with histograms and CDFs.</span>
+<span class="sd">        ``series-simple``   All series overlaid.</span>
+<span class="sd">        ==================  ======================================================================================</span>
+
+<span class="sd">        **View specs**, set by ``view_specs[key] = value`` before the call:</span>
+
+<span class="sd">        =========================  =================  ===========================================================================================</span>
+<span class="sd">        Key                        Default            Description</span>
+<span class="sd">        =========================  =================  ===========================================================================================</span>
+<span class="sd">        ``layout``                 ``"series"``       Name of the layout. See the table of layouts.</span>
+<span class="sd">        ``style``                  ``"wien"``         Name of the plot style. See :func:`plans.viewer.set_style`.</span>
+<span class="sd">        ``title``                  auto               Title of the figure.</span>
+<span class="sd">        ``gantt``                  auto               Title of the Gantt chart.</span>
+<span class="sd">        ``over``                   auto               Title of the overlap panel.</span>
+<span class="sd">        ``prev``                   auto               Title of the prevalence panel.</span>
+<span class="sd">        ``xlabel``                 auto               Label of the time axis.</span>
+<span class="sd">        ``ylabel_over``            ``"%"``            Label of the y axis of the overlap panel.</span>
+<span class="sd">        ``xlabel_prev``            ``"%"``            Label of the x axis of the prevalence panel.</span>
+<span class="sd">        ``usealias``               ``False``          Use aliases instead of names in labels.</span>
+<span class="sd">        ``n_dates``                ``5``              Number of date ticks, evenly spaced in time. None chooses them automatically.</span>
+<span class="sd">        ``format_dates``           ``"%Y-%m-%d"``     Format of the date labels.</span>
+<span class="sd">        ``xtick_rotation``         ``0``              Rotation of the date labels in the ``full`` and ``simple`` layouts.</span>
+<span class="sd">        ``color_over``             ``"tab:blue"``     Color of the overlap panel.</span>
+<span class="sd">        ``alpha_over``             ``0.4``            Opacity of the fill of the overlap panel.</span>
+<span class="sd">        ``color_prev``             ``"tab:gray"``     Color of the prevalence bars.</span>
+<span class="sd">        ``gantt_linewidth``        ``6``              Largest width of the Gantt lines. It shrinks to fit many series.</span>
+<span class="sd">        ``n_series_max``           ``10``             Above this many series, labels are hidden and series lines go to the background.</span>
+<span class="sd">        ``xmin``                   None               Start of the time axis. None is the first date of all series, with ``pad_x``.</span>
+<span class="sd">        ``xmax``                   None               End of the time axis. None is the last date of all series, with ``pad_x``.</span>
+<span class="sd">        ``ymin``                   None               Bottom of the overlap panel. None is automatic.</span>
+<span class="sd">        ``ymax``                   None               Top of the overlap panel. None is automatic.</span>
+<span class="sd">        ``pad_x``                  ``0``              Share of the time span added on each side of the time axis not set by ``xmin`` or ``xmax``.</span>
+<span class="sd">        ``folder``                 auto               Folder of the saved figure.</span>
+<span class="sd">        ``filename``               auto               Name of the saved figure, without extension. None is the name of the collection.</span>
+<span class="sd">        ``suff``                   ``""``             Suffix of the saved figure, if ``filename`` is None.</span>
+<span class="sd">        ``dpi``                    ``300``            Resolution of the saved figure.</span>
+<span class="sd">        ``fig_format``             ``"jpg"``          Format of the saved figure.</span>
+<span class="sd">        ``series``                 ``"Series"``       Title of the series panel, in the ``series`` layouts.</span>
+<span class="sd">        ``subtitle_hist``          ``"Histogram"``    Title of the histograms.</span>
+<span class="sd">        ``subtitle_cdf``           ``"CDF"``          Title of the CDFs.</span>
+<span class="sd">        ``ylabel``                 auto               Label of the y axis, in the ``series`` layouts. None comes from the variable.</span>
+<span class="sd">        ``range``                  None               Common y range, in the ``series`` layouts. None is set from the data.</span>
+<span class="sd">        ``cmap_series``            ``"tab10"``        Color map of the series. In ``series`` layouts, None uses the color of each series.</span>
+<span class="sd">        ``linewidth``              ``0.8``            Width of the series lines, in the ``series`` layouts.</span>
+<span class="sd">        ``alpha_hist``             ``0.4``            Opacity of overlaid histograms.</span>
+<span class="sd">        ``histtype``               ``"bar"``          Type of overlaid histograms. ``"step"`` draws outlines only.</span>
+<span class="sd">        ``bins``                   ``30``             Number of common bins of overlaid histograms.</span>
+<span class="sd">        ``plot_mean``              ``True``           Show mean lines on overlaid histograms and CDFs.</span>
+<span class="sd">        ``legend``                 ``True``           Show the legend of overlaid series.</span>
+<span class="sd">        ``highlight``              None               Names of the series drawn in color, in the ``series`` layouts.</span>
+<span class="sd">        ``plot_background``        ``True``           Show the background lines on the series panel.</span>
+<span class="sd">        ``color_background``       ``"silver"``       Color of the background series.</span>
+<span class="sd">        ``linewidth_background``   ``0.5``            Width of the background lines.</span>
+<span class="sd">        ``alpha_background``       ``0.6``            Opacity of the background lines.</span>
+<span class="sd">        ``alpha_hist_background``  ``0.1``            Opacity of the background histograms.</span>
+<span class="sd">        ``panels``                 None               Names of the series in each panel, as a list of lists. None is one series per panel.</span>
+<span class="sd">        ``panel_heights``          None               Relative heights of the panels, like ``[3, 1]``. None is equal.</span>
+<span class="sd">        ``reducers``               ``["mean"]``       Names of the reducers drawn in color, such as ``mean``. None hides them.</span>
+<span class="sd">        ``bands``                  ``[[5, 95]]``      Percentile bands, as ``[low, high]`` pairs. None hides them.</span>
+<span class="sd">        ``color_band``             ``"#8db4dc"``      Color of the bands.</span>
+<span class="sd">        ``alpha_band``             ``0.6``            Opacity of the bands.</span>
+<span class="sd">        ``xaxis``                  ``"month-alias"``  Labels of the x axis: ``"days"``, ``"month"``, ``"month-letter"`` or ``"month-alias"``.</span>
+<span class="sd">        =========================  =================  ===========================================================================================</span>
+
+<span class="sd">        :param show: option for showing instead of saving</span>
+<span class="sd">        :type show: bool</span>
+<span class="sd">        :param return_fig: option for returning the figure object</span>
+<span class="sd">        :type return_fig: bool</span>
+<span class="sd">        :return: figure object if ``return_fig`` is True, else None</span>
+<span class="sd">        :rtype: :class:`matplotlib.figure.Figure` or None</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span> <span class="n">return_fig</span><span class="o">=</span><span class="n">return_fig</span><span class="p">)</span></div>
 
 
     <span class="c1"># Static methods</span>

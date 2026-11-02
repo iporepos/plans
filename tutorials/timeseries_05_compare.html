@@ -392,6 +392,7 @@
 <li class="toctree-l2"><a class="reference internal" href="timeseries_10_ensemble.html">Time Series - Ensembles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_11_seasonal.html">Time Series - Seasonal ensembles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_12_collection_views.html">Time Series - Collection visuals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_13_synthetic.html">Time Series - Synthetic series</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="raster_01.html">Raster data - Basics</a></li>
 </ul>
@@ -510,7 +511,7 @@
 </section>
 <section id="create-two-synthetic-series-to-compare">
 <h2>Create two synthetic series to compare<a class="headerlink" href="#create-two-synthetic-series-to-compare" title="Link to this heading">#</a></h2>
-<p>Two Trend-Seasonality-Noise archetype series with different bases, trends, and noise levels – a stand-in for, e.g., two different sensors or sites over the same period. The differences are set by editing <code class="docutils literal notranslate"><span class="pre">.generator_specs</span></code> before calling <code class="docutils literal notranslate"><span class="pre">.generate()</span></code>.</p>
+<p>Two Trend, Cycle and Remainder archetype series with different bases, trends, and remainder levels – a stand-in for, e.g., two different sensors or sites over the same period. The differences are set by editing <code class="docutils literal notranslate"><span class="pre">.generator_specs</span></code> before calling <code class="docutils literal notranslate"><span class="pre">.generate()</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
@@ -520,7 +521,7 @@
 <span class="n">df_site_a</span> <span class="o">=</span> <span class="n">site_a</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"2020-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2023-12-31"</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">RNG_SEED</span><span class="p">)</span>
 
 <span class="n">site_b</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Site B"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"b"</span><span class="p">)</span>
-<span class="n">site_b</span><span class="o">.</span><span class="n">generator_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">baseline</span><span class="o">=</span><span class="mf">16.0</span><span class="p">,</span> <span class="n">topline</span><span class="o">=</span><span class="mf">24.0</span><span class="p">,</span> <span class="n">noise_sd</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">change_per_year</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">site_b</span><span class="o">.</span><span class="n">generator_specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">baseline</span><span class="o">=</span><span class="mf">16.0</span><span class="p">,</span> <span class="n">topline</span><span class="o">=</span><span class="mf">24.0</span><span class="p">,</span> <span class="n">remainder_sd</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">change_per_year</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="n">df_site_b</span> <span class="o">=</span> <span class="n">site_b</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"2020-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2023-12-31"</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">RNG_SEED</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Site A rows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_site_a</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
@@ -590,7 +591,7 @@ Site B rows: 1461
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7a6e60dba3b4c8cc91fa3114c66d2eb7cf48b421f11df3dcd9c89030317c186c.png" src="../_images/7a6e60dba3b4c8cc91fa3114c66d2eb7cf48b421f11df3dcd9c89030317c186c.png" />
+<img alt="../_images/afd53e9c4b9aa5404724dc7f649f7bf95b6ef7c743e9ed421cb5385c2d0b57be.png" src="../_images/afd53e9c4b9aa5404724dc7f649f7bf95b6ef7c743e9ed421cb5385c2d0b57be.png" />
 </div>
 </div>
 </section>

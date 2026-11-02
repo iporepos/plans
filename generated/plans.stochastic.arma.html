@@ -427,12 +427,12 @@
                   
   <section id="module-plans.stochastic.arma">
 <span id="plans-stochastic-arma"></span><h1>plans.stochastic.arma<a class="headerlink" href="#module-plans.stochastic.arma" title="Link to this heading">#</a></h1>
-<p>Trend, season and AR(1) memory model for synthetic series.</p>
-<p>A series is the sum of a linear trend, a mean-zero seasonal term and an AR(1)
+<p>Trend, cycle and AR(1) memory model for synthetic series.</p>
+<p>A series is the sum of a linear trend, a mean-zero cycle and an AR(1)
 remainder driven by Gaussian shocks. For steps <span class="math notranslate nohighlight">\(t = 0, 1, \dots, n-1\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[x_t = \underbrace{b + a t}_{\text{trend}}
-+ \underbrace{A (g_t - m_k)}_{\text{season}} + R_t,
++ \underbrace{A (g_t - m_k)}_{\text{cycle}} + R_t,
 \qquad R_t = \varphi R_{t-1} + \varepsilon_t,
 \qquad \varepsilon_t \sim \mathcal{N}(0, \sigma^2)\]</div>
 <p>Parameters map to symbols as <code class="docutils literal notranslate"><span class="pre">start</span></code> <span class="math notranslate nohighlight">\(b\)</span>, <code class="docutils literal notranslate"><span class="pre">slope</span></code> <span class="math notranslate nohighlight">\(a\)</span>, <code class="docutils literal notranslate"><span class="pre">amplitude</span></code>
@@ -454,6 +454,12 @@ components given the parameters, and <a class="reference internal" href="#plans.
 <tr class="row-odd"><td><p><a class="reference internal" href="#plans.stochastic.arma.build" title="plans.stochastic.arma.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a>(params, n[, seed, shocks])</p></td>
 <td><p>Make a series from the parameters.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.stochastic.arma.cycle_component" title="plans.stochastic.arma.cycle_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cycle_component</span></code></a>(n, amplitude, period, phase, ...)</p></td>
+<td><p>Get the cycle term, which averages zero over a cycle.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.stochastic.arma.cycle_shape" title="plans.stochastic.arma.cycle_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cycle_shape</span></code></a>(n, period, phase, power)</p></td>
+<td><p>Get the shape of the cycle, a raised cosine to a power.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#plans.stochastic.arma.decompose" title="plans.stochastic.arma.decompose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decompose</span></code></a>(x, params)</p></td>
 <td><p>Split a series into components, given the parameters.</p></td>
 </tr>
@@ -467,19 +473,13 @@ components given the parameters, and <a class="reference internal" href="#plans.
 <td><p>Fit the model to a series.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#plans.stochastic.arma.get_floor" title="plans.stochastic.arma.get_floor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_floor</span></code></a>(params, n)</p></td>
-<td><p>Get the lowest value of trend plus season, <span class="math notranslate nohighlight">\(\min_t (T_t + S_t)\)</span>.</p></td>
+<td><p>Get the lowest value of trend plus cycle, <span class="math notranslate nohighlight">\(\min_t (T_t + C_t)\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#plans.stochastic.arma.make_params" title="plans.stochastic.arma.make_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_params</span></code></a>(period[, start, average, slope, ...])</p></td>
 <td><p>Make the parameters from what is known, converting to the stored form.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#plans.stochastic.arma.season_component" title="plans.stochastic.arma.season_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">season_component</span></code></a>(n, amplitude, period, ...)</p></td>
-<td><p>Get the seasonal term, which averages zero over a cycle.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#plans.stochastic.arma.season_shape" title="plans.stochastic.arma.season_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">season_shape</span></code></a>(n, period, phase, power)</p></td>
-<td><p>Get the seasonal shape, a raised cosine to a power.</p></td>
-</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#plans.stochastic.arma.shape_mean" title="plans.stochastic.arma.shape_mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape_mean</span></code></a>(power)</p></td>
-<td><p>Get the average of the seasonal shape over a cycle.</p></td>
+<td><p>Get the average of the shape over a cycle.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#plans.stochastic.arma.simulate_ar1" title="plans.stochastic.arma.simulate_ar1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate_ar1</span></code></a>(n, phi, sigma, rng)</p></td>
 <td><p>Simulate an AR(1) remainder that is stationary from the first step.</p></td>
@@ -523,9 +523,9 @@ components given the parameters, and <a class="reference internal" href="#plans.
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plans.stochastic.arma.season_shape">
-<span class="sig-prename descclassname"><span class="pre">plans.stochastic.arma.</span></span><span class="sig-name descname"><span class="pre">season_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/stochastic/arma.html#season_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.stochastic.arma.season_shape" title="Link to this definition">#</a></dt>
-<dd><p>Get the seasonal shape, a raised cosine to a power.</p>
+<dt class="sig sig-object py" id="plans.stochastic.arma.cycle_shape">
+<span class="sig-prename descclassname"><span class="pre">plans.stochastic.arma.</span></span><span class="sig-name descname"><span class="pre">cycle_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/stochastic/arma.html#cycle_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.stochastic.arma.cycle_shape" title="Link to this definition">#</a></dt>
+<dd><p>Get the shape of the cycle, a raised cosine to a power.</p>
 <div class="math notranslate nohighlight">
 \[g_t = \left[ \frac{1 + \cos\theta_t}{2} \right]^{k},
 \qquad \theta_t = \frac{2 \pi (t - t_0)}{P}\]</div>
@@ -534,7 +534,7 @@ components given the parameters, and <a class="reference internal" href="#plans.
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> (<em>int</em>) – number of steps</p></li>
 <li><p><strong>period</strong> (<em>float</em>) – steps per cycle</p></li>
-<li><p><strong>phase</strong> (<em>float</em>) – step at which the season peaks</p></li>
+<li><p><strong>phase</strong> (<em>float</em>) – step at which the cycle peaks</p></li>
 <li><p><strong>power</strong> (<em>float</em>) – shape. 1 gives a plain cosine, larger gives a sharper peak.</p></li>
 </ul>
 </dd>
@@ -550,7 +550,7 @@ components given the parameters, and <a class="reference internal" href="#plans.
 <dl class="py function">
 <dt class="sig sig-object py" id="plans.stochastic.arma.shape_mean">
 <span class="sig-prename descclassname"><span class="pre">plans.stochastic.arma.</span></span><span class="sig-name descname"><span class="pre">shape_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/stochastic/arma.html#shape_mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.stochastic.arma.shape_mean" title="Link to this definition">#</a></dt>
-<dd><p>Get the average of the seasonal shape over a cycle.</p>
+<dd><p>Get the average of the shape over a cycle.</p>
 <div class="math notranslate nohighlight">
 \[m_k = \frac{\Gamma(k + \tfrac{1}{2})}{\sqrt{\pi} \, \Gamma(k + 1)}\]</div>
 <p>It equals 0.5 for <span class="math notranslate nohighlight">\(k = 1\)</span> and 0.375 for <span class="math notranslate nohighlight">\(k = 2\)</span>.</p>
@@ -568,24 +568,24 @@ components given the parameters, and <a class="reference internal" href="#plans.
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="plans.stochastic.arma.season_component">
-<span class="sig-prename descclassname"><span class="pre">plans.stochastic.arma.</span></span><span class="sig-name descname"><span class="pre">season_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/stochastic/arma.html#season_component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.stochastic.arma.season_component" title="Link to this definition">#</a></dt>
-<dd><p>Get the seasonal term, which averages zero over a cycle.</p>
+<dt class="sig sig-object py" id="plans.stochastic.arma.cycle_component">
+<span class="sig-prename descclassname"><span class="pre">plans.stochastic.arma.</span></span><span class="sig-name descname"><span class="pre">cycle_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/stochastic/arma.html#cycle_component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.stochastic.arma.cycle_component" title="Link to this definition">#</a></dt>
+<dd><p>Get the cycle term, which averages zero over a cycle.</p>
 <div class="math notranslate nohighlight">
-\[S_t = A (g_t - m_k)\]</div>
+\[C_t = A (g_t - m_k)\]</div>
 <p>For <span class="math notranslate nohighlight">\(k = 1\)</span> this is a plain cosine of half-range <span class="math notranslate nohighlight">\(A / 2\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> (<em>int</em>) – number of steps</p></li>
-<li><p><strong>amplitude</strong> (<em>float</em>) – peak-to-trough range of the seasonal term</p></li>
+<li><p><strong>amplitude</strong> (<em>float</em>) – peak-to-trough range of the cycle term</p></li>
 <li><p><strong>period</strong> (<em>float</em>) – steps per cycle</p></li>
-<li><p><strong>phase</strong> (<em>float</em>) – step at which the season peaks</p></li>
+<li><p><strong>phase</strong> (<em>float</em>) – step at which the cycle peaks</p></li>
 <li><p><strong>power</strong> (<em>float</em>) – shape</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>seasonal values</p>
+<dd class="field-even"><p>cycle values</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
@@ -671,9 +671,9 @@ state isolates the effect of <code class="docutils literal notranslate"><span cl
 <dt class="sig sig-object py" id="plans.stochastic.arma.fit_params">
 <span class="sig-prename descclassname"><span class="pre">plans.stochastic.arma.</span></span><span class="sig-name descname"><span class="pre">fit_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/stochastic/arma.html#fit_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.stochastic.arma.fit_params" title="Link to this definition">#</a></dt>
 <dd><p>Fit the model to a series.</p>
-<p>Trend and season are fitted jointly by nonlinear least squares from several
+<p>Trend and cycle are fitted jointly by nonlinear least squares from several
 starting shapes, keeping the best. <code class="docutils literal notranslate"><span class="pre">power</span></code> is bounded by <code class="docutils literal notranslate"><span class="pre">POWER_MIN</span></code> and
-<code class="docutils literal notranslate"><span class="pre">POWER_MAX</span></code>, so a season with a sharp trough and a flat top cannot be represented.</p>
+<code class="docutils literal notranslate"><span class="pre">POWER_MAX</span></code>, so a cycle with a sharp trough and a flat top cannot be represented.</p>
 <p>Memory and shocks come from the remainder <span class="math notranslate nohighlight">\(R_t\)</span>, after removing its mean.
 The memory is a regression through the origin, and <span class="math notranslate nohighlight">\(\hat{\sigma}\)</span> is the
 standard deviation of the residuals of that regression:</p>
@@ -682,7 +682,7 @@ standard deviation of the residuals of that regression:</p>
 \qquad \hat{\sigma} = \mathrm{sd}\left( R_t - \hat{\varphi} R_{t-1} \right)\]</div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Trend and season estimates ignore the memory, so they are less precise than
+<p>Trend and cycle estimates ignore the memory, so they are less precise than
 they could be, and <code class="docutils literal notranslate"><span class="pre">phi</span></code> tends to be low on short series.</p>
 </div>
 <dl class="field-list simple">
@@ -706,7 +706,7 @@ they could be, and <code class="docutils literal notranslate"><span class="pre">
 <span class="sig-prename descclassname"><span class="pre">plans.stochastic.arma.</span></span><span class="sig-name descname"><span class="pre">decompose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/stochastic/arma.html#decompose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.stochastic.arma.decompose" title="Link to this definition">#</a></dt>
 <dd><p>Split a series into components, given the parameters.</p>
 <div class="math notranslate nohighlight">
-\[R_t = x_t - T_t - S_t,
+\[R_t = x_t - T_t - C_t,
 \qquad \varepsilon_0 = R_0,
 \qquad \varepsilon_t = R_t - \varphi R_{t-1}\]</div>
 <dl class="field-list simple">
@@ -717,7 +717,7 @@ they could be, and <code class="docutils literal notranslate"><span class="pre">
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>arrays by component. Keys: trend, season, remainder, shocks</p>
+<dd class="field-even"><p>arrays by component. Keys: trend, cycle, remainder, shocks</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
@@ -752,7 +752,7 @@ they could be, and <code class="docutils literal notranslate"><span class="pre">
 <dl class="py function">
 <dt class="sig sig-object py" id="plans.stochastic.arma.get_floor">
 <span class="sig-prename descclassname"><span class="pre">plans.stochastic.arma.</span></span><span class="sig-name descname"><span class="pre">get_floor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/stochastic/arma.html#get_floor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.stochastic.arma.get_floor" title="Link to this definition">#</a></dt>
-<dd><p>Get the lowest value of trend plus season, <span class="math notranslate nohighlight">\(\min_t (T_t + S_t)\)</span>.</p>
+<dd><p>Get the lowest value of trend plus cycle, <span class="math notranslate nohighlight">\(\min_t (T_t + C_t)\)</span>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This is the deterministic floor. Shocks are Gaussian and additive, so a
@@ -766,7 +766,7 @@ synthetic series can still fall below it.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>lowest value of trend plus season</p>
+<dd class="field-even"><p>lowest value of trend plus cycle</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
@@ -779,7 +779,7 @@ synthetic series can still fall below it.</p>
 <span class="sig-prename descclassname"><span class="pre">plans.stochastic.arma.</span></span><span class="sig-name descname"><span class="pre">describe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/stochastic/arma.html#describe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.stochastic.arma.describe" title="Link to this definition">#</a></dt>
 <dd><p>Get a printout with all views of the same model.</p>
 <p>Baseline and topline are the extremes of the deterministic cycle, at the trend
-average <span class="math notranslate nohighlight">\(\bar{T}\)</span>. Noise moves the observed extremes beyond them.</p>
+average <span class="math notranslate nohighlight">\(\bar{T}\)</span>. Shocks move the observed extremes beyond them.</p>
 <div class="math notranslate nohighlight">
 \[\text{baseline} = \bar{T} - A m_k,
 \qquad \text{topline} = \bar{T} + A (1 - m_k)\]</div>
@@ -806,7 +806,7 @@ deterministic floor is below zero.</p></li>
 <span class="sig-prename descclassname"><span class="pre">plans.stochastic.arma.</span></span><span class="sig-name descname"><span class="pre">make_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">period</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cycle_change</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/stochastic/arma.html#make_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.stochastic.arma.make_params" title="Link to this definition">#</a></dt>
 <dd><p>Make the parameters from what is known, converting to the stored form.</p>
 <p>The trend level comes from <code class="docutils literal notranslate"><span class="pre">start</span></code> or <code class="docutils literal notranslate"><span class="pre">average</span></code>, its change from <code class="docutils literal notranslate"><span class="pre">slope</span></code>,
-<code class="docutils literal notranslate"><span class="pre">end</span></code> or <code class="docutils literal notranslate"><span class="pre">cycle_change</span></code>, and the season from <code class="docutils literal notranslate"><span class="pre">amplitude</span></code> or from both
+<code class="docutils literal notranslate"><span class="pre">end</span></code> or <code class="docutils literal notranslate"><span class="pre">cycle_change</span></code>, and the cycle from <code class="docutils literal notranslate"><span class="pre">amplitude</span></code> or from both
 <code class="docutils literal notranslate"><span class="pre">baseline</span></code> and <code class="docutils literal notranslate"><span class="pre">topline</span></code>, with <span class="math notranslate nohighlight">\(A = \text{topline} - \text{baseline}\)</span>.
 Giving more than one option for the same item raises an error. Length-based
 conversions apply once here, so a longer series continues the same line.</p>
@@ -822,10 +822,10 @@ conversions apply once here, so a longer series continues the same line.</p>
 <li><p><strong>end</strong> (<em>float</em>) – trend value at the last step. Requires <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">n</span></code>.</p></li>
 <li><p><strong>cycle_change</strong> (<em>float</em>) – trend change per cycle</p></li>
 <li><p><strong>n</strong> (<em>int</em>) – number of steps, used only by the length-based conversions</p></li>
-<li><p><strong>amplitude</strong> (<em>float</em>) – peak-to-trough range of the seasonal term</p></li>
+<li><p><strong>amplitude</strong> (<em>float</em>) – peak-to-trough range of the cycle term</p></li>
 <li><p><strong>baseline</strong> (<em>float</em>) – lowest value of the deterministic cycle</p></li>
 <li><p><strong>topline</strong> (<em>float</em>) – highest value of the deterministic cycle</p></li>
-<li><p><strong>phase</strong> (<em>float</em>) – step at which the season peaks</p></li>
+<li><p><strong>phase</strong> (<em>float</em>) – step at which the cycle peaks</p></li>
 <li><p><strong>power</strong> (<em>float</em>) – shape</p></li>
 <li><p><strong>phi</strong> (<em>float</em>) – AR(1) memory, inside (-1, 1)</p></li>
 <li><p><strong>sigma</strong> (<em>float</em>) – shock standard deviation</p></li>
@@ -981,9 +981,9 @@ conversions apply once here, so a longer series continues the same line.</p>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.stochastic.arma.trend_line"><code class="docutils literal notranslate"><span class="pre">trend_line()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.stochastic.arma.season_shape"><code class="docutils literal notranslate"><span class="pre">season_shape()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.stochastic.arma.cycle_shape"><code class="docutils literal notranslate"><span class="pre">cycle_shape()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.stochastic.arma.shape_mean"><code class="docutils literal notranslate"><span class="pre">shape_mean()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.stochastic.arma.season_component"><code class="docutils literal notranslate"><span class="pre">season_component()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.stochastic.arma.cycle_component"><code class="docutils literal notranslate"><span class="pre">cycle_component()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.stochastic.arma.draw_shocks"><code class="docutils literal notranslate"><span class="pre">draw_shocks()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.stochastic.arma.ar1_from_shocks"><code class="docutils literal notranslate"><span class="pre">ar1_from_shocks()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.stochastic.arma.simulate_ar1"><code class="docutils literal notranslate"><span class="pre">simulate_ar1()</span></code></a></li>

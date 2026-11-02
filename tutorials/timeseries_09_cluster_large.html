@@ -392,6 +392,7 @@
 <li class="toctree-l2"><a class="reference internal" href="timeseries_10_ensemble.html">Time Series - Ensembles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_11_seasonal.html">Time Series - Seasonal ensembles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_12_collection_views.html">Time Series - Collection visuals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_13_synthetic.html">Time Series - Synthetic series</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="raster_01.html">Raster data - Basics</a></li>
 </ul>
@@ -516,7 +517,7 @@
 <span class="n">y</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n_stations</span><span class="p">)</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">make_anomaly</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">sd</span><span class="p">):</span>
-    <span class="c1"># autoregressive anomaly: a[t] = phi * a[t-1] + noise</span>
+    <span class="c1"># autoregressive anomaly: a[t] = phi * a[t-1] + shock</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
     <span class="n">e</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">sd</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
@@ -526,7 +527,7 @@
 <span class="c1"># weather centers and their anomalies</span>
 <span class="n">centers</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">high</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 <span class="n">anomalies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">make_anomaly</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">sd</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">centers</span><span class="p">])</span>
-<span class="n">seasonal</span> <span class="o">=</span> <span class="mi">18</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">100</span><span class="p">)</span> <span class="o">/</span> <span class="mi">365</span><span class="p">)</span>
+<span class="n">cycle</span> <span class="o">=</span> <span class="mi">18</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">100</span><span class="p">)</span> <span class="o">/</span> <span class="mi">365</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -561,7 +562,7 @@
     <span class="c1"># mix of weather center anomalies, closer centers weigh more</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">centers</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">centers</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
     <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">d</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">15</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
-    <span class="n">values</span> <span class="o">=</span> <span class="n">seasonal</span> <span class="o">+</span> <span class="p">(</span><span class="n">w</span> <span class="o">/</span> <span class="n">w</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">@</span> <span class="n">anomalies</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">cycle</span> <span class="o">+</span> <span class="p">(</span><span class="n">w</span> <span class="o">/</span> <span class="n">w</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">@</span> <span class="n">anomalies</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
 
     <span class="c1"># random record start and some long gaps</span>
     <span class="n">values</span><span class="p">[:</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">300</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
@@ -602,7 +603,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/87bbde5f41388e2373610f1872bedb945c1656045de8149b573083bf74b8ee75.png" src="../_images/87bbde5f41388e2373610f1872bedb945c1656045de8149b573083bf74b8ee75.png" />
+<img alt="../_images/e60f37c228598e3ee14efba2bdfcc73fa279bbe174f0bf5c998d2e7133070db3.png" src="../_images/e60f37c228598e3ee14efba2bdfcc73fa279bbe174f0bf5c998d2e7133070db3.png" />
 </div>
 </div>
 <p>The overlapping data panel shows how the network grows during the first year, as stations start recording, and the dips caused by the long gaps.</p>
@@ -618,7 +619,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a9ee5d25349b844eda3996a0015f8aa08575c7861b03e2c10f8274532f641b6d.png" src="../_images/a9ee5d25349b844eda3996a0015f8aa08575c7861b03e2c10f8274532f641b6d.png" />
+<img alt="../_images/f250cccc04ae2549f2caa42614cfccde4a34f40a2c23c8f1d298ac8ed5f8c9ef.png" src="../_images/f250cccc04ae2549f2caa42614cfccde4a34f40a2c23c8f1d298ac8ed5f8c9ef.png" />
 </div>
 </div>
 <section id="highlighting-stations">
@@ -632,7 +633,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/73e3bf9cd5aa54a95724cf8da01ede5f301878a6e0d3e8a7a3ddb0f07b26fcc3.png" src="../_images/73e3bf9cd5aa54a95724cf8da01ede5f301878a6e0d3e8a7a3ddb0f07b26fcc3.png" />
+<img alt="../_images/decde77e53ca52dec2547e1349f565896491b20595a90b8f4e3688d9947fcc29.png" src="../_images/decde77e53ca52dec2547e1349f565896491b20595a90b8f4e3688d9947fcc29.png" />
 </div>
 </div>
 <p>Highlighting also works on small clusters, to point out one station among the others. To clear it, set it back to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>

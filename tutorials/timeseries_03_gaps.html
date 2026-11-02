@@ -392,6 +392,7 @@
 <li class="toctree-l2"><a class="reference internal" href="timeseries_10_ensemble.html">Time Series - Ensembles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_11_seasonal.html">Time Series - Seasonal ensembles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_12_collection_views.html">Time Series - Collection visuals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_13_synthetic.html">Time Series - Synthetic series</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="raster_01.html">Raster data - Basics</a></li>
 </ul>
@@ -467,7 +468,7 @@
 <li><p>Injecting realistic gaps into a synthetic series</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">.gapsize</span></code> attribute and what counts as a “small” gap</p></li>
 <li><p><strong>Epochs</strong>: continuous stretches of data separated by gaps too large to bridge</p></li>
-<li><p>Visualizing epochs with <code class="docutils literal notranslate"><span class="pre">.view_epochs()</span></code></p></li>
+<li><p>Visualizing epochs with the <code class="docutils literal notranslate"><span class="pre">epochs</span></code> layout</p></li>
 <li><p>Filling small gaps with <code class="docutils literal notranslate"><span class="pre">.interpolate_gaps()</span></code>, including the different interpolation methods and the <code class="docutils literal notranslate"><span class="pre">is_interpolation</span></code> flag column</p></li>
 </ul>
 <p>Gap-filling only ever applies <em>within</em> an epoch – bridging the gap <em>between</em> epochs is a different, harder problem (it usually needs an external predictor or reference series) and is out of scope here.</p>
@@ -514,7 +515,7 @@
 </section>
 <section id="create-a-perfect-synthetic-series">
 <h2>Create a perfect synthetic series<a class="headerlink" href="#create-a-perfect-synthetic-series" title="Link to this heading">#</a></h2>
-<p>Same starting point as the upscaling tutorial: a Trend-Seasonality-Noise archetype series.</p>
+<p>Same starting point as the upscaling tutorial: a Trend, Cycle and Remainder archetype series.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
@@ -695,7 +696,7 @@ Detected native frequency (dtfreq): h
 Gap-size tolerance attribute (.gapsize): 6
 </pre></div>
 </div>
-<img alt="../_images/d0222e37b200663e64296a9127f1e23f47aec9cdb117030531b2d68880ddb6e0.png" src="../_images/d0222e37b200663e64296a9127f1e23f47aec9cdb117030531b2d68880ddb6e0.png" />
+<img alt="../_images/5b30e65da99c3491e1d501de41a36df9298532c95cfff2f6a3d9ef5361093858.png" src="../_images/5b30e65da99c3491e1d501de41a36df9298532c95cfff2f6a3d9ef5361093858.png" />
 </div>
 </div>
 </section>
@@ -870,15 +871,16 @@ Gap-size tolerance attribute (.gapsize): 6
 </table>
 </div></div></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">.view_epochs()</span></code> plots each epoch in its own color, with the gaps highlighted in red. With two block gaps injected, three epochs should be visible.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">epochs</span></code> layout plots each epoch in its own color, with the gaps highlighted in red. With two block gaps injected, three epochs should be visible.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span><span class="o">.</span><span class="n">view_epochs</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"epochs"</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/acb5dda3a9a5adfa3ee78dce3280beb8f79999b63dc3f956922c674b2b8c42fa.png" src="../_images/acb5dda3a9a5adfa3ee78dce3280beb8f79999b63dc3f956922c674b2b8c42fa.png" />
+<img alt="../_images/3baf45f5bce1a4d738b0ca6bc3b1dd49b259456894aec93466afaa90f641b114.png" src="../_images/3baf45f5bce1a4d738b0ca6bc3b1dd49b259456894aec93466afaa90f641b114.png" />
 </div>
 </div>
 </section>
@@ -1594,12 +1596,13 @@ Records still NaN after interpolation (epoch-0 / between-epoch gaps): 434
 <p>View epochs again – there should be no red line marking small gaps:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span><span class="o">.</span><span class="n">view_epochs</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"epochs"</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c62c7912625095c2dae121ed24bfe5f831f549124de6cdb8419bfc18b88bd3b3.png" src="../_images/c62c7912625095c2dae121ed24bfe5f831f549124de6cdb8419bfc18b88bd3b3.png" />
+<img alt="../_images/79a2f92673584e4cfc80e5460be40a1eb64fac47790da54e5999de59d0fc77a5.png" src="../_images/79a2f92673584e4cfc80e5460be40a1eb64fac47790da54e5999de59d0fc77a5.png" />
 </div>
 </div>
 </section>
@@ -1607,7 +1610,7 @@ Records still NaN after interpolation (epoch-0 / between-epoch gaps): 434
 <h2>Recap<a class="headerlink" href="#recap" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Gaps come in two flavors: small (fillable) and large (epoch-breaking), separated by the <code class="docutils literal notranslate"><span class="pre">.gapsize</span></code> threshold.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.get_epochs()</span></code> / <code class="docutils literal notranslate"><span class="pre">.update_epochs_stats()</span></code> / <code class="docutils literal notranslate"><span class="pre">.view_epochs()</span></code> let you inspect and visualize epoch structure before deciding how to handle gaps.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.get_epochs()</span></code> / <code class="docutils literal notranslate"><span class="pre">.update_epochs_stats()</span></code> / the <code class="docutils literal notranslate"><span class="pre">epochs</span></code> layout let you inspect and visualize epoch structure before deciding how to handle gaps.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">.interpolate_gaps()</span></code> fills only the small, within-epoch gaps; between-epoch gaps require a different strategy (e.g. an external predictor) and are out of scope here.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">is_interpolation</span></code> flag column (returned with <code class="docutils literal notranslate"><span class="pre">inplace=False</span></code>) lets you track which values are observed versus filled – useful for downstream QA or for excluding filled values from certain analyses.</p></li>
 <li><p>This tutorial deliberately stopped before combining gap-filling with <code class="docutils literal notranslate"><span class="pre">.scale_up()</span></code> – that pairing (clean first vs. tolerate via <code class="docutils literal notranslate"><span class="pre">bad_max</span></code>) is a natural next tutorial.</p></li>

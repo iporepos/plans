@@ -392,6 +392,7 @@
 <li class="toctree-l2"><a class="reference internal" href="timeseries_10_ensemble.html">Time Series - Ensembles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_11_seasonal.html">Time Series - Seasonal ensembles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_12_collection_views.html">Time Series - Collection visuals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_13_synthetic.html">Time Series - Synthetic series</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="raster_01.html">Raster data - Basics</a></li>
 </ul>
@@ -589,10 +590,10 @@ None
 <section id="create-synthetic-time-series-data">
 <h3>Create synthetic time series data<a class="headerlink" href="#create-synthetic-time-series-data" title="Link to this heading">#</a></h3>
 <p>Lets first make a perfect time series using the <code class="docutils literal notranslate"><span class="pre">.generate()</span></code> method and save it to a CSV file.
-This method makes a Trend-Seasonality-Noise archetype time-series from the default parameters in <code class="docutils literal notranslate"><span class="pre">.generator_specs</span></code>:</p>
+This method makes a Trend, Cycle and Remainder archetype time-series from the default parameters in <code class="docutils literal notranslate"><span class="pre">.generator_specs</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make synthetic TSN (Trend-Seasonality-Noise) time-series</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make synthetic (Trend, Cycle and Remainder) time-series</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"2020-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2026-01-01"</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"3h"</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="c1"># Export CSV file</span>
@@ -766,7 +767,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series from the defau
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e3730975c2b32fe7da190d4ac091643cfc054c96868e3451cf3ffd6037bf15cc.png" src="../_images/e3730975c2b32fe7da190d4ac091643cfc054c96868e3451cf3ffd6037bf15cc.png" />
+<img alt="../_images/eb9c3f16828ce71b6afb5768372136e365573ce6fd1c850b64b69721f3eaa014.png" src="../_images/eb9c3f16828ce71b6afb5768372136e365573ce6fd1c850b64b69721f3eaa014.png" />
 </div>
 </div>
 </section>
@@ -807,7 +808,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series from the defau
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5bdda992e5ccfc16adc6f13a230f91db7b278d7e8536beb3e9ed7b36609f0082.png" src="../_images/5bdda992e5ccfc16adc6f13a230f91db7b278d7e8536beb3e9ed7b36609f0082.png" />
+<img alt="../_images/b5e60e13aef60b5fb6a86b6b669cb0532714643bf8b79babb1182179c8956ed5.png" src="../_images/b5e60e13aef60b5fb6a86b6b669cb0532714643bf8b79babb1182179c8956ed5.png" />
 </div>
 </div>
 </section>
@@ -821,7 +822,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series from the defau
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>dict_keys(['full', 'mini', 'simple', 'simple-shallow', 'default'])
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>dict_keys(['full', 'mini', 'simple', 'simple-shallow', 'epochs', 'default'])
 </pre></div>
 </div>
 </div>
@@ -834,7 +835,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series from the defau
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5bdda992e5ccfc16adc6f13a230f91db7b278d7e8536beb3e9ed7b36609f0082.png" src="../_images/5bdda992e5ccfc16adc6f13a230f91db7b278d7e8536beb3e9ed7b36609f0082.png" />
+<img alt="../_images/b5e60e13aef60b5fb6a86b6b669cb0532714643bf8b79babb1182179c8956ed5.png" src="../_images/b5e60e13aef60b5fb6a86b6b669cb0532714643bf8b79babb1182179c8956ed5.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -845,7 +846,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series from the defau
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9db77e52d2c1e1674b272c8050a98f2a1c2cd6b1989cdf03bee8db0b9ac3ac2c.png" src="../_images/9db77e52d2c1e1674b272c8050a98f2a1c2cd6b1989cdf03bee8db0b9ac3ac2c.png" />
+<img alt="../_images/dce09124943bc0b04a45705ae5757a39bf2fc40033fa949a0569817ce810bb09.png" src="../_images/dce09124943bc0b04a45705ae5757a39bf2fc40033fa949a0569817ce810bb09.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -856,7 +857,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series from the defau
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/46e74119a11eefd3ee0dbd447590494d833681052993882eb3a8d533b71c3258.png" src="../_images/46e74119a11eefd3ee0dbd447590494d833681052993882eb3a8d533b71c3258.png" />
+<img alt="../_images/afab3657cd9f5bd3e4342d17ee1817e6eaff8e5f4514b59dd3e2efcac5cb0ce5.png" src="../_images/afab3657cd9f5bd3e4342d17ee1817e6eaff8e5f4514b59dd3e2efcac5cb0ce5.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -867,7 +868,7 @@ This method makes a Trend-Seasonality-Noise archetype time-series from the defau
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1a263ec9499fae12dde2950a102e3ec66d0ba4697c13cdd26867d14e015c3a45.png" src="../_images/1a263ec9499fae12dde2950a102e3ec66d0ba4697c13cdd26867d14e015c3a45.png" />
+<img alt="../_images/210c01ff8b015201aceb9b6803339f9e051314103bf44b446267000b49f8588d.png" src="../_images/210c01ff8b015201aceb9b6803339f9e051314103bf44b446267000b49f8588d.png" />
 </div>
 </div>
 </section>

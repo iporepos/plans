@@ -18,7 +18,7 @@
     "- Injecting realistic gaps into a synthetic series\n",
     "- The `.gapsize` attribute and what counts as a \"small\" gap\n",
     "- **Epochs**: continuous stretches of data separated by gaps too large to bridge\n",
-    "- Visualizing epochs with `.view_epochs()`\n",
+    "- Visualizing epochs with the `epochs` layout\n",
     "- Filling small gaps with `.interpolate_gaps()`, including the different interpolation methods and the `is_interpolation` flag column\n",
     "\n",
     "Gap-filling only ever applies *within* an epoch -- bridging the gap *between* epochs is a different, harder problem (it usually needs an external predictor or reference series) and is out of scope here."
@@ -81,7 +81,7 @@
    "source": [
     "## Create a perfect synthetic series\n",
     "\n",
-    "Same starting point as the upscaling tutorial: a Trend-Seasonality-Noise archetype series."
+    "Same starting point as the upscaling tutorial: a Trend, Cycle and Remainder archetype series."
    ]
   },
   {
@@ -287,7 +287,7 @@
    "id": "d2e50a684548f31c",
    "metadata": {},
    "source": [
-    "`.view_epochs()` plots each epoch in its own color, with the gaps highlighted in red. With two block gaps injected, three epochs should be visible."
+    "The `epochs` layout plots each epoch in its own color, with the gaps highlighted in red. With two block gaps injected, three epochs should be visible."
    ]
   },
   {
@@ -299,7 +299,10 @@
      "start_time": "2026-08-25T19:24:49.088626Z"
     }
    },
-   "source": "ts.view_epochs(show=True)",
+   "source": [
+    "ts.view_specs[\"layout\"] = \"epochs\"\n",
+    "ts.view(show=True)"
+   ],
    "outputs": [],
    "execution_count": null
   },
@@ -465,7 +468,10 @@
      "start_time": "2026-08-25T19:24:51.054804Z"
     }
    },
-   "source": "ts.view_epochs(show=True)",
+   "source": [
+    "ts.view_specs[\"layout\"] = \"epochs\"\n",
+    "ts.view(show=True)"
+   ],
    "outputs": [],
    "execution_count": null
   },
@@ -477,7 +483,7 @@
     "## Recap\n",
     "\n",
     "- Gaps come in two flavors: small (fillable) and large (epoch-breaking), separated by the `.gapsize` threshold.\n",
-    "- `.get_epochs()` / `.update_epochs_stats()` / `.view_epochs()` let you inspect and visualize epoch structure before deciding how to handle gaps.\n",
+    "- `.get_epochs()` / `.update_epochs_stats()` / the `epochs` layout let you inspect and visualize epoch structure before deciding how to handle gaps.\n",
     "- `.interpolate_gaps()` fills only the small, within-epoch gaps; between-epoch gaps require a different strategy (e.g. an external predictor) and are out of scope here.\n",
     "- The `is_interpolation` flag column (returned with `inplace=False`) lets you track which values are observed versus filled -- useful for downstream QA or for excluding filled values from certain analyses.\n",
     "- This tutorial deliberately stopped before combining gap-filling with `.scale_up()` -- that pairing (clean first vs. tolerate via `bad_max`) is a natural next tutorial."

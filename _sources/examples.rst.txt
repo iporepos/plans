@@ -41,6 +41,7 @@ Available tutorials
    tutorials/timeseries_10_ensemble
    tutorials/timeseries_11_seasonal
    tutorials/timeseries_12_collection_views
+   tutorials/timeseries_13_synthetic
    tutorials/visuals_01
    tutorials/raster_01
 

@@ -392,6 +392,7 @@
 <li class="toctree-l2"><a class="reference internal" href="timeseries_10_ensemble.html">Time Series - Ensembles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_11_seasonal.html">Time Series - Seasonal ensembles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timeseries_12_collection_views.html">Time Series - Collection visuals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_13_synthetic.html">Time Series - Synthetic series</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="raster_01.html">Raster data - Basics</a></li>
 </ul>
@@ -554,21 +555,21 @@
 </section>
 <section id="build-a-synthetic-station-network">
 <h2>Build a synthetic station network<a class="headerlink" href="#build-a-synthetic-station-network" title="Link to this heading">#</a></h2>
-<p>Each station gets the same seasonal cycle, a weather anomaly common to the whole region, a weather anomaly of its own sub-region, and some local noise. The anomalies have memory (an autoregressive process), so warm or cold spells last for some days. Stations in the same sub-region share more signal, so they should correlate more.</p>
+<p>Each station gets the same cycle, a weather anomaly common to the whole region, a weather anomaly of its own sub-region, and some local shocks. The anomalies have memory (an autoregressive process), so warm or cold spells last for some days. Stations in the same sub-region share more signal, so they should correlate more.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">365</span>
 <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">make_anomaly</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">sd</span><span class="p">):</span>
-    <span class="c1"># autoregressive anomaly: a[t] = phi * a[t-1] + noise</span>
+    <span class="c1"># autoregressive anomaly: a[t] = phi * a[t-1] + shock</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
     <span class="n">e</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">sd</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
         <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">phi</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">e</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">a</span>
 
-<span class="n">seasonal</span> <span class="o">=</span> <span class="mi">18</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">100</span><span class="p">)</span> <span class="o">/</span> <span class="mi">365</span><span class="p">)</span>
+<span class="n">cycle</span> <span class="o">=</span> <span class="mi">18</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">100</span><span class="p">)</span> <span class="o">/</span> <span class="mi">365</span><span class="p">)</span>
 <span class="n">anomaly_region</span> <span class="o">=</span> <span class="n">make_anomaly</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">sd</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
 <span class="n">anomaly_subregion</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">"west"</span><span class="p">:</span> <span class="n">make_anomaly</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">sd</span><span class="o">=</span><span class="mf">1.2</span><span class="p">),</span>
@@ -587,7 +588,7 @@
 <span class="n">dc_series</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">stations</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
     <span class="n">dc_series</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">"Name"</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">seasonal</span>
+        <span class="n">cycle</span>
         <span class="o">+</span> <span class="n">anomaly_region</span>
         <span class="o">+</span> <span class="n">anomaly_subregion</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">"Subregion"</span><span class="p">]]</span>
         <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
@@ -770,7 +771,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/35ae6fc89ccec8cb2ef00da0259f57f4b7919325b3d9a92c2345d7a3f1ec1e55.png" src="../_images/35ae6fc89ccec8cb2ef00da0259f57f4b7919325b3d9a92c2345d7a3f1ec1e55.png" />
+<img alt="../_images/8c1d9556a0b9a39f74b1e6b6cee6acc8b9bc0ed5696319880ac7b5689a669d0a.png" src="../_images/8c1d9556a0b9a39f74b1e6b6cee6acc8b9bc0ed5696319880ac7b5689a669d0a.png" />
 </div>
 </div>
 </section>
@@ -785,10 +786,10 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8f78947ea61edca3650932ed894096e355cb9c8866e432b3fd820407919b7ae3.png" src="../_images/8f78947ea61edca3650932ed894096e355cb9c8866e432b3fd820407919b7ae3.png" />
+<img alt="../_images/0a3e7419fa150d3eb08bdfbe93a4936c858ee9ce6497cb4dcadb3f22e49be032.png" src="../_images/0a3e7419fa150d3eb08bdfbe93a4936c858ee9ce6497cb4dcadb3f22e49be032.png" />
 </div>
 </div>
-<p>The seasonal cycle dominates, but the two sub-regions drift apart during warm and cold spells. Note also that <code class="docutils literal notranslate"><span class="pre">S4</span></code> has a higher mean: its record starts in March, missing the coldest months. Comparing statistics between sites requires a common period.</p>
+<p>The cycle dominates, but the two sub-regions drift apart during warm and cold spells. Note also that <code class="docutils literal notranslate"><span class="pre">S4</span></code> has a higher mean: its record starts in March, missing the coldest months. Comparing statistics between sites requires a common period.</p>
 <p>For the series only, use the <code class="docutils literal notranslate"><span class="pre">series-simple</span></code> layout:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -798,7 +799,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/642eee31b2ea0dbfb6b870b89e0bd21d5a9a5353df9b3bb4b2bb3646fc40e11e.png" src="../_images/642eee31b2ea0dbfb6b870b89e0bd21d5a9a5353df9b3bb4b2bb3646fc40e11e.png" />
+<img alt="../_images/1c2c5d93f7e5cce6e0dd5ef359984be19968bce9a1d1312820d96bf4b4f575f6.png" src="../_images/1c2c5d93f7e5cce6e0dd5ef359984be19968bce9a1d1312820d96bf4b4f575f6.png" />
 </div>
 </div>
 </section>
@@ -898,7 +899,7 @@
 <p>The two sub-regions show up as two blocks: stations of the same sub-region correlate around 0.95, while stations of different sub-regions stay around 0.7. Spearman correlation is also available with <code class="docutils literal notranslate"><span class="pre">method=&quot;spearman&quot;</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>With strong seasonality, correlation is partly driven by the shared seasonal cycle itself. Even unrelated sites under the same climate correlate well.</p>
+<p>With a strong cycle, correlation is partly driven by the shared cycle itself. Even unrelated sites under the same climate correlate well.</p>
 </div>
 </section>
 <section id="filling-gaps-from-other-stations">
@@ -989,7 +990,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/adb04a5e098c5a136a0c683140203278746135f3e7894aca13a545e2231d510f.png" src="../_images/adb04a5e098c5a136a0c683140203278746135f3e7894aca13a545e2231d510f.png" />
+<img alt="../_images/4ff366005a0803e5591f62cc7fd202276f59abee548821c87c7e6c600096163d.png" src="../_images/4ff366005a0803e5591f62cc7fd202276f59abee548821c87c7e6c600096163d.png" />
 </div>
 </div>
 <section id="how-good-is-the-filling">

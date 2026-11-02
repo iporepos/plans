@@ -76,7 +76,7 @@
    "source": [
     "## Create two synthetic series to compare\n",
     "\n",
-    "Two Trend-Seasonality-Noise archetype series with different bases, trends, and noise levels -- a stand-in for, e.g., two different sensors or sites over the same period. The differences are set by editing `.generator_specs` before calling `.generate()`."
+    "Two Trend, Cycle and Remainder archetype series with different bases, trends, and remainder levels -- a stand-in for, e.g., two different sensors or sites over the same period. The differences are set by editing `.generator_specs` before calling `.generate()`."
    ]
   },
   {
@@ -96,7 +96,7 @@
     "df_site_a = site_a.generate(start=\"2020-01-01\", end=\"2023-12-31\", freq=\"D\", seed=RNG_SEED)\n",
     "\n",
     "site_b = TimeSeries(name=\"Site B\", alias=\"b\")\n",
-    "site_b.generator_specs.update(baseline=16.0, topline=24.0, noise_sd=2.0, change_per_year=-0.5)\n",
+    "site_b.generator_specs.update(baseline=16.0, topline=24.0, remainder_sd=2.0, change_per_year=-0.5)\n",
     "df_site_b = site_b.generate(start=\"2020-01-01\", end=\"2023-12-31\", freq=\"D\", seed=RNG_SEED + 1)\n",
     "\n",
     "print(f\"Site A rows: {len(df_site_a)}\")\n",

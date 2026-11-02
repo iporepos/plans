@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Time Series - Synthetic series &#8212; plans 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/timeseries_13_synthetic';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Visualizations - Basics" href="visuals_01.html" />
+    <link rel="prev" title="Time Series - Collection visuals" href="timeseries_12_collection_views.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-light" alt=""/>
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">plans</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../files.html">Files</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../files.html">Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_structures.html">Data Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../files_index.html">Files Index</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Projects</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="project_01.html">Projects - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="univar_01.html">Univariate data - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="univar_02_plots.html">Univariate data - Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="univar_03_geo.html">Univariate data - Geospatial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bivar_01.html">Bivariate data - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bivar_02_models.html">Bivariate data - Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochastic_01_arma.html">Stochastic series - AR(1) generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time Series - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_05_compare.html">Time Series - Comparing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_02_upscale.html">Time Series - Upscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_06_downscale.html">Time Series - Downscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_03_gaps.html">Time Series - Gaps and epochs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_04_standardize.html">Time Series - Standardizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_07_collection.html">Time Series - Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_08_cluster.html">Time Series - Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_09_cluster_large.html">Time Series - Large Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_10_ensemble.html">Time Series - Ensembles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_11_seasonal.html">Time Series - Seasonal ensembles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_12_collection_views.html">Time Series - Collection visuals</a></li>
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Time Series - Synthetic series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="raster_01.html">Raster data - Basics</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-house"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../userguide.html" class="nav-link">User Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../examples.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Time Series - Synthetic series</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="time-series-synthetic-series">
+<h1>Time Series - Synthetic series<a class="headerlink" href="#time-series-synthetic-series" title="Link to this heading">#</a></h1>
+<p>A <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> can make its own data, take a record apart, and estimate the parameters behind it. With these parameters, you can build new series: more realizations of the same process, or the same process with something changed. This tutorial goes through this cycle with daily temperature.</p>
+<p>A series is the sum of three parts. The <strong>Trend</strong> is a straight line. The <strong>Cycle</strong> repeats every year. The <strong>Remainder</strong> is what is left, and it has two parts of its own: the <strong>Memory</strong>, which carries part of the previous step, and the <strong>Shocks</strong>, which are new and random at each step:</p>
+<div class="math notranslate nohighlight">
+\[x_t = \text{Trend}_t + \text{Cycle}_t + \text{Remainder}_t, \qquad \text{Remainder}_t = \underbrace{\varphi \, \text{Remainder}_{t-1}}_{\text{Memory}} + \underbrace{\varepsilon_t}_{\text{Shocks}}, \qquad \varepsilon_t \sim \mathcal{N}(0, \sigma^2)\]</div>
+<p>Covered here:</p>
+<ul class="simple">
+<li><p>Generating a series from physical specs with <code class="docutils literal notranslate"><span class="pre">.generate()</span></code></p></li>
+<li><p>Splitting a series into its parts with <code class="docutils literal notranslate"><span class="pre">.decompose()</span></code></p></li>
+<li><p>Estimating the parameters with <code class="docutils literal notranslate"><span class="pre">.fit()</span></code></p></li>
+<li><p>Building new series from fitted and perturbed parameters</p></li>
+<li><p>A Monte Carlo simulation with random realizations of the shocks</p></li>
+</ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>Check out the <a class="reference internal" href="stochastic_01_arma.html"><span class="doc">Stochastic series - AR(1) generator</span></a> tutorial for the functions behind these methods, and the <a class="reference internal" href="timeseries_12_collection_views.html"><span class="doc">Time Series - Collection visuals</span></a> tutorial for the plots used here.</p>
+</div>
+<section id="notebook-setup">
+<h2>Notebook setup<a class="headerlink" href="#notebook-setup" title="Link to this heading">#</a></h2>
+<p>For users running this tutorial as a Jupyter Notebook, this cell must be executed first:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="c1"># Install `plans` in `google.colab`.</span>
+<span class="c1"># Use `pip install plans` for other environments.</span>
+
+<span class="k">if</span> <span class="s2">"google.colab"</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="si">}</span><span class="s2"> -m pip install -q plans"</span><span class="p">)</span>
+
+<span class="c1"># This avoids warnings related to uninstalled fonts</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="c1"># Set the matplotlib font manager logger to only show errors (hides warnings)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">'matplotlib.font_manager'</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TemperatureSeries</span><span class="p">,</span>
+    <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">TimeSeriesCollection</span><span class="p">,</span>
+    <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plans.datasets.analyst</span><span class="w"> </span><span class="kn">import</span> <span class="n">Univar</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="generate">
+<h2>Generate<a class="headerlink" href="#generate" title="Link to this heading">#</a></h2>
+<p>Each series class has its own default specs in <code class="docutils literal notranslate"><span class="pre">.generator_specs</span></code>, in physical terms, so they apply to any time step. Here we add a warming trend to the defaults of the temperature:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">TemperatureSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Station"</span><span class="p">)</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">generator_specs</span><span class="p">[</span><span class="s2">"change_per_year"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">generator_specs</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'baseline': 18.0,
+ 'topline': 28.0,
+ 'peak_day': 15,
+ 'power': 1.0,
+ 'memory_days': 3.0,
+ 'remainder_sd': 1.5,
+ 'change_per_year': 0.1}
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">.generate()</span></code> method returns a dataframe by default. With <code class="docutils literal notranslate"><span class="pre">inplace=True</span></code>, the data goes into the object. A <code class="docutils literal notranslate"><span class="pre">seed</span></code> makes the result reproducible:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"2000-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2019-12-31"</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/28d8fe9808520329c85f64a5c805acac2601b3e0aa0cedc643057ea4e64f4b6a.png" src="../_images/28d8fe9808520329c85f64a5c805acac2601b3e0aa0cedc643057ea4e64f4b6a.png" />
+</div>
+</div>
+</section>
+<section id="decompose">
+<h2>Decompose<a class="headerlink" href="#decompose" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">.decompose()</span></code> method splits the data into its parts, and returns a dataframe with one column for each. Without parameters, it estimates them from the data:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_parts</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">decompose</span><span class="p">()</span>
+<span class="n">df_parts</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>datetime</th>
+      <th>trend</th>
+      <th>cycle</th>
+      <th>remainder</th>
+      <th>shocks</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2000-01-01</td>
+      <td>21.917108</td>
+      <td>4.934382</td>
+      <td>0.522694</td>
+      <td>0.522694</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2000-01-02</td>
+      <td>21.917400</td>
+      <td>4.956947</td>
+      <td>1.232649</td>
+      <td>0.860207</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2000-01-03</td>
+      <td>21.917693</td>
+      <td>4.978005</td>
+      <td>1.226689</td>
+      <td>0.348373</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2000-01-04</td>
+      <td>21.917985</td>
+      <td>4.997550</td>
+      <td>-0.487571</td>
+      <td>-1.361641</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2000-01-05</td>
+      <td>21.918278</td>
+      <td>5.015575</td>
+      <td>0.594260</td>
+      <td>0.941675</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Stacked panels read naturally here. Note that each panel has its own y range, so read the values on the axes before comparing the size of the parts:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">make_series</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="c1"># plain series of temperature from a column</span>
+    <span class="n">ts_new</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">ts_new</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">"Temperature"</span>
+    <span class="n">ts_new</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">"Celsius"</span>
+    <span class="n">ts_new</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">input_df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">input_dtfield</span><span class="o">=</span><span class="s2">"datetime"</span><span class="p">,</span> <span class="n">input_varfield</span><span class="o">=</span><span class="n">field</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ts_new</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_collection</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ls_series</span><span class="p">):</span>
+    <span class="n">tsc</span> <span class="o">=</span> <span class="n">TimeSeriesCollection</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ts_new</span> <span class="ow">in</span> <span class="n">ls_series</span><span class="p">:</span>
+        <span class="n">tsc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_object</span><span class="o">=</span><span class="n">ts_new</span><span class="p">)</span>
+    <span class="n">tsc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">details</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tsc</span>
+
+<span class="n">df_parts</span><span class="p">[</span><span class="s2">"series"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">ls_panels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Series"</span><span class="p">,</span> <span class="s2">"Trend"</span><span class="p">,</span> <span class="s2">"Cycle"</span><span class="p">,</span> <span class="s2">"Remainder"</span><span class="p">,</span> <span class="s2">"Shocks"</span><span class="p">]</span>
+
+<span class="n">tsc_parts</span> <span class="o">=</span> <span class="n">make_collection</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"Decomposition"</span><span class="p">,</span>
+    <span class="n">ls_series</span><span class="o">=</span><span class="p">[</span><span class="n">make_series</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df_parts</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ls_panels</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">tsc_parts</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"stacked-simple"</span>
+<span class="n">tsc_parts</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"panels"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ls_panels</span><span class="p">]</span>
+<span class="n">tsc_parts</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/8590a58999de0e2676f84e78d5ed7bea7d41eacf2093460755dbb9aef8e2f577.png" src="../_images/8590a58999de0e2676f84e78d5ed7bea7d41eacf2093460755dbb9aef8e2f577.png" />
+</div>
+</div>
+<p>Nothing is lost. The trend, the cycle and the remainder add up to the series:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vct_sum</span> <span class="o">=</span> <span class="n">df_parts</span><span class="p">[</span><span class="s2">"trend"</span><span class="p">]</span> <span class="o">+</span> <span class="n">df_parts</span><span class="p">[</span><span class="s2">"cycle"</span><span class="p">]</span> <span class="o">+</span> <span class="n">df_parts</span><span class="p">[</span><span class="s2">"remainder"</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Largest difference: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vct_sum</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">df_parts</span><span class="p">[</span><span class="s1">'series'</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> C"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Largest difference: 3.55e-15 C
+</pre></div>
+</div>
+</div>
+</div>
+<p>The memory is the part of the remainder that does not come from the shocks. A closer look at one year shows how the remainder follows the memory, and how the shocks push it around:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_parts</span><span class="p">[</span><span class="s2">"memory"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_parts</span><span class="p">[</span><span class="s2">"remainder"</span><span class="p">]</span> <span class="o">-</span> <span class="n">df_parts</span><span class="p">[</span><span class="s2">"shocks"</span><span class="p">]</span>
+<span class="n">ls_panels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Remainder"</span><span class="p">,</span> <span class="s2">"Memory"</span><span class="p">,</span> <span class="s2">"Shocks"</span><span class="p">]</span>
+
+<span class="n">tsc_rem</span> <span class="o">=</span> <span class="n">make_collection</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"Remainder"</span><span class="p">,</span>
+    <span class="n">ls_series</span><span class="o">=</span><span class="p">[</span><span class="n">make_series</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df_parts</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ls_panels</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">tsc_rem</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"stacked-simple"</span>
+<span class="n">tsc_rem</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"panels"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">ls_panels</span><span class="p">]</span>
+<span class="n">tsc_rem</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"xmin"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">"2010-01-01"</span><span class="p">)</span>
+<span class="n">tsc_rem</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"xmax"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">"2010-12-31"</span><span class="p">)</span>
+<span class="n">tsc_rem</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/d05b8b4f49c16f05cab228cd0ca57a1739ab76687fd932ccc0ac02f8ad0c8719.png" src="../_images/d05b8b4f49c16f05cab228cd0ca57a1739ab76687fd932ccc0ac02f8ad0c8719.png" />
+</div>
+</div>
+</section>
+<section id="fit">
+<h2>Fit<a class="headerlink" href="#fit" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">.fit()</span></code> method gives the parameters of the same model as a dictionary, and it leaves the data untouched. It works on a regular series without gaps. If the record has gaps, deal with them first using <code class="docutils literal notranslate"><span class="pre">.interpolate_gaps()</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<span class="n">params</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'start': 21.917108007900598,
+ 'slope': 0.000292440207862643,
+ 'amplitude': 10.049533099848066,
+ 'period': 365.2425,
+ 'phase': 15.169432426951746,
+ 'power': 1.0462826783757024,
+ 'phi': 0.7125438865162383,
+ 'sigma': 1.0421041072878057,
+ 'origin': '2000-01-01 00:00:00',
+ 'freq': 'D'}
+</pre></div>
+</div>
+</div>
+</div>
+<p>The trend comes as <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">slope</span></code>, the cycle as <code class="docutils literal notranslate"><span class="pre">amplitude</span></code>, <code class="docutils literal notranslate"><span class="pre">period</span></code>, <code class="docutils literal notranslate"><span class="pre">phase</span></code> and <code class="docutils literal notranslate"><span class="pre">power</span></code>, the memory as <code class="docutils literal notranslate"><span class="pre">phi</span></code> and the shocks as <code class="docutils literal notranslate"><span class="pre">sigma</span></code>. These are values per step, and <code class="docutils literal notranslate"><span class="pre">origin</span></code> and <code class="docutils literal notranslate"><span class="pre">freq</span></code> tell which dates they refer to. Converting them to the terms of <code class="docutils literal notranslate"><span class="pre">.generator_specs</span></code> shows how close the fit gets to the specs that made the data:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">specs</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">generator_specs</span>
+<span class="n">df_check</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">"specs"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"Trend change per year"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"change_per_year"</span><span class="p">],</span>
+            <span class="s2">"Cycle range"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"topline"</span><span class="p">]</span> <span class="o">-</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"baseline"</span><span class="p">],</span>
+            <span class="s2">"Memory days"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"memory_days"</span><span class="p">],</span>
+            <span class="s2">"Remainder sd"</span><span class="p">:</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"remainder_sd"</span><span class="p">],</span>
+        <span class="p">},</span>
+        <span class="s2">"fit"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"Trend change per year"</span><span class="p">:</span> <span class="n">params</span><span class="p">[</span><span class="s2">"slope"</span><span class="p">]</span> <span class="o">*</span> <span class="n">params</span><span class="p">[</span><span class="s2">"period"</span><span class="p">],</span>
+            <span class="s2">"Cycle range"</span><span class="p">:</span> <span class="n">params</span><span class="p">[</span><span class="s2">"amplitude"</span><span class="p">],</span>
+            <span class="s2">"Memory days"</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">"phi"</span><span class="p">]),</span>
+            <span class="s2">"Remainder sd"</span><span class="p">:</span> <span class="n">params</span><span class="p">[</span><span class="s2">"sigma"</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">params</span><span class="p">[</span><span class="s2">"phi"</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+<span class="n">df_check</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>specs</th>
+      <th>fit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Trend change per year</th>
+      <td>0.1</td>
+      <td>0.107</td>
+    </tr>
+    <tr>
+      <th>Cycle range</th>
+      <td>10.0</td>
+      <td>10.050</td>
+    </tr>
+    <tr>
+      <th>Memory days</th>
+      <td>3.0</td>
+      <td>2.951</td>
+    </tr>
+    <tr>
+      <th>Remainder sd</th>
+      <td>1.5</td>
+      <td>1.485</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="build-new-series">
+<h2>Build new series<a class="headerlink" href="#build-new-series" title="Link to this heading">#</a></h2>
+<p>The fitted parameters go back into <code class="docutils literal notranslate"><span class="pre">.generate()</span></code>. Since <code class="docutils literal notranslate"><span class="pre">origin</span></code> and <code class="docutils literal notranslate"><span class="pre">freq</span></code> are part of them, they work from any start date, and the trend and the cycle carry over. A new seed gives new shocks:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_future</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"2020-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2029-12-31"</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">df_future</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>datetime</th>
+      <th>tas</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2020-01-01</td>
+      <td>29.272041</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2020-01-02</td>
+      <td>28.669198</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2020-01-03</td>
+      <td>28.358947</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2020-01-04</td>
+      <td>26.028630</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2020-01-05</td>
+      <td>28.792039</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>To see the effect of one parameter, change it and generate again with the same seed. All series below use the same random numbers, so any difference comes from the change. Here is one perturbation of each part of the model, each on a panel with the fitted series:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc_changes</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"Steeper trend"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"slope"</span><span class="p">:</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">params</span><span class="p">[</span><span class="s2">"slope"</span><span class="p">]},</span>
+    <span class="s2">"Larger cycle"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"amplitude"</span><span class="p">:</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">params</span><span class="p">[</span><span class="s2">"amplitude"</span><span class="p">]},</span>
+    <span class="s2">"Longer memory"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"phi"</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">},</span>
+    <span class="s2">"Larger shocks"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"sigma"</span><span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">params</span><span class="p">[</span><span class="s2">"sigma"</span><span class="p">]},</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_realization</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">params_new</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"2020-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2029-12-31"</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params_new</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">make_series</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">varfield</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+<span class="n">ls_series</span> <span class="o">=</span> <span class="p">[</span><span class="n">make_realization</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Fitted"</span><span class="p">,</span> <span class="n">params_new</span><span class="o">=</span><span class="n">params</span><span class="p">)]</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">dc_change</span> <span class="ow">in</span> <span class="n">dc_changes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">ls_series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">make_realization</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">params_new</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">dc_change</span><span class="p">)))</span>
+
+<span class="n">tsc_new</span> <span class="o">=</span> <span class="n">make_collection</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Perturbed parameters"</span><span class="p">,</span> <span class="n">ls_series</span><span class="o">=</span><span class="n">ls_series</span><span class="p">)</span>
+<span class="c1"># same color for the fitted series, and another for the perturbed ones</span>
+<span class="n">tsc_new</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="s2">"Fitted"</span><span class="p">]</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"color"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"silver"</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">dc_changes</span><span class="p">:</span>
+    <span class="n">tsc_new</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"color"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"tab:blue"</span>
+<span class="n">tsc_new</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"stacked-simple"</span>
+<span class="n">tsc_new</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"panels"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">"Fitted"</span><span class="p">,</span> <span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">dc_changes</span><span class="p">]</span>
+<span class="n">tsc_new</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/8c2bfad6bd2861221c932f5b6c4237aec57d4b9dc27465c1e9a2797a528a3f57.png" src="../_images/8c2bfad6bd2861221c932f5b6c4237aec57d4b9dc27465c1e9a2797a528a3f57.png" />
+</div>
+</div>
+<p>The trend turns around the start of the fitted record, so a steeper one is already far away after 20 years. Note also that <code class="docutils literal notranslate"><span class="pre">phi</span></code> and <code class="docutils literal notranslate"><span class="pre">sigma</span></code> both change the size of the remainder, since its variance is <span class="math notranslate nohighlight">\(\sigma^2 / (1 - \varphi^2)\)</span>. A longer memory makes warm and cold spells last longer, and also makes them larger.</p>
+</section>
+<section id="monte-carlo-simulation">
+<h2>Monte Carlo simulation<a class="headerlink" href="#monte-carlo-simulation" title="Link to this heading">#</a></h2>
+<p>Now to a question that one series can not answer. How hot can a day get in 2030, if the process stays the same? A single realization gives one value. Many realizations give a distribution.</p>
+<p>Here, each member has the same trend, cycle and memory, and its own random realization of the Gaussian shocks, which is what a different seed gives. A <code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code> holds them:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_members</span> <span class="o">=</span> <span class="mi">200</span>
+
+<span class="n">tse</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Monte Carlo"</span><span class="p">,</span> <span class="n">base_object</span><span class="o">=</span><span class="n">TemperatureSeries</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">seed</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_members</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"R</span><span class="si">{</span><span class="n">seed</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">:</span><span class="s2">03d</span><span class="si">}</span><span class="s2">"</span>
+    <span class="n">ts_member</span> <span class="o">=</span> <span class="n">TemperatureSeries</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">ts_member</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span>
+        <span class="n">input_df</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"2030-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2030-12-31"</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">),</span>
+        <span class="n">input_dtfield</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dtfield</span><span class="p">,</span>
+        <span class="n">input_varfield</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">varfield</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">tse</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_object</span><span class="o">=</span><span class="n">ts_member</span><span class="p">)</span>
+<span class="n">tse</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">details</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">tse</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"bands"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">95</span><span class="p">]]</span>
+<span class="n">tse</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"reducers"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"mean"</span><span class="p">]</span>
+<span class="n">tse</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/beb5cfa992b0a3bcf0be31d78040581daf25a9d664ca8378bdea8dd3868d0d1b.png" src="../_images/beb5cfa992b0a3bcf0be31d78040581daf25a9d664ca8378bdea8dd3868d0d1b.png" />
+</div>
+</div>
+<p>The mean of the members follows the trend and the cycle, and the width of the band comes from the remainder only. This can be checked. The spread between members at each step should match the standard deviation of the remainder:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vct_std</span> <span class="o">=</span> <span class="n">tse</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Spread between members: </span><span class="si">{</span><span class="n">vct_std</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> C"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Remainder from the parameters: </span><span class="si">{</span><span class="n">params</span><span class="p">[</span><span class="s1">'sigma'</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">params</span><span class="p">[</span><span class="s1">'phi'</span><span class="p">]</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> C"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Spread between members: 1.48 C
+Remainder from the parameters: 1.49 C
+</pre></div>
+</div>
+</div>
+</div>
+<p>Each member has its hottest day of the year. Together, they give the distribution of the answer:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vct_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">tse</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ts</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">tse</span><span class="o">.</span><span class="n">collection</span><span class="p">])</span>
+
+<span class="n">uv</span> <span class="o">=</span> <span class="n">Univar</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Hottest day of 2030"</span><span class="p">)</span>
+<span class="n">uv</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="s2">"Temperature"</span>
+<span class="n">uv</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">"Celsius"</span>
+<span class="n">uv</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">array</span><span class="o">=</span><span class="n">vct_max</span><span class="p">)</span>
+<span class="n">uv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"title"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Monte Carlo | Hottest day of 2030"</span>
+<span class="n">uv</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/f206b890f40cdcd9f7851a14650f4e9c000be03c8d82c373aff88f951e8b64ed.png" src="../_images/f206b890f40cdcd9f7851a14650f4e9c000be03c8d82c373aff88f951e8b64ed.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">threshold</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">33</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">35</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"P(hottest day &gt; </span><span class="si">{</span><span class="n">threshold</span><span class="si">}</span><span class="s2"> C): </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">vct_max</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">threshold</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>P(hottest day &gt; 33 C): 62.0%
+P(hottest day &gt; 34 C): 14.5%
+P(hottest day &gt; 35 C): 3.0%
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The members only differ by their shocks. The parameters are taken as known, while in practice they come with their own uncertainty, so this spread is a lower bound. The shocks are also Gaussian and additive, so the model does not fit variables with a skewed distribution as it fits temperature.</p>
+</div>
+</section>
+<section id="recap">
+<h2>Recap<a class="headerlink" href="#recap" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.generate()</span></code> makes a series from physical specs in <code class="docutils literal notranslate"><span class="pre">.generator_specs</span></code>, or from parameters.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.decompose()</span></code> splits a series into trend, cycle, remainder and shocks. The remainder holds the memory and the shocks.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.fit()</span></code> estimates the parameters from a regular series without gaps, and they work from any start date.</p></li>
+<li><p>Changing a parameter and keeping the seed shows the effect of that parameter alone.</p></li>
+<li><p>Different seeds give different realizations of the shocks, and an ensemble of them makes a Monte Carlo simulation.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="timeseries_12_collection_views.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Time Series - Collection visuals</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="visuals_01.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Visualizations - Basics</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notebook-setup">Notebook setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generate">Generate</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decompose">Decompose</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fit">Fit</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-new-series">Build new series</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#monte-carlo-simulation">Monte Carlo simulation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#recap">Recap</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/tutorials/timeseries_13_synthetic.ipynb.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Iporã Possantti.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
