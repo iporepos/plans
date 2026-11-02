@@ -535,14 +535,14 @@ class TestArma(unittest.TestCase):
         self.assertAlmostEqual(arma.shape_mean(power=2), 0.375)
         for power in [1.0, 2.5, 7.0]:
             with self.subTest(power=power):
-                g = arma.season_shape(n=1000, period=1000, phase=0, power=power)
+                g = arma.cycle_shape(n=1000, period=1000, phase=0, power=power)
                 self.assertAlmostEqual(np.mean(a=g), arma.shape_mean(power=power))
 
-    def test_season(self):
-        s = arma.season_component(n=12, amplitude=10.0, period=12, phase=3, power=1)
+    def test_cycle(self):
+        s = arma.cycle_component(n=12, amplitude=10.0, period=12, phase=3, power=1)
         expected = 5 * np.cos(2 * np.pi * (np.arange(start=0, stop=12) - 3) / 12)
         np.testing.assert_allclose(s, expected, atol=1e-12)
-        s = arma.season_component(n=24, amplitude=10.0, period=24, phase=5, power=4)
+        s = arma.cycle_component(n=24, amplitude=10.0, period=24, phase=5, power=4)
         self.assertAlmostEqual(np.mean(a=s), 0.0)
         self.assertEqual(np.argmax(a=s), 5)
 

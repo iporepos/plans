@@ -4,15 +4,15 @@
 # See pyproject.toml for authors/maintainers.
 # See LICENSE for license details.
 r"""
-Trend, season and AR(1) memory model for synthetic series.
+Trend, cycle and AR(1) memory model for synthetic series.
 
-A series is the sum of a linear trend, a mean-zero seasonal term and an AR(1)
+A series is the sum of a linear trend, a mean-zero cycle and an AR(1)
 remainder driven by Gaussian shocks. For steps :math:`t = 0, 1, \dots, n-1`:
 
 .. math::
 
     x_t = \underbrace{b + a t}_{\text{trend}}
-    + \underbrace{A (g_t - m_k)}_{\text{season}} + R_t,
+    + \underbrace{A (g_t - m_k)}_{\text{cycle}} + R_t,
     \qquad R_t = \varphi R_{t-1} + \varepsilon_t,
     \qquad \varepsilon_t \sim \mathcal{N}(0, \sigma^2)
 
@@ -44,9 +44,9 @@ import numpy as np
 
 __all__ = [
     "trend_line",
-    "season_shape",
+    "cycle_shape",
     "shape_mean",
-    "season_component",
+    "cycle_component",
     "draw_shocks",
     "ar1_from_shocks",
     "simulate_ar1",
@@ -64,7 +64,7 @@ __all__ = [
 
 POWER_MIN = 1.0
 POWER_MAX = 10.0
-# starting shapes of the fit, so a sharp season is not missed
+# starting shapes of the fit, so a sharp cycle is not missed
 POWER_STARTS = (1.0, 3.0, 6.0)
 MIN_CYCLES = 3
 
@@ -117,9 +117,9 @@ def trend_line(n, start, slope):
     return start + slope * np.arange(start=0, stop=n)
 
 
-def season_shape(n, period, phase, power):
+def cycle_shape(n, period, phase, power):
     r"""
-    Get the seasonal shape, a raised cosine to a power.
+    Get the shape of the cycle, a raised cosine to a power.
 
     .. math::
 
@@ -130,7 +130,7 @@ def season_shape(n, period, phase, power):
     :type n: int
     :param period: steps per cycle
     :type period: float
-    :param phase: step at which the season peaks
+    :param phase: step at which the cycle peaks
     :type phase: float
     :param power: shape. 1 gives a plain cosine, larger gives a sharper peak.
     :type power: float
@@ -143,7 +143,7 @@ def season_shape(n, period, phase, power):
 
 def shape_mean(power):
     r"""
-    Get the average of the seasonal shape over a cycle.
+    Get the average of the shape over a cycle.
 
     .. math::
 
@@ -161,30 +161,30 @@ def shape_mean(power):
     return float(np.exp(gammaln(power + 0.5) - gammaln(power + 1)) / np.sqrt(np.pi))
 
 
-def season_component(n, amplitude, period, phase, power):
+def cycle_component(n, amplitude, period, phase, power):
     r"""
-    Get the seasonal term, which averages zero over a cycle.
+    Get the cycle term, which averages zero over a cycle.
 
     .. math::
 
-        S_t = A (g_t - m_k)
+        C_t = A (g_t - m_k)
 
     For :math:`k = 1` this is a plain cosine of half-range :math:`A / 2`.
 
     :param n: number of steps
     :type n: int
-    :param amplitude: peak-to-trough range of the seasonal term
+    :param amplitude: peak-to-trough range of the cycle term
     :type amplitude: float
     :param period: steps per cycle
     :type period: float
-    :param phase: step at which the season peaks
+    :param phase: step at which the cycle peaks
     :type phase: float
     :param power: shape
     :type power: float
-    :return: seasonal values
+    :return: cycle values
     :rtype: :class:`numpy.ndarray`
     """
-    g = season_shape(n=n, period=period, phase=phase, power=power)
+    g = cycle_shape(n=n, period=period, phase=phase, power=power)
     return amplitude * (g - shape_mean(power=power))
 
 
@@ -269,9 +269,9 @@ def fit_params(x, period):
     r"""
     Fit the model to a series.
 
-    Trend and season are fitted jointly by nonlinear least squares from several
+    Trend and cycle are fitted jointly by nonlinear least squares from several
     starting shapes, keeping the best. ``power`` is bounded by ``POWER_MIN`` and
-    ``POWER_MAX``, so a season with a sharp trough and a flat top cannot be represented.
+    ``POWER_MAX``, so a cycle with a sharp trough and a flat top cannot be represented.
 
     Memory and shocks come from the remainder :math:`R_t`, after removing its mean.
     The memory is a regression through the origin, and :math:`\hat{\sigma}` is the
@@ -284,7 +284,7 @@ def fit_params(x, period):
 
     .. warning::
 
-        Trend and season estimates ignore the memory, so they are less precise than
+        Trend and cycle estimates ignore the memory, so they are less precise than
         they could be, and ``phi`` tends to be low on short series.
 
     :param x: series without nan values
@@ -317,10 +317,10 @@ def fit_params(x, period):
 
     def _residuals(p):
         trend = trend_line(n=n, start=p[0], slope=p[1])
-        season = season_component(
+        cycle = cycle_component(
             n=n, amplitude=p[2], period=period, phase=p[3], power=p[4]
         )
-        return trend + season - x
+        return trend + cycle - x
 
     # joint fit from each starting shape
     bounds = (
@@ -329,7 +329,7 @@ def fit_params(x, period):
     )
     best = None
     for power_0 in POWER_STARTS:
-        g = season_shape(n=n, period=period, phase=phase_0, power=power_0)
+        g = cycle_shape(n=n, period=period, phase=phase_0, power=power_0)
         design = np.column_stack(
             [np.ones(shape=n), t, g - shape_mean(power=power_0)],
         )
@@ -370,7 +370,7 @@ def decompose(x, params):
 
     .. math::
 
-        R_t = x_t - T_t - S_t,
+        R_t = x_t - T_t - C_t,
         \qquad \varepsilon_0 = R_0,
         \qquad \varepsilon_t = R_t - \varphi R_{t-1}
 
@@ -378,24 +378,24 @@ def decompose(x, params):
     :type x: :class:`numpy.ndarray`
     :param params: parameters. See :func:`fit_params`.
     :type params: dict
-    :return: arrays by component. Keys: trend, season, remainder, shocks
+    :return: arrays by component. Keys: trend, cycle, remainder, shocks
     :rtype: dict
     """
     x = np.asarray(x, dtype=float)
     n = len(x)
     trend = trend_line(n=n, start=params["start"], slope=params["slope"])
-    season = season_component(
+    cycle = cycle_component(
         n=n,
         amplitude=params["amplitude"],
         period=params["period"],
         phase=params["phase"],
         power=params["power"],
     )
-    r = x - trend - season
+    r = x - trend - cycle
     # the first shock is the first remainder, as in ar1_from_shocks
     shocks = r.copy()
     shocks[1:] = r[1:] - params["phi"] * r[:-1]
-    return {"trend": trend, "season": season, "remainder": r, "shocks": shocks}
+    return {"trend": trend, "cycle": cycle, "remainder": r, "shocks": shocks}
 
 
 def build(params, n, seed=None, shocks=None):
@@ -429,14 +429,14 @@ def build(params, n, seed=None, shocks=None):
             raise ValueError("shocks must have size n")
         r = ar1_from_shocks(shocks=shocks, phi=params["phi"])
     trend = trend_line(n=n, start=params["start"], slope=params["slope"])
-    season = season_component(
+    cycle = cycle_component(
         n=n,
         amplitude=params["amplitude"],
         period=params["period"],
         phase=params["phase"],
         power=params["power"],
     )
-    return trend + season + r
+    return trend + cycle + r
 
 
 # FUNCTIONS -- Presenting
@@ -445,7 +445,7 @@ def build(params, n, seed=None, shocks=None):
 
 def get_floor(params, n):
     r"""
-    Get the lowest value of trend plus season, :math:`\min_t (T_t + S_t)`.
+    Get the lowest value of trend plus cycle, :math:`\min_t (T_t + C_t)`.
 
     .. note::
 
@@ -456,18 +456,18 @@ def get_floor(params, n):
     :type params: dict
     :param n: number of steps
     :type n: int
-    :return: lowest value of trend plus season
+    :return: lowest value of trend plus cycle
     :rtype: float
     """
     trend = trend_line(n=n, start=params["start"], slope=params["slope"])
-    season = season_component(
+    cycle = cycle_component(
         n=n,
         amplitude=params["amplitude"],
         period=params["period"],
         phase=params["phase"],
         power=params["power"],
     )
-    return float(np.min(a=trend + season))
+    return float(np.min(a=trend + cycle))
 
 
 def describe(params, n, positive=False):
@@ -475,7 +475,7 @@ def describe(params, n, positive=False):
     Get a printout with all views of the same model.
 
     Baseline and topline are the extremes of the deterministic cycle, at the trend
-    average :math:`\bar{T}`. Noise moves the observed extremes beyond them.
+    average :math:`\bar{T}`. Shocks move the observed extremes beyond them.
 
     .. math::
 
@@ -517,7 +517,7 @@ def describe(params, n, positive=False):
     s = "\n".join(f"{k:<30}{v:>14.6g}" for k, v in ls_rows)
 
     if positive and floor < 0:
-        s_warn = f"Floor of trend + season is below zero: {floor:.6g}"
+        s_warn = f"Floor of trend + cycle is below zero: {floor:.6g}"
         warnings.warn(s_warn)
         s = s + f"\nWARNING: {s_warn}"
     return s
@@ -625,7 +625,7 @@ def make_params(
     Make the parameters from what is known, converting to the stored form.
 
     The trend level comes from ``start`` or ``average``, its change from ``slope``,
-    ``end`` or ``cycle_change``, and the season from ``amplitude`` or from both
+    ``end`` or ``cycle_change``, and the cycle from ``amplitude`` or from both
     ``baseline`` and ``topline``, with :math:`A = \text{topline} - \text{baseline}`.
     Giving more than one option for the same item raises an error. Length-based
     conversions apply once here, so a longer series continues the same line.
@@ -647,13 +647,13 @@ def make_params(
     :type cycle_change: float
     :param n: number of steps, used only by the length-based conversions
     :type n: int
-    :param amplitude: peak-to-trough range of the seasonal term
+    :param amplitude: peak-to-trough range of the cycle term
     :type amplitude: float
     :param baseline: lowest value of the deterministic cycle
     :type baseline: float
     :param topline: highest value of the deterministic cycle
     :type topline: float
-    :param phase: step at which the season peaks
+    :param phase: step at which the cycle peaks
     :type phase: float
     :param power: shape
     :type power: float
@@ -697,7 +697,7 @@ def make_params(
     elif start is None:
         start = 0.0
 
-    # season
+    # cycle
     if baseline is not None:
         amplitude = topline - baseline
     elif amplitude is None:

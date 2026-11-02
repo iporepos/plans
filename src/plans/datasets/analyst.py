@@ -466,12 +466,16 @@ class Univar(DataSet):
         if specs["layout"] == "simple":
             fig.add_subplot(gs[2:12, 4:])
 
-        elif specs["layout"] in ["simple-shallow", "qq"]:
+        elif specs["layout"] == "simple-shallow":
+            # lower top, so the panel title sits below the figure title
+            fig.add_subplot(gs[4:10, 4:])
+
+        elif specs["layout"] == "qq":
             fig.add_subplot(gs[2:10, 4:])
 
         else:
             fig.add_subplot(gs[2:10, 2:10])
-            fig.add_subplot(gs[2:10, 13:18])
+            fig.add_subplot(gs[2:10, 12:17])
             fig.add_subplot(gs[2:10, 19:])
 
         return fig
@@ -590,6 +594,87 @@ class Univar(DataSet):
         """
         Get the visualization. Layout is set by ``view_specs["layout"]``. The
         options are the keys of the ``layouts`` attribute.
+
+        **Layouts**, set by ``view_specs["layout"]``:
+
+        ==================  ===================================================
+        Layout              Panels
+        ==================  ===================================================
+        ``full``            Data, histogram and CDF, with the statistics table.
+        ``mini``            Data, histogram and CDF.
+        ``simple``          Data only.
+        ``simple-shallow``  Data only, in a shallow figure.
+        ``qq``              Q-Q plot.
+        ``default``         Same panels of ``mini``, in the figure of ``full``.
+        ==================  ===================================================
+
+        **View specs**, set by ``view_specs[key] = value`` before the call:
+
+        ====================  =================  =====================================================================================================================
+        Key                   Default            Description
+        ====================  =================  =====================================================================================================================
+        ``style``             ``"wien"``         Name of the plot style. See :func:`plans.viewer.set_style`.
+        ``folder``            auto               Folder of the saved figure.
+        ``filename``          auto               Name of the saved figure, without extension.
+        ``fig_format``        ``"jpg"``          Format of the saved figure.
+        ``dpi``               ``300``            Resolution of the saved figure.
+        ``title``             auto               Title of the figure.
+        ``xvar``              auto               Not in use.
+        ``yvar``              auto               Not in use.
+        ``xlabel``            auto               Label of the x axis.
+        ``ylabel``            auto               Label of the y axis.
+        ``color``             ``"tab:grey"``     Color of the data.
+        ``xmin``              None               Not in use.
+        ``xmax``              None               Not in use.
+        ``ymin``              None               Not in use.
+        ``ymax``              None               Not in use.
+        ``layout``            ``"full"``         Name of the layout. See the table of layouts.
+        ``data_plot``         ``"scatter"``      Plot of the data panel: ``"scatter"`` or ``"boxplot"``.
+        ``subtitle_data``     ``"Data Points"``  Title of the data panel. None hides it.
+        ``subtitle_box``      ``"Boxplot"``      Title of the data panel, if a boxplot.
+        ``subtitle_hist``     ``"Histogram"``    Title of the histogram. None hides it.
+        ``subtitle_cdf``      ``"CDF"``          Title of the CDF. None hides it.
+        ``subtitle_qq``       ``"Q-Q"``          Title of the Q-Q panel. None hides it.
+        ``yvar_field``        auto               Column of values. Set with the data.
+        ``xlabel_cdf``        ``"P(X)"``         Label of the x axis of the CDF.
+        ``xlabel_qq``         auto               Label of the x axis of the Q-Q panel.
+        ``data_label``        auto               Label of the data in the legend.
+        ``data_legend``       ``False``          Show the legend of the data panel.
+        ``color_hist``        ``"tab:grey"``     Color of the histogram.
+        ``color_cdf``         ``"black"``        Color of the CDF.
+        ``color_mean``        ``"red"``          Color of the mean line.
+        ``color_mean_text``   None               Color of the mean label. None is black.
+        ``scheme_cmap``       ``"equal"``        Classes of the color map: ``"equal"``, ``"quantiles"`` or other schemes of :func:`plans.stochastic.binning.get_bins`.
+        ``n_classes_cmap``    ``5``              Number of classes of the color map.
+        ``cmap``              ``"viridis"``      Name of the color map.
+        ``alpha``             ``0.8``            Opacity of the data.
+        ``alpha_hist``        ``1``              Opacity of the histogram.
+        ``alpha_cdf``         ``1``              Opacity of the CDF.
+        ``range``             None               Range of the y axis, as ``[low, high]``. None is set from the data.
+        ``range_x``           None               Range of the x axis, as ``[low, high]``. None is set from the data.
+        ``plot_mean``         ``True``           Show the mean line.
+        ``plot_mean_data``    ``False``          Show the mean line also on the data panel.
+        ``linestyle_mean``    ``"solid"``        Line style of the mean.
+        ``pad_mean``          ``1``              Spaces between the mean label and its line.
+        ``plot_mean_label``   ``True``           Show the mean label.
+        ``hist_density``      ``True``           Not in use.
+        ``bins``              ``20``             Number of histogram bins, or the width of the bins if ``bins_density``.
+        ``bins_density``      ``False``          Take ``bins`` as the width of the bins.
+        ``ax_data``           ``0``              Internal. Index of the data axis.
+        ``ax_hist``           ``1``              Internal. Index of the histogram axis. False has no histogram.
+        ``ax_cdf``            ``2``              Internal. Index of the CDF axis. False has no CDF.
+        ``x_stats``           ``0.01``           Horizontal position of the statistics table, as a share of the figure.
+        ``x_stats_sep``       ``0.2``            Space between columns of the statistics table.
+        ``y_stats``           ``0.3``            Vertical position of the statistics table, as a share of the figure.
+        ``zorder_data``       ``1``              Drawing order of the data.
+        ``zorder_histh``      ``1``              Drawing order of the histogram.
+        ``zorder_cdf``        ``1``              Drawing order of the CDF.
+        ``scatter_factor``    ``4``              Size of the scatter markers.
+        ``colorize_scatter``  ``False``          Color the scatter markers by the color map.
+        ``box_width``         ``0.4``            Width of the boxplot.
+        ``box_showfliers``    ``True``           Show the outliers of the boxplot.
+        ``gs_*``              auto               Internal. Replaced by the shared grid of :mod:`plans.viewer`.
+        ====================  =================  =====================================================================================================================
 
         :param show: option for showing instead of saving
         :type show: bool
@@ -893,7 +978,6 @@ class Univar(DataSet):
         ax.set_xlim(0, xmax)
         ax.set_ylim(data_range)
         ax.set_xlabel("%")
-        ax.set_ylabel(specs["ylabel"])
         if formatter is not None:
             ax.yaxis.set_major_formatter(formatter)
 
@@ -954,7 +1038,6 @@ class Univar(DataSet):
 
         if formatter is not None:
             ax.yaxis.set_major_formatter(formatter)
-        ax.set_yticklabels([])
         ax.xaxis.set_major_formatter(mticker.PercentFormatter(1))
 
         # PLOT MEAN
@@ -1364,6 +1447,108 @@ class GeoUnivar(Univar):
         )
         return None
 
+    def view(self, show=True, return_fig=False):
+        """
+        Get the visualization, with a map as the first panel.
+
+        **Layouts**, set by ``view_specs["layout"]``:
+
+        ========  ========================================================
+        Layout    Panels
+        ========  ========================================================
+        ``full``  Map, data, histogram and CDF, with the statistics table.
+        ``mini``  Map, data, histogram and CDF.
+        ========  ========================================================
+
+        **View specs**, set by ``view_specs[key] = value`` before the call:
+
+        ====================  =================  =====================================================================================================================
+        Key                   Default            Description
+        ====================  =================  =====================================================================================================================
+        ``style``             ``"wien"``         Name of the plot style. See :func:`plans.viewer.set_style`.
+        ``folder``            auto               Folder of the saved figure.
+        ``filename``          auto               Name of the saved figure, without extension.
+        ``fig_format``        ``"jpg"``          Format of the saved figure.
+        ``dpi``               ``300``            Resolution of the saved figure.
+        ``title``             auto               Title of the figure.
+        ``xvar``              auto               Not in use.
+        ``yvar``              auto               Not in use.
+        ``xlabel``            auto               Label of the x axis.
+        ``ylabel``            auto               Label of the y axis.
+        ``color``             ``"tab:grey"``     Color of the data.
+        ``xmin``              None               Not in use.
+        ``xmax``              None               Not in use.
+        ``ymin``              None               Not in use.
+        ``ymax``              None               Not in use.
+        ``layout``            ``"full"``         Name of the layout. See the table of layouts.
+        ``data_plot``         ``"scatter"``      Plot of the data panel: ``"scatter"`` or ``"boxplot"``.
+        ``subtitle_data``     ``"Data Points"``  Title of the data panel. None hides it.
+        ``subtitle_box``      ``"Boxplot"``      Title of the data panel, if a boxplot.
+        ``subtitle_hist``     ``"Histogram"``    Title of the histogram. None hides it.
+        ``subtitle_cdf``      ``"CDF"``          Title of the CDF. None hides it.
+        ``subtitle_qq``       ``"Q-Q"``          Title of the Q-Q panel. None hides it.
+        ``yvar_field``        auto               Column of values. Set with the data.
+        ``xlabel_cdf``        ``"P(X)"``         Label of the x axis of the CDF.
+        ``xlabel_qq``         auto               Label of the x axis of the Q-Q panel.
+        ``data_label``        auto               Label of the data in the legend.
+        ``data_legend``       ``False``          Show the legend of the data panel.
+        ``color_hist``        ``"tab:grey"``     Color of the histogram.
+        ``color_cdf``         ``"black"``        Color of the CDF.
+        ``color_mean``        ``"red"``          Color of the mean line.
+        ``color_mean_text``   None               Color of the mean label. None is black.
+        ``scheme_cmap``       ``"equal"``        Classes of the color map: ``"equal"``, ``"quantiles"`` or other schemes of :func:`plans.stochastic.binning.get_bins`.
+        ``n_classes_cmap``    ``5``              Number of classes of the color map.
+        ``cmap``              ``"viridis"``      Name of the color map.
+        ``alpha``             ``0.8``            Opacity of the data.
+        ``alpha_hist``        ``1``              Opacity of the histogram.
+        ``alpha_cdf``         ``1``              Opacity of the CDF.
+        ``range``             None               Range of the y axis, as ``[low, high]``. None is set from the data.
+        ``range_x``           None               Range of the x axis, as ``[low, high]``. None is set from the data.
+        ``plot_mean``         ``True``           Show the mean line.
+        ``plot_mean_data``    ``False``          Show the mean line also on the data panel.
+        ``linestyle_mean``    ``"solid"``        Line style of the mean.
+        ``pad_mean``          ``1``              Spaces between the mean label and its line.
+        ``plot_mean_label``   ``True``           Show the mean label.
+        ``hist_density``      ``True``           Not in use.
+        ``bins``              ``20``             Number of histogram bins, or the width of the bins if ``bins_density``.
+        ``bins_density``      ``False``          Take ``bins`` as the width of the bins.
+        ``ax_data``           ``1``              Internal. Index of the data axis.
+        ``ax_hist``           ``2``              Internal. Index of the histogram axis. False has no histogram.
+        ``ax_cdf``            ``3``              Internal. Index of the CDF axis. False has no CDF.
+        ``x_stats``           ``0.55``           Horizontal position of the statistics table, as a share of the figure.
+        ``x_stats_sep``       ``0.2``            Space between columns of the statistics table.
+        ``y_stats``           ``0.3``            Vertical position of the statistics table, as a share of the figure.
+        ``zorder_data``       ``1``              Drawing order of the data.
+        ``zorder_histh``      ``1``              Drawing order of the histogram.
+        ``zorder_cdf``        ``1``              Drawing order of the CDF.
+        ``scatter_factor``    ``4``              Size of the scatter markers.
+        ``colorize_scatter``  ``False``          Color the scatter markers by the color map.
+        ``box_width``         ``0.4``            Width of the boxplot.
+        ``box_showfliers``    ``True``           Show the outliers of the boxplot.
+        ``subtitle_map``      ``"Map"``          Title of the map. None hides it.
+        ``ax_map``            ``0``              Internal. Index of the map axis.
+        ``zorder_map``        ``3``              Drawing order of the data on the map.
+        ``layers_map``        None               Other layers, as a list of dictionaries. See :meth:`plot_map`.
+        ``empty_map``         ``False``          Hide the data on the map, leaving only other layers.
+        ``grid_map``          ``False``          Show the grid of the map.
+        ``marker_map``        ``"o"``            Marker of the points.
+        ``markersize_map``    ``10``             Size of the points.
+        ``edgecolor_map``     ``"none"``         Edge color of the points or polygons.
+        ``colorize_map``      ``True``           Color the data on the map by the color map.
+        ``cbar_scatter``      ``True``           Color the bar of the scatter panel. Off if ``colorize_scatter``.
+        ``cbar_histh``        ``True``           Color the bars of the histogram by the color map.
+        ``gs_*``              auto               Internal. Replaced by the shared grid of :mod:`plans.viewer`.
+        ====================  =================  =====================================================================================================================
+
+        :param show: option for showing instead of saving
+        :type show: bool
+        :param return_fig: option for returning the figure object
+        :type return_fig: bool
+        :return: figure object if ``return_fig`` is True, else None
+        :rtype: :class:`matplotlib.figure.Figure` or None
+        """
+        return super().view(show=show, return_fig=return_fig)
+
     def load_data(self, file_data, layer_name, input_varfield=None):
         """
         Load data from file. Expected to overwrite superior methods.
@@ -1437,13 +1622,13 @@ class GeoUnivar(Univar):
         # ------------ setup axes ------------
         if specs["layout"] == "full":
             fig.add_subplot(gs[2:15, 1:14])
-            fig.add_subplot(gs[2:10, 16:21])
-            fig.add_subplot(gs[2:10, 23:28])
+            fig.add_subplot(gs[2:10, 16:20])
+            fig.add_subplot(gs[2:10, 22:27])
             fig.add_subplot(gs[2:10, 29:])
         elif specs["layout"] == "mini":
             fig.add_subplot(gs[2:10, 1:9])
-            fig.add_subplot(gs[2:10, 12:19])
-            fig.add_subplot(gs[2:10, 21:27])
+            fig.add_subplot(gs[2:10, 12:18])
+            fig.add_subplot(gs[2:10, 20:26])
             fig.add_subplot(gs[2:10, 28:])
         return fig
 
@@ -2198,7 +2383,6 @@ class Bivar(DataSet):
         """
         specs_h = specs.copy()
         specs_h["subtitle_hist"] = None
-        specs_h["ylabel"] = None
         specs_h["plot_mean_label"] = False
         if specs_h["bins"] is None:
             specs_h["bins"] = _binning.get_nbins_fd(data=data)
@@ -2208,6 +2392,67 @@ class Bivar(DataSet):
         """
         Get the visualization. Layout is set by ``view_specs["layout"]``
         (``full`` or ``model``).
+
+        **Layouts**, set by ``view_specs["layout"]``:
+
+        ===========  ======================================================
+        Layout       Panels
+        ===========  ======================================================
+        ``full``     Scatter with histograms on the sides.
+        ``model``    Model, error, error histogram, Q-Q and error variance.
+        ``default``  Same as ``full``.
+        ===========  ======================================================
+
+        **View specs**, set by ``view_specs[key] = value`` before the call:
+
+        =====================  ==============  ==============================================================================
+        Key                    Default         Description
+        =====================  ==============  ==============================================================================
+        ``style``              ``"wien"``      Name of the plot style. See :func:`plans.viewer.set_style`.
+        ``folder``             auto            Folder of the saved figure.
+        ``filename``           auto            Name of the saved figure, without extension.
+        ``fig_format``         ``"jpg"``       Format of the saved figure.
+        ``dpi``                ``300``         Resolution of the saved figure.
+        ``title``              auto            Title of the figure.
+        ``xvar``               auto            Not in use.
+        ``yvar``               auto            Not in use.
+        ``xlabel``             auto            Label of the x axis.
+        ``ylabel``             auto            Label of the y axis.
+        ``color``              ``"tab:grey"``  Color of the data.
+        ``xmin``               None            Not in use.
+        ``xmax``               None            Not in use.
+        ``ymin``               None            Not in use.
+        ``ymax``               None            Not in use.
+        ``layout``             ``"full"``      Name of the layout. See the table of layouts.
+        ``model_type``         ``"Linear"``    Model of the ``model`` layout: ``"Linear"``, ``"Power"`` or ``"Power_zero"``.
+        ``subtitle_data``      None            Title of the scatter panel. None hides it.
+        ``subtitle_model``     ``"Model"``     Title of the model panel. None hides it.
+        ``subtitle_error``     ``"Error"``     Title of the error panel. None hides it.
+        ``subtitle_variance``  auto            Title of the error variance panel. None hides it.
+        ``subtitle_qq``        ``"Q-Q"``       Title of the Q-Q panel. None hides it.
+        ``color_hist``         ``"tab:grey"``  Color of the histogram.
+        ``color_model``        ``"black"``     Color of the model.
+        ``color_error``        ``"tab:grey"``  Color of the errors.
+        ``color_variance``     ``"darkred"``   Color of the error variance.
+        ``color_mean``         ``"red"``       Color of the mean line.
+        ``color_mean_text``    None            Color of the mean label. None is black.
+        ``alpha``              ``0.8``         Opacity of the data.
+        ``alpha_hist``         ``1``           Opacity of the histogram.
+        ``alpha_error``        ``0.8``         Opacity of the errors.
+        ``range``              None            Range of the y axis, as ``[low, high]``. None is set from the data.
+        ``range_x``            None            Range of the x axis, as ``[low, high]``. None is set from the data.
+        ``range_e``            None            Range of the errors, as ``[low, high]``. None is symmetric, set from the data.
+        ``plot_mean``          ``True``        Show the mean line.
+        ``linestyle_mean``     ``"solid"``     Line style of the mean.
+        ``pad_mean``           ``1``           Spaces between the mean label and its line.
+        ``plot_mean_label``    ``True``        Show the mean label.
+        ``bins``               None            Number of histogram bins. None uses the Freedman-Diaconis rule.
+        ``bins_density``       ``False``       Take ``bins`` as the width of the bins.
+        ``zorder_data``        ``1``           Drawing order of the data.
+        ``zorder_model``       ``2``           Drawing order of the model.
+        ``zorder_histh``       ``1``           Drawing order of the histogram.
+        ``gs_*``               auto            Internal. Replaced by the shared grid of :mod:`plans.viewer`.
+        =====================  ==============  ==============================================================================
 
         :param show: option for showing instead of saving
         :type show: bool

@@ -31,6 +31,7 @@ import unittest
 # External imports
 # =======================================================================
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import numpy as np
 import pandas as pd
 
@@ -170,6 +171,96 @@ class TestTimeSeries(unittest.TestCase):
         with self.assertRaises(ValueError):
             ts.fit()
 
+    def get_generated(self):
+        ts = TimeSeries(name="Generated")
+        ts.generate(start="2015-01-01", end="2019-12-31", seed=1, inplace=True)
+        return ts
+
+    def get_fig(self, ts, layout):
+        ts.view_specs["layout"] = layout
+        fig = ts.view(show=False, return_fig=True)
+        self.addCleanup(plt.close, fig)
+        fig.canvas.draw()
+        return fig
+
+    def test_y_title_only_on_data_panel(self):
+        ax_data, ax_hist, ax_cdf = self.get_fig(
+            ts=self.get_generated(), layout="mini"
+        ).get_axes()
+        self.assertNotEqual(ax_data.get_ylabel(), "")
+        self.assertEqual(ax_hist.get_ylabel(), "")
+        self.assertEqual(ax_cdf.get_ylabel(), "")
+
+    def test_side_panels_have_same_width(self):
+        ts = self.get_generated()
+        for layout in ["full", "mini"]:
+            with self.subTest(layout=layout):
+                _, ax_hist, ax_cdf = self.get_fig(ts=ts, layout=layout).get_axes()
+                self.assertAlmostEqual(
+                    ax_hist.get_position().width, ax_cdf.get_position().width
+                )
+
+    def test_shallow_titles_are_stacked(self):
+        fig = self.get_fig(ts=self.get_generated(), layout="simple-shallow")
+        box_title = fig.get_axes()[0]._left_title.get_window_extent()
+        self.assertLess(box_title.y1, fig._suptitle.get_window_extent().y0)
+
+    def test_time_axis_defaults(self):
+        ts = self.get_generated()
+        ax = self.get_fig(ts=ts, layout="simple").get_axes()[0]
+        self.assertEqual(len(ax.get_xticks()), 5)
+        vct_num = mdates.date2num([ts.start, ts.end])
+        delta = 0.05 * (vct_num[1] - vct_num[0])
+        np.testing.assert_allclose(
+            ax.get_xlim(), [vct_num[0] - delta, vct_num[1] + delta]
+        )
+
+    def test_range_x_has_no_padding(self):
+        ts = self.get_generated()
+        ls_range = [pd.Timestamp("2016-01-01"), pd.Timestamp("2017-01-01")]
+        ts.view_specs["range_x"] = ls_range
+        ax = self.get_fig(ts=ts, layout="simple").get_axes()[0]
+        np.testing.assert_allclose(ax.get_xlim(), mdates.date2num(ls_range))
+
+    def test_epochs_layout(self):
+        ts = self.get_gap_series(cls=TimeSeries, dropnan=True)
+        df_before = ts.data.copy()
+        fig = self.get_fig(ts=ts, layout="epochs")
+        ax, ax_legend = fig.get_axes()
+        # two epochs on the series panel, and the list on the side
+        self.assertEqual(len(ax.get_lines()), 2)
+        ls_labels = [t.get_text() for t in ax_legend.get_legend().get_texts()]
+        self.assertListEqual(ls_labels, ["Gaps", "Epoch 1", "Epoch 2"])
+        pd.testing.assert_frame_equal(ts.data, df_before)
+
+    def test_decompose(self):
+        ts = self.get_generated()
+        df_before = ts.data.copy()
+        df = ts.decompose()
+        vct_sum = df["trend"] + df["cycle"] + df["remainder"]
+        np.testing.assert_allclose(vct_sum, ts.data[ts.varfield])
+        pd.testing.assert_frame_equal(ts.data, df_before)
+
+    def test_decompose_rejects_gaps(self):
+        ts = self.get_gap_series(cls=TimeSeries, dropnan=False)
+        with self.assertRaises(ValueError):
+            ts.decompose(params=self.get_generated().fit())
+
+    def test_decompose_moves_params(self):
+        # the same parts for the same dates, whatever the origin of the parameters
+        ts = self.get_generated()
+        params = ts.fit()
+        df_new = ts.generate(start="2017-01-01", end="2017-12-31", seed=2)
+        ts_new = TimeSeries(name="New")
+        ts_new.set_data(
+            input_df=df_new, input_dtfield=ts.dtfield, input_varfield=ts.varfield
+        )
+        df_all = ts.decompose(params=params).set_index(ts.dtfield)
+        df = ts_new.decompose(params=params).set_index(ts.dtfield)
+        np.testing.assert_allclose(
+            df["trend"], df_all.loc[df.index, "trend"], atol=1e-6
+        )
+
     def test_generate_returns_dataframe(self):
         ts = TemperatureSeries(name="Sim")
         df = ts.generate(start="2000-01-01", end="2000-12-31", seed=1)
@@ -197,7 +288,7 @@ class TestTimeSeries(unittest.TestCase):
         # the season follows the calendar at any step, and the specs can be edited
         ts = TemperatureSeries()
         ts.generator_specs.update(
-            {"noise_sd": 0.0, "peak_day": 200, "change_per_year": 0}
+            {"remainder_sd": 0.0, "peak_day": 200, "change_per_year": 0}
         )
         for freq, tolerance in [("D", 1), ("7D", 7), ("MS", 31)]:
             with self.subTest(freq=freq):
@@ -218,7 +309,7 @@ class TestTimeSeries(unittest.TestCase):
     def test_generate_sum_scales_with_step(self):
         # variables aggregated by sum are given per day
         ts = RainSeries()
-        ts.generator_specs["noise_sd"] = 0.0
+        ts.generator_specs["remainder_sd"] = 0.0
         kwargs = {"start": "2000-01-01", "end": "2019-12-31"}
         daily = ts.generate(freq="D", **kwargs)[ts.varfield]
         monthly = ts.generate(freq="MS", **kwargs)[ts.varfield]
@@ -227,12 +318,12 @@ class TestTimeSeries(unittest.TestCase):
     def test_generate_floor(self):
         for ts in [RainSeries(), DischargeSeries()]:
             with self.subTest(name=type(ts).__name__):
-                ts.generator_specs["noise_sd"] = 50.0
+                ts.generator_specs["remainder_sd"] = 50.0
                 df = ts.generate(start="2000-01-01", end="2000-12-31", seed=1)
                 self.assertEqual(df[ts.varfield].min(), 0.0)
         # no floor by default
         ts = TimeSeries()
-        ts.generator_specs["noise_sd"] = 50.0
+        ts.generator_specs["remainder_sd"] = 50.0
         df = ts.generate(start="2000-01-01", end="2000-12-31", seed=1)
         self.assertLess(df[ts.varfield].min(), 0.0)
 

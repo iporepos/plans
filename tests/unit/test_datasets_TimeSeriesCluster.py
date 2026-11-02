@@ -35,6 +35,7 @@ import warnings
 
 # External imports
 # =======================================================================
+import matplotlib.dates as mdates
 import numpy as np
 import pandas as pd
 import matplotlib
@@ -341,6 +342,26 @@ class TestStackedLayout(unittest.TestCase):
         ts_d = self.tsc.collection["D"]
         self.assertEqual(ts_d.data[ts_d.varfield].isna().sum(), 2)
 
+    def test_time_axis_defaults(self):
+        # the largest range of all series, with padding, and no panel letters
+        ts = make_series(name="D", values=np.arange(N_SIZE), start="2021-01-01")
+        self.tsc.append(new_object=ts)
+        self.tsc.update(details=True)
+        vct_num = mdates.date2num([self.tsc.start, self.tsc.end])
+        delta = 0.05 * (vct_num[1] - vct_num[0])
+        for layout in ["full", "stacked"]:
+            with self.subTest(layout=layout):
+                self.tsc.view_specs["layout"] = layout
+                ax = self.get_fig().get_axes()[0]
+                np.testing.assert_allclose(
+                    ax.get_xlim(), [vct_num[0] - delta, vct_num[1] + delta]
+                )
+                self.assertEqual(len(ax.get_xticks()), 5)
+        self.tsc.view_specs["layout"] = "full"
+        self.assertEqual(
+            self.get_fig().get_axes()[0].get_title(loc="left")[:5], "Gantt"
+        )
+
     def test_repeated_color_is_distinct(self):
         for name in ["A", "B"]:
             self.tsc.collection[name].view_specs["color"] = "blue"
@@ -427,8 +448,32 @@ class TestStackedLayout(unittest.TestCase):
         self.assertEqual(ax_first.get_xlim(), ax_last.get_xlim())
         self.assertEqual(ax_first.get_xlabel(), "")
         self.assertEqual(ax_last.get_xlabel(), "Date")
-        self.assertFalse(ax_first.xaxis.get_tick_params()["labelbottom"])
+        self.assertTrue(ax_first.xaxis.get_tick_params()["labelbottom"])
         self.assertTrue(ax_last.xaxis.get_tick_params()["labelbottom"])
+
+    def test_side_panels_have_same_width(self):
+        self.tsc.view_specs["layout"] = "stacked"
+        axes = self.get_fig().get_axes()
+        self.assertAlmostEqual(
+            axes[1].get_position().width, axes[2].get_position().width
+        )
+
+    def test_tick_labels_on_all_panels(self):
+        self.tsc.view_specs["layout"] = "stacked"
+        fig = self.get_fig()
+        fig.canvas.draw()
+        axes = fig.get_axes()
+        for ax in axes:
+            self.assertTrue(any(t.get_text() for t in ax.get_xticklabels()))
+            self.assertTrue(any(t.get_text() for t in ax.get_yticklabels()))
+        # axis labels of the time, histogram and CDF only on the last panel
+        for ax in axes[:-3]:
+            self.assertEqual(ax.get_xlabel(), "")
+        for ax in axes[-3:]:
+            self.assertNotEqual(ax.get_xlabel(), "")
+        # no y axis labels on the sides
+        self.assertEqual(axes[1].get_ylabel(), "")
+        self.assertEqual(axes[2].get_ylabel(), "")
 
     def test_lateral_panels(self):
         self.tsc.view_specs["layout"] = "stacked"

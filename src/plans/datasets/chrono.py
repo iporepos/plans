@@ -128,7 +128,7 @@ class RainSeries(WaterBalanceSeries):
                 "topline": 10.0,
                 "power": 3.0,
                 "memory_days": 1.0,
-                "noise_sd": 2.0,
+                "remainder_sd": 2.0,
             }
         )
 
@@ -182,7 +182,7 @@ class StreamflowSeries(WaterBalanceSeries):
                 "peak_day": 45,
                 "power": 2.0,
                 "memory_days": 20.0,
-                "noise_sd": 0.3,
+                "remainder_sd": 0.3,
             }
         )
 
@@ -268,7 +268,7 @@ class ETSeries(WaterBalanceSeries):
                 "baseline": 2.0,
                 "topline": 4.5,
                 "memory_days": 2.0,
-                "noise_sd": 0.5,
+                "remainder_sd": 0.5,
             }
         )
 
@@ -301,7 +301,7 @@ class PETSeries(WaterBalanceSeries):
                 "baseline": 3.0,
                 "topline": 5.5,
                 "memory_days": 2.0,
-                "noise_sd": 0.5,
+                "remainder_sd": 0.5,
             }
         )
 
@@ -343,7 +343,7 @@ class TemperatureSeries(TimeSeries):
                 "baseline": 18.0,
                 "topline": 28.0,
                 "memory_days": 3.0,
-                "noise_sd": 1.5,
+                "remainder_sd": 1.5,
                 "change_per_year": 0.03,
             }
         )
@@ -389,7 +389,7 @@ class StageSeries(TimeSeries):
                 "peak_day": 45,
                 "power": 2.0,
                 "memory_days": 20.0,
-                "noise_sd": 10.0,
+                "remainder_sd": 10.0,
             }
         )
 
@@ -443,7 +443,7 @@ class DischargeSeries(TimeSeries):
                 "peak_day": 45,
                 "power": 2.0,
                 "memory_days": 20.0,
-                "noise_sd": 3.0,
+                "remainder_sd": 3.0,
             }
         )
 

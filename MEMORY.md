@@ -1,5 +1,14 @@
 # Memory Log
 
+## 2026-11-02 — All panels show tick labels: dates on every stacked panel, y values on histograms and CDFs
+These are plots for inspecting data, so readable values come first. Axis labels stay on the last panel, and the data panel gave up one grid column to make room for the labels, keeping histogram and CDF at the same width. Long labels can still overflow, by the user's choice. The y axis title stays on the data panel only, except in Raster views, whose map has no y title, so the histogram keeps the one with the units.
+
+## 2026-11-02 — Renamed `noise_sd` to `remainder_sd`, `season_shape` to `cycle_shape` and `season_component` to `cycle_component`
+Requested by the user, no aliases kept since the code is new. The value was already the standard deviation of the remainder, not of the shocks.
+
+## 2026-11-02 — TimeSeries fine tunings: `epochs` layout replaces `view_epochs()`, `n_dates=5`, `pad_x=0.05`, spec tables in `view()` docstrings, `decompose()`, new synthetic tutorial
+From `prompt.md`. Trend, Cycle, Remainder (Memory and Shocks) and Shocks in tutorials; the `arma.decompose()` key `season` became `cycle`. `SeasonalEnsemble` has `pad_x=0`, since padding would repeat months at the edges. Thin `view()` overrides were added to hold the tables. Raster views and the `noise_sd` name were left as they are.
+
 ## 2026-11-02 — Series only change when asked: `dropnan=False` by default, reads work on a regular copy, specs survive `update()`, `tsc.standardize()` no longer fills gaps
 User decisions. `update()` keeps specs the user changed, `get_epochs`/`interpolate_gaps(inplace=False)`/`update_epochs_stats` use `_get_standard_data()`. `get_epochs()` now sees missing timestamps. The fill in `tsc.standardize()` dated from the first commit, but only `regionalize()` and tutorial 07 used it, so `regionalize()` now fills small gaps from other series instead of interpolating or zeroing them.
 

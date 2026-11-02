@@ -145,6 +145,8 @@ class TimeSeries(Univar):
     frequency detection, standardization, gap analysis, and scaling.
     """
 
+    EPOCHS_ROWS = 14  # rows of the list of epochs, by column
+
     # Dunder methods
     # -------------------------------------------------------------------
     def __init__(self, name="MyTimeSeries", alias="TS0"):
@@ -196,7 +198,7 @@ class TimeSeries(Univar):
             "peak_day": 15,
             "power": 1.0,
             "memory_days": 5.0,
-            "noise_sd": 1.0,
+            "remainder_sd": 1.0,
             "change_per_year": 0.0,
         }
 
@@ -224,6 +226,14 @@ class TimeSeries(Univar):
                 "nrows": 12,
                 "width": viewer.FIG_SIZES["M3"]["w"],
                 "height": viewer.FIG_SIZES["M3"]["h"],
+            },
+            "epochs": {
+                "ncols": 34,
+                "nrows": 12,
+                "width": viewer.FIG_SIZES["L"]["w"],
+                "height": viewer.FIG_SIZES["L"]["h"],
+                "ax_hist": False,
+                "ax_cdf": False,
             },
             "default": {
                 "ncols": 34,
@@ -1646,24 +1656,29 @@ class TimeSeries(Univar):
         """
         # ------------ setup axes ------------
         if specs["layout"] == "full":
-            fig.add_subplot(gs[2:10, 2:21])
-            fig.add_subplot(gs[2:10, 23:28])
+            fig.add_subplot(gs[2:10, 2:20])
+            fig.add_subplot(gs[2:10, 22:27])
             fig.add_subplot(gs[2:10, 29:])
 
         elif specs["layout"] == "mini":
-            fig.add_subplot(gs[2:10, 2:21])
-            fig.add_subplot(gs[2:10, 23:28])
+            fig.add_subplot(gs[2:10, 2:20])
+            fig.add_subplot(gs[2:10, 22:27])
             fig.add_subplot(gs[2:10, 29:])
 
         elif specs["layout"] == "simple":
             fig.add_subplot(gs[2:10, 2:34])
 
         elif specs["layout"] == "simple-shallow":
-            fig.add_subplot(gs[2:10, 2:34])
+            # lower top, so the panel title sits below the figure title
+            fig.add_subplot(gs[4:10, 2:34])
+
+        elif specs["layout"] == "epochs":
+            fig.add_subplot(gs[2:10, 2:20])
+            fig.add_subplot(gs[2:10, 22:])  # legend
 
         else:
-            fig.add_subplot(gs[2:10, 2:21])
-            fig.add_subplot(gs[2:10, 23:28])
+            fig.add_subplot(gs[2:10, 2:20])
+            fig.add_subplot(gs[2:10, 22:27])
             fig.add_subplot(gs[2:10, 29:])
 
         return fig
@@ -1717,6 +1732,7 @@ class TimeSeries(Univar):
                 # titles
                 "title": s_title,
                 "subtitle_data": "Time Series",
+                "subtitle_epochs": "Epochs",
                 # fields
                 "xvar": self.dtfield,
                 "yvar": self.varfield,
@@ -1735,19 +1751,22 @@ class TimeSeries(Univar):
                 # options
                 "fill": False,
                 "fill_only": False,
+                "color_gaps": "tab:red",
+                "alpha_gaps": 0.6,
                 # ranges todo review
                 "xmin": None,
                 "xmax": None,
                 "xmax_aux": 20,
                 "ymin": 0,
                 "ymax": None,
+                "pad_x": 0.05,  # share of the time span added on each side
                 # styles
                 "linestyle": "solid",
                 "marker": None,
                 "marker_eva": ".",
                 "drawstyle": None,
                 "n_bins": 100,
-                "n_dates": None,
+                "n_dates": 5,
                 "format_dates": "%Y-%m-%d",
                 "include_eva": False,
                 # stats locators
@@ -1770,6 +1789,108 @@ class TimeSeries(Univar):
 
             Use values in the ``view_specs()`` attribute for plotting
 
+        **Layouts**, set by ``view_specs["layout"]``:
+
+        ==================  ================================================================================
+        Layout              Panels
+        ==================  ================================================================================
+        ``full``            Series, histogram and CDF, with the statistics table.
+        ``mini``            Series, histogram and CDF.
+        ``simple``          Series only.
+        ``simple-shallow``  Series only, in a shallow figure.
+        ``epochs``          Series with epochs in colors and gaps in the background, and the list of epochs.
+        ``default``         Same panels of ``mini``, in the figure of ``full``.
+        ==================  ================================================================================
+
+        **View specs**, set by ``view_specs[key] = value`` before the call:
+
+        ====================  ===================  =====================================================================================================================
+        Key                   Default              Description
+        ====================  ===================  =====================================================================================================================
+        ``style``             ``"wien"``           Name of the plot style. See :func:`plans.viewer.set_style`.
+        ``folder``            auto                 Folder of the saved figure.
+        ``filename``          auto                 Name of the saved figure, without extension.
+        ``fig_format``        ``"jpg"``            Format of the saved figure.
+        ``dpi``               ``300``              Resolution of the saved figure.
+        ``title``             auto                 Title of the figure.
+        ``xvar``              auto                 Internal. Column of dates.
+        ``yvar``              auto                 Internal. Column of values.
+        ``xlabel``            auto                 Label of the x axis.
+        ``ylabel``            auto                 Label of the y axis.
+        ``color``             ``"gray"``           Color of the line.
+        ``xmin``              None                 Not in use.
+        ``xmax``              None                 Not in use.
+        ``ymin``              ``0``                Bottom of the fill.
+        ``ymax``              None                 Not in use.
+        ``layout``            ``"full"``           Name of the layout. See the table of layouts.
+        ``data_plot``         ``"scatter"``        Plot of the data panel: ``"scatter"`` or ``"boxplot"``.
+        ``subtitle_data``     ``"Time Series"``    Title of the series panel. None hides it.
+        ``subtitle_box``      ``"Boxplot"``        Title of the data panel, if a boxplot.
+        ``subtitle_hist``     ``"Histogram"``      Title of the histogram. None hides it.
+        ``subtitle_cdf``      ``"CDF"``            Title of the CDF. None hides it.
+        ``subtitle_qq``       ``"Q-Q"``            Title of the Q-Q panel. None hides it.
+        ``yvar_field``        auto                 Column of values. Set with the data.
+        ``xlabel_cdf``        ``"P(X)"``           Label of the x axis of the CDF.
+        ``xlabel_qq``         auto                 Label of the x axis of the Q-Q panel.
+        ``data_label``        auto                 Label of the data in the legend.
+        ``data_legend``       ``False``            Show the legend of the data panel.
+        ``color_hist``        ``"tab:grey"``       Color of the histogram.
+        ``color_cdf``         ``"black"``          Color of the CDF.
+        ``color_mean``        ``"red"``            Color of the mean line.
+        ``color_mean_text``   None                 Color of the mean label. None is black.
+        ``scheme_cmap``       ``"equal"``          Classes of the color map: ``"equal"``, ``"quantiles"`` or other schemes of :func:`plans.stochastic.binning.get_bins`.
+        ``n_classes_cmap``    ``5``                Number of classes of the color map.
+        ``cmap``              ``"viridis"``        Name of the color map.
+        ``alpha``             ``1``                Opacity of the line.
+        ``alpha_hist``        ``1``                Opacity of the histogram.
+        ``alpha_cdf``         ``1``                Opacity of the CDF.
+        ``range``             None                 Range of the y axis, as ``[low, high]``. None is set from the data.
+        ``range_x``           None                 Range of the x axis, as ``[low, high]``. None is the time span with ``pad_x``.
+        ``plot_mean``         ``True``             Show the mean line.
+        ``plot_mean_data``    ``False``            Show the mean line also on the data panel.
+        ``linestyle_mean``    ``"solid"``          Line style of the mean.
+        ``pad_mean``          ``1``                Spaces between the mean label and its line.
+        ``plot_mean_label``   ``True``             Show the mean label.
+        ``hist_density``      ``True``             Not in use.
+        ``bins``              ``20``               Number of histogram bins, or the width of the bins if ``bins_density``.
+        ``bins_density``      ``False``            Take ``bins`` as the width of the bins.
+        ``ax_data``           ``0``                Internal. Index of the data axis.
+        ``ax_hist``           ``1``                Internal. Index of the histogram axis. False has no histogram.
+        ``ax_cdf``            ``2``                Internal. Index of the CDF axis. False has no CDF.
+        ``x_stats``           ``0.73``             Horizontal position of the statistics table, as a share of the figure.
+        ``x_stats_sep``       ``0.12``             Space between columns of the statistics table.
+        ``y_stats``           ``0.28``             Vertical position of the statistics table, as a share of the figure.
+        ``zorder_data``       ``1``                Drawing order of the data.
+        ``zorder_histh``      ``1``                Drawing order of the histogram.
+        ``zorder_cdf``        ``1``                Drawing order of the CDF.
+        ``scatter_factor``    ``4``                Size of the scatter markers.
+        ``colorize_scatter``  ``False``            Color the scatter markers by the color map.
+        ``box_width``         ``0.4``              Width of the boxplot.
+        ``box_showfliers``    ``True``             Show the outliers of the boxplot.
+        ``subtitle_epochs``   ``"Epochs"``         Title of the list of epochs, in the ``epochs`` layout.
+        ``color_aux``         ``"gray"``           Not in use.
+        ``color_fill``        None                 Color of the fill. None is the color of the line.
+        ``color_eva``         ``"blue"``           Color of the annual maxima.
+        ``legend_eva``        ``"Annual Maxima"``  Label of the annual maxima.
+        ``alpha_aux``         ``1``                Not in use.
+        ``alpha_fill``        ``1``                Opacity of the fill.
+        ``fill``              ``False``            Fill below the line, down to ``ymin``.
+        ``fill_only``         ``False``            With ``fill``, hide the line.
+        ``color_gaps``        ``"tab:red"``        Color of the gaps, in the ``epochs`` layout.
+        ``alpha_gaps``        ``0.6``              Opacity of the gaps, in the ``epochs`` layout.
+        ``xmax_aux``          ``20``               Not in use.
+        ``pad_x``             ``0.05``             Share of the time span added on each side of the x axis, if ``range_x`` is None.
+        ``linestyle``         ``"solid"``          Line style.
+        ``marker``            None                 Marker of the line.
+        ``marker_eva``        ``"."``              Not in use.
+        ``drawstyle``         None                 Draw style of the line, such as ``"steps-mid"``.
+        ``n_bins``            ``100``              Not in use.
+        ``n_dates``           ``5``                Number of date ticks, evenly spaced in time. None chooses them automatically.
+        ``format_dates``      ``"%Y-%m-%d"``       Format of the date labels.
+        ``include_eva``       ``False``            Show the annual maxima and their model. Needs the extreme values analysis.
+        ``gs_*``              auto                 Internal. Replaced by the shared grid of :mod:`plans.viewer`.
+        ====================  ===================  =====================================================================================================================
+
         :param show: option for showing instead of saving.
         :type show: bool
         :param return_fig: option for returning the figure object itself.
@@ -1786,7 +1907,7 @@ class TimeSeries(Univar):
             self.view_specs["xlabel_b"] = "p(X)"
 
         # handle mode specs
-        if "simple" in specs["layout"]:
+        if "simple" in specs["layout"] or specs["layout"] == "epochs":
             self.view_specs["ax_hist"] = False
             self.view_specs["ax_cdf"] = False
         else:
@@ -1813,7 +1934,10 @@ class TimeSeries(Univar):
         ax = axes[specs["ax_data"]]
         ax.cla()
 
-        TimeSeries.plot_series(data=self.data, ax=ax, specs=specs)
+        if specs["layout"] == "epochs":
+            self._plot_epochs(ax=ax, ax_legend=axes[1], specs=specs)
+        else:
+            TimeSeries.plot_series(data=self.data, ax=ax, specs=specs)
 
         # handle eva
         # ----------------------------------------------
@@ -1885,6 +2009,8 @@ class TimeSeries(Univar):
             # the EVA model panel has its own y axis
             viewer.clear_xticks(axes=axes[:2])
             viewer.clear_xticks(axes=axes[2:])
+        elif specs["layout"] == "epochs":
+            viewer.clear_xticks(axes=[ax])
         else:
             viewer.clear_xticks(axes=axes)
 
@@ -1899,98 +2025,137 @@ class TimeSeries(Univar):
         else:
             viewer.ship_fig(fig=fig, show=show, file_output=file_path, dpi=specs["dpi"])
 
-    def view_epochs(self, show=True):
+    def _plot_epochs(self, ax, ax_legend, specs):
         """
-        Get a basic visualization.
-        Expected to overwrite superior methods.
+        Plot each epoch in its own color and the gaps in the background, with the
+        list of epochs on the side. The series is not changed.
 
-        :param show: option for showing instead of saving.
-        :type show: bool
-
-        **Notes**
-
-        - Uses values in the ``view_specs()`` attribute for plotting
-
+        :param ax: axis of the series
+        :type ax: :class:`matplotlib.axes.Axes`
+        :param ax_legend: axis of the legend
+        :type ax_legend: :class:`matplotlib.axes.Axes`
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :return: None
+        :rtype: None
         """
-        # get specs
-        specs = self.view_specs.copy()
-        # --------------------- pre-processing --------------------- #
-        # preprocessing
-        if self.epochs_stats is None:
-            self.update_epochs_stats()
+        self.update_epochs_stats()
+        df = self._get_standard_data(cut=True)
+        dates = df[self.dtfield]
 
-        # --------------------- figure setup --------------------- #
-        fig = plt.figure(figsize=(6, 4))  # Width, Height
-
-        # handle min max
-        if specs["xmin"] is None:
-            specs["xmin"] = self.data[specs["xvar"]].min()
-        if specs["ymin"] is None:
-            specs["ymin"] = self.data[specs["yvar"]].min()
-        if specs["xmax"] is None:
-            specs["xmax"] = self.data[specs["xvar"]].max()
-        if specs["ymax"] is None:
-            specs["ymax"] = self.data[specs["yvar"]].max()
-
-        # --------------------- plotting --------------------- #
-        gaps_c = "tab:red"
-        gaps_a = 0.6
-        # plot loop
-        for i in range(len(self.epochs_stats)):
-            start = self.epochs_stats["start"].values[i]
-            end = self.epochs_stats["end"].values[i]
-            df_aux = self.data.query(
-                "{} >= '{}' and {} < '{}'".format(
-                    self.dtfield, start, self.dtfield, end
-                )
+        # all epochs under the same range and without their own ticks
+        sp = dict(specs, data_legend=False, n_dates=None)
+        if sp["range_x"] is None:
+            sp["range_x"] = TimeSeries.get_range_x(
+                xmin=dates.min(), xmax=dates.max(), pad=specs["pad_x"]
             )
-            epoch_c = self.epochs_stats["color"].values[i]
-            epoch_id = self.epochs_stats[self.epochs_id_field].values[i]
-            plt.plot(
-                df_aux[self.dtfield],
-                df_aux[self.varfield],
-                linestyle=specs["linestyle"],
-                color=epoch_c,
-                label=f"Epoch {epoch_id}",
+        for i in range(self.epochs_n):
+            is_epoch = dates.between(
+                self.epochs_stats[self.start_field].values[i],
+                self.epochs_stats[self.end_field].values[i],
             )
-            # Fill the space where there are missing values
-            plt.fill_between(
-                df_aux[self.dtfield],
-                y1=0,
-                y2=1.2 * specs["ymax"],
-                where=df_aux[self.varfield].isna(),
-                color=gaps_c,
-                alpha=gaps_a,
+            sp["color"] = self.epochs_stats[self.field_color].values[i]
+            sp["data_label"] = "Epoch {}".format(
+                self.epochs_stats[self.epochs_id_field].values[i]
             )
-        # Create a dummy plot for missing data symbol
-        plt.plot([], [], color=gaps_c, alpha=gaps_a, label="Gaps")
-        if self.epochs_n <= 12:
-            plt.legend(frameon=True, ncol=3)
+            TimeSeries.plot_series(data=df[is_epoch], ax=ax, specs=sp)
 
-        # --------------------- post-plotting --------------------- #
-        # set basic plotting stuff
-        plt.title(specs["title"])
-        plt.ylabel(specs["ylabel"])
-        plt.xlabel(specs["xlabel"])
+        # the step keeps gaps of a single record visible
+        vct_gaps = df[self.varfield].isna().values
+        if vct_gaps.any():
+            ax.fill_between(
+                dates,
+                0,
+                1,
+                where=vct_gaps,
+                step="mid",
+                transform=ax.get_xaxis_transform(),
+                color=specs["color_gaps"],
+                alpha=specs["alpha_gaps"],
+                linewidth=0,
+                label="Gaps",
+            )
+        TimeSeries.set_date_ticks(
+            ax=ax,
+            xmin=dates.min(),
+            xmax=dates.max(),
+            n_dates=specs["n_dates"],
+            format_dates=specs["format_dates"],
+        )
 
-        plt.xlim(specs["xmin"], specs["xmax"])
-        plt.ylim(specs["ymin"], 1.2 * specs["ymax"])
+        # list up to what fits in the space, gaps first
+        ls_handles, ls_labels = ax.get_legend_handles_labels()
+        n_rows = TimeSeries.EPOCHS_ROWS
+        if vct_gaps.any():
+            ls_handles = ls_handles[-1:] + ls_handles[:-1]
+            ls_labels = ls_labels[-1:] + ls_labels[:-1]
+        ls_handles = ls_handles[: 3 * n_rows]
+        ls_labels = ls_labels[: 3 * n_rows]
+        ax_legend.axis("off")
+        ax_legend.set_title(
+            "{} ({})".format(specs["subtitle_epochs"], self.epochs_n), loc="left"
+        )
+        ax_legend.legend(
+            ls_handles,
+            ls_labels,
+            loc="upper left",
+            bbox_to_anchor=(0, 1),
+            ncol=int(np.ceil(len(ls_labels) / n_rows)),
+            fontsize=7,
+            frameon=False,
+            borderaxespad=0,
+        )
+        return None
 
-        # Adjust layout to prevent cutoff
-        plt.tight_layout()
+    @staticmethod
+    def get_range_x(xmin, xmax, pad):
+        """
+        Get the range of a time axis with a padding on each side.
 
-        # --------------------- end --------------------- #
-        # show or save
-        if show:
-            plt.show()
+        :param xmin: first date
+        :type xmin: :class:`pandas.Timestamp`
+        :param xmax: last date
+        :type xmax: :class:`pandas.Timestamp`
+        :param pad: share of the time span added on each side
+        :type pad: float
+        :return: first and last date of the range
+        :rtype: list
+        """
+        delta = pad * (xmax - xmin)
+        return [xmin - delta, xmax + delta]
+
+    @staticmethod
+    def set_date_ticks(ax, xmin, xmax, n_dates, format_dates):
+        """
+        Set ticks evenly spaced in calendar time on a time axis, within its limits.
+
+        :param ax: target axis
+        :type ax: :class:`matplotlib.axes.Axes`
+        :param xmin: date of the first tick
+        :type xmin: :class:`pandas.Timestamp`
+        :param xmax: date of the last tick
+        :type xmax: :class:`pandas.Timestamp`
+        :param n_dates: number of ticks. If None, they are chosen automatically
+        :type n_dates: int
+        :param format_dates: format of the dates. If None, it is the current one
+        :type format_dates: str
+        :return: None
+        :rtype: None
+        """
+        if n_dates is None:
+            ax.xaxis.set_major_locator(mdates.AutoDateLocator(minticks=3, maxticks=7))
             return None
+        # ticks out of the limits would widen the axis
+        num_low, num_high = ax.get_xlim()
+        num_start = max(mdates.date2num(xmin), num_low)
+        num_end = min(mdates.date2num(xmax), num_high)
+        if n_dates <= 1:
+            ax.set_xticks([num_start])
         else:
-            file_path = "{}/{}.{}".format(
-                specs["folder"], specs["filename"], specs["fig_format"]
-            )
-            plt.savefig(file_path, dpi=specs["dpi"])
-            plt.close(fig)
-            return file_path
+            ax.set_xticks(np.linspace(num_start, num_end, n_dates))
+        if format_dates is not None:
+            ax.xaxis.set_major_formatter(mdates.DateFormatter(format_dates))
+        return None
 
     @staticmethod
     def plot_series(data, ax, specs):
@@ -2045,31 +2210,6 @@ class TimeSeries(Univar):
                 zorder=specs["zorder_data"],
             )
 
-        # handle dates
-        if specs["n_dates"] is not None:
-            n_dates = specs["n_dates"]
-            dates = data[specs["xvar"]]
-
-            # Handle n_dates dynamically
-            if n_dates <= 1:
-                # Just the first one
-                tick_indices = [0]
-            elif n_dates == 2:
-                # First and last
-                tick_indices = [0, len(dates) - 1]
-            else:
-                # Evenly spaced positions across the dataset
-                tick_indices = np.linspace(0, len(dates) - 1, n_dates, dtype=int)
-
-            # Get the corresponding dates
-            ticks = dates.iloc[tick_indices]
-
-            # Apply to plot
-            ax.set_xticks(ticks)
-            format_dates = specs.get("format_dates", None)
-            if format_dates is not None:
-                ax.set_xticklabels([d.strftime(format_dates) for d in ticks])
-
         # handle subtitle
         if specs["subtitle_data"] is not None:
             ax.set_title(specs["subtitle_data"], loc="left")
@@ -2079,8 +2219,25 @@ class TimeSeries(Univar):
             ax.set_ylim(specs["range"])
 
         # handle range x
+        dates = data[specs["xvar"]]
         if specs["range_x"] is not None:
             ax.set_xlim(specs["range_x"])
+        elif len(dates) > 0:
+            ax.set_xlim(
+                TimeSeries.get_range_x(
+                    xmin=dates.min(), xmax=dates.max(), pad=specs["pad_x"]
+                )
+            )
+
+        # handle dates
+        if specs["n_dates"] is not None and len(dates) > 0:
+            TimeSeries.set_date_ticks(
+                ax=ax,
+                xmin=dates.min(),
+                xmax=dates.max(),
+                n_dates=specs["n_dates"],
+                format_dates=specs.get("format_dates", None),
+            )
 
         if specs["data_legend"]:
             ax.legend(
@@ -2200,6 +2357,17 @@ class TimeSeries(Univar):
         ts1.view_specs["range"] = range_y
         ts2.view_specs["range"] = range_y
 
+        # shared time axis, from the first date to the last one of both
+        xmin = min(ts1.data[ts1.dtfield].min(), ts2.data[ts2.dtfield].min())
+        xmax = max(ts1.data[ts1.dtfield].max(), ts2.data[ts2.dtfield].max())
+        range_x = specs.get("range_x")
+        if range_x is None:
+            range_x = TimeSeries.get_range_x(
+                xmin=xmin, xmax=xmax, pad=ts1.view_specs["pad_x"]
+            )
+        ts1.view_specs["range_x"] = range_x
+        ts2.view_specs["range_x"] = range_x
+
         # setup first series
         # ----------------------------------------------------------------
         ts1.view_specs["title"] = specs["title"]
@@ -2231,6 +2399,13 @@ class TimeSeries(Univar):
         # plot series
         TimeSeries.plot_series(
             data=ts2.data, ax=axes[ts2.view_specs["ax_data"]], specs=ts2.view_specs
+        )
+        TimeSeries.set_date_ticks(
+            ax=axes[ts2.view_specs["ax_data"]],
+            xmin=xmin,
+            xmax=xmax,
+            n_dates=ts2.view_specs["n_dates"],
+            format_dates=ts2.view_specs["format_dates"],
         )
 
         # plot hist
@@ -2327,12 +2502,12 @@ class TimeSeries(Univar):
             phase=((specs["peak_day"] - start.dayofyear) / step_days) % period,
             power=specs["power"],
             phi=phi,
-            sigma=factor * specs["noise_sd"] * np.sqrt(1 - phi**2),
+            sigma=factor * specs["remainder_sd"] * np.sqrt(1 - phi**2),
         )
 
     def generate(self, start, end, freq=None, params=None, seed=None, inplace=False):
         """
-        Generate a synthetic series with trend, a yearly season and AR(1) memory.
+        Generate a synthetic series with trend, a yearly cycle and AR(1) memory.
 
         Without ``params``, it uses the ``generator_specs`` attribute, which each child
         class sets for its own variable and which can be edited. These specs are in
@@ -2341,9 +2516,9 @@ class TimeSeries(Univar):
         - ``baseline`` and ``topline``: lowest and highest points of the yearly cycle,
           at the middle of the record. Per day if the object aggregates by sum.
         - ``peak_day``: day of the year of the peak.
-        - ``power``: shape of the season. See :func:`plans.stochastic.arma.season_shape`.
-        - ``memory_days``: time for the noise memory to decay by a factor of e.
-        - ``noise_sd``: standard deviation of the noise. Per day if aggregated by sum.
+        - ``power``: shape of the cycle. See :func:`plans.stochastic.arma.cycle_shape`.
+        - ``memory_days``: time for the memory of the remainder to decay by a factor of e.
+        - ``remainder_sd``: standard deviation of the remainder. Per day if aggregated by sum.
         - ``change_per_year``: change of the trend per year. Per day if aggregated by sum.
 
         Values below ``generator_floor`` are pruned to it, if it is set.
@@ -2361,7 +2536,7 @@ class TimeSeries(Univar):
         :param freq: frequency alias. By default, it is the one in ``params`` or ``D``.
         :type freq: str
         :param params: parameters, usually from :meth:`fit`. Those from :meth:`fit` follow
-            the calendar, so the season and trend carry over to any ``start``.
+            the calendar, so the cycle and trend carry over to any ``start``.
         :type params: dict
         :param seed: random seed
         :type seed: int
@@ -2392,15 +2567,8 @@ class TimeSeries(Univar):
         # handle parameters
         if params is None:
             params = self._get_generator_params(start=dates[0], freq=freq, n=len(dates))
-        elif "origin" in params:
-            # move step 0 from the origin to the new start
-            delta = dates[0] - pd.Timestamp(params["origin"])
-            shift = (delta.total_seconds() / 86400) / (YEAR_DAYS / period)
-            params = dict(
-                params,
-                start=params["start"] + params["slope"] * shift,
-                phase=(params["phase"] - shift) % params["period"],
-            )
+        else:
+            params = TimeSeries._move_params(params=params, start=dates[0])
 
         values = _arma.build(params=params, n=len(dates), seed=seed)
         if self.generator_floor is not None:
@@ -2414,6 +2582,49 @@ class TimeSeries(Univar):
             )
             return None
         return df
+
+    @staticmethod
+    def _move_params(params, start):
+        """
+        Move step 0 of the parameters from their origin, if any, to a new start.
+
+        :param params: parameters
+        :type params: dict
+        :param start: new first date
+        :type start: :class:`pandas.Timestamp`
+        :return: parameters that apply from the new start
+        :rtype: dict
+        """
+        if "origin" not in params:
+            return params
+        delta = start - pd.Timestamp(params["origin"])
+        shift = (delta.total_seconds() / 86400) / (YEAR_DAYS / params["period"])
+        return dict(
+            params,
+            start=params["start"] + params["slope"] * shift,
+            phase=(params["phase"] - shift) % params["period"],
+        )
+
+    def decompose(self, params=None):
+        """
+        Split the data into trend, cycle, remainder and shocks. The data is not
+        changed. The remainder holds the memory and the shocks, so that
+        ``trend + cycle + remainder`` rebuilds the data.
+
+        :param params: parameters. By default, they come from :meth:`fit`.
+        :type params: dict
+        :return: dates and components, in columns ``trend``, ``cycle``, ``remainder``
+            and ``shocks``
+        :rtype: :class:`pandas.DataFrame`
+        """
+        if params is None:
+            params = self.fit()
+        df = self.data.sort_values(by=self.dtfield)
+        if df[self.varfield].isna().any():
+            raise ValueError("There are gaps in the data. Fill them to decompose")
+        params = TimeSeries._move_params(params=params, start=df[self.dtfield].iloc[0])
+        dc_parts = _arma.decompose(x=df[self.varfield].values, params=params)
+        return pd.DataFrame({self.dtfield: df[self.dtfield].values, **dc_parts})
 
     def fit(self):
         """
@@ -2895,6 +3106,7 @@ class TimeSeriesCollection(Collection):
             "xmax": None,
             "ymin": None,
             "ymax": None,
+            "pad_x": 0.05,  # share of the time span added on each side, if auto
             # export
             "folder": "./output",
             "filename": None,
@@ -3047,17 +3259,17 @@ class TimeSeriesCollection(Collection):
                 rows = slice(i_row, i_row + n_rows)
                 # series and CDFs share their x axis across panels
                 ax = fig.add_subplot(
-                    gs[rows, 3:] if is_simple else gs[rows, 3:21], sharex=ax_series
+                    gs[rows, 3:] if is_simple else gs[rows, 3:20], sharex=ax_series
                 )
                 ax_series = ax if ax_series is None else ax_series
                 if not is_simple:
-                    fig.add_subplot(gs[rows, 23:28])
+                    fig.add_subplot(gs[rows, 22:27])
                     ax = fig.add_subplot(gs[rows, 29:], sharex=ax_cdf)
                     ax_cdf = ax if ax_cdf is None else ax_cdf
                 i_row = i_row + n_rows + TimeSeriesCollection.PANEL_GAP_ROWS
         elif specs["layout"] == "series":
-            fig.add_subplot(gs[2:10, 3:21])  # 0: series
-            fig.add_subplot(gs[2:10, 23:28])  # 1: histograms
+            fig.add_subplot(gs[2:10, 3:20])  # 0: series
+            fig.add_subplot(gs[2:10, 22:27])  # 1: histograms
             fig.add_subplot(gs[2:10, 29:])  # 2: CDFs
         elif specs["layout"] == "series-simple":
             # one row below the title, for the legend
@@ -3137,34 +3349,15 @@ class TimeSeriesCollection(Collection):
         # cross-series overlap
         epochs_df = self.get_epochs()
 
-        xmin = specs["xmin"] if specs["xmin"] is not None else self.start
-        xmax = specs["xmax"] if specs["xmax"] is not None else self.end
-
-        # Evenly-spaced ticks in *calendar time*, not by row position.
-        # `epochs_df` can mix resolutions (e.g. hourly while one series is
-        # active, daily once it ends -- see merge_data()), so picking ticks
-        # by row index would bunch them together in the fine-resolution
-        # stretch and leave a big gap across the coarse one. Building the
-        # ticks directly from xmin/xmax (mirrors TimeSeries.plot_series'
-        # ``n_dates``/``format_dates``) keeps them evenly spaced regardless.
-        n_dates = specs["n_dates"]
-        if n_dates is None:
-            ticks = None
-        elif n_dates <= 1:
-            ticks = [xmin]
-        elif n_dates == 2:
-            ticks = [xmin, xmax]
-        else:
-            ticks = pd.date_range(start=xmin, end=xmax, periods=n_dates)
-        format_dates = specs.get("format_dates", None)
+        xmin, xmax, range_x = self._get_range_x(specs=specs)
 
         # large collections drop per-series labels
         n_series = len(names)
         is_large = n_series > specs["n_series_max"]
 
-        # --- a. Gantt chart ---
+        # --- Gantt chart ---
         ax_gantt = axes[0]
-        ax_gantt.set_title("a. {}".format(specs["gantt"]), loc="left")
+        ax_gantt.set_title(specs["gantt"], loc="left")
         # fit line width to row height (points), so rows never overlap
         row_pt = ax_gantt.get_window_extent().height * 72 / fig.dpi / n_series
         gantt_linewidth = min(specs["gantt_linewidth"], 0.7 * row_pt)
@@ -3182,25 +3375,26 @@ class TimeSeriesCollection(Collection):
                     solid_capstyle="butt",
                 )
         ax_gantt.set_ylim(0, 1)
-        ax_gantt.set_xlim(xmin, xmax)
+        ax_gantt.set_xlim(range_x)
         if is_large:
             ax_gantt.set_yticks([])
             ax_gantt.set_ylabel("{} series".format(n_series))
         else:
             ax_gantt.set_yticks(heights, labels)
         ax_gantt.set_xlabel(specs["xlabel"])
-        if ticks is not None:
-            ax_gantt.set_xticks(ticks)
-            if format_dates is not None:
-                ax_gantt.set_xticklabels(
-                    [pd.Timestamp(d).strftime(format_dates) for d in ticks]
-                )
+        TimeSeries.set_date_ticks(
+            ax=ax_gantt,
+            xmin=xmin,
+            xmax=xmax,
+            n_dates=specs["n_dates"],
+            format_dates=specs["format_dates"],
+        )
         ax_gantt.tick_params(axis="x", labelrotation=specs["xtick_rotation"])
         ax_gantt.grid(axis="y")
 
-        # --- b. Overlapping chart ---
+        # --- Overlapping chart ---
         ax_over = axes[1]
-        ax_over.set_title("b. {}".format(specs["over"]), loc="left")
+        ax_over.set_title(specs["over"], loc="left")
         ax_over.plot(
             epochs_df[self.dtfield],
             100 * epochs_df[self.overfield],
@@ -3215,21 +3409,22 @@ class TimeSeriesCollection(Collection):
         ymin = specs["ymin"] if specs["ymin"] is not None else -5
         ymax = specs["ymax"] if specs["ymax"] is not None else 105
         ax_over.set_ylim(ymin, ymax)
-        ax_over.set_xlim(xmin, xmax)
+        ax_over.set_xlim(range_x)
         ax_over.set_xlabel(specs["xlabel"])
-        if ticks is not None:
-            ax_over.set_xticks(ticks)
-            if format_dates is not None:
-                ax_over.set_xticklabels(
-                    [pd.Timestamp(d).strftime(format_dates) for d in ticks]
-                )
+        TimeSeries.set_date_ticks(
+            ax=ax_over,
+            xmin=xmin,
+            xmax=xmax,
+            n_dates=specs["n_dates"],
+            format_dates=specs["format_dates"],
+        )
         ax_over.tick_params(axis="x", labelrotation=specs["xtick_rotation"])
         ax_over.set_ylabel(specs["ylabel_over"])
 
-        # --- c. Prevalence chart (only in the "full" layout) ---
+        # --- Prevalence chart (only in the "full" layout) ---
         if len(axes) > 2:
             ax_prev = axes[2]
-            ax_prev.set_title("c. {}".format(specs["prev"]), loc="left")
+            ax_prev.set_title(specs["prev"], loc="left")
             # rows aligned with the gantt chart
             ax_prev.barh(
                 heights,
@@ -3249,6 +3444,25 @@ class TimeSeriesCollection(Collection):
 
         fig.suptitle(specs["title"])
         return fig
+
+    def _get_range_x(self, specs):
+        """
+        Get the time axis: from the first date to the last one of all series,
+        with a padding on the sides not set by ``xmin`` and ``xmax``.
+
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :return: first and last tick, and the range of the axis
+        :rtype: tuple
+        """
+        xmin = specs["xmin"] if specs["xmin"] is not None else self.start
+        xmax = specs["xmax"] if specs["xmax"] is not None else self.end
+        range_x = TimeSeries.get_range_x(xmin=xmin, xmax=xmax, pad=specs["pad_x"])
+        if specs["xmin"] is not None:
+            range_x[0] = xmin
+        if specs["xmax"] is not None:
+            range_x[1] = xmax
+        return xmin, xmax, range_x
 
     def _get_labels(self, specs):
         """
@@ -3310,8 +3524,7 @@ class TimeSeriesCollection(Collection):
 
         # COMMON RANGES
         # -------------------------------------------------------------------
-        xmin = specs["xmin"] if specs["xmin"] is not None else self.start
-        xmax = specs["xmax"] if specs["xmax"] is not None else self.end
+        xmin, xmax, range_x = self._get_range_x(specs=specs)
         range_y = specs["range"]
         if range_y is None:
             vmin = np.nanmin(
@@ -3361,7 +3574,7 @@ class TimeSeriesCollection(Collection):
                     "data_legend": False,
                     "linewidth": specs["linewidth"],
                     "range": range_y,
-                    "range_x": [xmin, xmax],
+                    "range_x": range_x,
                     "n_dates": None,
                     "xlabel": specs["xlabel"],
                     "ylabel": ylabel,
@@ -3407,12 +3620,16 @@ class TimeSeriesCollection(Collection):
 
         # DECORATIONS
         # -------------------------------------------------------------------
-        axes[0].xaxis.set_major_locator(mdates.AutoDateLocator(minticks=3, maxticks=7))
+        TimeSeries.set_date_ticks(
+            ax=axes[0],
+            xmin=xmin,
+            xmax=xmax,
+            n_dates=specs["n_dates"],
+            format_dates=specs["format_dates"],
+        )
         if len(axes) > 1:
             # histograms share the series axis
             axes[1].set_xlim(0, 1.1 * hist_max)
-            axes[1].set_ylabel(None)
-            axes[1].tick_params(labelleft=False)
 
         viewer.clear_xticks(axes=axes)
         self._set_series_legend(axes=axes, specs=specs)
@@ -3483,8 +3700,7 @@ class TimeSeriesCollection(Collection):
         dc_labels = dict(
             zip(self.catalog[self.field_name].values, self._get_labels(specs=specs))
         )
-        xmin = specs["xmin"] if specs["xmin"] is not None else self.start
-        xmax = specs["xmax"] if specs["xmax"] is not None else self.end
+        xmin, xmax, range_x = self._get_range_x(specs=specs)
         n_panels = len(specs["panels"])
         n_axes = len(axes) // n_panels
 
@@ -3513,7 +3729,7 @@ class TimeSeriesCollection(Collection):
                         "data_label": dc_labels[name],
                         "data_legend": False,
                         "range": range_y,
-                        "range_x": [xmin, xmax],
+                        "range_x": range_x,
                         "n_dates": None,
                         "xlabel": None,
                         "ylabel": ylabel,
@@ -3552,10 +3768,7 @@ class TimeSeriesCollection(Collection):
             if len(ls_lateral) > 0:
                 ax_hist, ax_cdf = ls_lateral
                 ax_hist.set_xlim(0, 1.1 * hist_max)
-                ax_hist.set_ylabel(None)
-                ax_hist.tick_params(labelleft=False)
-                # histograms keep their own scale, and CDFs share one
-                ax_cdf.tick_params(labelbottom=is_last)
+                # axis labels only below the last panel
                 if not is_last:
                     ax_hist.set_xlabel(None)
                     ax_cdf.set_xlabel(None)
@@ -3563,10 +3776,14 @@ class TimeSeriesCollection(Collection):
             viewer.clear_xticks(axes=[ax_series] + ls_lateral)
             if not is_single:
                 self._set_series_legend(axes=[ax_series], specs=specs)
-            # dates only below the last panel
-            ax_series.tick_params(labelbottom=is_last)
 
-        axes[0].xaxis.set_major_locator(mdates.AutoDateLocator(minticks=3, maxticks=7))
+        TimeSeries.set_date_ticks(
+            ax=axes[0],
+            xmin=xmin,
+            xmax=xmax,
+            n_dates=specs["n_dates"],
+            format_dates=specs["format_dates"],
+        )
         axes[(n_panels - 1) * n_axes].set_xlabel(specs["xlabel"])
         return None
 
@@ -3615,6 +3832,73 @@ class TimeSeriesCollection(Collection):
         titles, axis ranges, layout choice...) now lives in
         ``self.view_specs`` -- set it before calling, exactly like
         :meth:`TimeSeries.view`.
+
+        **Layouts**, set by ``view_specs["layout"]``:
+
+        ==================  ======================================================================================
+        Layout              Panels
+        ==================  ======================================================================================
+        ``full``            Gantt chart, overlap and prevalence.
+        ``simple``          Gantt chart and overlap.
+        ``default``         Same as ``full``.
+        ``stacked``         A panel for each entry of ``panels``, with histograms and CDFs, on a shared time axis.
+        ``stacked-simple``  A panel for each entry of ``panels``, on a shared time axis.
+        ==================  ======================================================================================
+
+        **View specs**, set by ``view_specs[key] = value`` before the call:
+
+        =========================  ===============  ===========================================================================================
+        Key                        Default          Description
+        =========================  ===============  ===========================================================================================
+        ``layout``                 ``"full"``       Name of the layout. See the table of layouts.
+        ``style``                  ``"wien"``       Name of the plot style. See :func:`plans.viewer.set_style`.
+        ``title``                  auto             Title of the figure.
+        ``gantt``                  auto             Title of the Gantt chart.
+        ``over``                   auto             Title of the overlap panel.
+        ``prev``                   auto             Title of the prevalence panel.
+        ``xlabel``                 auto             Label of the time axis.
+        ``ylabel_over``            ``"%"``          Label of the y axis of the overlap panel.
+        ``xlabel_prev``            ``"%"``          Label of the x axis of the prevalence panel.
+        ``usealias``               ``False``        Use aliases instead of names in labels.
+        ``n_dates``                ``5``            Number of date ticks, evenly spaced in time. None chooses them automatically.
+        ``format_dates``           ``"%Y-%m-%d"``   Format of the date labels.
+        ``xtick_rotation``         ``0``            Rotation of the date labels in the ``full`` and ``simple`` layouts.
+        ``color_over``             ``"tab:blue"``   Color of the overlap panel.
+        ``alpha_over``             ``0.4``          Opacity of the fill of the overlap panel.
+        ``color_prev``             ``"tab:gray"``   Color of the prevalence bars.
+        ``gantt_linewidth``        ``6``            Largest width of the Gantt lines. It shrinks to fit many series.
+        ``n_series_max``           ``10``           Above this many series, labels are hidden and series lines go to the background.
+        ``xmin``                   None             Start of the time axis. None is the first date of all series, with ``pad_x``.
+        ``xmax``                   None             End of the time axis. None is the last date of all series, with ``pad_x``.
+        ``ymin``                   None             Bottom of the overlap panel. None is automatic.
+        ``ymax``                   None             Top of the overlap panel. None is automatic.
+        ``pad_x``                  ``0.05``         Share of the time span added on each side of the time axis not set by ``xmin`` or ``xmax``.
+        ``folder``                 auto             Folder of the saved figure.
+        ``filename``               auto             Name of the saved figure, without extension. None is the name of the collection.
+        ``suff``                   ``""``           Suffix of the saved figure, if ``filename`` is None.
+        ``dpi``                    ``300``          Resolution of the saved figure.
+        ``fig_format``             ``"jpg"``        Format of the saved figure.
+        ``series``                 ``"Series"``     Title of the series panel, in the ``series`` layouts.
+        ``subtitle_hist``          ``"Histogram"``  Title of the histograms.
+        ``subtitle_cdf``           ``"CDF"``        Title of the CDFs.
+        ``ylabel``                 auto             Label of the y axis, in the ``series`` layouts. None comes from the variable.
+        ``range``                  None             Common y range, in the ``series`` layouts. None is set from the data.
+        ``cmap_series``            ``"tab10"``      Color map of the series. In ``series`` layouts, None uses the color of each series.
+        ``linewidth``              ``0.8``          Width of the series lines, in the ``series`` layouts.
+        ``alpha_hist``             ``0.4``          Opacity of overlaid histograms.
+        ``histtype``               ``"bar"``        Type of overlaid histograms. ``"step"`` draws outlines only.
+        ``bins``                   ``30``           Number of common bins of overlaid histograms.
+        ``plot_mean``              ``True``         Show mean lines on overlaid histograms and CDFs.
+        ``legend``                 ``True``         Show the legend of overlaid series.
+        ``highlight``              None             Names of the series drawn in color, in the ``series`` layouts.
+        ``plot_background``        ``True``         Show the background lines on the series panel.
+        ``color_background``       ``"silver"``     Color of the background series.
+        ``linewidth_background``   ``0.5``          Width of the background lines.
+        ``alpha_background``       ``0.6``          Opacity of the background lines.
+        ``alpha_hist_background``  ``0.1``          Opacity of the background histograms.
+        ``panels``                 None             Names of the series in each panel, as a list of lists. None is one series per panel.
+        ``panel_heights``          None             Relative heights of the panels, like ``[3, 1]``. None is equal.
+        =========================  ===============  ===========================================================================================
 
         :param show: option for showing instead of saving.
         :type show: bool
@@ -4111,6 +4395,95 @@ class TimeSeriesCluster(TimeSeriesCollection):
             fig = super()._plot(fig=fig, gs=gs, specs=specs)
         return fig
 
+    def view(self, show=True, return_fig=False):
+        """
+        Get the visualization, which also has the correlation between series.
+
+        **Layouts**, set by ``view_specs["layout"]``:
+
+        ==================  ======================================================================================
+        Layout              Panels
+        ==================  ======================================================================================
+        ``full``            Gantt chart, overlap and prevalence.
+        ``simple``          Gantt chart and overlap.
+        ``default``         Same as ``full``.
+        ``stacked``         A panel for each entry of ``panels``, with histograms and CDFs, on a shared time axis.
+        ``stacked-simple``  A panel for each entry of ``panels``, on a shared time axis.
+        ``series``          All series overlaid, with histograms and CDFs.
+        ``series-simple``   All series overlaid.
+        ``correlation``     Correlation matrix.
+        ==================  ======================================================================================
+
+        **View specs**, set by ``view_specs[key] = value`` before the call:
+
+        =========================  =================  ===========================================================================================
+        Key                        Default            Description
+        =========================  =================  ===========================================================================================
+        ``layout``                 ``"full"``         Name of the layout. See the table of layouts.
+        ``style``                  ``"wien"``         Name of the plot style. See :func:`plans.viewer.set_style`.
+        ``title``                  auto               Title of the figure.
+        ``gantt``                  auto               Title of the Gantt chart.
+        ``over``                   auto               Title of the overlap panel.
+        ``prev``                   auto               Title of the prevalence panel.
+        ``xlabel``                 auto               Label of the time axis.
+        ``ylabel_over``            ``"%"``            Label of the y axis of the overlap panel.
+        ``xlabel_prev``            ``"%"``            Label of the x axis of the prevalence panel.
+        ``usealias``               ``False``          Use aliases instead of names in labels.
+        ``n_dates``                ``5``              Number of date ticks, evenly spaced in time. None chooses them automatically.
+        ``format_dates``           ``"%Y-%m-%d"``     Format of the date labels.
+        ``xtick_rotation``         ``0``              Rotation of the date labels in the ``full`` and ``simple`` layouts.
+        ``color_over``             ``"tab:blue"``     Color of the overlap panel.
+        ``alpha_over``             ``0.4``            Opacity of the fill of the overlap panel.
+        ``color_prev``             ``"tab:gray"``     Color of the prevalence bars.
+        ``gantt_linewidth``        ``6``              Largest width of the Gantt lines. It shrinks to fit many series.
+        ``n_series_max``           ``10``             Above this many series, labels are hidden and series lines go to the background.
+        ``xmin``                   None               Start of the time axis. None is the first date of all series, with ``pad_x``.
+        ``xmax``                   None               End of the time axis. None is the last date of all series, with ``pad_x``.
+        ``ymin``                   None               Bottom of the overlap panel. None is automatic.
+        ``ymax``                   None               Top of the overlap panel. None is automatic.
+        ``pad_x``                  ``0.05``           Share of the time span added on each side of the time axis not set by ``xmin`` or ``xmax``.
+        ``folder``                 auto               Folder of the saved figure.
+        ``filename``               auto               Name of the saved figure, without extension. None is the name of the collection.
+        ``suff``                   ``""``             Suffix of the saved figure, if ``filename`` is None.
+        ``dpi``                    ``300``            Resolution of the saved figure.
+        ``fig_format``             ``"jpg"``          Format of the saved figure.
+        ``series``                 ``"Series"``       Title of the series panel, in the ``series`` layouts.
+        ``subtitle_hist``          ``"Histogram"``    Title of the histograms.
+        ``subtitle_cdf``           ``"CDF"``          Title of the CDFs.
+        ``ylabel``                 auto               Label of the y axis, in the ``series`` layouts. None comes from the variable.
+        ``range``                  None               Common y range, in the ``series`` layouts. None is set from the data.
+        ``cmap_series``            ``"tab10"``        Color map of the series. In ``series`` layouts, None uses the color of each series.
+        ``linewidth``              ``0.8``            Width of the series lines, in the ``series`` layouts.
+        ``alpha_hist``             ``0.4``            Opacity of overlaid histograms.
+        ``histtype``               ``"bar"``          Type of overlaid histograms. ``"step"`` draws outlines only.
+        ``bins``                   ``30``             Number of common bins of overlaid histograms.
+        ``plot_mean``              ``True``           Show mean lines on overlaid histograms and CDFs.
+        ``legend``                 ``True``           Show the legend of overlaid series.
+        ``highlight``              None               Names of the series drawn in color, in the ``series`` layouts.
+        ``plot_background``        ``True``           Show the background lines on the series panel.
+        ``color_background``       ``"silver"``       Color of the background series.
+        ``linewidth_background``   ``0.5``            Width of the background lines.
+        ``alpha_background``       ``0.6``            Opacity of the background lines.
+        ``alpha_hist_background``  ``0.1``            Opacity of the background histograms.
+        ``panels``                 None               Names of the series in each panel, as a list of lists. None is one series per panel.
+        ``panel_heights``          None               Relative heights of the panels, like ``[3, 1]``. None is equal.
+        ``correlation``            ``"Correlation"``  Title of the correlation panel.
+        ``corr_method``            ``"pearson"``      Correlation method: ``"pearson"``, ``"kendall"`` or ``"spearman"``.
+        ``corr_min_overlap``       ``30``             Fewest common records for a correlation.
+        ``cmap_corr``              ``"RdBu_r"``       Color map of the correlation.
+        ``range_corr``             ``[-1, 1]``        Range of the color map. Narrow it to reveal structure.
+        ``annotate``               ``True``           Show values on the correlation cells.
+        =========================  =================  ===========================================================================================
+
+        :param show: option for showing instead of saving
+        :type show: bool
+        :param return_fig: option for returning the figure object
+        :type return_fig: bool
+        :return: figure object if ``return_fig`` is True, else None
+        :rtype: :class:`matplotlib.figure.Figure` or None
+        """
+        return super().view(show=show, return_fig=return_fig)
+
     def _plot_correlation(self, ax, specs):
         """
         Plot the correlation matrix as an annotated heatmap.
@@ -4404,6 +4777,92 @@ class TimeSeriesEnsemble(TimeSeriesCollection):
         self._set_series_legend(axes=axes, specs=specs)
         return None
 
+    def view(self, show=True, return_fig=False):
+        """
+        Get the visualization, with members in the background and reducers and bands on top.
+
+        **Layouts**, set by ``view_specs["layout"]``:
+
+        ==================  ======================================================================================
+        Layout              Panels
+        ==================  ======================================================================================
+        ``full``            Gantt chart, overlap and prevalence.
+        ``simple``          Gantt chart and overlap.
+        ``default``         Same as ``full``.
+        ``stacked``         A panel for each entry of ``panels``, with histograms and CDFs, on a shared time axis.
+        ``stacked-simple``  A panel for each entry of ``panels``, on a shared time axis.
+        ``series``          All series overlaid, with histograms and CDFs.
+        ``series-simple``   All series overlaid.
+        ==================  ======================================================================================
+
+        **View specs**, set by ``view_specs[key] = value`` before the call:
+
+        =========================  ===============  ===========================================================================================
+        Key                        Default          Description
+        =========================  ===============  ===========================================================================================
+        ``layout``                 ``"series"``     Name of the layout. See the table of layouts.
+        ``style``                  ``"wien"``       Name of the plot style. See :func:`plans.viewer.set_style`.
+        ``title``                  auto             Title of the figure.
+        ``gantt``                  auto             Title of the Gantt chart.
+        ``over``                   auto             Title of the overlap panel.
+        ``prev``                   auto             Title of the prevalence panel.
+        ``xlabel``                 auto             Label of the time axis.
+        ``ylabel_over``            ``"%"``          Label of the y axis of the overlap panel.
+        ``xlabel_prev``            ``"%"``          Label of the x axis of the prevalence panel.
+        ``usealias``               ``False``        Use aliases instead of names in labels.
+        ``n_dates``                ``5``            Number of date ticks, evenly spaced in time. None chooses them automatically.
+        ``format_dates``           ``"%Y-%m-%d"``   Format of the date labels.
+        ``xtick_rotation``         ``0``            Rotation of the date labels in the ``full`` and ``simple`` layouts.
+        ``color_over``             ``"tab:blue"``   Color of the overlap panel.
+        ``alpha_over``             ``0.4``          Opacity of the fill of the overlap panel.
+        ``color_prev``             ``"tab:gray"``   Color of the prevalence bars.
+        ``gantt_linewidth``        ``6``            Largest width of the Gantt lines. It shrinks to fit many series.
+        ``n_series_max``           ``10``           Above this many series, labels are hidden and series lines go to the background.
+        ``xmin``                   None             Start of the time axis. None is the first date of all series, with ``pad_x``.
+        ``xmax``                   None             End of the time axis. None is the last date of all series, with ``pad_x``.
+        ``ymin``                   None             Bottom of the overlap panel. None is automatic.
+        ``ymax``                   None             Top of the overlap panel. None is automatic.
+        ``pad_x``                  ``0.05``         Share of the time span added on each side of the time axis not set by ``xmin`` or ``xmax``.
+        ``folder``                 auto             Folder of the saved figure.
+        ``filename``               auto             Name of the saved figure, without extension. None is the name of the collection.
+        ``suff``                   ``""``           Suffix of the saved figure, if ``filename`` is None.
+        ``dpi``                    ``300``          Resolution of the saved figure.
+        ``fig_format``             ``"jpg"``        Format of the saved figure.
+        ``series``                 ``"Series"``     Title of the series panel, in the ``series`` layouts.
+        ``subtitle_hist``          ``"Histogram"``  Title of the histograms.
+        ``subtitle_cdf``           ``"CDF"``        Title of the CDFs.
+        ``ylabel``                 auto             Label of the y axis, in the ``series`` layouts. None comes from the variable.
+        ``range``                  None             Common y range, in the ``series`` layouts. None is set from the data.
+        ``cmap_series``            ``"tab10"``      Color map of the series. In ``series`` layouts, None uses the color of each series.
+        ``linewidth``              ``0.8``          Width of the series lines, in the ``series`` layouts.
+        ``alpha_hist``             ``0.4``          Opacity of overlaid histograms.
+        ``histtype``               ``"bar"``        Type of overlaid histograms. ``"step"`` draws outlines only.
+        ``bins``                   ``30``           Number of common bins of overlaid histograms.
+        ``plot_mean``              ``True``         Show mean lines on overlaid histograms and CDFs.
+        ``legend``                 ``True``         Show the legend of overlaid series.
+        ``highlight``              None             Names of the series drawn in color, in the ``series`` layouts.
+        ``plot_background``        ``True``         Show the background lines on the series panel.
+        ``color_background``       ``"silver"``     Color of the background series.
+        ``linewidth_background``   ``0.5``          Width of the background lines.
+        ``alpha_background``       ``0.6``          Opacity of the background lines.
+        ``alpha_hist_background``  ``0.1``          Opacity of the background histograms.
+        ``panels``                 None             Names of the series in each panel, as a list of lists. None is one series per panel.
+        ``panel_heights``          None             Relative heights of the panels, like ``[3, 1]``. None is equal.
+        ``reducers``               ``["mean"]``     Names of the reducers drawn in color, such as ``mean``. None hides them.
+        ``bands``                  ``[[5, 95]]``    Percentile bands, as ``[low, high]`` pairs. None hides them.
+        ``color_band``             ``"#8db4dc"``    Color of the bands.
+        ``alpha_band``             ``0.6``          Opacity of the bands.
+        =========================  ===============  ===========================================================================================
+
+        :param show: option for showing instead of saving
+        :type show: bool
+        :param return_fig: option for returning the figure object
+        :type return_fig: bool
+        :return: figure object if ``return_fig`` is True, else None
+        :rtype: :class:`matplotlib.figure.Figure` or None
+        """
+        return super().view(show=show, return_fig=return_fig)
+
     # Static methods
     # -------------------------------------------------------------------
     @staticmethod
@@ -4530,6 +4989,7 @@ class SeasonalEnsemble(TimeSeriesEnsemble):
                 # x axis labels: "days", "month", "month-letter" or "month-alias"
                 "xaxis": "month-alias",
                 "xlabel": None,  # None is set by the x axis mode
+                "pad_x": 0,  # a padding would repeat months at the edges
             }
         )
         return None
@@ -4596,6 +5056,93 @@ class SeasonalEnsemble(TimeSeriesEnsemble):
             mticker.FuncFormatter(lambda x, pos: func(mdates.num2date(x).month - 1))
         )
         return None
+
+    def view(self, show=True, return_fig=False):
+        """
+        Get the visualization, with the years of the series on the same calendar.
+
+        **Layouts**, set by ``view_specs["layout"]``:
+
+        ==================  ======================================================================================
+        Layout              Panels
+        ==================  ======================================================================================
+        ``full``            Gantt chart, overlap and prevalence.
+        ``simple``          Gantt chart and overlap.
+        ``default``         Same as ``full``.
+        ``stacked``         A panel for each entry of ``panels``, with histograms and CDFs, on a shared time axis.
+        ``stacked-simple``  A panel for each entry of ``panels``, on a shared time axis.
+        ``series``          All series overlaid, with histograms and CDFs.
+        ``series-simple``   All series overlaid.
+        ==================  ======================================================================================
+
+        **View specs**, set by ``view_specs[key] = value`` before the call:
+
+        =========================  =================  ===========================================================================================
+        Key                        Default            Description
+        =========================  =================  ===========================================================================================
+        ``layout``                 ``"series"``       Name of the layout. See the table of layouts.
+        ``style``                  ``"wien"``         Name of the plot style. See :func:`plans.viewer.set_style`.
+        ``title``                  auto               Title of the figure.
+        ``gantt``                  auto               Title of the Gantt chart.
+        ``over``                   auto               Title of the overlap panel.
+        ``prev``                   auto               Title of the prevalence panel.
+        ``xlabel``                 auto               Label of the time axis.
+        ``ylabel_over``            ``"%"``            Label of the y axis of the overlap panel.
+        ``xlabel_prev``            ``"%"``            Label of the x axis of the prevalence panel.
+        ``usealias``               ``False``          Use aliases instead of names in labels.
+        ``n_dates``                ``5``              Number of date ticks, evenly spaced in time. None chooses them automatically.
+        ``format_dates``           ``"%Y-%m-%d"``     Format of the date labels.
+        ``xtick_rotation``         ``0``              Rotation of the date labels in the ``full`` and ``simple`` layouts.
+        ``color_over``             ``"tab:blue"``     Color of the overlap panel.
+        ``alpha_over``             ``0.4``            Opacity of the fill of the overlap panel.
+        ``color_prev``             ``"tab:gray"``     Color of the prevalence bars.
+        ``gantt_linewidth``        ``6``              Largest width of the Gantt lines. It shrinks to fit many series.
+        ``n_series_max``           ``10``             Above this many series, labels are hidden and series lines go to the background.
+        ``xmin``                   None               Start of the time axis. None is the first date of all series, with ``pad_x``.
+        ``xmax``                   None               End of the time axis. None is the last date of all series, with ``pad_x``.
+        ``ymin``                   None               Bottom of the overlap panel. None is automatic.
+        ``ymax``                   None               Top of the overlap panel. None is automatic.
+        ``pad_x``                  ``0``              Share of the time span added on each side of the time axis not set by ``xmin`` or ``xmax``.
+        ``folder``                 auto               Folder of the saved figure.
+        ``filename``               auto               Name of the saved figure, without extension. None is the name of the collection.
+        ``suff``                   ``""``             Suffix of the saved figure, if ``filename`` is None.
+        ``dpi``                    ``300``            Resolution of the saved figure.
+        ``fig_format``             ``"jpg"``          Format of the saved figure.
+        ``series``                 ``"Series"``       Title of the series panel, in the ``series`` layouts.
+        ``subtitle_hist``          ``"Histogram"``    Title of the histograms.
+        ``subtitle_cdf``           ``"CDF"``          Title of the CDFs.
+        ``ylabel``                 auto               Label of the y axis, in the ``series`` layouts. None comes from the variable.
+        ``range``                  None               Common y range, in the ``series`` layouts. None is set from the data.
+        ``cmap_series``            ``"tab10"``        Color map of the series. In ``series`` layouts, None uses the color of each series.
+        ``linewidth``              ``0.8``            Width of the series lines, in the ``series`` layouts.
+        ``alpha_hist``             ``0.4``            Opacity of overlaid histograms.
+        ``histtype``               ``"bar"``          Type of overlaid histograms. ``"step"`` draws outlines only.
+        ``bins``                   ``30``             Number of common bins of overlaid histograms.
+        ``plot_mean``              ``True``           Show mean lines on overlaid histograms and CDFs.
+        ``legend``                 ``True``           Show the legend of overlaid series.
+        ``highlight``              None               Names of the series drawn in color, in the ``series`` layouts.
+        ``plot_background``        ``True``           Show the background lines on the series panel.
+        ``color_background``       ``"silver"``       Color of the background series.
+        ``linewidth_background``   ``0.5``            Width of the background lines.
+        ``alpha_background``       ``0.6``            Opacity of the background lines.
+        ``alpha_hist_background``  ``0.1``            Opacity of the background histograms.
+        ``panels``                 None               Names of the series in each panel, as a list of lists. None is one series per panel.
+        ``panel_heights``          None               Relative heights of the panels, like ``[3, 1]``. None is equal.
+        ``reducers``               ``["mean"]``       Names of the reducers drawn in color, such as ``mean``. None hides them.
+        ``bands``                  ``[[5, 95]]``      Percentile bands, as ``[low, high]`` pairs. None hides them.
+        ``color_band``             ``"#8db4dc"``      Color of the bands.
+        ``alpha_band``             ``0.6``            Opacity of the bands.
+        ``xaxis``                  ``"month-alias"``  Labels of the x axis: ``"days"``, ``"month"``, ``"month-letter"`` or ``"month-alias"``.
+        =========================  =================  ===========================================================================================
+
+        :param show: option for showing instead of saving
+        :type show: bool
+        :param return_fig: option for returning the figure object
+        :type return_fig: bool
+        :return: figure object if ``return_fig`` is True, else None
+        :rtype: :class:`matplotlib.figure.Figure` or None
+        """
+        return super().view(show=show, return_fig=return_fig)
 
     # Static methods
     # -------------------------------------------------------------------
