@@ -551,10 +551,10 @@ Metadata:
 	color: blue
 	source: None
 	description: Just a tutorial
+	units: cm
 	file_data: None
 	var_name: Unknown variable
 	var_alias: UnVar
-	units: cm
 	datetime: None
 	resolution: None
 	rows: None
@@ -677,7 +677,7 @@ Metadata:
 </div>
 </div>
 </div>
-<p>View map:</p>
+<p>View map. The layout is the same of the <code class="docutils literal notranslate"><span class="pre">GeoUnivar</span></code> object, with the raster in the map panel, in map coordinates:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rs</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
@@ -685,32 +685,115 @@ Metadata:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/51e1e13487778c74a25d70b0862a754cf247a96f8b699f2369152854963219a4.png" src="../_images/51e1e13487778c74a25d70b0862a754cf247a96f8b699f2369152854963219a4.png" />
+<img alt="../_images/377e5718f3af8a1fbbe764009dd1d7e6a5ba88a0178896d4f0584a25cc018f25.png" src="../_images/377e5718f3af8a1fbbe764009dd1d7e6a5ba88a0178896d4f0584a25cc018f25.png" />
 </div>
 </div>
-<p>Convert and get an <code class="docutils literal notranslate"><span class="pre">Univar</span></code> instance:</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">Raster</span></code> is a <code class="docutils literal notranslate"><span class="pre">GeoUnivar</span></code>, so all methods of the univariate family work on the values of the grid. The <code class="docutils literal notranslate"><span class="pre">.data</span></code> attribute is still the grid:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="n">get_univar</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">uv</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">rs</span><span class="o">.</span><span class="n">get_normality</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class 'plans.datasets.analyst.Univar'&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(98, 92)
 </pre></div>
 </div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/site-packages/scipy/stats/_axis_nan_policy.py:592: UserWarning: scipy.stats.shapiro: For N &gt; 5000, computed p-value may not be accurate. Current N is 9016.
+  res = hypotest_fun_out(*samples, **kwds)
+</pre></div>
 </div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Test</th>
+      <th>Statistic</th>
+      <th>p-value</th>
+      <th>is_normal</th>
+      <th>Confidence</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Kolmogorov-Smirnov</td>
+      <td>0.130110</td>
+      <td>0.000000e+00</td>
+      <td>False</td>
+      <td>0.95</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Shapiro-Wilk</td>
+      <td>0.898810</td>
+      <td>1.536659e-60</td>
+      <td>False</td>
+      <td>0.95</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>D'Agostino-Pearson</td>
+      <td>837.388672</td>
+      <td>0.000000e+00</td>
+      <td>False</td>
+      <td>0.95</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
 </div>
-<p>View as Univar:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">mini</span></code> layout is also available. Colors are continuous by default, but classes work as well, with the <code class="docutils literal notranslate"><span class="pre">scheme_cmap</span></code> and <code class="docutils literal notranslate"><span class="pre">n_classes_cmap</span></code> keys:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rs</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"mini"</span>
+<span class="n">rs</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"scheme_cmap"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"equal"</span>
+<span class="n">rs</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"n_classes_cmap"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">rs</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+
+<span class="c1"># back to the defaults</span>
+<span class="n">rs</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"layout"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"full"</span>
+<span class="n">rs</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"scheme_cmap"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"continuous"</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fea1a9175e40f90225f4c5773d5f071e369d0d92645ecf10936ddb02d377d554.png" src="../_images/fea1a9175e40f90225f4c5773d5f071e369d0d92645ecf10936ddb02d377d554.png" />
+<img alt="../_images/bbc37762515104c460c7a3ce97b29592671016a36e80426ee64af23e35dc271f.png" src="../_images/bbc37762515104c460c7a3ce97b29592671016a36e80426ee64af23e35dc271f.png" />
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">helper_geometry</span></code> key overlays a <code class="docutils literal notranslate"><span class="pre">GeoDataFrame</span></code> in the coordinates of the map. Here, a box in the middle of the map:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">box</span>
+
+<span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="n">get_extent</span><span class="p">()</span>
+<span class="n">rs</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"helper_geometry"</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
+    <span class="n">geometry</span><span class="o">=</span><span class="p">[</span><span class="n">box</span><span class="p">(</span><span class="n">xmin</span> <span class="o">+</span> <span class="mi">500</span><span class="p">,</span> <span class="n">ymin</span> <span class="o">+</span> <span class="mi">500</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">-</span> <span class="mi">500</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">-</span> <span class="mi">500</span><span class="p">)]</span>
+<span class="p">)</span>
+<span class="n">rs</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+
+<span class="n">rs</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"helper_geometry"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/aedde52e672f971b1f0acb90e22a9d503f7443be0f9177eea5207af3c7d95621.png" src="../_images/aedde52e672f971b1f0acb90e22a9d503f7443be0f9177eea5207af3c7d95621.png" />
 </div>
 </div>
 </section>
@@ -771,7 +854,7 @@ File was created: True
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/38b3279aac726980677591a968b81bcc666ac911ab98ad5ede884d04990a2fdc.png" src="../_images/38b3279aac726980677591a968b81bcc666ac911ab98ad5ede884d04990a2fdc.png" />
+<img alt="../_images/86c741f8691262dbfe45796e6797a77d88db2aa5dc4c886af13c02156d60f335.png" src="../_images/86c741f8691262dbfe45796e6797a77d88db2aa5dc4c886af13c02156d60f335.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -826,7 +909,7 @@ No-data value: -99999
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/39ece4134933f63956e9e92fdee1171c0223f07712f6b7dba134d758617249af.png" src="../_images/39ece4134933f63956e9e92fdee1171c0223f07712f6b7dba134d758617249af.png" />
+<img alt="../_images/05ccb573c7d2272c10e4c31019385d41a316a6e2865f72adccaaba035ccc066d.png" src="../_images/05ccb573c7d2272c10e4c31019385d41a316a6e2865f72adccaaba035ccc066d.png" />
 </div>
 </div>
 </section>
@@ -1481,7 +1564,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ad4a3c2df369b83df9b48d1aea97726d01e39946eedaa1daae4a3f3d5d4a9381.png" src="../_images/ad4a3c2df369b83df9b48d1aea97726d01e39946eedaa1daae4a3f3d5d4a9381.png" />
+<img alt="../_images/1c2dd718d300a3a39e559e24afd7aa2d3f56a81624939c7b8ebbd91c24ce0854.png" src="../_images/1c2dd718d300a3a39e559e24afd7aa2d3f56a81624939c7b8ebbd91c24ce0854.png" />
 </div>
 </div>
 </section>
@@ -1502,7 +1585,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/868327bf717d68d2cd05a6631093f8e4a588cad56e88fa141283ae5ed1d2c838.png" src="../_images/868327bf717d68d2cd05a6631093f8e4a588cad56e88fa141283ae5ed1d2c838.png" />
+<img alt="../_images/c947ca6f0d02db7929cc99a7b5a55d4f7911fb9a1231e168da836321555d2f8f.png" src="../_images/c947ca6f0d02db7929cc99a7b5a55d4f7911fb9a1231e168da836321555d2f8f.png" />
 </div>
 </div>
 </section>
@@ -1519,7 +1602,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/bf46661088e5762b9e56d56ff9a38ec72fd3ce334fa4017c906fc6c9cd699e48.png" src="../_images/bf46661088e5762b9e56d56ff9a38ec72fd3ce334fa4017c906fc6c9cd699e48.png" />
+<img alt="../_images/3f0559833c87de0dbb4ec6ac8b5c0c371fa1da48490bf5668227435c5882c487.png" src="../_images/3f0559833c87de0dbb4ec6ac8b5c0c371fa1da48490bf5668227435c5882c487.png" />
 </div>
 </div>
 </section>
@@ -1536,7 +1619,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f54c8cffbe3f55133d64cef7c6f9a4d6fc15ea8262fbaec85388c26693a38d4f.png" src="../_images/f54c8cffbe3f55133d64cef7c6f9a4d6fc15ea8262fbaec85388c26693a38d4f.png" />
+<img alt="../_images/ee8deb6ec372cd54fde9c521381980b7c8dd379e0803bdc691c991a801fdf5df.png" src="../_images/ee8deb6ec372cd54fde9c521381980b7c8dd379e0803bdc691c991a801fdf5df.png" />
 </div>
 </div>
 </section>
@@ -1553,7 +1636,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f2edda2d21f4192659d9aa8a77e5998542db11cd69311df01ed9b0eff9faa68d.png" src="../_images/f2edda2d21f4192659d9aa8a77e5998542db11cd69311df01ed9b0eff9faa68d.png" />
+<img alt="../_images/b9c5085b5634e1d8c9a97cab83d2c21438bd792bf58bf7cce934122c3c65a713.png" src="../_images/b9c5085b5634e1d8c9a97cab83d2c21438bd792bf58bf7cce934122c3c65a713.png" />
 </div>
 </div>
 </section>
@@ -1572,7 +1655,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/6242d988e231770fbc4bbd43449605079dcefcfcc9db11b94c42b8b9181168f7.png" src="../_images/6242d988e231770fbc4bbd43449605079dcefcfcc9db11b94c42b8b9181168f7.png" />
+<img alt="../_images/7a1f641c883da23ca1e5db75d2c3204e1c07845a23c6b00b0e68008d152acb84.png" src="../_images/7a1f641c883da23ca1e5db75d2c3204e1c07845a23c6b00b0e68008d152acb84.png" />
 </div>
 </div>
 </section>
@@ -1594,7 +1677,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d42394804657c82f03aa25adcd71e7927f6a39ba215ac1bf13e4d4c90354d87b.png" src="../_images/d42394804657c82f03aa25adcd71e7927f6a39ba215ac1bf13e4d4c90354d87b.png" />
+<img alt="../_images/0f3f40b18293117c564cf20896fb32f66b642fb2a0c8e396f094cffa675ffec2.png" src="../_images/0f3f40b18293117c564cf20896fb32f66b642fb2a0c8e396f094cffa675ffec2.png" />
 </div>
 </div>
 </section>
@@ -1617,7 +1700,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f41595a39326337d726ec8a7b9633a316491870e004746321dac48eaacb433ed.png" src="../_images/f41595a39326337d726ec8a7b9633a316491870e004746321dac48eaacb433ed.png" />
+<img alt="../_images/2afc08d4c6e14ce3f2304388bc8eaef47a2b6a894e63800bf98a9a11a44458e1.png" src="../_images/2afc08d4c6e14ce3f2304388bc8eaef47a2b6a894e63800bf98a9a11a44458e1.png" />
 </div>
 </div>
 </section>
@@ -1637,7 +1720,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/36531f86f9062a8d2afd93e19ea6680057081a352413fb3b64cfc9ee6503b0a1.png" src="../_images/36531f86f9062a8d2afd93e19ea6680057081a352413fb3b64cfc9ee6503b0a1.png" />
+<img alt="../_images/4624a2ee65cf3a19d55631ddfaad51f41c043fbcc804a6acea66e04eac6e01ce.png" src="../_images/4624a2ee65cf3a19d55631ddfaad51f41c043fbcc804a6acea66e04eac6e01ce.png" />
 </div>
 </div>
 </section>
@@ -1657,7 +1740,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e349574c03f957533dd4a52155fbe568a119214a26e0fb58bc0cfa4531417606.png" src="../_images/e349574c03f957533dd4a52155fbe568a119214a26e0fb58bc0cfa4531417606.png" />
+<img alt="../_images/21fd44ea8222aa7408bf663685b1fa3514b5fe43508115f69a48802d79c267cc.png" src="../_images/21fd44ea8222aa7408bf663685b1fa3514b5fe43508115f69a48802d79c267cc.png" />
 </div>
 </div>
 <p>The AOI mask can be realeased:</p>
@@ -1670,7 +1753,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/cc6ba161f25173211badda325d044f0504f0099e6ad6f233c0e5d4fb99b83123.png" src="../_images/cc6ba161f25173211badda325d044f0504f0099e6ad6f233c0e5d4fb99b83123.png" />
+<img alt="../_images/80569a783ca477068110017c59005c70a2a7f1acfd15045f34cb48aa8ccf1271.png" src="../_images/80569a783ca477068110017c59005c70a2a7f1acfd15045f34cb48aa8ccf1271.png" />
 </div>
 </div>
 <p>The same can be done with qualitative maps:</p>
@@ -1683,7 +1766,7 @@ No-data value: 255
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/264e1aa6f6a91e71e82fe49fd6a02c24de89f9e694db129d420c8fcbfbb7a410.png" src="../_images/264e1aa6f6a91e71e82fe49fd6a02c24de89f9e694db129d420c8fcbfbb7a410.png" />
+<img alt="../_images/16b4a642b253c514c5532f1b1076f8bc5458b0ca46c0def7f0779e43ac9e353e.png" src="../_images/16b4a642b253c514c5532f1b1076f8bc5458b0ca46c0def7f0779e43ac9e353e.png" />
 </div>
 </div>
 </section>

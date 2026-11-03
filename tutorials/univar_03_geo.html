@@ -475,6 +475,7 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
 
@@ -846,7 +847,7 @@
 </section>
 <section id="standard-visualization">
 <h2>Standard visualization<a class="headerlink" href="#standard-visualization" title="Link to this heading">#</a></h2>
-<p>Get the standard visual using the <code class="docutils literal notranslate"><span class="pre">.view()</span></code> method. Colors on the map follow classes of value, shown as the color bars beside the data and histogram panels. The map panel is always square and aligned with the top of the other panels, so its view limits widen to fit the shape of the data:</p>
+<p>Get the standard visual using the <code class="docutils literal notranslate"><span class="pre">.view()</span></code> method. Colors on the map follow classes of value, shown on the color bar, with labels at the boundaries of the classes. The bar holds the y axis of the panels at its right, so a value is at the same height on all of them. For this, the outer classes reach the ends of the range of the panels. The map panel is always square and aligned with the top of the other panels, so its view limits widen to fit the shape of the data:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
@@ -854,7 +855,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b5f66ba0bf487e6681b806c38916af11b883a7ff68acb7710c2ed5a26c12d349.png" src="../_images/b5f66ba0bf487e6681b806c38916af11b883a7ff68acb7710c2ed5a26c12d349.png" />
+<img alt="../_images/2305c1f66450a1826752fd0866ec3d63869dad6e5670b750bbebb97b2d7b60ad.png" src="../_images/2305c1f66450a1826752fd0866ec3d63869dad6e5670b750bbebb97b2d7b60ad.png" />
 </div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">GeoUnivar</span></code> has two layouts:</p>
@@ -879,13 +880,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/62171d959bee79550af423be754b813bcfe1a663a8b9d2c38692d25dad4db552.png" src="../_images/62171d959bee79550af423be754b813bcfe1a663a8b9d2c38692d25dad4db552.png" />
+<img alt="../_images/075240dd55a55398c13cc41ab685e589ad4646cc0e19f1ab557b6b6f00467c77.png" src="../_images/075240dd55a55398c13cc41ab685e589ad4646cc0e19f1ab557b6b6f00467c77.png" />
 </div>
 </div>
 </section>
-<section id="fine-tuning-the-classes">
-<h2>Fine-tuning the classes<a class="headerlink" href="#fine-tuning-the-classes" title="Link to this heading">#</a></h2>
-<p>Colors follow classes of value, five by default, and the <code class="docutils literal notranslate"><span class="pre">scheme_cmap</span></code> key sets how they are defined. There are two options, and <code class="docutils literal notranslate"><span class="pre">get_bins()</span></code> shows the boundaries each one gives for this sample:</p>
+<section id="color-schemes">
+<h2>Color schemes<a class="headerlink" href="#color-schemes" title="Link to this heading">#</a></h2>
+<p>Colors follow classes of value, five by default, and the <code class="docutils literal notranslate"><span class="pre">scheme_cmap</span></code> key sets how they are defined. There are two options for classes, and <code class="docutils literal notranslate"><span class="pre">get_bins()</span></code> shows the boundaries each one gives for this sample:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vct_values</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">gv</span><span class="o">.</span><span class="n">varfield</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
@@ -912,10 +913,10 @@ quantiles: [1.31 2.55 3.12 3.59 4.17 6.58]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b5f66ba0bf487e6681b806c38916af11b883a7ff68acb7710c2ed5a26c12d349.png" src="../_images/b5f66ba0bf487e6681b806c38916af11b883a7ff68acb7710c2ed5a26c12d349.png" />
+<img alt="../_images/2305c1f66450a1826752fd0866ec3d63869dad6e5670b750bbebb97b2d7b60ad.png" src="../_images/2305c1f66450a1826752fd0866ec3d63869dad6e5670b750bbebb97b2d7b60ad.png" />
 </div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">quantiles</span></code> makes classes with the same number of points. All colors are used evenly, so the west to east pattern is clearer, but classes have different widths, as the color bars show:</p>
+<p><code class="docutils literal notranslate"><span class="pre">quantiles</span></code> makes classes with the same number of points. All colors are used evenly, so the west to east pattern is clearer, but classes have different widths, as the color bar shows:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"scheme_cmap"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"quantiles"</span>
@@ -924,10 +925,10 @@ quantiles: [1.31 2.55 3.12 3.59 4.17 6.58]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ad3c9809e37238c4912cab6c75e78a5635038603fd5393e9d14b6da17dfd49f3.png" src="../_images/ad3c9809e37238c4912cab6c75e78a5635038603fd5393e9d14b6da17dfd49f3.png" />
+<img alt="../_images/df1d3bdaf7b4f20f7cf6543bcabefd6f149bd77551dc7f36ea3b5b4fb932648f.png" src="../_images/df1d3bdaf7b4f20f7cf6543bcabefd6f149bd77551dc7f36ea3b5b4fb932648f.png" />
 </div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">n_classes_cmap</span></code> key sets the number of classes. Fewer classes give a simpler map, and the panels and color bars all follow:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">n_classes_cmap</span></code> key sets the number of classes. Fewer classes give a simpler map, and the color bar follows:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"n_classes_cmap"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
@@ -936,7 +937,7 @@ quantiles: [1.31 2.55 3.12 3.59 4.17 6.58]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9d785afeb483bf3346bfeaaa65667651d48cfaf8441466bec1cd2500a5b96f86.png" src="../_images/9d785afeb483bf3346bfeaaa65667651d48cfaf8441466bec1cd2500a5b96f86.png" />
+<img alt="../_images/d0e1c2954c95021188f56b9d807e4b7daf507f1a89b3d1a2cb4ba02ca7728a06.png" src="../_images/d0e1c2954c95021188f56b9d807e4b7daf507f1a89b3d1a2cb4ba02ca7728a06.png" />
 </div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">cmap</span></code> key sets the colors, with any <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> color map name. Other map options are the keys ending in <code class="docutils literal notranslate"><span class="pre">_map</span></code>, such as <code class="docutils literal notranslate"><span class="pre">marker_map</span></code> and <code class="docutils literal notranslate"><span class="pre">markersize_map</span></code>:</p>
@@ -950,24 +951,85 @@ quantiles: [1.31 2.55 3.12 3.59 4.17 6.58]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8fd2c4d2a8ddecb082b8f98a616a10514ab72dba8e760f952e62373d71d45a52.png" src="../_images/8fd2c4d2a8ddecb082b8f98a616a10514ab72dba8e760f952e62373d71d45a52.png" />
+<img alt="../_images/06e942db635dad4bbf52ee58568e3e909ee534b85a910d80594ff689661590b7.png" src="../_images/06e942db635dad4bbf52ee58568e3e909ee534b85a910d80594ff689661590b7.png" />
 </div>
 </div>
-</section>
-<section id="adding-the-catchment">
-<h2>Adding the catchment<a class="headerlink" href="#adding-the-catchment" title="Link to this heading">#</a></h2>
-<p>Other geometries go in the <code class="docutils literal notranslate"><span class="pre">layers_map</span></code> key, as a list with one dictionary per layer. The <code class="docutils literal notranslate"><span class="pre">data</span></code> key holds the geometries, in the same CRS as the points, and all other keys go to their <code class="docutils literal notranslate"><span class="pre">.plot()</span></code> method. Polygons and lines stay below the points, which are on the layer set by <code class="docutils literal notranslate"><span class="pre">zorder_map</span></code>:</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">scheme_cmap</span></code> as <code class="docutils literal notranslate"><span class="pre">continuous</span></code>, colors change smoothly instead of by classes. The scale spans the <code class="docutils literal notranslate"><span class="pre">range</span></code> key, the same as the y axis of the other panels, so a fixed <code class="docutils literal notranslate"><span class="pre">range</span></code> also fixes the colors:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"layers_map"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">{</span><span class="s2">"data"</span><span class="p">:</span> <span class="n">catchment</span><span class="p">,</span> <span class="s2">"facecolor"</span><span class="p">:</span> <span class="s2">"gainsboro"</span><span class="p">,</span> <span class="s2">"edgecolor"</span><span class="p">:</span> <span class="s2">"black"</span><span class="p">,</span> <span class="s2">"linewidth"</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">},</span>
-<span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"scheme_cmap"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"continuous"</span>
 <span class="n">gv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/90c04d11fdcfc48a9ff52b950a68b506ad0403b3d66b96b2065463992f28f9aa.png" src="../_images/90c04d11fdcfc48a9ff52b950a68b506ad0403b3d66b96b2065463992f28f9aa.png" />
+<img alt="../_images/8de331bfcc493cb0d7a4537dd6efff1255b0724021a405ddbdac8c932cc1c4a1.png" src="../_images/8de331bfcc493cb0d7a4537dd6efff1255b0724021a405ddbdac8c932cc1c4a1.png" />
+</div>
+</div>
+</section>
+<section id="the-color-bar">
+<h2>The color bar<a class="headerlink" href="#the-color-bar" title="Link to this heading">#</a></h2>
+<p>If the <code class="docutils literal notranslate"><span class="pre">range</span></code> key clips the data, a triangular tip on the color bar marks that side, to show that the data continues. Here, the range cuts both ends. The <code class="docutils literal notranslate"><span class="pre">cbar_map</span></code> key removes the bar altogether, and strips inside the data and histogram panels are available with the <code class="docutils literal notranslate"><span class="pre">cbar_scatter</span></code> and <code class="docutils literal notranslate"><span class="pre">cbar_histh</span></code> keys:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"scheme_cmap"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"equal"</span>
+<span class="n">v_range</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span>
+<span class="n">gv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="n">gv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"cbar_histh"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">gv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/97bdebb3d3e3c980002b068b81fcff14e21704db931a24d4d90699c513e0be13.png" src="../_images/97bdebb3d3e3c980002b068b81fcff14e21704db931a24d4d90699c513e0be13.png" />
+</div>
+</div>
+</section>
+<section id="adding-the-catchment">
+<h2>Adding the catchment<a class="headerlink" href="#adding-the-catchment" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">helper_geometry</span></code> key overlays one <code class="docutils literal notranslate"><span class="pre">GeoDataFrame</span></code>, in the same CRS as the points. By default, it is an outline above the data:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"range"</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_range</span>
+<span class="n">gv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"cbar_histh"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">gv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"helper_geometry"</span><span class="p">]</span> <span class="o">=</span> <span class="n">catchment</span>
+<span class="n">gv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/0be85f3160c554aadaab5fabe32425ec5d364b31f0d15150d153259e2f8a0edc.png" src="../_images/0be85f3160c554aadaab5fabe32425ec5d364b31f0d15150d153259e2f8a0edc.png" />
+</div>
+</div>
+<p>The keys ending in <code class="docutils literal notranslate"><span class="pre">_helper</span></code> set its style. A filled polygon needs a <code class="docutils literal notranslate"><span class="pre">zorder_helper</span></code> below <code class="docutils literal notranslate"><span class="pre">zorder_map</span></code>, to stay under the points:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"facecolor_helper"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"gainsboro"</span>
+<span class="n">gv</span><span class="o">.</span><span class="n">view_specs</span><span class="p">[</span><span class="s2">"zorder_helper"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">gv</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/5b5098f9608e0325600318766b300695ff6f90ccc979ea923a4a561576956b26.png" src="../_images/5b5098f9608e0325600318766b300695ff6f90ccc979ea923a4a561576956b26.png" />
+</div>
+</div>
+<p>For any other geometry, get the figure with <code class="docutils literal notranslate"><span class="pre">return_fig=True</span></code> and plot on the map axis, which is the first one:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lake</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
+    <span class="n">geometry</span><span class="o">=</span><span class="n">gpd</span><span class="o">.</span><span class="n">points_from_xy</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">51.2</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">30.1</span><span class="p">])</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="n">distance</span><span class="o">=</span><span class="mf">0.02</span><span class="p">),</span>
+    <span class="n">crs</span><span class="o">=</span><span class="s2">"EPSG:4674"</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_fig</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">lake</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">fig</span><span class="o">.</span><span class="n">get_axes</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">"tab:blue"</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/110a1ff042e7846c431e8b478969d588d7a5514560baa4fc7918f239bcbc1eb9.png" src="../_images/110a1ff042e7846c431e8b478969d588d7a5514560baa4fc7918f239bcbc1eb9.png" />
 </div>
 </div>
 </section>
@@ -1095,8 +1157,9 @@ quantiles: [1.31 2.55 3.12 3.59 4.17 6.58]
 <li><p><code class="docutils literal notranslate"><span class="pre">GeoUnivar</span></code> is a <code class="docutils literal notranslate"><span class="pre">Univar</span></code> with a <code class="docutils literal notranslate"><span class="pre">GeoDataFrame</span></code> as data, and a map panel in its visual.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">.set_data()</span></code> and <code class="docutils literal notranslate"><span class="pre">.load_data()</span></code> take the name of the column of values.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">view_specs[&quot;layout&quot;]</span></code> switches between <code class="docutils literal notranslate"><span class="pre">full</span></code> and <code class="docutils literal notranslate"><span class="pre">mini</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">scheme_cmap</span></code> defines the classes, as <code class="docutils literal notranslate"><span class="pre">equal</span></code> or <code class="docutils literal notranslate"><span class="pre">quantiles</span></code>, and <code class="docutils literal notranslate"><span class="pre">n_classes_cmap</span></code> sets how many. <code class="docutils literal notranslate"><span class="pre">cmap</span></code> sets the colors, and the <code class="docutils literal notranslate"><span class="pre">_map</span></code> keys set the map panel.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">layers_map</span></code> adds a catchment or other geometries to the map.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scheme_cmap</span></code> defines the colors, as classes by <code class="docutils literal notranslate"><span class="pre">equal</span></code> or <code class="docutils literal notranslate"><span class="pre">quantiles</span></code>, or as <code class="docutils literal notranslate"><span class="pre">continuous</span></code>. <code class="docutils literal notranslate"><span class="pre">n_classes_cmap</span></code> sets how many classes, and <code class="docutils literal notranslate"><span class="pre">cmap</span></code> sets the colors.</p></li>
+<li><p>The color bar has a tip where <code class="docutils literal notranslate"><span class="pre">range</span></code> clips the data. <code class="docutils literal notranslate"><span class="pre">cbar_map</span></code> removes it, and the <code class="docutils literal notranslate"><span class="pre">_map</span></code> keys set the map panel.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">helper_geometry</span></code> adds one geometry to the map, and the figure takes any others.</p></li>
 </ul>
 </section>
 </section>
@@ -1152,7 +1215,8 @@ quantiles: [1.31 2.55 3.12 3.59 4.17 6.58]
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sample-data">Sample data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-the-data">Setting the data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#standard-visualization">Standard visualization</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fine-tuning-the-classes">Fine-tuning the classes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#color-schemes">Color schemes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-color-bar">The color bar</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-the-catchment">Adding the catchment</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-from-a-file">Loading from a file</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#recap">Recap</a></li>

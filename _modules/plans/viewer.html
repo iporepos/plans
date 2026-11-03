@@ -426,8 +426,12 @@
 <span class="c1"># External imports</span>
 <span class="c1"># =======================================================================</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.artist</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">martist</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.collections</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mcollections</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mcolors</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.ticker</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mticker</span>
 
 <span class="c1"># ... {develop}</span>
 
@@ -493,6 +497,12 @@
     <span class="s2">"gs_bottom"</span><span class="p">:</span> <span class="mf">0.06</span><span class="p">,</span>
 <span class="p">}</span>
 
+
+<span class="c1"># drawing order of the layers of a panel. Images stay at 0 and plots start at 1</span>
+<span class="n">ZORDER_GRID</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">ZORDER_FRAME</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="n">COLOR_ANNOTATION</span> <span class="o">=</span> <span class="s2">"#5f5f5f"</span>
 
 <span class="n">FIG_STYLES</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">"bare"</span><span class="p">:</span> <span class="p">{</span>
@@ -855,6 +865,166 @@
         <span class="n">y_new</span> <span class="o">=</span> <span class="n">trans</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span><span class="o">.</span><span class="n">transform</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">ls_close</span><span class="p">)</span> <span class="o">-</span> <span class="n">px_clear</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
             <span class="n">a</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="n">y_new</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="get_annotation_specs">
+<a class="viewcode-back" href="../../generated/plans.viewer.html#plans.viewer.get_annotation_specs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_annotation_specs</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Get the style of annotations, such as statistics and values inside a panel.</span>
+
+<span class="sd">    :return: arguments of a text</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"color"</span><span class="p">:</span> <span class="n">COLOR_ANNOTATION</span><span class="p">,</span> <span class="s2">"fontsize"</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"font.size"</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="CoordinateLocator">
+<a class="viewcode-back" href="../../generated/plans.viewer.html#plans.viewer.CoordinateLocator">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CoordinateLocator</span><span class="p">(</span><span class="n">mticker</span><span class="o">.</span><span class="n">Locator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Locator of a fixed number of round ticks inside the view, for map coordinates.</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="CoordinateLocator.__init__">
+<a class="viewcode-back" href="../../generated/plans.viewer.html#plans.viewer.CoordinateLocator.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_ticks</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_ticks</span> <span class="o">=</span> <span class="n">n_ticks</span></div>
+
+
+<div class="viewcode-block" id="CoordinateLocator.__call__">
+<a class="viewcode-back" href="../../generated/plans.viewer.html#plans.viewer.CoordinateLocator.__call__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">get_view_interval</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tick_values</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CoordinateLocator.tick_values">
+<a class="viewcode-back" href="../../generated/plans.viewer.html#plans.viewer.CoordinateLocator.tick_values">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tick_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get the ticks of a view.</span>
+
+<span class="sd">        :param vmin: lower limit of the view</span>
+<span class="sd">        :type vmin: float</span>
+<span class="sd">        :param vmax: upper limit of the view</span>
+<span class="sd">        :type vmax: float</span>
+<span class="sd">        :return: ticks</span>
+<span class="sd">        :rtype: :class:`numpy.ndarray`</span>
+<span class="sd">        """</span>
+        <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">vmin</span> <span class="o">==</span> <span class="n">vmax</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_ticks</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">vmin</span> <span class="o">+</span> <span class="n">vmax</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">])</span>
+        <span class="n">n_mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">vmin</span> <span class="o">+</span> <span class="n">vmax</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">n_range</span> <span class="o">=</span> <span class="n">vmax</span> <span class="o">-</span> <span class="n">vmin</span>
+
+        <span class="c1"># largest round step that keeps the ticks away from the frame</span>
+        <span class="n">n_max_step</span> <span class="o">=</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">n_range</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_ticks</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">n_scale</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">n_max_step</span><span class="p">))</span>
+        <span class="n">n_step</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">n_scale</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span> <span class="k">if</span> <span class="n">n</span> <span class="o">*</span> <span class="n">n_scale</span> <span class="o">&lt;=</span> <span class="n">n_max_step</span><span class="p">)</span>
+
+        <span class="c1"># coarsest snap of the center that leaves the ticks nearly centered</span>
+        <span class="n">n_power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">n_step</span><span class="p">))</span>
+        <span class="n">n_center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">n_mid</span> <span class="o">/</span> <span class="mi">10</span><span class="o">**</span><span class="n">n_power</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="n">n_power</span>
+        <span class="k">while</span> <span class="nb">abs</span><span class="p">(</span><span class="n">n_center</span> <span class="o">-</span> <span class="n">n_mid</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">n_range</span><span class="p">:</span>
+            <span class="n">n_power</span> <span class="o">=</span> <span class="n">n_power</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">n_center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">n_mid</span> <span class="o">/</span> <span class="mi">10</span><span class="o">**</span><span class="n">n_power</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="n">n_power</span>
+
+        <span class="n">vct_ticks</span> <span class="o">=</span> <span class="n">n_center</span> <span class="o">+</span> <span class="n">n_step</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_ticks</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_ticks</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="p">)</span>
+        <span class="c1"># keep the ticks free of floating point residues</span>
+        <span class="n">n_decimals</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_power</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">n_step</span><span class="p">)))))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">vct_ticks</span><span class="p">,</span> <span class="n">n_decimals</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="AxisGrid">
+<a class="viewcode-back" href="../../generated/plans.viewer.html#plans.viewer.AxisGrid">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AxisGrid</span><span class="p">(</span><span class="n">martist</span><span class="o">.</span><span class="n">Artist</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Grid lines of one axis, as an artist with its own drawing order. An axis draws</span>
+<span class="sd">    its ticks and its grid together, so they can not be on different layers.</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="AxisGrid.__init__">
+<a class="viewcode-back" href="../../generated/plans.viewer.html#plans.viewer.AxisGrid.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">gridline</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Initialize the grid.</span>
+
+<span class="sd">        :param axis: axis to follow, for the positions of the lines</span>
+<span class="sd">        :type axis: :class:`matplotlib.axis.Axis`</span>
+<span class="sd">        :param gridline: line to copy the style from</span>
+<span class="sd">        :type gridline: :class:`matplotlib.lines.Line2D`</span>
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="n">axis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="n">mcollections</span><span class="o">.</span><span class="n">LineCollection</span><span class="p">(</span>
+            <span class="n">segments</span><span class="o">=</span><span class="p">[],</span>
+            <span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="n">gridline</span><span class="o">.</span><span class="n">get_color</span><span class="p">()],</span>
+            <span class="n">linewidths</span><span class="o">=</span><span class="n">gridline</span><span class="o">.</span><span class="n">get_linewidth</span><span class="p">(),</span>
+            <span class="n">linestyles</span><span class="o">=</span><span class="n">gridline</span><span class="o">.</span><span class="n">get_linestyle</span><span class="p">(),</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">gridline</span><span class="o">.</span><span class="n">get_alpha</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_zorder</span><span class="p">(</span><span class="n">ZORDER_GRID</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_in_layout</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AxisGrid.draw">
+<a class="viewcode-back" href="../../generated/plans.viewer.html#plans.viewer.AxisGrid.draw">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">renderer</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Draw the lines at the current ticks of the axis.</span>
+
+<span class="sd">        :param renderer: renderer of the figure</span>
+<span class="sd">        :type renderer: :class:`matplotlib.backend_bases.RendererBase`</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        """</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span>
+        <span class="n">n_low</span><span class="p">,</span> <span class="n">n_high</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">get_view_interval</span><span class="p">())</span>
+        <span class="n">ls_ticks</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">get_majorticklocs</span><span class="p">()</span> <span class="k">if</span> <span class="n">n_low</span> <span class="o">&lt;=</span> <span class="n">v</span> <span class="o">&lt;=</span> <span class="n">n_high</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">axis_name</span> <span class="o">==</span> <span class="s2">"x"</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">set_segments</span><span class="p">([[(</span><span class="n">v</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ls_ticks</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">set_transform</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xaxis_transform</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">set_segments</span><span class="p">([[(</span><span class="mi">0</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ls_ticks</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">set_transform</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_yaxis_transform</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">set_figure</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">set_clip_path</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">patch</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">renderer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stale</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="set_layers">
+<a class="viewcode-back" href="../../generated/plans.viewer.html#plans.viewer.set_layers">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_layers</span><span class="p">(</span><span class="n">fig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Set the drawing order of all panels of a figure. From the bottom to the top:</span>
+<span class="sd">    background, raster, grid, plot elements (with their own order), ticks and frame.</span>
+
+<span class="sd">    :param fig: figure with all panels already plotted</span>
+<span class="sd">    :type fig: :class:`matplotlib.figure.Figure`</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    :rtype: None</span>
+<span class="sd">    """</span>
+    <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">fig</span><span class="o">.</span><span class="n">get_axes</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="p">,</span> <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="p">]:</span>
+            <span class="n">ls_gridlines</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">get_gridlines</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ls_gridlines</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">ls_gridlines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_visible</span><span class="p">():</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">AxisGrid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">gridline</span><span class="o">=</span><span class="n">ls_gridlines</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                <span class="n">axis</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">set_zorder</span><span class="p">(</span><span class="n">ZORDER_FRAME</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">spine</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">spine</span><span class="o">.</span><span class="n">set_zorder</span><span class="p">(</span><span class="n">ZORDER_FRAME</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">None</span></div>
 
 
