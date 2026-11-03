@@ -1,5 +1,8 @@
 # Memory Log
 
+## 2026-11-03 — Map panel clears axis labels after drawing, since geopandas 1.2 adds them from the CRS and they fall off the figure
+Found by CI, which installs the latest packages, while the local venv had geopandas 1.1.1. Clearing works on all versions, while `add_labels=False` fails on older ones.
+
 ## 2026-11-03 — Annotations of `GeoUnivar` and `Raster` move below the lateral panels and never pass the bottom of the map; the figure is shorter
 `Univar.plot_text_columns` places columns of text in that box. `median` is dropped, since it repeats `p50`, and rasters show cell units and the EPSG code. `PROJ_LIB` and `GDAL_DATA` on this machine point to an old install, which degrades CRS reading, so `get_crs_info` reads units from the WKT as a fallback.
 

@@ -1972,6 +1972,10 @@ class GeoUnivar(Univar):
                 zorder=specs["zorder_helper"],
             )
 
+        # geopandas may label the axes from the CRS, past the end of the figure
+        ax.set_xlabel("")
+        ax.set_ylabel("")
+
         # plain and round coordinates
         for axis in [ax.xaxis, ax.yaxis]:
             formatter = mticker.ScalarFormatter(useOffset=False, useMathText=False)
