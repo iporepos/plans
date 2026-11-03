@@ -3643,8 +3643,7 @@ class TimeSeriesCollection(Collection):
         if not specs["legend"] or len(ls_labels) == 0:
             return None
         # above the series panel, beside its title. Fewer columns if too wide
-        width_free = axes[0].get_window_extent().width
-        width_free = width_free - axes[0]._left_title.get_window_extent().width
+        x_title = axes[0]._left_title.get_window_extent().x1
         for ncol in range(len(ls_labels), 0, -1):
             legend = axes[0].legend(
                 loc="lower right",
@@ -3655,7 +3654,7 @@ class TimeSeriesCollection(Collection):
                 handlelength=1.5,
                 columnspacing=1,
             )
-            if legend.get_window_extent().width < width_free:
+            if legend.get_window_extent().x0 > x_title:
                 break
         return None
 

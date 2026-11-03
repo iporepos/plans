@@ -1,5 +1,11 @@
 # Memory Log
 
+## 2026-11-02 — CI fixes: series legend no longer overlaps the panel title; `DejaVu Sans` is the fallback for Arial
+From `prompt.md`. `_set_series_legend` compared widths and ignored the legend padding, so legends could overlap the title with any font. It now compares the legend left edge with the title right edge. Not confirmed on CI itself. `dropna(inplace=True)` warnings from pandas 3.1 left as they are. Raster assessment parked in `testing/raster_geounivar_assessment.md`.
+
+## 2026-11-02 — Assessed moving `Raster` under `GeoUnivar`; no source changed, decision open
+`Raster` extends `DataSet` and only borrows from `Univar`/`GeoUnivar`. The blocker is `self.data`: a grid in `Raster`, a dataframe in 13 `Univar`/`GeoUnivar` methods. Most of the reuse is available through the static `Univar.plot_*` without changing the parent. Found existing `Raster` family bugs, not fixed: `Zones()`, `load_metadata` and `load_tif_metadata` on tif, base `get_aoi`, `get_zonal_stats`, `cellsize` in `set_raster_metadata`.
+
 ## 2026-11-02 — All panels show tick labels: dates on every stacked panel, y values on histograms and CDFs
 These are plots for inspecting data, so readable values come first. Axis labels stay on the last panel, and the data panel gave up one grid column to make room for the labels, keeping histogram and CDF at the same width. Long labels can still overflow, by the user's choice. The y axis title stays on the data panel only, except in Raster views, whose map has no y title, so the histogram keeps the one with the units.
 

@@ -222,7 +222,8 @@ def set_fonts(style=None):
     # Font style
     plt.rcParams["font.family"] = "sans-serif"
     plt.rcParams["font.serif"] = ["Times New Roman"]
-    plt.rcParams["font.sans-serif"] = ["Arial"]
+    # DejaVu Sans ships with matplotlib, for systems without Arial
+    plt.rcParams["font.sans-serif"] = ["Arial", "DejaVu Sans"]
     # Font sizes
 
     # Convert mm to points
