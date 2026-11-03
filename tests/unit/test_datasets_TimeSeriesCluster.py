@@ -451,6 +451,18 @@ class TestStackedLayout(unittest.TestCase):
         self.assertTrue(ax_first.xaxis.get_tick_params()["labelbottom"])
         self.assertTrue(ax_last.xaxis.get_tick_params()["labelbottom"])
 
+    def test_hist_has_three_labels(self):
+        for layout in ["stacked"]:
+            self.tsc.view_specs["layout"] = layout
+            fig = self.get_fig()
+            fig.canvas.draw()
+            ax_hist = fig.get_axes()[1]
+            self.assertEqual(len(ax_hist.get_xticks()), 3)
+            self.assertEqual(ax_hist.get_xlim()[0], 0)
+            for t in ax_hist.get_xticklabels():
+                self.assertNotIn(".", t.get_text())
+            plt.close(fig)
+
     def test_side_panels_have_same_width(self):
         self.tsc.view_specs["layout"] = "stacked"
         axes = self.get_fig().get_axes()

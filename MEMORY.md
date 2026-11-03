@@ -1,5 +1,29 @@
 # Memory Log
 
+## 2026-11-03 — Annotations of `GeoUnivar` and `Raster` move below the lateral panels and never pass the bottom of the map; the figure is shorter
+`Univar.plot_text_columns` places columns of text in that box. `median` is dropped, since it repeats `p50`, and rasters show cell units and the EPSG code. `PROJ_LIB` and `GDAL_DATA` on this machine point to an old install, which degrades CRS reading, so `get_crs_info` reads units from the WKT as a fallback.
+
+## 2026-11-03 — Color bar tips mark where `range` clips the data, with no spec; `edges_cbar` removed; data points take 1/3 of the panel in `GeoUnivar` and `Raster`
+"Sharp edges" meant these tips, not lines between classes, so the lines and their spec are gone. No new dependency: `extend` in matplotlib, with the locator removed so tips do not shrink the bar.
+
+## 2026-11-03 — Panels get one drawing order: background, raster, grid, plot elements, ticks and frame; grid of maps is nearly centered
+An axis draws ticks and grid together, so `viewer.AxisGrid` draws the grid as its own artist, and `viewer.set_layers` runs at the end of every family `view`. Statistics, raster metadata, mean labels and area labels share one darker gray and are one point smaller (`viewer.get_annotation_specs`). Histograms always have three integer labels in percent. Data panels of rasters use a dynamic opacity by default.
+
+## 2026-11-03 — Color bar of `GeoUnivar` and `Raster` moves in line with the side panels and holds their y axis
+It shares `range`, so outer classes now reach the ends of the range. The data panel is narrower and has no axis labels, the map has 3 round ticks with a grid, and the default title of the data panel is "Data" in all of `Univar`.
+
+## 2026-11-03 — `Raster` now inherits from `GeoUnivar`, with `.data` still a grid; its figures follow the family
+Removes the duplicated `_plot`, `view` details and `get_univar`. Default colors are continuous for rasters and classes for points. Statistics are lazy, but `get_stats` and every view compute from the current grid, because `mask_nodata` edits float grids in place. Normality and Gumbel raise an error on `QualiRaster`. Confirmed old bugs fixed in the same pass, including `RasterCollection.reduce`, which failed at HEAD.
+
+## 2026-11-03 — `GeoUnivar` gets a real color bar, a `continuous` scheme and `helper_geometry`, which replaces `layers_map`
+The bar is a child axis of the map, so it follows the square panel and panel indexes do not change. In-panel strips and `colorize_map` gave way: strips stay as options, off by default. No new dependency: `BoundaryNorm` and `drawedges` in matplotlib give the sharp edges.
+
+## 2026-11-03 — Raster plan: re-parent under `GeoUnivar` by stages, with `.data` kept as a grid; no Raster source changed
+A runtime prototype ran all of `raster_01` with the same grids, using only `_get_values()`, `_plot_map()` and lazy statistics. This replaces the earlier advice to reuse without re-parenting. Plan and confirmed bugs in `testing/raster_geounivar_assessment.md`, decisions on map colors and `QualiRaster` getters still open.
+
+## 2026-11-03 — Gaps tutorial shows all gaps first; `get_epochs` sees gaps at the end, `interpolate_gaps` stops extrapolating and flags only filled records
+The small gaps were in the plotted data, but one hour was 0.05 pixels wide. `linewidth_gaps` keeps them visible in the `epochs` layout. The standard grid pads the last day, and these rows stayed in the last epoch and were extrapolated.
+
 ## 2026-11-02 — CI fixes: series legend no longer overlaps the panel title; `DejaVu Sans` is the fallback for Arial
 From `prompt.md`. `_set_series_legend` compared widths and ignored the legend padding, so legends could overlap the title with any font. It now compares the legend left edge with the title right edge. Not confirmed on CI itself. `dropna(inplace=True)` warnings from pandas 3.1 left as they are. Raster assessment parked in `testing/raster_geounivar_assessment.md`.
 

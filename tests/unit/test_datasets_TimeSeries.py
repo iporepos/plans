@@ -261,6 +261,52 @@ class TestTimeSeries(unittest.TestCase):
             df["trend"], df_all.loc[df.index, "trend"], atol=1e-6
         )
 
+    def get_hourly_gaps(self):
+        # small gap, large gap and a large gap at the end
+        vct_dates = pd.date_range(start="2020-01-01", periods=200, freq="h")
+        vct_values = np.arange(200.0)
+        vct_values[50:52] = np.nan
+        vct_values[100:120] = np.nan
+        vct_values[180:] = np.nan
+        ts = TimeSeries(name="Gaps")
+        ts.set_data(
+            input_df=pd.DataFrame({"datetime": vct_dates, "x": vct_values}),
+            input_dtfield="datetime",
+            input_varfield="x",
+        )
+        return ts
+
+    def test_gap_at_the_end_is_not_filled(self):
+        ts = self.get_hourly_gaps()
+        df = ts.interpolate_gaps(inplace=False)
+        s_filled = df[f"{ts.varfield}_interpolation"]
+        self.assertTrue(s_filled.iloc[180:].isna().all())
+        self.assertTrue((ts.get_epochs()[ts.epochs_id_field].iloc[180:] == 0).all())
+
+    def test_edges_are_not_extrapolated(self):
+        # last two records are missing, which is below the gap size
+        ts = self.get_hourly_gaps()
+        ts.data.loc[120:, ts.varfield] = np.arange(120.0, 200.0)
+        ts.data.loc[198:, ts.varfield] = np.nan
+        df = ts.interpolate_gaps(inplace=False)
+        self.assertTrue(df[f"{ts.varfield}_interpolation"].iloc[198:].isna().all())
+
+    def test_flag_marks_only_filled_records(self):
+        ts = self.get_hourly_gaps()
+        df = ts.interpolate_gaps(inplace=False)
+        self.assertListEqual(list(df.index[df["is_interpolation"] == 1]), [50, 51])
+        np.testing.assert_allclose(
+            df[f"{ts.varfield}_interpolation"].iloc[50:52], [50, 51]
+        )
+
+    def test_epochs_layout_shows_small_gaps(self):
+        ts = self.get_hourly_gaps()
+        ax = self.get_fig(ts=ts, layout="epochs").get_axes()[0]
+        coll = ax.collections[-1]
+        self.assertGreater(coll.get_linewidth()[0], 0)
+        # one area for each run of missing records
+        self.assertEqual(len(coll.get_paths()), 2)
+
     def test_generate_returns_dataframe(self):
         ts = TemperatureSeries(name="Sim")
         df = ts.generate(start="2000-01-01", end="2000-12-31", seed=1)

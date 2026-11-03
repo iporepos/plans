@@ -22,8 +22,12 @@ to built plots with ``matplotlib``.
 # External imports
 # =======================================================================
 import matplotlib as mpl
+import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.artist as martist
+import matplotlib.collections as mcollections
 import matplotlib.colors as mcolors
+import matplotlib.ticker as mticker
 
 # ... {develop}
 
@@ -89,6 +93,12 @@ GRID_SPECS = {
     "gs_bottom": 0.06,
 }
 
+
+# drawing order of the layers of a panel. Images stay at 0 and plots start at 1
+ZORDER_GRID = 0.25
+ZORDER_FRAME = 100
+
+COLOR_ANNOTATION = "#5f5f5f"
 
 FIG_STYLES = {
     "bare": {
@@ -428,6 +438,139 @@ def clear_xticks(axes):
         y_new = trans.inverted().transform((0, max(ls_close) - px_clear))[1]
         for a in axes:
             a.set_ylim(bottom=y_new)
+    return None
+
+
+def get_annotation_specs():
+    """
+    Get the style of annotations, such as statistics and values inside a panel.
+
+    :return: arguments of a text
+    :rtype: dict
+    """
+    return {"color": COLOR_ANNOTATION, "fontsize": plt.rcParams["font.size"] - 1}
+
+
+class CoordinateLocator(mticker.Locator):
+    """
+    Locator of a fixed number of round ticks inside the view, for map coordinates.
+    """
+
+    def __init__(self, n_ticks=3):
+        self.n_ticks = n_ticks
+
+    def __call__(self):
+        vmin, vmax = self.axis.get_view_interval()
+        return self.tick_values(vmin=vmin, vmax=vmax)
+
+    def tick_values(self, vmin, vmax):
+        """
+        Get the ticks of a view.
+
+        :param vmin: lower limit of the view
+        :type vmin: float
+        :param vmax: upper limit of the view
+        :type vmax: float
+        :return: ticks
+        :rtype: :class:`numpy.ndarray`
+        """
+        vmin, vmax = sorted([vmin, vmax])
+        if vmin == vmax or self.n_ticks < 2:
+            return np.array([(vmin + vmax) / 2])
+        n_mid = (vmin + vmax) / 2
+        n_range = vmax - vmin
+
+        # largest round step that keeps the ticks away from the frame
+        n_max_step = 0.8 * n_range / (self.n_ticks - 1)
+        n_scale = 10 ** np.floor(np.log10(n_max_step))
+        n_step = max(n * n_scale for n in [1, 2, 5] if n * n_scale <= n_max_step)
+
+        # coarsest snap of the center that leaves the ticks nearly centered
+        n_power = np.floor(np.log10(n_step))
+        n_center = np.round(n_mid / 10**n_power) * 10**n_power
+        while abs(n_center - n_mid) > 0.1 * n_range:
+            n_power = n_power - 1
+            n_center = np.round(n_mid / 10**n_power) * 10**n_power
+
+        vct_ticks = n_center + n_step * (
+            np.arange(self.n_ticks) - (self.n_ticks - 1) / 2
+        )
+        # keep the ticks free of floating point residues
+        n_decimals = int(max(0, 1 - min(n_power, np.floor(np.log10(n_step)))))
+        return np.round(vct_ticks, n_decimals)
+
+
+class AxisGrid(martist.Artist):
+    """
+    Grid lines of one axis, as an artist with its own drawing order. An axis draws
+    its ticks and its grid together, so they can not be on different layers.
+    """
+
+    def __init__(self, axis, gridline):
+        """
+        Initialize the grid.
+
+        :param axis: axis to follow, for the positions of the lines
+        :type axis: :class:`matplotlib.axis.Axis`
+        :param gridline: line to copy the style from
+        :type gridline: :class:`matplotlib.lines.Line2D`
+        """
+        super().__init__()
+        self.axis = axis
+        self.lines = mcollections.LineCollection(
+            segments=[],
+            colors=[gridline.get_color()],
+            linewidths=gridline.get_linewidth(),
+            linestyles=gridline.get_linestyle(),
+            alpha=gridline.get_alpha(),
+        )
+        self.set_zorder(ZORDER_GRID)
+        self.set_in_layout(False)
+
+    def draw(self, renderer):
+        """
+        Draw the lines at the current ticks of the axis.
+
+        :param renderer: renderer of the figure
+        :type renderer: :class:`matplotlib.backend_bases.RendererBase`
+        :return: None
+        :rtype: None
+        """
+        ax = self.axes
+        n_low, n_high = sorted(self.axis.get_view_interval())
+        ls_ticks = [v for v in self.axis.get_majorticklocs() if n_low <= v <= n_high]
+        if self.axis.axis_name == "x":
+            self.lines.set_segments([[(v, 0), (v, 1)] for v in ls_ticks])
+            self.lines.set_transform(ax.get_xaxis_transform())
+        else:
+            self.lines.set_segments([[(0, v), (1, v)] for v in ls_ticks])
+            self.lines.set_transform(ax.get_yaxis_transform())
+        self.lines.set_figure(ax.figure)
+        self.lines.set_clip_path(ax.patch)
+        self.lines.draw(renderer)
+        self.stale = False
+        return None
+
+
+def set_layers(fig):
+    """
+    Set the drawing order of all panels of a figure. From the bottom to the top:
+    background, raster, grid, plot elements (with their own order), ticks and frame.
+
+    :param fig: figure with all panels already plotted
+    :type fig: :class:`matplotlib.figure.Figure`
+    :return: None
+    :rtype: None
+    """
+    for ax in fig.get_axes():
+        for axis in [ax.xaxis, ax.yaxis]:
+            ls_gridlines = axis.get_gridlines()
+            if len(ls_gridlines) > 0 and ls_gridlines[0].get_visible():
+                ax.add_artist(AxisGrid(axis=axis, gridline=ls_gridlines[0]))
+                axis.grid(visible=False)
+            axis.set_zorder(ZORDER_FRAME)
+        for spine in ax.spines.values():
+            spine.set_zorder(ZORDER_FRAME)
     return None
 
 

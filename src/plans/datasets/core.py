@@ -34,7 +34,7 @@ import rasterio
 # Project-level imports
 # =======================================================================
 from plans.root import Collection, DataSet
-from plans.datasets.analyst import Univar, GeoUnivar
+from plans.datasets.analyst import Univar, GeoUnivar, LazyStat
 from plans.stochastic import arma as _arma
 from plans.stochastic import binning as _binning
 from plans.stochastic import metrics as _metrics
@@ -57,6 +57,7 @@ DC_NODATA = {
     "byte": 255,  # categorical/boolean maps
     "uint8": 255,  # categorical/boolean maps
     "uint16": 0,  # zone maps
+    "uint32": 0,  # zone maps
     "float16": -99999,  # fuzzy maps
     "float32": -99999,  # scientific maps
 }
@@ -983,6 +984,9 @@ class TimeSeries(Univar):
                     if i <= n_curr:
                         n_start = 0
                     skip_v[n_start + 1 : i + 1] = 1
+        # a run at the end has no record after it, so the loop can not see it
+        if len(df) > 0 and df["CumSum"].values[-1] >= self.gapsize:
+            skip_v[len(df) - df["CumSum"].values[-1] :] = 1
         df["Skip"] = skip_v
 
         # Set Epoch Field
@@ -1104,8 +1108,6 @@ class TimeSeries(Univar):
 
         for epoch in epochs:
             df_aux1 = df.query("{} == {}".format(self.epochs_id_field, epoch)).copy()
-            # flag rows that are missing *before* they get filled in
-            df_aux1["is_interpolation"] = df_aux1[self.varfield].isna().astype(int)
             if epoch == 0:
                 df_aux1["{}_interpolation".format(self.varfield)] = np.nan
             else:
@@ -1123,12 +1125,18 @@ class TimeSeries(Univar):
                         df_aux2[self.dtfield].astype(np.int64).values,
                         df_aux2[self.varfield].values,
                         kind=method,
-                        fill_value="extrapolate",
+                        bounds_error=False,  # edges of an epoch are not extrapolated
+                        fill_value=np.nan,
                     )
                     # Interpolate full values
                     df_aux1["{}_interpolation".format(self.varfield)] = (
                         interpolation_func(df_aux1[self.dtfield].astype(np.int64))
                     )
+            # flag rows that were missing and are now filled
+            s_filled = df_aux1["{}_interpolation".format(self.varfield)]
+            df_aux1["is_interpolation"] = (
+                df_aux1[self.varfield].isna() & s_filled.notna()
+            ).astype(int)
             # Append
             list_dfs.append(df_aux1)
         df_new = pd.concat(list_dfs, ignore_index=True)
@@ -1753,6 +1761,7 @@ class TimeSeries(Univar):
                 "fill_only": False,
                 "color_gaps": "tab:red",
                 "alpha_gaps": 0.6,
+                "linewidth_gaps": 0.5,  # keeps gaps narrower than a pixel visible
                 # ranges todo review
                 "xmin": None,
                 "xmax": None,
@@ -1837,7 +1846,7 @@ class TimeSeries(Univar):
         ``color_hist``        ``"tab:grey"``       Color of the histogram.
         ``color_cdf``         ``"black"``          Color of the CDF.
         ``color_mean``        ``"red"``            Color of the mean line.
-        ``color_mean_text``   None                 Color of the mean label. None is black.
+        ``color_mean_text``   None                 Color of the mean label. None is gray.
         ``scheme_cmap``       ``"equal"``          Classes of the color map: ``"equal"``, ``"quantiles"`` or other schemes of :func:`plans.stochastic.binning.get_bins`.
         ``n_classes_cmap``    ``5``                Number of classes of the color map.
         ``cmap``              ``"viridis"``        Name of the color map.
@@ -1878,6 +1887,7 @@ class TimeSeries(Univar):
         ``fill_only``         ``False``            With ``fill``, hide the line.
         ``color_gaps``        ``"tab:red"``        Color of the gaps, in the ``epochs`` layout.
         ``alpha_gaps``        ``0.6``              Opacity of the gaps, in the ``epochs`` layout.
+        ``linewidth_gaps``    ``0.5``              Width of the edge of the gaps, which keeps short ones visible.
         ``xmax_aux``          ``20``               Not in use.
         ``pad_x``             ``0.05``             Share of the time span added on each side of the x axis, if ``range_x`` is None.
         ``linestyle``         ``"solid"``          Line style.
@@ -2020,6 +2030,7 @@ class TimeSeries(Univar):
         file_path = "{}/{}.{}".format(
             specs["folder"], specs["filename"], specs["fig_format"]
         )
+        viewer.set_layers(fig=fig)
         if return_fig:
             return fig
         else:
@@ -2060,7 +2071,8 @@ class TimeSeries(Univar):
             )
             TimeSeries.plot_series(data=df[is_epoch], ax=ax, specs=sp)
 
-        # the step keeps gaps of a single record visible
+        # the step gives width to gaps of a single record, and the edge keeps it
+        # visible when it is narrower than a pixel
         vct_gaps = df[self.varfield].isna().values
         if vct_gaps.any():
             ax.fill_between(
@@ -2072,7 +2084,8 @@ class TimeSeries(Univar):
                 transform=ax.get_xaxis_transform(),
                 color=specs["color_gaps"],
                 alpha=specs["alpha_gaps"],
-                linewidth=0,
+                linewidth=specs["linewidth_gaps"],
+                zorder=0.5,  # below the lines
                 label="Gaps",
             )
         TimeSeries.set_date_ticks(
@@ -2429,6 +2442,7 @@ class TimeSeries(Univar):
         # SHIP
         # ----------------------------------------------------------------
 
+        viewer.set_layers(fig=fig)
         if return_fig:
             return fig
         else:
@@ -3629,7 +3643,7 @@ class TimeSeriesCollection(Collection):
         )
         if len(axes) > 1:
             # histograms share the series axis
-            axes[1].set_xlim(0, 1.1 * hist_max)
+            Univar.set_hist_xaxis(ax=axes[1], hist_max=hist_max)
 
         viewer.clear_xticks(axes=axes)
         self._set_series_legend(axes=axes, specs=specs)
@@ -3766,7 +3780,7 @@ class TimeSeriesCollection(Collection):
 
             if len(ls_lateral) > 0:
                 ax_hist, ax_cdf = ls_lateral
-                ax_hist.set_xlim(0, 1.1 * hist_max)
+                Univar.set_hist_xaxis(ax=ax_hist, hist_max=hist_max)
                 # axis labels only below the last panel
                 if not is_last:
                     ax_hist.set_xlabel(None)
@@ -3922,6 +3936,7 @@ class TimeSeriesCollection(Collection):
         if filename is None:
             filename = "{}{}".format(self.name, specs["suff"])
         file_path = "{}/{}.{}".format(specs["folder"], filename, specs["fig_format"])
+        viewer.set_layers(fig=fig)
         if return_fig:
             return fig
         else:
@@ -5172,11 +5187,16 @@ class SeasonalEnsemble(TimeSeriesEnsemble):
 # -----------------------------------------------------------------------
 
 
-class Raster(DataSet):
+class Raster(GeoUnivar):
     """
-    The basic Raster map dataset.
+    The basic Raster map dataset. A :class:`GeoUnivar` with a grid as data, in
+    place of a table with geometries.
 
     """
+
+    N_DRAW = 5000  # records to draw on the data and CDF panels
+    var_min = LazyStat(getter="_get_var_min")
+    var_max = LazyStat(getter="_get_var_max")
 
     # Dunder methods
     # -------------------------------------------------------------------
@@ -5193,14 +5213,16 @@ class Raster(DataSet):
         }
         self.cmap = "jet"
         # extra
-        self.varname = "Unknown variable"
-        self.varalias = "UnVar"
-        self.units = "unknown"
         self.datetime = None  # "2020-01-01"
 
         # call super
         super().__init__(name=name, alias=alias)
         # -------------------------------------
+        # overwrite the defaults of the family
+        self.varname = "Unknown variable"
+        self.varalias = "UnVar"
+        self.units = "unknown"
+        self._set_view_specs()
         # set basic attributes
         self.dtype = dtype
         self.backup_data = None
@@ -5226,6 +5248,59 @@ class Raster(DataSet):
 
     # Core internal methods
     # -------------------------------------------------------------------
+    @property
+    def data(self):
+        """
+        The grid. A new grid drops the statistics of the previous one.
+        """
+        return self._data
+
+    @data.setter
+    def data(self, grid):
+        self._data = grid
+        self._reset_stats()
+
+    def _reset_stats(self):
+        """
+        Drop the statistics, to be computed again on next use.
+
+        :return: None
+        :rtype: None
+        """
+        super()._reset_stats()
+        self.var_min = None
+        self.var_max = None
+        return None
+
+    def _get_values(self):
+        """
+        Get the values of the grid, flat and cleared.
+
+        :return: vector of values
+        :rtype: :class:`numpy.ndarray`
+        """
+        return self.get_grid_data()
+
+    def _get_var_min(self):
+        values = self._get_values()
+        return values.min() if values.size > 0 else None
+
+    def _get_var_max(self):
+        values = self._get_values()
+        return values.max() if values.size > 0 else None
+
+    def _thin(self, data):
+        """
+        Get evenly spaced records of a sequence, since a screen shows no more than a
+        few thousand. Panels of statistics and the histogram still use all data.
+
+        :param data: vector or dataframe, with one record for each value
+        :type data: :class:`numpy.ndarray` or :class:`pandas.DataFrame`
+        :return: thinned sequence
+        :rtype: :class:`numpy.ndarray` or :class:`pandas.DataFrame`
+        """
+        return data[:: max(1, len(data) // self.N_DRAW)]
+
     def _set_fields(self):
         """
         Set fields names.
@@ -5316,6 +5391,59 @@ class Raster(DataSet):
         extent = [d["xmin"], d["xmax"], d["ymin"], d["ymax"]]
         return extent
 
+    def get_crs_info(self):
+        """
+        Get the EPSG code and the units of the cells, from the CRS or the projection
+        file. Without the database of PROJ, a CRS may lose its EPSG code.
+
+        :return: dictionary of ``epsg`` and ``units``, ``"m"`` or ``"deg."``. None if unknown.
+        :rtype: dict
+        """
+        dc_info = {"epsg": None, "units": None}
+        crs = self.raster_metadata["crs"]
+        if crs is None and self.prj is not None:
+            try:
+                crs = rasterio.crs.CRS.from_wkt(self.prj)
+            except rasterio.errors.CRSError:
+                pass
+        if crs is None:
+            return dc_info
+
+        # without PROJ, a CRS is neither of these, and asking only prints errors
+        if crs.is_projected or crs.is_geographic:
+            dc_info["epsg"] = crs.to_epsg()
+        s_wkt = crs.to_wkt()
+        if crs.is_geographic:
+            dc_info["units"] = "deg."
+        elif crs.linear_units in ["metre", "meter"] or 'UNIT["metre"' in s_wkt:
+            dc_info["units"] = "m"
+        elif 'UNIT["degree"' in s_wkt:
+            dc_info["units"] = "deg."
+        return dc_info
+
+    def get_metadata_lines(self):
+        """
+        Get the lines of text of the metadata, for the annotations of the view.
+
+        :return: lines of text
+        :rtype: list
+        """
+        dc_meta = self.raster_metadata
+        dc_crs = self.get_crs_info()
+        s_cell = "{:.6g}".format(dc_meta["cellsize"])
+        if dc_crs["units"] is not None:
+            s_cell = "{} {}".format(s_cell, dc_crs["units"])
+        n_nodata = dc_meta["NODATA_value"]
+        return [
+            "{:>5}: {}".format("Rows", dc_meta["nrows"]),
+            "{:>5}: {}".format("Cols", dc_meta["ncols"]),
+            "{:>5}: {}".format("Cell", s_cell),
+            "{:>5}: {:.2f}".format("XLL", dc_meta["xllcorner"]),
+            "{:>5}: {:.2f}".format("YLL", dc_meta["yllcorner"]),
+            "{:>5}: {}".format("NaN", "n/a" if n_nodata is None else n_nodata),
+            "{:>5}: {}".format("EPSG", dc_crs["epsg"] or "n/a"),
+        ]
+
     def get_grid_datapoints(self, drop_nan=False):
         """
         Get flat and cleared grid data points (x, y, and z).
@@ -5396,27 +5524,13 @@ class Raster(DataSet):
         if self.data is None:
             return None
         else:
-            if self.data.dtype.kind in ["i", "u"]:
+            _grid = np.ma.compressed(self.data)
+            if _grid.dtype.kind in ["i", "u"]:
                 # for integer grid
-                _grid = self.data[~self.data.mask]
                 return _grid
             else:
                 # for floating point grid:
-                _grid = self.data.ravel()[~np.isnan(self.data.ravel())]
-                return _grid
-
-    def get_univar(self):
-        """
-        Creates and returns a Univar object initialized with the current object's grid data.
-
-        :return: A Univar object containing the grid data for univariate analysis.
-        :rtype: :class:`plans.datasets.analyst.Univar`
-        """
-        from plans.datasets.analyst import Univar
-
-        uni = Univar()
-        uni.set_array(array=self.get_grid_data())
-        return uni
+                return _grid[~np.isnan(_grid)]
 
     def get_stats(self, inplace=False):
         """
@@ -5443,8 +5557,9 @@ class Raster(DataSet):
         :rtype: :class:`pandas.DataFrame` or None
 
         """
-        uni = self.get_univar()
-        return uni.get_basic_stats()
+        # always from the current grid, which may have been edited in place
+        self.stats_df = self.get_basic_stats()
+        return self.stats_df.copy()
 
     def get_aoi(self, by_value_lo, by_value_hi):
         """
@@ -5463,6 +5578,8 @@ class Raster(DataSet):
         - The AOI map is constructed as a binary grid where values within the specified range are set to 1, and others to 0.
 
         """
+        from plans.datasets.spatial import AOI
+
         map_aoi = AOI(name="{} {}-{}".format(self.varname, by_value_lo, by_value_hi))
         map_aoi.set_raster_metadata(metadata=self.raster_metadata)
         map_aoi.prj = self.prj
@@ -5483,11 +5600,13 @@ class Raster(DataSet):
         Expected to be incremented downstream.
 
         """
-        super().update()
+        # the grid is not a table, and specs hold the range of the map
+        DataSet.update(self)
         # refresh all mutable attributes
         if self.data is not None:
             # data size
             self.size = self.raster_metadata["nrows"] * self.raster_metadata["ncols"]
+            self._reset_stats()
 
         # raster metadata attributes
         self.nodatavalue = self.raster_metadata["NODATA_value"]
@@ -5517,6 +5636,18 @@ class Raster(DataSet):
         self.mask_nodata()
         return None
 
+    def set_array(self, array):
+        """
+        Set the data grid for the raster object. See :meth:`set_data`.
+
+        :param array: The data grid to be set for the raster.
+        :type array: :class:`numpy.ndarray`
+        :return: None
+        :rtype: None
+        """
+        self.set_data(grid=array)
+        return None
+
     def set_raster_metadata(self, metadata):
         """
         Set metadata for the raster object based on incoming metadata.
@@ -5530,7 +5661,7 @@ class Raster(DataSet):
         for k in self.raster_metadata:
             if k in metadata:
                 self.raster_metadata[k] = metadata[k]
-        self.cellsize = self.raster_metadata[k]
+        self.cellsize = self.raster_metadata["cellsize"]
         return None
 
     # Load data methods
@@ -5559,12 +5690,14 @@ class Raster(DataSet):
         self.update()
         return None
 
-    def load_metadata(self, file_data):
+    def load_metadata(self, file_data, id_band=1):
         """
         Load only metadata from files to the raster object.
 
         :param file_data: The path to the raster file.
         :type file_data: str
+        :param id_band: Band id to read for GeoTIFF. Default value = 1
+        :type id_band: int
 
 
         """
@@ -5633,7 +5766,7 @@ class Raster(DataSet):
 
 
         """
-        dc_metadata = Raster.read_tif_metadata(file_input=file_input, id_band=id_band)
+        dc_metadata = Raster.read_tif_metadata(file_input=file_input, n_band=id_band)
         self.set_raster_metadata(metadata=dc_metadata)
         return None
 
@@ -6043,25 +6176,23 @@ class Raster(DataSet):
 
         """
         super()._set_view_specs()
-        # borrow from Univar
-        uv = GeoUnivar()
-        self.view_specs.update(uv.view_specs)
         self.view_specs.update(
             {
                 "cmap": self.cmap,
+                "scheme_cmap": "continuous",
+                "zorder_map": 0,  # below the grid
+                "alpha": None,  # by the number of points
                 "title": "{} | {}".format(self.varname, self.name),
                 "run_id": None,
                 "zoom_window": None,
-                "subtitle_data": "Map",
             }
         )
         self.view_specs["ylabel"] = self.units
-        self.view_specs["grid_map"] = False
         return None
 
     def _plot(self, fig, gs, specs):
         """
-        Generates a plot visualizing the Raster data.
+        Plot the panels of the family, with the raster on the map panel.
 
         :param fig: The matplotlib figure object.
         :type fig: :class:`matplotlib.figure.Figure`
@@ -6072,287 +6203,99 @@ class Raster(DataSet):
         :return: The modified matplotlib figure object with the plots.
         :rtype: :class:`matplotlib.figure.Figure`
         """
-        # todo [DRY] most of this can be run on Univar -- make static method?
-        import matplotlib.ticker as mticker
+        # the figure follows the current grid, which may have been edited in place
+        self._reset_stats()
+        return super()._plot(fig=fig, gs=gs, specs=specs)
 
-        # from matplotlib.ticker import PercentFormatter  # Import PercentFormatter
-        formatter = mticker.ScalarFormatter(useOffset=False, useMathText=False)
-        formatter.set_scientific(False)  # Ensure scientific notation is off
+    def _get_annotation_columns(self):
+        """
+        Get the columns of annotations, with the metadata next to the statistics.
 
-        def _get_max(std_values, data):
-            data_max = np.max(data)
-            closest_max_index = np.argmin(np.abs(np.array(std_values) - data_max))
-            _id = closest_max_index + 1
-            if _id >= len(std_values):
-                _id = len(std_values) - 1
-            return std_values[_id]
+        :return: list of columns, each one a list of lines of text
+        :rtype: list
+        """
+        ls_columns = super()._get_annotation_columns()
+        if self.cellsize is not None:
+            ls_columns.append(self.get_metadata_lines())
+        return ls_columns
 
-        def _plot_mean(axe, xmin, xmax):
-            axe.hlines(
-                y=y_mu,
-                xmin=xmin,
-                xmax=xmax,
-                colors="red",
-            )
-            axe.annotate(
-                r" $\mu$ = {}".format(round(y_mu, 2)),
-                xy=(xmin, y_mu),
-                xytext=(1, 3),
-                textcoords="offset points",
-                color="red",
-            )
+    def _draw_map(self, ax, cmap, norm, specs):
+        """
+        Draw the grid on the map panel, in map coordinates.
 
-        # ------------- get aux data -------------
-        uni = self.get_univar()
-        y_mu = uni.stats_df.loc[uni.stats_df["statistic"] == "mean", "value"].values[0]
-
-        ylim = specs["range"]
-        # handle no range
-        if specs["range"] is None:
-            p_low = uni.stats_df.loc[
-                uni.stats_df["statistic"] == "p01", "value"
-            ].values[0]
-            p_hi = uni.stats_df.loc[uni.stats_df["statistic"] == "p99", "value"].values[
-                0
-            ]
-            rng = p_hi - p_low
-            rng_margin = rng * 0.1
-            ylim = (p_low - rng_margin, p_hi + rng_margin)
-
-        # handle aux vars
-        plot_mean = specs["plot_mean"]
-
-        # build axes ------------
-        ax1 = fig.add_subplot(gs[2:14, 0:12])
-        ax2 = fig.add_subplot(gs[2:8, 15:19])
-        ax3 = fig.add_subplot(gs[2:8, 20:])
-        ax_cbar = fig.add_subplot(gs[2:8, 12:13])
-
-        if specs["title"] is not None:
-            plt.suptitle(specs["title"], fontsize=9)
-
-        # ------------ map plot ------------
+        :param ax: axis to plot on
+        :type ax: :class:`matplotlib.axes.Axes`
+        :param cmap: color map
+        :type cmap: :class:`matplotlib.colors.Colormap`
+        :param norm: norm of the color scheme
+        :type norm: :class:`matplotlib.colors.Normalize`
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :return: None
+        :rtype: None
+        """
         # handle zoom window
-        i_min = 0
-        i_max = len(self.data)
-        j_min = 0
-        j_max = len(self.data[0])
+        n_rows, n_cols = self.data.shape
+        dc_zoom = {"i_min": 0, "i_max": n_rows, "j_min": 0, "j_max": n_cols}
         if specs["zoom_window"] is not None:
-            i_min = specs["zoom_window"]["i_min"]
-            i_max = specs["zoom_window"]["i_max"]
-            j_min = specs["zoom_window"]["j_min"]
-            j_max = specs["zoom_window"]["j_max"]
-        grid_show = self.data[i_min:i_max, j_min:j_max]
-        grid_show_squared = Raster.make_square(grid_input=grid_show)
-        # plot image
-        im = ax1.imshow(
-            grid_show_squared,
-            cmap=specs["cmap"],
-            vmin=ylim[0],
-            vmax=ylim[1],
+            dc_zoom = specs["zoom_window"]
+        i_min, i_max = dc_zoom["i_min"], dc_zoom["i_max"]
+        j_min, j_max = dc_zoom["j_min"], dc_zoom["j_max"]
+
+        # handle extent. A grid without metadata stays in pixels
+        extent = None
+        if self.cellsize is not None:
+            d = self.get_bbox()
+            extent = [
+                d["xmin"] + j_min * self.cellsize,
+                d["xmin"] + j_max * self.cellsize,
+                d["ymax"] - i_max * self.cellsize,
+                d["ymax"] - i_min * self.cellsize,
+            ]
+        ax.imshow(
+            self.data[i_min:i_max, j_min:j_max],
+            cmap=cmap,
+            norm=norm,
+            extent=extent,
             interpolation="none",
-            # extent=self.get_extent(),
             aspect="equal",
             origin="upper",
+            zorder=specs["zorder_map"],
         )
-        ax1.set_autoscale_on(False)  # Prevent auto-scaling which might add padding
+        return None
 
-        # plot helper geometry
-        helper_geometry = specs["geometry"]
-        if helper_geometry is not None:
-            helper_geometry.plot(ax=ax1, color="none", edgecolor="k")
-        if specs["subtitle_data"] is not None:
-            ax1.set_title(specs["subtitle_data"], loc="left")
-        # handle tick labels
-        ax1.yaxis.set_major_formatter(formatter)
-        ax1.xaxis.set_major_formatter(formatter)
-        if specs["grid_map"]:
-            ax1.grid(visible=specs["grid_map"])
-        else:
-            ax1.axis("off")
-        ax1.grid(False)
-
-        cbar = fig.colorbar(
-            im, fraction=1, extend="neither", ax=ax_cbar, location="left"
-        )
-        # Set the tick locations to only min and max
-        cbar.set_ticks(ylim)
-
-        # Format the tick labels to display only these values
-        # This custom formatter ensures only the set ticks are labeled
-        # cbar.set_ticklabels(ylim)
-        cbar.ax.yaxis.set_tick_params(which="both", labelleft=True, labelright=False)
-        ax_cbar.axis("off")
-
-        # todo [DRY] -- this can be optimized since is the same plots in Univar._plot()
-        # ------------ hist plot ------------
-        # Standard x-axis maximum values for hist
-        sdmax1 = list(np.linspace(1, 9, 9) / 100)
-        sdmax2 = list(np.linspace(10, 100, 10) / 100)
-        standard_max_values = sdmax1 + sdmax2
-        data = uni.data[uni.varfield].values
-        h = ax2.hist(
-            data,
-            bins=specs["bins"],
-            color=specs["color_hist"],
-            alpha=1,
-            orientation="horizontal",
-            weights=np.ones(len(data)) / len(data),
-        )
-        ax2.xaxis.set_major_formatter(mticker.PercentFormatter(1))
-        if specs["subtitle_hist"] is not None:
-            ax2.set_title(specs["subtitle_hist"], loc="left")
-        # Get the maximum value from the data
-        xmax = _get_max(standard_max_values, h[0]) * 1.1
-        ax2.set_xlim(0, xmax)
-        ax2.set_ylim(ylim)
-        ax2.set_xlabel("%")
-        ax2.set_ylabel(specs["ylabel"])
-        ax2.yaxis.set_major_formatter(formatter)
-        # extra lines
-        if plot_mean:
-            _plot_mean(
-                ax2,
-                xmin=0,
-                xmax=xmax,
-            )
-
-        # ------------ CDF plot ------------
-        ax3.plot(
-            uni.weibull_df["P(X)"], uni.weibull_df["Data"], color=specs["color_cdf"]
-        )
-        if specs["subtitle_cdf"] is not None:
-            ax3.set_title(specs["subtitle_cdf"], loc="left")
-        ax3.set_xlabel(specs["xlabel_cdf"])
-        # ax3.set_xticklabels([0, 0.5, 1.0])
-        ax3.set_xlim(-0.05, 1.05)
-        ax3.xaxis.set_major_formatter(mticker.PercentFormatter(1))
-        ax3.set_ylim(ylim)
-        ax3.yaxis.set_major_formatter(formatter)
-        ax3.set_yticklabels([])
-
-        # extra lines
-        if plot_mean:
-            _plot_mean(
-                ax3,
-                xmin=-0.05,
-                xmax=1.05,
-            )
-
-        fig = Univar.plot_stats(fig=fig, stats_df=uni.stats_df, x=0.5, y=0.4)
-        fig = Raster.plot_metadata(
-            fig=fig, metadata=self.raster_metadata, x=0.02, y=0.1
-        )
-        return fig
-
-    def _get_fig_specs(self):
+    def view(self, show=True, return_fig=False):
         """
-        Assemble the figure specification dictionary for the current layout.
-        """
-        # handle specs
-        specs = self.view_specs.copy()
+        Get the visualization, with the raster on the map panel. All layouts and view
+        specs of :meth:`plans.datasets.analyst.GeoUnivar.view` are available, except
+        for those of points. These are the differences:
 
-        # handle mode
-        mode = specs["layout"]
+        ====================  ================  =========================================================================
+        Key                   Default           Description
+        ====================  ================  =========================================================================
+        ``scheme_cmap``       ``"continuous"``  Color scheme. Classes are also available, such as ``"equal"``.
+        ``cmap``              auto              Name of the color map, from the ``cmap`` attribute.
+        ``range``             auto              Range of the y axis and of continuous colors. None is set from the data.
+        ``zoom_window``       None              Part of the grid on the map, as a dictionary of ``i_min``, ``i_max``, ``j_min`` and ``j_max``.
+        ``zorder_map``        ``0``             Drawing order of the raster, which stays below the grid of the map.
+        ``alpha``             None              Opacity of the data panel. None sets it by the number of points.
+        ``run_id``            None              Not in use.
+        ====================  ================  =========================================================================
 
-        specs_aux = {
-            "ncols": 24,
-            "nrows": 16,
-            "width": viewer.FIG_SIZES["M"]["w"],
-            "height": viewer.FIG_SIZES["M"]["h"],
-        }
+        The data and CDF panels draw evenly spaced records, up to about ``N_DRAW``
+        of them. The histogram and the statistics use all data.
 
-        # update sizes
-        specs.update(specs_aux)
-
-        # update gridspecs
-        specs.update(viewer.GRID_SPECS)
-
-        return specs
-
-    def view(self, show=True, return_fig=False, helper_geometry=None):
-        """
-        Displays or returns a visualization of the spatial data.
-
-        :param show: If True, the plot is displayed. Default value = True
+        :param show: option for showing instead of saving
         :type show: bool
-        :param return_fig: If True, the matplotlib figure object is returned. Default value = False
+        :param return_fig: option for returning the figure object
         :type return_fig: bool
-        :param helper_geometry: [optional] An optional geometry object to overlay on the map.
-        :type helper_geometry: object
-        :return: The matplotlib figure object if `return_fig` is True, otherwise None.
+        :return: figure object if ``return_fig`` is True, else None
         :rtype: :class:`matplotlib.figure.Figure` or None
         """
-
-        specs = self._get_fig_specs()
-
-        # update geometry
-        specs["geometry"] = helper_geometry
-
-        # -------------- BUILD --------------
-        fig, gs = viewer.build_fig(specs=specs)
-
-        # -------------- PLOT --------------
-        fig = self._plot(fig=fig, gs=gs, specs=specs)
-
-        # -------------- SHIP --------------
-        # plt.tight_layout()
-        # create path
-        file_path = "{}/{}.{}".format(
-            specs["folder"], specs["filename"], specs["fig_format"]
-        )
-        if return_fig:
-            return fig
-        else:
-            viewer.ship_fig(fig=fig, show=show, file_output=file_path, dpi=specs["dpi"])
+        return super().view(show=show, return_fig=return_fig)
 
     # Static methods
     # -------------------------------------------------------------------
-
-    @staticmethod
-    def plot_metadata(fig, metadata, x=0.0, y=0.1):
-        """
-        Adds raster metadata as text annotations to a matplotlib figure.
-
-        :param fig: The matplotlib figure object to which metadata will be added.
-        :type fig: :class:`matplotlib.figure.Figure`
-        :param metadata: A dictionary containing raster metadata (e.g., 'nrows', 'ncols', 'cellsize', 'xllcorner', 'yllcorner', 'NODATA_value').
-        :type metadata: dict
-        :param x: The x-coordinate (figure fraction) for the left-most column of metadata. Default value = 0.0
-        :type x: float
-        :param y: The y-coordinate (figure fraction) for the top row of metadata. Default value = 0.1
-        :type y: float
-        :return: The modified matplotlib figure object.
-        :rtype: :class:`matplotlib.figure.Figure`
-        """
-
-        def _plot_column(x_position, ls_meta, start_y):
-            current_y = start_y
-            for m in ls_meta:
-                plt.text(
-                    x=x_position,
-                    y=current_y,
-                    s=m,
-                    fontdict={"family": "monospace"},
-                    transform=fig.transFigure,
-                )
-                current_y -= n_step
-
-        n_step = 0.03
-
-        s1 = "{:>10}: {:<10}".format("Rows", metadata["nrows"])
-        s2 = "{:>10}: {:<10}".format("Cols", metadata["ncols"])
-        s3 = "{:>10}: {:<10.2f}".format("Cell", metadata["cellsize"])
-        ls_meta = [s1, s2, s3]
-        _plot_column(x_position=x, ls_meta=ls_meta, start_y=y)
-
-        s1 = "{:>10}: {:<10.2f}".format("XLL", metadata["xllcorner"])
-        s2 = "{:>10}: {:<10.2f}".format("YLL", metadata["yllcorner"])
-        s3 = "{:>10}: {:<10.2f}".format("NaN", metadata["NODATA_value"])
-        ls_meta = [s1, s2, s3]
-        _plot_column(x_position=x + 0.15, ls_meta=ls_meta, start_y=y)
-
-        return fig
 
     @staticmethod
     def read_tif_metadata(file_input, n_band=1):
@@ -6584,30 +6527,6 @@ class Raster(DataSet):
                 # for floating point grid:
                 return np.nan_to_num(grid_input, nan=nodatavalue)
 
-    @staticmethod
-    def make_square(grid_input):
-        """
-        Reshapes a 2D input grid into a square array, padding with NaNs or masked values if necessary.
-
-        :param grid_input: The input 2D array (grid).
-        :type grid_input: :class:`numpy.ndarray`
-        :return: A square array containing the original grid, padded with NaNs or masked values.
-        :rtype: :class:`numpy.ndarray`
-        """
-        # Determine the size for the squared array
-        size = max(grid_input.shape)
-
-        if grid_input.dtype.kind in ["i", "u"]:
-            # for integer grid
-            squared_arr = np.ma.masked_all((size, size))
-        else:
-            # for floating point grid:
-            # Create a new array filled with NaN
-            squared_arr = np.full((size, size), np.nan)
-        # Place the original array (with masked values converted to NaN) in the upper left corner
-        squared_arr[: grid_input.shape[0], : grid_input.shape[1]] = grid_input
-        return squared_arr
-
 
 class SciRaster(Raster):
     """
@@ -6757,6 +6676,24 @@ class QualiRaster(Raster):
             else:
                 return df_aux
 
+    def get_normality(self, clevel=0.95):
+        """
+        Not available, since category IDs have no distribution.
+
+        :param clevel: confidence level
+        :type clevel: float
+        :raises ValueError: always
+        """
+        raise ValueError("Normality is meaningless for category IDs")
+
+    def get_cdf_gumbel(self):
+        """
+        Not available, since category IDs have no maxima.
+
+        :raises ValueError: always
+        """
+        raise ValueError("The Gumbel CDF is meaningless for category IDs")
+
     def get_zonal_stats(self, raster_sample, merge=False, skip_count=False):
         """Get zonal stats from other raster map to sample.
 
@@ -6769,8 +6706,6 @@ class QualiRaster(Raster):
         :return: dataframe of zonal stats
         :rtype: :class:`pandas.DataFrame`
         """
-        from plans.datasets.analyst import Univar
-
         # deploy dataframe
         df_aux1 = self.table.copy()
         self.clear_table()  # clean
@@ -6791,9 +6726,8 @@ class QualiRaster(Raster):
             grid_aoi = 1 * (self.data == n_id)
             raster_sample.apply_aoi_mask(grid_aoi=grid_aoi, inplace=True)
             # get basic stats
-            raster_uni = Univar(data=raster_sample.get_grid_data(), name=varname)
-            df_stats = raster_uni.get_basic_stats()
-            lst_stats.append(df_stats.copy())
+            df_stats = raster_sample.get_stats_df()
+            lst_stats.append(df_stats)
             # restore
             raster_sample.data = grid_raster
 
@@ -7020,11 +6954,8 @@ class QualiRaster(Raster):
     # -------------------------------------------------------------------
     def _plot(self, fig, gs, specs):
         """
-        Generates a plot visualizing the spatial data and its area distribution.
-
-        This method creates a figure with a map of the spatial data and a horizontal bar chart
-        showing the percentage area of each unique class. It can aggregate smaller classes
-        into an "others" category and displays raster metadata.
+        Plot the map panel of the family, with the areas of each class in place of
+        the panels of statistics.
 
         :param fig: The matplotlib figure object.
         :type fig: :class:`matplotlib.figure.Figure`
@@ -7035,36 +6966,6 @@ class QualiRaster(Raster):
         :return: The modified matplotlib figure object with the plots.
         :rtype: :class:`matplotlib.figure.Figure`
         """
-
-        # todo [DRY] most of this can be run on Univar -- make static method?
-        import matplotlib.ticker as mticker
-
-        # from matplotlib.ticker import PercentFormatter  # Import PercentFormatter
-        formatter = mticker.ScalarFormatter(useOffset=False, useMathText=False)
-        formatter.set_scientific(False)  # Ensure scientific notation is off
-
-        def _get_max(std_values, data):
-            data_max = np.max(data)
-            closest_max_index = np.argmin(np.abs(np.array(std_values) - data_max))
-            _id = closest_max_index + 1
-            if _id >= len(std_values):
-                _id = len(std_values) - 1
-            return std_values[_id]
-
-        def _plot_mean(axe, xmin, xmax):
-            axe.hlines(
-                y=y_mu,
-                xmin=xmin,
-                xmax=xmax,
-                colors="red",
-            )
-            axe.annotate(
-                r" $\mu$ = {}".format(round(y_mu, 2)),
-                xy=(xmin, y_mu),
-                xytext=(1, 3),
-                textcoords="offset points",
-                color="red",
-            )
 
         def _categorize_and_limit(df, M):
             """
@@ -7119,8 +7020,6 @@ class QualiRaster(Raster):
 
             return df_final
 
-        ylim = specs["range"]
-
         # ---------- preable ---------
         df_areas = self.get_areas()
 
@@ -7147,52 +7046,21 @@ class QualiRaster(Raster):
         # print(df_areas.to_string())
 
         # ------------ setup axes ------------
-        ax1 = fig.add_subplot(gs[2:14, 0:12])
-
-        ax2 = fig.add_subplot(gs[2:n_max, 18:23])
+        fig = GeoUnivar._build_axes(fig=fig, gs=gs, specs=specs)
+        ax1 = fig.get_axes()[specs["ax_map"]]
+        # one panel takes the place of the others
+        for ax in fig.get_axes()[1:]:
+            ax.remove()
+        # the rows below are for the annotations
+        n_max = min(n_max, 10)
+        n_left = 21 if specs["layout"] == "full" else 18
+        ax2 = fig.add_subplot(gs[2:n_max, n_left:32])
 
         if specs["title"] is not None:
             plt.suptitle(specs["title"], fontsize=9)
 
         # ------------ map plot ------------
-        # handle zoom window
-        i_min = 0
-        i_max = len(self.data)
-        j_min = 0
-        j_max = len(self.data[0])
-        if specs["zoom_window"] is not None:
-            i_min = specs["zoom_window"]["i_min"]
-            i_max = specs["zoom_window"]["i_max"]
-            j_min = specs["zoom_window"]["j_min"]
-            j_max = specs["zoom_window"]["j_max"]
-        grid_show = self.data[i_min:i_max, j_min:j_max]
-        grid_show_squared = Raster.make_square(grid_input=grid_show)
-        im = ax1.imshow(
-            grid_show_squared,
-            cmap=specs["cmap"],
-            vmin=ylim[0],
-            vmax=ylim[1],
-            interpolation="none",
-            # extent=self.get_extent(),
-            aspect="equal",
-            origin="upper",
-        )
-        # todo the extent issue must be settled
-        ax1.set_autoscale_on(False)  # Prevent auto-scaling which might add padding
-
-        # plot helper geometry
-        helper_geometry = specs["geometry"]
-        if helper_geometry is not None:
-            helper_geometry.plot(ax=ax1, color="none", edgecolor="k")
-        if specs["subtitle_data"] is not None:
-            ax1.set_title(specs["subtitle_data"], loc="left")
-        # handle tick labels
-        ax1.yaxis.set_major_formatter(formatter)
-        ax1.xaxis.set_major_formatter(formatter)
-        if specs["grid_map"]:
-            ax1.grid(visible=specs["grid_map"])
-        else:
-            ax1.axis("off")
+        self._plot_map(ax=ax1, specs=specs)
 
         # ------------ areas plot ------------
         n_w_legend = 0.1
@@ -7216,14 +7084,13 @@ class QualiRaster(Raster):
         )
         # Add value labels on each bar
         for index, value in enumerate(df_areas[self.field_area + "_f"].values):
-            plt.text(
+            ax2.text(
                 value + 0.05,
                 index,
                 "{:.1f}%".format(value * 100),
                 ha="left",
                 va="center",
-                fontfamily="Arial",
-                fontsize=6,
+                **viewer.get_annotation_specs(),
             )  # Add text label: (x, y, text)
         if specs["subtitle_areas"] is not None:
             ax2.set_title(specs["subtitle_areas"], loc="left")
@@ -7242,10 +7109,30 @@ class QualiRaster(Raster):
         ax2.set_xticks([0, 0.25, 0.5, 0.75, 1])
         ax2.xaxis.set_major_formatter(mticker.PercentFormatter(1))
 
-        fig = Raster.plot_metadata(
-            fig=fig, metadata=self.raster_metadata, x=0.02, y=0.1
-        )
+        if specs["layout"] == "full":
+            self._plot_annotations(fig=fig, specs=specs)
         return fig
+
+    def _get_annotation_columns(self):
+        """
+        Get the columns of annotations. Here, only the metadata.
+
+        :return: list of columns, each one a list of lines of text
+        :rtype: list
+        """
+        return [self.get_metadata_lines()] if self.cellsize is not None else []
+
+    def _get_cmap_norm(self, specs):
+        """
+        Get the color map and the norm of the map panel, one color for each ID.
+
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :return: color map and norm
+        :rtype: tuple
+        """
+        v_range = specs["range"]
+        return specs["cmap"], mcolors.Normalize(vmin=v_range[0], vmax=v_range[1])
 
     def _set_view_specs(self):
         """
@@ -7253,6 +7140,11 @@ class QualiRaster(Raster):
 
 
         """
+        super()._set_view_specs()
+        # the areas of each class play the role of the color bar
+        self.view_specs["cbar_map"] = False
+        # the panel of areas is the one above the annotations
+        self.view_specs["ax_hist"] = 1
         # handle if there is no table
         if self.table is None:
             pass
@@ -7274,7 +7166,6 @@ class QualiRaster(Raster):
                 _lst_colors.append(_color)
 
             # setup
-            super()._set_view_specs()
             self.view_specs.update(
                 {
                     "cmap": ListedColormap(_lst_colors),
@@ -7291,53 +7182,35 @@ class QualiRaster(Raster):
 
         return None
 
-    def view(self, show=True, return_fig=False, helper_geometry=None):
+    def view(self, show=True, return_fig=False):
         """
-        Displays or returns a visualization of the spatial data and its area distribution.
+        Get the visualization, with the map and the areas of each class. All layouts
+        of :meth:`plans.datasets.analyst.GeoUnivar.view` and the keys of the map panel
+        are available. These are the differences:
 
-        This method orchestrates the plotting process by setting up figure specifications,
-        calling the internal plotting function (`_plot`), and then either displaying
-        or saving the generated figure.
+        ==================  =====================  =========================================================
+        Key                 Default                Description
+        ==================  =====================  =========================================================
+        ``cmap``            auto                   Colors of the classes, from the table.
+        ``range``           auto                   Range of the IDs, from the table.
+        ``cbar_map``        ``False``              Show the color bar of the map. The areas take its role.
+        ``color``           ``"tab:gray"``         Color of the bars of areas.
+        ``use_alias``       ``False``              Label the bars with the alias of the classes.
+        ``cutoff``          ``True``               Hide classes without area.
+        ``max_classes``     ``15``                 Number of classes shown. Others are aggregated.
+        ``subtitle_areas``  ``"Aereal ratios"``    Title of the panel of areas. None hides it.
+        ``area_unit``       ``"km2"``              Unit of the total area: ``"m2"``, ``"ha"`` or ``"km2"``.
+        ``total_area``      ``"Total area"``       Label of the total area.
+        ==================  =====================  =========================================================
 
-        :param show: If True, the plot is displayed. Default value = True
+        :param show: option for showing instead of saving
         :type show: bool
-        :param return_fig: If True, the matplotlib figure object is returned. Default value = False
+        :param return_fig: option for returning the figure object
         :type return_fig: bool
-        :param helper_geometry: [optional] An optional geometry object to overlay on the map.
-        :type helper_geometry: object
-        :return: The matplotlib figure object if `return_fig` is True, otherwise None.
+        :return: figure object if ``return_fig`` is True, else None
         :rtype: :class:`matplotlib.figure.Figure` or None
         """
-        # handle specs
-        specs = self.view_specs.copy()
-        specs_aux = {
-            "ncols": 24,
-            "nrows": 16,
-            "width": viewer.FIG_SIZES["M"]["w"],
-            "height": viewer.FIG_SIZES["M"]["h"],
-        }
-        # update
-        specs.update(specs_aux)
-        # update gridspecs
-        specs.update(viewer.GRID_SPECS)
-        # update geometry
-        specs["geometry"] = helper_geometry
-
-        # -------------- BUILD --------------
-        fig, gs = viewer.build_fig(specs=specs)
-
-        # -------------- PLOT --------------
-        fig = self._plot(fig=fig, gs=gs, specs=specs)
-
-        # -------------- SHIP --------------
-        # create path
-        file_path = "{}/{}.{}".format(
-            specs["folder"], specs["filename"], specs["fig_format"]
-        )
-        if return_fig:
-            return fig
-        else:
-            viewer.ship_fig(fig=fig, show=show, file_output=file_path, dpi=specs["dpi"])
+        return super().view(show=show, return_fig=return_fig)
 
 
 class QualiHard(QualiRaster):
@@ -7476,8 +7349,8 @@ class Zones(QualiRaster):
 
 
         """
-        self.load_asc(file=asc_file)
-        self.load_prj(file=prj_file)
+        self.load_asc(file_input=asc_file)
+        self.load_prj(file_input=prj_file)
         return None
 
     def get_aoi(self, zone_id):
@@ -7552,10 +7425,7 @@ class Zones(QualiRaster):
         for k in self.view_specs:
             map_zones_aux.view_specs[k] = self.view_specs[k]
         # call view
-        map_zones_aux.view(
-            accum=False,
-            show=show,
-        )
+        map_zones_aux.view(show=show)
         del map_zones_aux
         return None
 
@@ -7780,8 +7650,8 @@ class RasterCollection(Collection):
         :return: True if all datasets have the same grid dimensions, False otherwise.
         :rtype: bool
         """
-        u_cols = len(self.catalog["ncols"].unique())
-        u_rows = len(self.catalog["nrows"].unique())
+        u_cols = len(self.catalog["columns"].unique())
+        u_rows = len(self.catalog["rows"].unique())
         if u_cols == 1 and u_rows == 1:
             return True
         else:
@@ -7817,7 +7687,7 @@ class RasterCollection(Collection):
         if self.is_same_grid():
             # get shape parameters
             n = len(self.catalog)
-            _first = self.catalog["Name"].values[0]
+            _first = self.catalog[self.field_name].values[0]
             n_flat = (
                 self.collection[_first].data.shape[0]
                 * self.collection[_first].data.shape[1]
@@ -7850,9 +7720,7 @@ class RasterCollection(Collection):
                     vct_stats[i] = reducer_func(_vct, extra_arg)
 
             # reshape
-            grd_stats = np.reshape(
-                a=vct_stats, newshape=self.collection[_first].data.shape
-            )
+            grd_stats = vct_stats.reshape(self.collection[_first].data.shape)
             # return set up
             output_raster = copy.deepcopy(self.collection[_first])
             output_raster.set_data(grd_stats)

@@ -44,11 +44,37 @@ from plans.stochastic.curves import linear, power, power_zero
 # ***********************************************************************
 
 
+class LazyStat:
+    """
+    Attribute computed from the data on first use, and kept until it is set to None.
+    """
+
+    def __init__(self, getter):
+        self.getter = getter
+
+    def __set_name__(self, owner, name):
+        self.key = "_{}".format(name)
+
+    def __get__(self, obj, owner=None):
+        if obj is None:
+            return self
+        if obj.__dict__.get(self.key) is None and obj.data is not None:
+            obj.__dict__[self.key] = getattr(obj, self.getter)()
+        return obj.__dict__.get(self.key)
+
+    def __set__(self, obj, value):
+        obj.__dict__[self.key] = value
+
+
 class Univar(DataSet):
     """
     The Univariate object
 
     """
+
+    stats_df = LazyStat(getter="get_basic_stats")
+    freq_df = LazyStat(getter="get_frequency")
+    weibull_df = LazyStat(getter="get_cdf_weibull")
 
     def __init__(self, name="MyUnivar", alias="Uv0"):
         # ------------ set defaults ----------- #
@@ -225,9 +251,7 @@ class Univar(DataSet):
             self.start = self.data.index.min()
             self.end = self.data.index.max()
 
-            self.stats_df = self.get_basic_stats()
-            self.freq_df = self.get_frequency()
-            self.weibull_df = self.get_cdf_weibull()
+            self._reset_stats()
 
             # view specs -- 5% margin keeps extremes off the panel edges
             margin = 0.05 * (self.var_max - self.var_min)
@@ -235,6 +259,38 @@ class Univar(DataSet):
 
         # ... continues in downstream objects ... #
         return None
+
+    def _reset_stats(self):
+        """
+        Drop the statistics, to be computed again on next use.
+
+        :return: None
+        :rtype: None
+        """
+        self.stats_df = None
+        self.freq_df = None
+        self.weibull_df = None
+        return None
+
+    def _get_values(self):
+        """
+        Get the values of the variable, without missing data.
+
+        :return: vector of values
+        :rtype: :class:`numpy.ndarray`
+        """
+        return self.data.dropna()[self.varfield].values
+
+    def _thin(self, data):
+        """
+        Get the part of a sequence worth drawing on a panel. Here, all of it.
+
+        :param data: vector or dataframe, with one record for each value
+        :type data: :class:`numpy.ndarray` or :class:`pandas.DataFrame`
+        :return: the same sequence
+        :rtype: :class:`numpy.ndarray` or :class:`pandas.DataFrame`
+        """
+        return data
 
     # GET METHODS
     # ===================================================================
@@ -248,8 +304,7 @@ class Univar(DataSet):
         :return: dataframe of assessment results
         :rtype: :class:`pandas.DataFrame`
         """
-        data = self.data.dropna()[self.varfield].values
-        return _normality.get_normality(data=data, clevel=clevel)
+        return _normality.get_normality(data=self._get_values(), clevel=clevel)
 
     def get_frequency(self):
         """
@@ -258,8 +313,7 @@ class Univar(DataSet):
         :return: result dataframe
         :rtype: :class:`pandas.DataFrame`
         """
-        data = self.data.dropna()[self.varfield].values
-        return _frequency.get_frequency(data=data)
+        return _frequency.get_frequency(data=self._get_values())
 
     def get_basic_stats(self):
         """
@@ -268,8 +322,7 @@ class Univar(DataSet):
         :return: DataFrame with statistics and their values.
         :rtype: :class:`pandas.DataFrame`
         """
-        data = self.data.dropna()[self.varfield].values
-        return _descriptive.get_basic_stats(data=data)
+        return _descriptive.get_basic_stats(data=self._get_values())
 
     def get_cdf_weibull(self):
         """
@@ -278,8 +331,7 @@ class Univar(DataSet):
         :return: model dataframe
         :rtype: :class:`pandas.DataFrame`
         """
-        data = self.data.dropna()[self.varfield].values
-        return _frequency.get_cdf_weibull(data=data)
+        return _frequency.get_cdf_weibull(data=self._get_values())
 
     def get_cdf_gumbel(self):
         """
@@ -288,7 +340,8 @@ class Univar(DataSet):
         :return: multiple results from the assessment
         :rtype: dict
         """
-        return _frequency.get_cdf_gumbel(df=self.data.dropna(), varfield=self.varfield)
+        df = pd.DataFrame({self.varfield: self._get_values()})
+        return _frequency.get_cdf_gumbel(df=df, varfield=self.varfield)
 
     # PLOT METHODS
     # ===================================================================
@@ -311,8 +364,6 @@ class Univar(DataSet):
 
         # RANGE
         # -------------------------------------------------------------------
-        if self.stats_df is None:
-            self.stats_df = self.get_basic_stats()
         # handle if none
         if specs["range"] is None:
             p_low = self.stats_df.loc[
@@ -356,9 +407,6 @@ class Univar(DataSet):
         :return: None
         :rtype: None
         """
-        if self.weibull_df is None:
-            self.weibull_df = self.get_cdf_weibull()
-
         all_axes = fig.get_axes()
 
         # DATA
@@ -378,8 +426,7 @@ class Univar(DataSet):
 
         # CLEANUP
         # -------------------------------------------------------------------
-        df_clean = self.data.dropna()
-        data = df_clean[self.varfield].values
+        data = self._get_values()
 
         # PLOT DATA
         # -------------------------------------------------------------------
@@ -392,7 +439,7 @@ class Univar(DataSet):
             )
         else:
             Univar.plot_scatter(
-                data=data,
+                data=self._thin(data=data),
                 ax=ax_data,
                 specs=specs,
                 formatter=formatter,
@@ -410,23 +457,38 @@ class Univar(DataSet):
         # PLOT CDF
         # -------------------------------------------------------------------
         Univar.plot_cdf(
-            cdf_df=self.weibull_df,
+            cdf_df=self._thin(data=self.weibull_df),
             ax=ax_cdf,
             specs=specs,
             formatter=formatter,
+            y_mu=np.mean(data),
         )
 
         # PLOT STATS
         # -------------------------------------------------------------------
         if specs["layout"] == "full":
-            Univar.plot_stats(
-                fig=fig,
-                stats_df=self.stats_df,
-                x=specs["x_stats"],
-                y=specs["y_stats"],
-                sep=specs["x_stats_sep"],
-            )
+            self._plot_annotations(fig=fig, specs=specs)
 
+        return None
+
+    def _plot_annotations(self, fig, specs):
+        """
+        Plot the annotations of the figure. Here, the basic statistics.
+
+        :param fig: figure object
+        :type fig: :class:`matplotlib.figure.Figure`
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :return: None
+        :rtype: None
+        """
+        Univar.plot_stats(
+            fig=fig,
+            stats_df=self.stats_df,
+            x=specs["x_stats"],
+            y=specs["y_stats"],
+            sep=specs["x_stats_sep"],
+        )
         return None
 
     def _plot_qq(self, fig, specs, formatter):
@@ -443,7 +505,7 @@ class Univar(DataSet):
         :rtype: None
         """
         Univar.plot_qq(
-            data=self.data[self.varfield].dropna().values,
+            data=self._get_values(),
             ax=fig.get_axes()[0],
             specs=specs,
             formatter=formatter,
@@ -520,7 +582,7 @@ class Univar(DataSet):
                 # data plot: "scatter" or "boxplot"
                 "data_plot": "scatter",
                 # titles
-                "subtitle_data": "Data Points",
+                "subtitle_data": "Data",
                 "subtitle_box": "Boxplot",
                 "subtitle_hist": "Histogram",
                 "subtitle_cdf": "CDF",
@@ -569,7 +631,7 @@ class Univar(DataSet):
                 "ax_hist": 1,
                 "ax_cdf": 2,
                 # stats locators
-                "x_stats": 0.01,
+                "x_stats": 0.04,
                 "x_stats_sep": 0.2,
                 "y_stats": 0.3,
                 # zorder
@@ -630,7 +692,7 @@ class Univar(DataSet):
         ``ymax``              None               Not in use.
         ``layout``            ``"full"``         Name of the layout. See the table of layouts.
         ``data_plot``         ``"scatter"``      Plot of the data panel: ``"scatter"`` or ``"boxplot"``.
-        ``subtitle_data``     ``"Data Points"``  Title of the data panel. None hides it.
+        ``subtitle_data``     ``"Data"``         Title of the data panel. None hides it.
         ``subtitle_box``      ``"Boxplot"``      Title of the data panel, if a boxplot.
         ``subtitle_hist``     ``"Histogram"``    Title of the histogram. None hides it.
         ``subtitle_cdf``      ``"CDF"``          Title of the CDF. None hides it.
@@ -643,11 +705,11 @@ class Univar(DataSet):
         ``color_hist``        ``"tab:grey"``     Color of the histogram.
         ``color_cdf``         ``"black"``        Color of the CDF.
         ``color_mean``        ``"red"``          Color of the mean line.
-        ``color_mean_text``   None               Color of the mean label. None is black.
-        ``scheme_cmap``       ``"equal"``        Classes of the color map: ``"equal"``, ``"quantiles"`` or other schemes of :func:`plans.stochastic.binning.get_bins`.
-        ``n_classes_cmap``    ``5``              Number of classes of the color map.
+        ``color_mean_text``   None               Color of the mean label. None is gray.
+        ``scheme_cmap``       ``"equal"``        Color scheme: ``"continuous"``, or classes by ``"equal"``, ``"quantiles"`` and other schemes of :func:`plans.stochastic.binning.get_bins`.
+        ``n_classes_cmap``    ``5``              Number of classes of the color map. Not used if ``"continuous"``.
         ``cmap``              ``"viridis"``      Name of the color map.
-        ``alpha``             ``0.8``            Opacity of the data.
+        ``alpha``             ``0.8``            Opacity of the data. None sets it by the number of points.
         ``alpha_hist``        ``1``              Opacity of the histogram.
         ``alpha_cdf``         ``1``              Opacity of the CDF.
         ``range``             None               Range of the y axis, as ``[low, high]``. None is set from the data.
@@ -663,13 +725,13 @@ class Univar(DataSet):
         ``ax_data``           ``0``              Internal. Index of the data axis.
         ``ax_hist``           ``1``              Internal. Index of the histogram axis. False has no histogram.
         ``ax_cdf``            ``2``              Internal. Index of the CDF axis. False has no CDF.
-        ``x_stats``           ``0.01``           Horizontal position of the statistics table, as a share of the figure.
+        ``x_stats``           ``0.04``           Horizontal position of the statistics table, as a share of the figure.
         ``x_stats_sep``       ``0.2``            Space between columns of the statistics table.
         ``y_stats``           ``0.3``            Vertical position of the statistics table, as a share of the figure.
         ``zorder_data``       ``1``              Drawing order of the data.
         ``zorder_histh``      ``1``              Drawing order of the histogram.
         ``zorder_cdf``        ``1``              Drawing order of the CDF.
-        ``scatter_factor``    ``4``              Size of the scatter markers.
+        ``scatter_factor``    ``4``              Space at each side of the points, in widths of the band of points.
         ``colorize_scatter``  ``False``          Color the scatter markers by the color map.
         ``box_width``         ``0.4``            Width of the boxplot.
         ``box_showfliers``    ``True``           Show the outliers of the boxplot.
@@ -705,6 +767,7 @@ class Univar(DataSet):
         file_path = "{}/{}.{}".format(
             specs["folder"], specs["filename"], specs["fig_format"]
         )
+        viewer.set_layers(fig=fig)
         if return_fig:
             return fig
         else:
@@ -714,7 +777,7 @@ class Univar(DataSet):
     # ===================================================================
 
     @staticmethod
-    def plot_mean(ax, y_mu, xmin, xmax, specs):
+    def plot_mean(ax, y_mu, xmin, xmax, specs, label_right=False):
         """
         Plot the mean as a horizontal line, with an optional label.
 
@@ -728,6 +791,8 @@ class Univar(DataSet):
         :type xmax: float
         :param specs: plot specification dictionary (from ``view_specs``)
         :type specs: dict
+        :param label_right: place the label at the right side of the panel
+        :type label_right: bool
         :return: None
         :rtype: None
         """
@@ -742,19 +807,21 @@ class Univar(DataSet):
             linestyle=specs["linestyle_mean"],
         )
 
-        if specs["color_mean_text"] is None:
-            specs["color_mean_text"] = "black"
-
         if specs["plot_mean_label"]:
             pad = specs["pad_mean"] * " "
-            s = r"{}$\mu$ = {}".format(pad, round(y_mu, 2))
-            ax.annotate(
-                s,
-                xy=(xmin, y_mu),
-                xytext=(1, 3),
-                textcoords="offset points",
-                color=specs["color_mean_text"],
-            )
+            s = r"{}$\mu$ = {}".format(pad, round(float(y_mu), 2))
+            dc_place = {"xy": (xmin, y_mu), "xytext": (1, 3)}
+            if label_right:
+                dc_place = {
+                    "xy": (1, y_mu),
+                    "xycoords": ax.get_yaxis_transform(),
+                    "xytext": (-1, 3),
+                    "ha": "right",
+                }
+            dc_text = viewer.get_annotation_specs()
+            if specs["color_mean_text"] is not None:
+                dc_text["color"] = specs["color_mean_text"]
+            ax.annotate(s, textcoords="offset points", **dc_text, **dc_place)
         return None
 
     @staticmethod
@@ -777,24 +844,22 @@ class Univar(DataSet):
             return None
         x_values = np.arange(len(data))
         x_factor = specs["scatter_factor"]
+        # handle opacity
+        n_alpha = specs["alpha"]
+        if n_alpha is None:
+            n_alpha = Univar.get_dynamic_alpha(n_points=len(data))
         # handle scheme
         if specs["colorize_scatter"]:
-            color_data = _binning.classify(
-                data=data,
-                n_classes=specs["n_classes_cmap"],
-                scheme=specs["scheme_cmap"],
-            )
-            color_cmap = viewer.get_discrete_cmap(
-                n_classes=specs["n_classes_cmap"], base_cmap_name=specs["cmap"]
-            )
+            color_cmap, color_norm = Univar.get_cmap_norm(data=data, specs=specs)
             # plot
             ax.scatter(
                 x_values,
                 data,
                 marker=".",
-                c=color_data,
+                c=data,
                 cmap=color_cmap,
-                alpha=specs["alpha"],
+                norm=color_norm,
+                alpha=n_alpha,
                 s=0.8 * viewer.MM_TO_PT,
                 zorder=specs["zorder_data"],
             )
@@ -804,7 +869,7 @@ class Univar(DataSet):
                 data,
                 marker=".",
                 color=specs["color"],
-                alpha=specs["alpha"],
+                alpha=n_alpha,
                 s=0.8 * viewer.MM_TO_PT,
                 zorder=specs["zorder_data"],
             )
@@ -927,24 +992,10 @@ class Univar(DataSet):
         """
 
         # todo dry --- evaluate to remove the range_data parameter
-        # ------- local functions --------
-        def _get_max(std_values, data):
-            data_max = np.max(data)
-            closest_max_index = np.argmin(np.abs(np.array(std_values) - data_max))
-            _id = closest_max_index + 1
-            if _id >= len(std_values):
-                _id = len(std_values) - 1
-            return std_values[_id]
-
         h = None
 
         if not ax:
             return None
-
-        # Standard x-axis maximum values for hist
-        sdmax1 = list(np.linspace(1, 9, 9) / 100)
-        sdmax2 = list(np.linspace(10, 100, 10) / 100)
-        standard_max_values = sdmax1 + sdmax2
 
         # handle data range
         data_range = specs["range"]
@@ -969,13 +1020,10 @@ class Univar(DataSet):
             weights=np.ones(len(data)) / len(data),
             zorder=specs["zorder_histh"],
         )
-        ax.xaxis.set_major_formatter(mticker.PercentFormatter(1))
         if specs["subtitle_hist"] is not None:
             ax.set_title(specs["subtitle_hist"], loc="left")
 
-        # Get the maximum value from the data
-        xmax = _get_max(standard_max_values, h[0]) * 1.1
-        ax.set_xlim(0, xmax)
+        Univar.set_hist_xaxis(ax=ax, hist_max=np.max(h[0]))
         ax.set_ylim(data_range)
         ax.set_xlabel("%")
         if formatter is not None:
@@ -984,19 +1032,22 @@ class Univar(DataSet):
         # PLOT MEAN
         # --------------------------------------------------
         if specs["plot_mean"]:
-            # hist
+            # hist -- at the right, since the bars are at the left
             Univar.plot_mean(
                 ax,
                 y_mu=np.nanmean(data),
                 xmin=0,
                 xmax=1,
                 specs=specs,
+                label_right=True,
             )
 
         return h
 
     @staticmethod
-    def plot_cdf(cdf_df, ax, specs, formatter=None, px_field="P(X)", var_field="Data"):
+    def plot_cdf(
+        cdf_df, ax, specs, formatter=None, px_field="P(X)", var_field="Data", y_mu=None
+    ):
         """
         Plot the CDF, as exceedance probability.
 
@@ -1012,6 +1063,8 @@ class Univar(DataSet):
         :type px_field: str
         :param var_field: name of the variable field
         :type var_field: str
+        :param y_mu: [optional] mean of the data. Default is the mean of the curve.
+        :type y_mu: float
         :return: None
         :rtype: None
         """
@@ -1045,7 +1098,7 @@ class Univar(DataSet):
         if specs["plot_mean"]:
             Univar.plot_mean(
                 ax,
-                y_mu=cdf_df[var_field].mean(),
+                y_mu=cdf_df[var_field].mean() if y_mu is None else y_mu,
                 xmin=-0.05,
                 xmax=1.05,
                 specs=specs,
@@ -1120,68 +1173,168 @@ class Univar(DataSet):
         :return: figure object
         :rtype: :class:`matplotlib.figure.Figure`
         """
-
-        # Helper function to plot a single column of stats
-        def _plot_column(x_position, stats_list, start_y):
-            current_y = start_y
-            for stat in stats_list:
-                # Handle "Median" special case if it's coming from ls_stats that uses it
-                display_stat = "p50" if stat == "median" else stat
-
-                # Ensure the stat exists in the DataFrame before attempting to access
-                stat_row = stats_df.loc[stats_df["statistic"] == display_stat]
-                if not stat_row.empty:
-                    s_value = stat_row["value"].values[0]
-                    s_head = stat  # Use the original name for display if needed, or display_stat
-
-                    # Determine formatting based on value magnitude
-                    if abs(s_value) > 1_000_000:
-                        s_line = "{:>10}: {:<10.2e}".format(s_head, s_value)
-                    elif stat == "count":
-                        s_line = "{:>10}: {:<10}".format(s_head, int(s_value))
-                    else:
-                        s_line = "{:>10}: {:<10.2f}".format(s_head, s_value)
-
-                    current_y -= n_step
-                    plt.text(
-                        x=x_position,
-                        y=current_y,
-                        s=s_line,
-                        fontdict={"family": "monospace"},
-                        transform=fig.transFigure,
-                    )
-                else:
-                    # Optional: Handle cases where a stat might not be found
-                    # print(f"Warning: Statistic '{display_stat}' not found in DataFrame.")
-                    pass
-
-        n_step = 0.03
-
-        # First column of statistics
-        ls_stats_col1 = [
-            "count",
-            "sum",
-            "mean",
-            "median",  # This will be mapped to "P50" internally by the helper
-            "sd",
-            "min",
-            "max",
-        ]
-        _plot_column(x, ls_stats_col1, y - 0.01)
-
-        # Second column of statistics
-        ls_stats_col2 = [
-            "p05",
-            "p10",
-            "p25",
-            "p50",
-            "p75",
-            "p90",
-            "p95",
-        ]
-        _plot_column(x + sep, ls_stats_col2, y - 0.01)
-
+        Univar.plot_text_columns(
+            fig=fig,
+            ls_columns=Univar.get_stats_columns(stats_df=stats_df),
+            x=x,
+            y=y,
+            sep=sep,
+        )
         return fig
+
+    @staticmethod
+    def get_stats_columns(stats_df):
+        """
+        Get two columns of lines of text, with the basic statistics.
+
+        :param stats_df: dataframe of basic statistics
+        :type stats_df: :class:`pandas.DataFrame`
+        :return: list of columns, each one a list of lines
+        :rtype: list
+        """
+        dc_stats = dict(zip(stats_df["statistic"], stats_df["value"]))
+
+        def _get_line(stat):
+            n_value = dc_stats[stat]
+            # capitals for the standard deviation and the percentiles
+            s_head = (
+                stat.upper() if stat == "sd" or stat[0] == "p" else stat.capitalize()
+            )
+            # Determine formatting based on value magnitude
+            if abs(n_value) > 1_000_000:
+                return "{:>5}: {:<10.2e}".format(s_head, n_value)
+            if stat == "count":
+                return "{:>5}: {:<10}".format(s_head, int(n_value))
+            return "{:>5}: {:<10.2f}".format(s_head, n_value)
+
+        ls_col1 = ["count", "sum", "mean", "sd", "min", "max"]
+        ls_col2 = ["p05", "p10", "p25", "p50", "p75", "p90", "p95"]
+        return [
+            [_get_line(stat=k) for k in ls if k in dc_stats]
+            for ls in [ls_col1, ls_col2]
+        ]
+
+    @staticmethod
+    def plot_text_columns(fig, ls_columns, x, y, sep, y_min=None):
+        """
+        Plot columns of annotations on the figure, from the top down. With a lower limit,
+        lines get closer if needed, so the columns never pass it.
+
+        :param fig: figure object
+        :type fig: :class:`matplotlib.figure.Figure`
+        :param ls_columns: list of columns, each one a list of lines of text
+        :type ls_columns: list
+        :param x: position of the first column, in figure fraction
+        :type x: float
+        :param y: position of the top of the columns, in figure fraction
+        :type y: float
+        :param sep: distance between the columns, in figure fraction
+        :type sep: float
+        :param y_min: [optional] lower limit of the columns, in figure fraction
+        :type y_min: float
+        :return: None
+        :rtype: None
+        """
+        dc_text = viewer.get_annotation_specs()
+        # height of a line, in figure fraction
+        n_height = 1.25 * dc_text["fontsize"] / (72 * fig.get_figheight())
+        n_lines = max([len(ls) for ls in ls_columns] + [2])
+        n_step = n_height
+        if y_min is not None:
+            n_step = min(n_height, (y - y_min - n_height) / (n_lines - 1))
+        for i, ls_lines in enumerate(ls_columns):
+            for j, s_line in enumerate(ls_lines):
+                fig.text(
+                    x=x + i * sep,
+                    y=y - j * n_step,
+                    s=s_line,
+                    fontdict={"family": "monospace"},
+                    va="top",
+                    **dc_text,
+                )
+        return None
+
+    @staticmethod
+    def set_hist_xaxis(ax, hist_max):
+        """
+        Set the x axis of a horizontal histogram, with three integer labels in percent.
+        The first is the zero, on the y axis.
+
+        :param ax: axis of the histogram
+        :type ax: :class:`matplotlib.axes.Axes`
+        :param hist_max: largest share of data in a bar, as a fraction
+        :type hist_max: float
+        :return: None
+        :rtype: None
+        """
+        # smallest round step, in percent, that holds the largest bar
+        n_step = 50
+        for n in [1, 2, 5, 10, 20, 25, 50]:
+            if 2 * n >= 100 * hist_max:
+                n_step = n
+                break
+        vct_ticks = n_step * np.arange(3) / 100
+        ax.set_xlim(0, 1.1 * vct_ticks[-1])
+        ax.set_xticks(vct_ticks)
+        ax.xaxis.set_major_formatter(mticker.PercentFormatter(xmax=1, decimals=0))
+        return None
+
+    @staticmethod
+    def get_dynamic_alpha(n_points):
+        """
+        Get the opacity of a cloud of points, which gets lower as they get denser.
+
+        :param n_points: number of points
+        :type n_points: int
+        :return: opacity
+        :rtype: float
+        """
+        return float(np.clip(5 / np.sqrt(max(n_points, 1)), 0.02, 0.8))
+
+    @staticmethod
+    def get_cmap_norm(data, specs):
+        """
+        Get the color map and the norm of the color scheme, so all panels agree.
+
+        Colors span ``specs["range"]``, or the data if it is None, so a color bar
+        shares the y axis of the other panels. A ``continuous`` scheme changes smoothly
+        along it. Other schemes make one flat color for each class of value, with the
+        outer classes reaching the ends of the range.
+
+        :param data: vector of data without nan values
+        :type data: :class:`numpy.ndarray`
+        :param specs: plot specification dictionary (from ``view_specs``)
+        :type specs: dict
+        :return: color map and norm
+        :rtype: tuple
+        """
+        v_range = specs["range"]
+        if v_range is None:
+            v_range = (np.min(data), np.max(data))
+        v_low, v_high = v_range
+        if v_low == v_high:
+            v_low, v_high = v_low - 0.5, v_high + 0.5
+
+        if specs["scheme_cmap"] == "continuous":
+            norm = mcolors.Normalize(vmin=v_low, vmax=v_high)
+            return plt.get_cmap(specs["cmap"]), norm
+
+        # equal boundaries make no class
+        bins = np.unique(
+            _binning.get_bins(
+                data=data, n_bins=specs["n_classes_cmap"], scheme=specs["scheme_cmap"]
+            )
+        )
+        # a boundary too close to the ends of the range merges in the outer class
+        n_margin = 0.25 * np.median(np.diff(bins)) if len(bins) > 1 else 0
+        bins = bins[1:-1]
+        bins = bins[(bins > v_low + n_margin) & (bins < v_high - n_margin)]
+        bins = np.concatenate(([v_low], bins, [v_high]))
+        n_classes = len(bins) - 1
+        cmap = viewer.get_discrete_cmap(
+            n_classes=n_classes, base_cmap_name=specs["cmap"]
+        )
+        return cmap, mcolors.BoundaryNorm(boundaries=bins, ncolors=n_classes)
 
     @staticmethod
     def plot_cbar(
@@ -1207,6 +1360,11 @@ class Univar(DataSet):
         :return: None
         :rtype: None
         """
+
+        # a continuous bar is a stack of many thin classes
+        if scheme == "continuous":
+            scheme = "equal"
+            n_classes = 100
 
         # handle bins
         bins = _binning.get_bins(data=data, n_bins=n_classes, scheme=scheme)
@@ -1402,11 +1560,13 @@ class GeoUnivar(Univar):
 
         # the map panel needs its own layouts
         self.layouts = {
+            # the height makes the rows of the map as tall as its columns are wide,
+            # so the figure ends at the labels of the map
             "full": {
                 "ncols": 34,
-                "nrows": 16,
+                "nrows": 15,
                 "width": viewer.FIG_SIZES["L"]["w"],
-                "height": viewer.FIG_SIZES["L"]["h"],
+                "height": 72,
             },
             "mini": {
                 "ncols": 34,
@@ -1432,17 +1592,26 @@ class GeoUnivar(Univar):
                 "ax_data": 1,
                 "ax_hist": 2,
                 "ax_cdf": 3,
-                "x_stats": 0.55,
-                "zorder_map": 3,  # above polygons and lines of other layers
-                "layers_map": None,  # list of other layers, see plot_map
+                "ax_cbar": 4,
+                "x_stats": 0.5,
+                "x_stats_sep": 0.155,
+                "y_stats": 0.11,  # room for the labels of the panels above
+                "zorder_map": 3,
+                "helper_geometry": None,
+                "facecolor_helper": "none",
+                "edgecolor_helper": "black",
+                "linewidth_helper": 0.8,
+                "zorder_helper": 4,  # above the data
                 "empty_map": False,
-                "grid_map": False,
+                "grid_map": True,
+                "n_ticks_map": 3,
                 "marker_map": "o",
                 "markersize_map": 10,
                 "edgecolor_map": "none",
-                "colorize_map": True,
-                "cbar_scatter": True,
-                "cbar_histh": True,
+                "cbar_map": True,
+                "scatter_factor": 1,  # a band of 1/3 of the x axis
+                "cbar_scatter": False,
+                "cbar_histh": False,
             }
         )
         return None
@@ -1473,8 +1642,8 @@ class GeoUnivar(Univar):
         ``title``             auto               Title of the figure.
         ``xvar``              auto               Not in use.
         ``yvar``              auto               Not in use.
-        ``xlabel``            auto               Label of the x axis.
-        ``ylabel``            auto               Label of the y axis.
+        ``xlabel``            auto               Not in use. The data panel has no label on its x axis.
+        ``ylabel``            auto               Label of the color bar, which holds the y axis of the panels. On the data panel if there is no color bar.
         ``color``             ``"tab:grey"``     Color of the data.
         ``xmin``              None               Not in use.
         ``xmax``              None               Not in use.
@@ -1482,7 +1651,7 @@ class GeoUnivar(Univar):
         ``ymax``              None               Not in use.
         ``layout``            ``"full"``         Name of the layout. See the table of layouts.
         ``data_plot``         ``"scatter"``      Plot of the data panel: ``"scatter"`` or ``"boxplot"``.
-        ``subtitle_data``     ``"Data Points"``  Title of the data panel. None hides it.
+        ``subtitle_data``     ``"Data"``         Title of the data panel. None hides it.
         ``subtitle_box``      ``"Boxplot"``      Title of the data panel, if a boxplot.
         ``subtitle_hist``     ``"Histogram"``    Title of the histogram. None hides it.
         ``subtitle_cdf``      ``"CDF"``          Title of the CDF. None hides it.
@@ -1495,14 +1664,14 @@ class GeoUnivar(Univar):
         ``color_hist``        ``"tab:grey"``     Color of the histogram.
         ``color_cdf``         ``"black"``        Color of the CDF.
         ``color_mean``        ``"red"``          Color of the mean line.
-        ``color_mean_text``   None               Color of the mean label. None is black.
-        ``scheme_cmap``       ``"equal"``        Classes of the color map: ``"equal"``, ``"quantiles"`` or other schemes of :func:`plans.stochastic.binning.get_bins`.
-        ``n_classes_cmap``    ``5``              Number of classes of the color map.
+        ``color_mean_text``   None               Color of the mean label. None is gray.
+        ``scheme_cmap``       ``"equal"``        Color scheme: ``"continuous"``, or classes by ``"equal"``, ``"quantiles"`` and other schemes of :func:`plans.stochastic.binning.get_bins`. Outer classes reach the ends of ``range``.
+        ``n_classes_cmap``    ``5``              Number of classes of the color map. Not used if ``"continuous"``.
         ``cmap``              ``"viridis"``      Name of the color map.
-        ``alpha``             ``0.8``            Opacity of the data.
+        ``alpha``             ``0.8``            Opacity of the data. None sets it by the number of points.
         ``alpha_hist``        ``1``              Opacity of the histogram.
         ``alpha_cdf``         ``1``              Opacity of the CDF.
-        ``range``             None               Range of the y axis, as ``[low, high]``. None is set from the data.
+        ``range``             None               Range of the y axis and of the colors, as ``[low, high]``. None is set from the data.
         ``range_x``           None               Range of the x axis, as ``[low, high]``. None is set from the data.
         ``plot_mean``         ``True``           Show the mean line.
         ``plot_mean_data``    ``False``          Show the mean line also on the data panel.
@@ -1515,28 +1684,34 @@ class GeoUnivar(Univar):
         ``ax_data``           ``1``              Internal. Index of the data axis.
         ``ax_hist``           ``2``              Internal. Index of the histogram axis. False has no histogram.
         ``ax_cdf``            ``3``              Internal. Index of the CDF axis. False has no CDF.
-        ``x_stats``           ``0.55``           Horizontal position of the statistics table, as a share of the figure.
-        ``x_stats_sep``       ``0.2``            Space between columns of the statistics table.
-        ``y_stats``           ``0.3``            Vertical position of the statistics table, as a share of the figure.
+        ``ax_cbar``           ``4``              Internal. Index of the axis of the color bar.
+        ``x_stats``           ``0.5``            Horizontal position of the annotations, as a share of the figure.
+        ``x_stats_sep``       ``0.155``          Space between columns of the annotations.
+        ``y_stats``           ``0.11``           Space between the lateral panels and the annotations, as a share of the figure. They never pass the bottom of the map.
         ``zorder_data``       ``1``              Drawing order of the data.
         ``zorder_histh``      ``1``              Drawing order of the histogram.
         ``zorder_cdf``        ``1``              Drawing order of the CDF.
-        ``scatter_factor``    ``4``              Size of the scatter markers.
+        ``scatter_factor``    ``1``              Space at each side of the points, in widths of the band of points. The default makes a band of 1/3 of the x axis.
         ``colorize_scatter``  ``False``          Color the scatter markers by the color map.
         ``box_width``         ``0.4``            Width of the boxplot.
         ``box_showfliers``    ``True``           Show the outliers of the boxplot.
         ``subtitle_map``      ``"Map"``          Title of the map. None hides it.
         ``ax_map``            ``0``              Internal. Index of the map axis.
         ``zorder_map``        ``3``              Drawing order of the data on the map.
-        ``layers_map``        None               Other layers, as a list of dictionaries. See :meth:`plot_map`.
-        ``empty_map``         ``False``          Hide the data on the map, leaving only other layers.
-        ``grid_map``          ``False``          Show the grid of the map.
+        ``helper_geometry``   None               A :class:`geopandas.GeoDataFrame` to overlay on the map, in the same CRS as the data.
+        ``facecolor_helper``  ``"none"``         Fill color of the helper geometry.
+        ``edgecolor_helper``  ``"black"``        Edge color of the helper geometry.
+        ``linewidth_helper``  ``0.8``            Width of the edge of the helper geometry.
+        ``zorder_helper``     ``4``              Drawing order of the helper geometry. Below ``zorder_map`` to stay under the data.
+        ``empty_map``         ``False``          Hide the data on the map, leaving only the helper geometry.
+        ``grid_map``          ``True``           Show the grid of the map, at the coordinates of the ticks.
+        ``n_ticks_map``       ``3``              Number of ticks on each axis of the map.
         ``marker_map``        ``"o"``            Marker of the points.
         ``markersize_map``    ``10``             Size of the points.
         ``edgecolor_map``     ``"none"``         Edge color of the points or polygons.
-        ``colorize_map``      ``True``           Color the data on the map by the color map.
-        ``cbar_scatter``      ``True``           Color the bar of the scatter panel. Off if ``colorize_scatter``.
-        ``cbar_histh``        ``True``           Color the bars of the histogram by the color map.
+        ``cbar_map``          ``True``           Show the color bar of the map. A triangular tip marks a side where ``range`` clips the data.
+        ``cbar_scatter``      ``False``          Show a strip of the color map inside the data panel. Off if ``colorize_scatter``.
+        ``cbar_histh``        ``False``          Show a strip of the color map inside the histogram.
         ``gs_*``              auto               Internal. Replaced by the shared grid of :mod:`plans.viewer`.
         ====================  =================  =====================================================================================================================
 
@@ -1621,15 +1796,26 @@ class GeoUnivar(Univar):
         # todo [docstring]
         # ------------ setup axes ------------
         if specs["layout"] == "full":
-            fig.add_subplot(gs[2:15, 1:14])
-            fig.add_subplot(gs[2:10, 16:20])
+            n_cbar, gs_data = 15, gs[2:10, 17:20]
+            ax_map = fig.add_subplot(gs[2:15, 1:13])
+        elif specs["layout"] == "mini":
+            n_cbar, gs_data = 12, gs[2:10, 14:18]
+            ax_map = fig.add_subplot(gs[2:10, 1:9])
+        # square panel at the top left of its cell, for any map extent
+        ax_map.set_box_aspect(1)
+        ax_map.set_anchor("NW")
+        # a narrow data panel, in four of five parts of its cell
+        fig.add_subplot(gs_data.subgridspec(nrows=1, ncols=5, wspace=0)[0, 1:])
+        if specs["layout"] == "full":
             fig.add_subplot(gs[2:10, 22:27])
             fig.add_subplot(gs[2:10, 29:])
         elif specs["layout"] == "mini":
-            fig.add_subplot(gs[2:10, 1:9])
-            fig.add_subplot(gs[2:10, 12:18])
             fig.add_subplot(gs[2:10, 20:26])
             fig.add_subplot(gs[2:10, 28:])
+        # a thin color bar, in the same rows of the panels it shares the y axis with
+        if specs["cbar_map"] and not specs["empty_map"]:
+            gs_cbar = gs[2:10, n_cbar].subgridspec(nrows=1, ncols=2, wspace=0)
+            fig.add_subplot(gs_cbar[0, 1])
         return fig
 
     def _plot(self, fig, gs, specs):
@@ -1641,7 +1827,14 @@ class GeoUnivar(Univar):
         # ------------ map plot ------------
         ax_map = all_axes[specs["ax_map"]]
 
-        self.plot_map(data=self.data, ax=ax_map, column=self.varfield, specs=specs)
+        self._plot_map(ax=ax_map, specs=specs)
+
+        # ------------ data labels ------------
+        # the color bar holds the y axis of the panels
+        ax_data = all_axes[specs["ax_data"]]
+        ax_data.set_xlabel("")
+        if specs["cbar_map"] and not specs["empty_map"]:
+            ax_data.set_ylabel("")
 
         # ------------ scatter cbar plot ------------
         # handle plotting conflict
@@ -1649,7 +1842,7 @@ class GeoUnivar(Univar):
             specs["cbar_scatter"] = False
         if specs["cbar_scatter"]:
             Univar.plot_cbar(
-                data=self.data[specs["yvar_field"]].values,
+                data=self._get_values(),
                 ax=all_axes[specs["ax_data"]],
                 scheme=specs["scheme_cmap"],
                 cmap=specs["cmap"],
@@ -1659,7 +1852,7 @@ class GeoUnivar(Univar):
         # ------------ hist cbar plot ------------
         if specs["cbar_histh"]:
             Univar.plot_cbar(
-                data=self.data[specs["yvar_field"]].values,
+                data=self._get_values(),
                 ax=all_axes[specs["ax_hist"]],
                 scheme=specs["scheme_cmap"],
                 cmap=specs["cmap"],
@@ -1668,79 +1861,126 @@ class GeoUnivar(Univar):
 
         return fig
 
-    @staticmethod
-    def plot_map(data, ax, column, specs, legend=False):
+    def _get_annotation_columns(self):
         """
-        Plot the data and other layers on the map panel.
+        Get the columns of annotations. Expected to increment superior methods.
 
-        Other layers come from ``specs["layers_map"]``, as a list of dictionaries.
-        The ``data`` key holds the geometries, in the same CRS as the data, and
-        all other keys go to their ``plot`` method. For example,
-        ``{"data": catchment, "facecolor": "none", "edgecolor": "black"}``.
+        :return: list of columns, each one a list of lines of text
+        :rtype: list
+        """
+        return Univar.get_stats_columns(stats_df=self.stats_df)
 
-        :param data: data to plot, left untouched
-        :type data: :class:`geopandas.GeoDataFrame`
-        :param ax: axis to plot on
-        :type ax: :class:`matplotlib.axes.Axes`
-        :param column: name of the column of values
-        :type column: str
+    def _plot_annotations(self, fig, specs):
+        """
+        Plot the annotations in the space below the lateral panels, down to the bottom
+        of the map at most.
+
+        :param fig: figure object
+        :type fig: :class:`matplotlib.figure.Figure`
         :param specs: plot specification dictionary
         :type specs: dict
-        :param legend: option to add a legend
-        :type legend: bool
         :return: None
         :rtype: None
         """
-        # square panel at the top left of its cell, for any map extent: the
-        # map aspect widens the view limits instead of shrinking the panel
-        ax.set_box_aspect(1)
-        ax.set_anchor("NW")
+        all_axes = fig.get_axes()
+        ax_map = all_axes[specs["ax_map"]]
+        ax_map.apply_aspect()
+        Univar.plot_text_columns(
+            fig=fig,
+            ls_columns=self._get_annotation_columns(),
+            x=specs["x_stats"],
+            y=all_axes[specs["ax_hist"]].get_position().y0 - specs["y_stats"],
+            sep=specs["x_stats_sep"],
+            y_min=ax_map.get_position().y0,
+        )
+        return None
+
+    def _get_cmap_norm(self, specs):
+        """
+        Get the color map and the norm of the map panel.
+
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :return: color map and norm
+        :rtype: tuple
+        """
+        return Univar.get_cmap_norm(data=self._get_values(), specs=specs)
+
+    def _draw_map(self, ax, cmap, norm, specs):
+        """
+        Draw the data on the map panel. Expected to overwrite superior methods.
+
+        :param ax: axis to plot on
+        :type ax: :class:`matplotlib.axes.Axes`
+        :param cmap: color map
+        :type cmap: :class:`matplotlib.colors.Colormap`
+        :param norm: norm of the color scheme
+        :type norm: :class:`matplotlib.colors.Normalize`
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :return: None
+        :rtype: None
+        """
+        self.data.plot(
+            ax=ax,
+            column=self.varfield,
+            zorder=specs["zorder_map"],
+            cmap=cmap,
+            norm=norm,
+            marker=specs["marker_map"],  # Use a circle marker for dots
+            markersize=specs[
+                "markersize_map"
+            ],  # Set the size of the points (adjust as needed)
+            edgecolor=specs["edgecolor_map"],
+        )
+        return None
+
+    def _plot_map(self, ax, specs):
+        """
+        Plot the data and the helper geometry on the map panel, with the color bar.
+
+        :param ax: axis to plot on
+        :type ax: :class:`matplotlib.axes.Axes`
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :return: None
+        :rtype: None
+        """
+        # the map aspect widens the view limits instead of shrinking the panel
         ax.set_adjustable("datalim")
 
-        # other layers
-        for dc_layer in specs["layers_map"] or []:
-            dc_kwargs = {k: v for k, v in dc_layer.items() if k != "data"}
-            dc_layer["data"].plot(ax=ax, **dc_kwargs)
-
         if not specs["empty_map"]:
-
-            # handle scheme
-            if specs["colorize_map"]:
-
-                color_data = _binning.classify(
-                    data=data[column].values,
-                    n_classes=specs["n_classes_cmap"],
-                    scheme=specs["scheme_cmap"],
-                )
-                color_cmap = viewer.get_discrete_cmap(
-                    n_classes=specs["n_classes_cmap"], base_cmap_name=specs["cmap"]
-                )
-
-                data.plot(
-                    ax=ax,
-                    column=color_data,
-                    zorder=specs["zorder_map"],
+            color_cmap, color_norm = self._get_cmap_norm(specs=specs)
+            self._draw_map(ax=ax, cmap=color_cmap, norm=color_norm, specs=specs)
+            if specs["cbar_map"]:
+                GeoUnivar.plot_cbar_map(
+                    ax=ax.figure.get_axes()[specs["ax_cbar"]],
                     cmap=color_cmap,
-                    legend=legend,
-                    marker=specs["marker_map"],  # Use a circle marker for dots
-                    markersize=specs[
-                        "markersize_map"
-                    ],  # Set the size of the points (adjust as needed)
-                    edgecolor=specs["edgecolor_map"],
+                    norm=color_norm,
+                    data=self._get_values(),
+                    specs=specs,
                 )
-            else:
-                data.plot(
-                    ax=ax,
-                    column=column,
-                    zorder=specs["zorder_map"],
-                    cmap=specs["cmap"],
-                    legend=legend,
-                    marker=specs["marker_map"],  # Use a circle marker for dots
-                    markersize=specs[
-                        "markersize_map"
-                    ],  # Set the size of the points (adjust as needed)
-                    edgecolor=specs["edgecolor_map"],
-                )
+
+        # helper geometry, after the data so it also widens the view of a raster
+        if specs["helper_geometry"] is not None:
+            specs["helper_geometry"].plot(
+                ax=ax,
+                aspect=ax.get_aspect(),
+                facecolor=specs["facecolor_helper"],
+                edgecolor=specs["edgecolor_helper"],
+                linewidth=specs["linewidth_helper"],
+                zorder=specs["zorder_helper"],
+            )
+
+        # plain and round coordinates
+        for axis in [ax.xaxis, ax.yaxis]:
+            formatter = mticker.ScalarFormatter(useOffset=False, useMathText=False)
+            formatter.set_scientific(False)
+            axis.set_major_formatter(formatter)
+            axis.set_major_locator(
+                viewer.CoordinateLocator(n_ticks=specs["n_ticks_map"])
+            )
+
         # Set the Y-axis tick labels orientation
         ax.tick_params(
             axis="y",  # Apply to the y-axis
@@ -1755,6 +1995,58 @@ class GeoUnivar(Univar):
             ax.set_title(specs["subtitle_map"], loc="left")
         ax.grid(visible=specs["grid_map"])
 
+        return None
+
+    @staticmethod
+    def plot_cbar_map(ax, cmap, norm, data, specs):
+        """
+        Plot the vertical color bar, with its labels on the left. It spans the range
+        of the panels at its right, so it reads as their y axis.
+
+        Classes are spaced by their width and labeled at their boundaries. A triangular
+        tip marks a side where the norm clips the data, outside the rows of the panels.
+
+        :param ax: axis of the color bar
+        :type ax: :class:`matplotlib.axes.Axes`
+        :param cmap: color map
+        :type cmap: :class:`matplotlib.colors.Colormap`
+        :param norm: norm of the color scheme
+        :type norm: :class:`matplotlib.colors.Normalize`
+        :param data: vector of data without nan values
+        :type data: :class:`numpy.ndarray`
+        :param specs: plot specification dictionary
+        :type specs: dict
+        :return: None
+        :rtype: None
+        """
+        is_classes = isinstance(norm, mcolors.BoundaryNorm)
+        # tips only where the data continues
+        is_low, is_high = np.min(data) < norm.vmin, np.max(data) > norm.vmax
+        s_extend = {
+            (False, False): "neither",
+            (True, False): "min",
+            (False, True): "max",
+            (True, True): "both",
+        }[(bool(is_low), bool(is_high))]
+        cbar = ax.figure.colorbar(
+            mappable=plt.cm.ScalarMappable(norm=norm, cmap=cmap),
+            cax=ax,
+            spacing="proportional",
+            ticklocation="left",
+            extend=s_extend,
+            extendfrac=0.05,
+        )
+        # by default, tips shrink the bar and break the alignment with the panels
+        ax.set_axes_locator(None)
+        if is_classes:
+            bins = norm.boundaries
+            # two digits on the narrowest class
+            n_decimals = 1 - int(np.floor(np.log10(np.diff(bins).min())))
+            cbar.set_ticks(
+                ticks=bins, labels=[f"{v:.{max(n_decimals, 0)}f}" for v in bins]
+            )
+        cbar.ax.minorticks_off()
+        cbar.set_label(specs["ylabel"])
         return None
 
 
@@ -2435,7 +2727,7 @@ class Bivar(DataSet):
         ``color_error``        ``"tab:grey"``  Color of the errors.
         ``color_variance``     ``"darkred"``   Color of the error variance.
         ``color_mean``         ``"red"``       Color of the mean line.
-        ``color_mean_text``    None            Color of the mean label. None is black.
+        ``color_mean_text``    None            Color of the mean label. None is gray.
         ``alpha``              ``0.8``         Opacity of the data.
         ``alpha_hist``         ``1``           Opacity of the histogram.
         ``alpha_error``        ``0.8``         Opacity of the errors.
@@ -2478,6 +2770,7 @@ class Bivar(DataSet):
         file_path = "{}/{}.{}".format(
             specs["folder"], specs["filename"], specs["fig_format"]
         )
+        viewer.set_layers(fig=fig)
         if return_fig:
             return fig
         else:
