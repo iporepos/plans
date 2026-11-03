@@ -4234,8 +4234,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">specs</span><span class="p">[</span><span class="s2">"legend"</span><span class="p">]</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">ls_labels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="c1"># above the series panel, beside its title. Fewer columns if too wide</span>
-        <span class="n">width_free</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span><span class="o">.</span><span class="n">width</span>
-        <span class="n">width_free</span> <span class="o">=</span> <span class="n">width_free</span> <span class="o">-</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_left_title</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span><span class="o">.</span><span class="n">width</span>
+        <span class="n">x_title</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_left_title</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span><span class="o">.</span><span class="n">x1</span>
         <span class="k">for</span> <span class="n">ncol</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ls_labels</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
             <span class="n">legend</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
                 <span class="n">loc</span><span class="o">=</span><span class="s2">"lower right"</span><span class="p">,</span>
@@ -4246,7 +4245,7 @@
                 <span class="n">handlelength</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
                 <span class="n">columnspacing</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="n">legend</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span><span class="o">.</span><span class="n">width</span> <span class="o">&lt;</span> <span class="n">width_free</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">legend</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span><span class="o">.</span><span class="n">x0</span> <span class="o">&gt;</span> <span class="n">x_title</span><span class="p">:</span>
                 <span class="k">break</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
