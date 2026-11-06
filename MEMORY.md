@@ -1,5 +1,26 @@
 # Memory Log
 
+## 2026-11-06 — Inserts validate before writing: unknown flags, unparseable dates, extra columns, and specs pointing to unknown catalogue entries (plan item 5.3), with tests in `TestInsertValidation`
+`_to_epoch` raises on non-null inputs that fail to parse, instead of coercing them to `None`. Null `end` in specs stays valid. `drop_extra` is on `insert_rows`, `insert_row`, `insert_records`, `insert_record` and `load_records`.
+
+## 2026-11-06 — Extra DataFrame columns raise on insert by default; `drop_extra=True` opts out (option c for plan item 5.3)
+Silent dropping hid typos in specs files (`ofset` led to `offset = 0`) and merged grid cells when `geometry_id` was dropped on the base class. The opt-out keeps wide CSV loads through `load_records` to one argument.
+
+## 2026-11-06 — Unit tests for plan item 5.2 added as `TestSpecNames` in `tests/unit/test_databases.py`
+No soft tests from Ipo this session, so tests follow each patch directly.
+
+## 2026-11-06 — Spec names are unique and uppercase; `spec_name` added to the insert and query methods, with `spec_id` kept as fallback (plan item 5.2)
+Approved change to `data/sql/base/specs.sql`: `UNIQUE` plus a `CHECK` on the name format. Input names are stripped and uppercased (lenient lookup), and duplicates raise. Only `_resolve_spec_ids` maps names and ids, and child classes reuse it. `spec_id` now accepts numpy integers but rejects floats. `inspect_specs` shows the name first and the id after it.
+
+## 2026-11-06 — New `tests/unit/test_databases.py` with unittest tests for plan item 5.1 (SQL lookup with fallback to `base/`)
+Unittest style, like the other unit modules (pytest is not in the venv). One temp folder per class holds two databases, so few files are created.
+
+## 2026-11-06 — `DataBase.new()` resolves each table's SQL in the subclass `SQL_DIR`, falling back to `base/`; a missing `.sql` path now raises `FileNotFoundError`
+Plan item 5.1. Before, a subclass with a partial SQL folder (like `semispatial/`) failed because the missing path was run as SQL text. `execute_sql` and `query_sql` share a private `_read_sql`.
+
+## 2026-11-06 — Databases plan: public spec parameter is `spec_name=` (preferred) with `spec_id=` kept as fallback, instead of replacing `spec_id` by `spec=`
+Avoids a breaking change and follows Rule 5 naming (`variable_name`, `source_name`). A shared resolver maps either one to ids. Supersedes decision 4.1.3 of `prompts/new_features_ideas/plans_databases.md` on this point. Details: name always wins, and a conflicting id issues a warning saying the name was used; `spec_id` keeps its current position, `spec_name` comes after it; inserts raise if both are None, queries treat both None as all specs; a warning admonition in docstrings says ids are only stable inside one database file.
+
 ## 2026-11-03 — Map panel clears axis labels after drawing, since geopandas 1.2 adds them from the CRS and they fall off the figure
 Found by CI, which installs the latest packages, while the local venv had geopandas 1.1.1. Clearing works on all versions, while `add_labels=False` fails on older ones.
 

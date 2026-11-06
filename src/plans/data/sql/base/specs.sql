@@ -1,7 +1,10 @@
 CREATE TABLE IF NOT EXISTS specs (
 	id INTEGER PRIMARY KEY,
 	-- basic info
-	name TEXT NOT NULL, -- name of the dataset
+	-- unique name of the dataset (eg, PPT_MONTHLY_CHIRPS)
+	-- uppercase ASCII letters, digits and _, starting with a letter
+	name TEXT NOT NULL UNIQUE
+		CHECK (name GLOB '[A-Z]*' AND name NOT GLOB '*[^A-Z0-9_]*'),
 	abstract TEXT NOT NULL, -- summary of the dataset
 	method TEXT NOT NULL, -- method of generation
 

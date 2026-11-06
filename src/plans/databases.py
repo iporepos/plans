@@ -26,7 +26,7 @@ A JSON specs file is a list of objects, one per dataset::
 
     [
       {
-        "name": "ppt_monthly_chirps",
+        "name": "PPT_MONTHLY_CHIRPS",
         "abstract": "Monthly precipitation from CHIRPS v2.0",
         "method": "spatial average over watershed",
         "timestep": "1M",
@@ -40,6 +40,11 @@ A JSON specs file is a list of objects, one per dataset::
         "source_name": "CHIRPS v2.0"
       }
     ]
+
+Spec names are unique and uppercase (ASCII letters, digits and ``_``, starting
+with a letter). Input names are stripped and uppercased, so ``ppt_monthly_chirps``
+resolves to ``PPT_MONTHLY_CHIRPS``. Public methods take ``spec_name`` (preferred)
+or ``spec_id``; ids are only stable inside one database file.
 
 Values in ``records`` are stored as ``stored = actual * scale + offset``.
 """
@@ -104,6 +109,9 @@ import sqlite3
 import tomllib
 import json
 import time
+import re
+import operator
+import warnings
 from pathlib import Path
 
 # ... {develop}
@@ -128,6 +136,9 @@ _TABLE_ORDER = ("variables", "flags", "sources", "statistics", "specs", "records
 _EPOCH_COLS = {
     "specs": ("start", "end"),
 }
+
+# spec names: uppercase ASCII letters, digits and _, starting with a letter
+_SPEC_NAME_PATTERN = re.compile(r"[A-Z][A-Z0-9_]*")
 
 
 class DataBase(MbaE):
@@ -285,7 +296,7 @@ class DataBase(MbaE):
                     else "open"
                 )
                 lines.append("")
-                lines.append(f"  [{sid}] {name}")
+                lines.append(f"  {name}  (id {sid})")
                 lines.append(
                     f"       {variable_name} · {statistic_name} · {timestep} · {extent}"
                 )
@@ -352,6 +363,26 @@ class DataBase(MbaE):
                 )
         return df
 
+    @staticmethod
+    def _read_sql(sql):
+        # return SQL text from a string or a .sql file path; a missing .sql file raises
+        path = Path(sql)
+        if path.suffix == ".sql":
+            if not path.is_file():
+                raise FileNotFoundError(f"SQL file not found: {path}")
+            return path.read_text(encoding="utf-8")
+        return str(sql)
+
+    def _sql_path(self, table):
+        # resolve the table's .sql file: SQL_DIR first, then fall back to base
+        for folder in (self.SQL_DIR, DATA_SQL_DIR / "base"):
+            path = folder / f"{table}.sql"
+            if path.is_file():
+                return path
+        raise FileNotFoundError(
+            f"No SQL file for table {table!r} in {self.SQL_DIR} or {DATA_SQL_DIR / 'base'}"
+        )
+
     def execute_sql(self, sql):
         """
         Execute SQL from a string or a ``.sql`` file path.
@@ -360,12 +391,9 @@ class DataBase(MbaE):
         :type sql: str or Path
         :return: None
         :rtype: None
+        :raises FileNotFoundError: if ``sql`` has a ``.sql`` suffix but the file does not exist
         """
-        path = Path(sql)
-        if path.suffix == ".sql" and path.is_file():
-            sql_text = path.read_text(encoding="utf-8")
-        else:
-            sql_text = str(sql)
+        sql_text = self._read_sql(sql=sql)
         self.conn.executescript(sql_text)
         return None
 
@@ -382,6 +410,7 @@ class DataBase(MbaE):
         :return: query result; no datetime conversion is applied — epoch columns
             remain as integers unless the SQL itself handles the transformation
         :rtype: pandas.DataFrame
+        :raises FileNotFoundError: if ``sql`` has a ``.sql`` suffix but the file does not exist
 
         Example — convert epoch to a readable UTC string directly in SQLite::
 
@@ -389,11 +418,7 @@ class DataBase(MbaE):
                 sql="SELECT datetime(datetime, 'unixepoch') AS dt, value FROM records LIMIT 10"
             )
         """
-        path = Path(sql)
-        if path.suffix == ".sql" and path.is_file():
-            sql_text = path.read_text(encoding="utf-8")
-        else:
-            sql_text = str(sql)
+        sql_text = self._read_sql(sql=sql)
         return pd.read_sql(sql=sql_text, con=self.conn, params=params)
 
     @staticmethod
@@ -453,9 +478,9 @@ class DataBase(MbaE):
         try:
             self.connect(file_db=file_db)
 
-            # create all tables in dependency order
+            # create all tables in dependency order; child SQL_DIR overrides base
             for table in _TABLE_ORDER:
-                self.execute_sql(sql=self.SQL_DIR / f"{table}.sql")
+                self.execute_sql(sql=self._sql_path(table=table))
 
             # seed catalogue tables; missing files are silently skipped
             catalogs = cfg.get("catalogs", {})
@@ -497,6 +522,13 @@ class DataBase(MbaE):
         if pd.api.types.is_integer_dtype(series):
             return series
         converted = pd.to_datetime(arg=series, utc=True, errors="coerce")
+        # non-null inputs that failed to parse
+        bad = series[converted.isna() & series.notna()]
+        if len(bad):
+            raise ValueError(
+                f"{len(bad)} unparseable date(s) in {series.name!r}, "
+                f"eg: {bad.head(3).tolist()}"
+            )
         return converted.apply(lambda x: int(x.timestamp()) if pd.notna(x) else None)
 
     @staticmethod
@@ -524,9 +556,117 @@ class DataBase(MbaE):
                 df[col] = self._to_epoch(series=df[col])
         self.insert_rows(dataframe=df, on_table=table)
 
-    def insert_rows(self, dataframe, on_table, columns_map=None):
+    # SPEC NAMES
+    # -------------------------------------------------------------------
+    @staticmethod
+    def _as_list(x):
+        # scalars (numpy included) become one-item lists; iterables become lists
+        if isinstance(x, str) or not hasattr(x, "__iter__"):
+            return [x]
+        return list(x)
+
+    @staticmethod
+    def _normalize_spec_name(name):
+        # strip and uppercase, then validate the spec name format
+        if not isinstance(name, str):
+            raise ValueError(f"Spec name must be a string, got {name!r}")
+        clean = name.strip().upper()
+        if any(c.isspace() for c in clean):
+            raise ValueError(
+                f"Spec name {name!r} has whitespace inside; use underscores instead"
+            )
+        if not _SPEC_NAME_PATTERN.fullmatch(clean):
+            raise ValueError(
+                f"Invalid spec name {name!r}: use uppercase ASCII letters, digits "
+                f"and underscores, starting with a letter (eg, PPT_MONTHLY_CHIRPS)"
+            )
+        return clean
+
+    def _spec_lookup(self):
+        # map spec names to ids
+        return dict(self.conn.execute("SELECT name, id FROM specs").fetchall())
+
+    def _check_specs(self, df):
+        # normalize spec names; reject duplicates and unknown catalogue entries
+        df["name"] = df["name"].apply(lambda x: self._normalize_spec_name(name=x))
+        in_batch = set(df["name"][df["name"].duplicated()])
+        in_table = set(df["name"]) & set(self._spec_lookup())
+        dups = sorted(in_batch | in_table)
+        if dups:
+            raise ValueError(f"Duplicate spec name(s): {dups}")
+        refs = {
+            "variable_name": "variables",
+            "statistic_name": "statistics",
+            "source_name": "sources",
+        }
+        for col, table in refs.items():
+            if col not in df.columns:
+                continue
+            valid = {r[0] for r in self.conn.execute(f"SELECT name FROM {table}")}
+            bad = df.loc[~df[col].isin(valid), ["name", col]]
+            if len(bad):
+                pairs = [f"{n}: {v!r}" for n, v in bad.itertuples(index=False)]
+                raise ValueError(f"Unknown {col} (not in {table}) for spec(s): {pairs}")
+        return df
+
+    def _resolve_spec_ids(self, spec_name=None, spec_id=None, required=True):
         """
-        Insert DataFrame rows into a table, keeping only columns that exist in the target.
+        Resolve spec names or ids to a list of spec ids.
+
+        ``spec_name`` always wins: if ``spec_id`` is also given and points to other
+        specs, a warning is issued and ``spec_id`` is ignored.
+
+        :param spec_name: one or more spec names; case and surrounding whitespace are ignored
+        :type spec_name: str or list[str], optional
+        :param spec_id: one or more spec ids, used only if ``spec_name`` is ``None``
+        :type spec_id: int or list[int], optional
+        :param required: raise if both are ``None``; otherwise return ``None``
+        :type required: bool
+        :return: spec ids, or ``None`` if nothing was given and not required
+        :rtype: list[int] or None
+        :raises ValueError: if a name or id is unknown, or both are ``None`` while required
+        """
+        if spec_name is None and spec_id is None:
+            if required:
+                raise ValueError("Provide spec_name (preferred) or spec_id")
+            return None
+        lookup = self._spec_lookup()
+        # operator.index accepts python and numpy integers only
+        ids_given = (
+            None
+            if spec_id is None
+            else [operator.index(i) for i in self._as_list(spec_id)]
+        )
+        if spec_name is not None:
+            names = [self._normalize_spec_name(name=n) for n in self._as_list(spec_name)]
+            unknown = [n for n in names if n not in lookup]
+            if unknown:
+                raise ValueError(
+                    f"Unknown spec_name(s): {unknown}. Valid: {sorted(lookup)}"
+                )
+            ids = [lookup[n] for n in names]
+            if ids_given is not None and set(ids_given) != set(ids):
+                warnings.warn(
+                    f"spec_name {names} and spec_id {ids_given} point to different "
+                    f"specs; spec_name was used",
+                    stacklevel=3,
+                )
+            return ids
+        valid = {sid: name for name, sid in lookup.items()}
+        unknown = [i for i in ids_given if i not in valid]
+        if unknown:
+            raise ValueError(f"Unknown spec_id(s): {unknown}. Valid: {valid}")
+        return ids_given
+
+    # INSERTS
+    # -------------------------------------------------------------------
+    def insert_rows(self, dataframe, on_table, columns_map=None, drop_extra=False):
+        """
+        Insert DataFrame rows into a table.
+
+        Columns the target table does not have raise an error, unless
+        ``drop_extra`` is ``True``. Rows for ``specs`` get their ``name``
+        normalized and checked for duplicates and unknown catalogue entries.
 
         :param dataframe: source data
         :type dataframe: pandas.DataFrame
@@ -535,19 +675,28 @@ class DataBase(MbaE):
         :param columns_map: column mapping ``{db_col: csv_name_or_index}``; values may be
             a string (source column name) or an int (source column position, 0-based)
         :type columns_map: dict, optional
+        :param drop_extra: drop columns the target table does not have instead of raising
+        :type drop_extra: bool
         :return: None
         :rtype: None
+        :raises ValueError: if there are extra columns and ``drop_extra`` is ``False``,
+            or if a spec is invalid, duplicated or points to unknown catalogue entries
         """
         df = dataframe.copy()
         if columns_map:
             df = self._apply_columns_map(df=df, columns_map=columns_map)
         cursor = self.conn.execute(f"PRAGMA table_info({on_table})")
         table_cols = {row[1] for row in cursor.fetchall()}
-        df = df[[c for c in df.columns if c in table_cols]]
+        extra = [c for c in df.columns if c not in table_cols]
+        if extra and not drop_extra:
+            raise ValueError(f"Columns not in table {on_table!r}: {extra}")
+        df = df.drop(columns=extra)
+        if on_table == "specs" and "name" in df.columns:
+            df = self._check_specs(df=df)
         df.to_sql(name=on_table, con=self.conn, if_exists="append", index=False)
         return None
 
-    def insert_row(self, row_dict, on_table, columns_map=None):
+    def insert_row(self, row_dict, on_table, columns_map=None, drop_extra=False):
         """
         Insert a single row from a plain dict into any table.
 
@@ -568,22 +717,31 @@ class DataBase(MbaE):
         for col in _EPOCH_COLS.get(on_table, ()):
             if col in df.columns:
                 df[col] = self._to_epoch(series=df[col])
-        self.insert_rows(dataframe=df, on_table=on_table, columns_map=columns_map)
+        self.insert_rows(
+            dataframe=df,
+            on_table=on_table,
+            columns_map=columns_map,
+            drop_extra=drop_extra,
+        )
         return None
 
     def insert_records(
         self,
         dataframe,
-        spec_id,
+        spec_id=None,
+        spec_name=None,
         flag=None,
         columns_map=None,
         transform_values=True,
         fill_nan=None,
+        drop_extra=False,
     ):
         """
         Insert records into the ``records`` table for a given spec.
 
-        ``spec_id`` is broadcast to all rows in the batch. The ``datetime``
+        The spec is given by ``spec_name`` (preferred) or ``spec_id`` and is
+        broadcast to all rows in the batch. If both are given and disagree,
+        ``spec_name`` is used and a warning is issued. The ``datetime``
         column is converted from text to epoch seconds automatically. The
         optional linear transform (``stored = actual * scale + offset``) is
         resolved from the matching row in ``specs``.
@@ -591,11 +749,21 @@ class DataBase(MbaE):
         NaN handling in ``value`` is controlled by ``fill_nan``: ``None`` drops
         rows with NaN values; any other value fills them before inserting.
 
+        Inputs are validated before anything is written: unknown flags,
+        unparseable dates and columns ``records`` does not have raise an error.
+
+        .. warning::
+
+            Spec ids depend on the order specs were created, so the same id can
+            point to different datasets in two database files. Prefer ``spec_name``.
+
         :param dataframe: source data; must contain at least ``datetime`` and ``value``;
             ``flag_value`` is also required unless ``flag`` is provided
         :type dataframe: pandas.DataFrame
-        :param spec_id: foreign key referencing the ``specs`` table
-        :type spec_id: int
+        :param spec_id: id of the spec; used only if ``spec_name`` is ``None``
+        :type spec_id: int, optional
+        :param spec_name: name of the spec (preferred); case is ignored
+        :type spec_name: str, optional
         :param flag: if given, overwrite or create the ``flag_value`` column with this constant
         :type flag: int, optional
         :param columns_map: column mapping ``{db_col: csv_name_or_index}``; values may be
@@ -605,9 +773,17 @@ class DataBase(MbaE):
         :type transform_values: bool
         :param fill_nan: fill value for NaN entries in ``value``; if ``None``, NaN rows are dropped
         :type fill_nan: float or None
+        :param drop_extra: drop columns ``records`` does not have instead of raising
+        :type drop_extra: bool
         :return: None
         :rtype: None
+        :raises ValueError: if no spec is given, the spec is unknown, more than one spec
+            is given, or a flag, date or column is invalid
         """
+        ids = self._resolve_spec_ids(spec_name=spec_name, spec_id=spec_id)
+        if len(ids) != 1:
+            raise ValueError(f"Records are inserted for a single spec, got {len(ids)}")
+        spec_id = ids[0]
         df = dataframe.copy()
         if columns_map:
             df = self._apply_columns_map(df=df, columns_map=columns_map)
@@ -625,6 +801,11 @@ class DataBase(MbaE):
             df = df.dropna(subset=["value"])
         else:
             df["value"] = df["value"].fillna(fill_nan)
+        valid = {r[0] for r in self.conn.execute("SELECT value FROM flags")}
+        unknown = set(df["flag_value"].unique()) - valid
+        if unknown:
+            unknown = [v.item() if hasattr(v, "item") else v for v in unknown]
+            raise ValueError(f"Unknown flag_value(s): {unknown}. Valid: {sorted(valid)}")
         if transform_values and "value" in df.columns:
             row = self.conn.execute(
                 "SELECT scale, offset FROM specs WHERE id = ?", (spec_id,)
@@ -632,27 +813,36 @@ class DataBase(MbaE):
             if row:
                 scale, offset = row
                 df["value"] = df["value"] * scale + offset
-        self.insert_rows(dataframe=df, on_table="records")
+        self.insert_rows(dataframe=df, on_table="records", drop_extra=drop_extra)
         return None
 
     def insert_record(
         self,
         row_dict,
-        spec_id,
+        spec_id=None,
+        spec_name=None,
         flag=None,
         columns_map=None,
         transform_values=True,
         fill_nan=None,
+        drop_extra=False,
     ):
         """
         Insert a single record from a plain dict.
 
         Convenience wrapper around :meth:`insert_records` for one-row inserts.
 
+        .. warning::
+
+            Spec ids depend on the order specs were created, so the same id can
+            point to different datasets in two database files. Prefer ``spec_name``.
+
         :param row_dict: record fields, e.g. ``{"datetime": "2024-01-01", "value": 12.3}``
         :type row_dict: dict
-        :param spec_id: foreign key referencing the ``specs`` table
-        :type spec_id: int
+        :param spec_id: id of the spec; used only if ``spec_name`` is ``None``
+        :type spec_id: int, optional
+        :param spec_name: name of the spec (preferred); case is ignored
+        :type spec_name: str, optional
         :param flag: if given, overwrite or create the ``flag_value`` column with this constant
         :type flag: int, optional
         :param columns_map: column mapping ``{db_col: csv_name_or_index}``; values may be
@@ -662,28 +852,34 @@ class DataBase(MbaE):
         :type transform_values: bool
         :param fill_nan: fill value for NaN entries in ``value``; if ``None``, NaN rows are dropped
         :type fill_nan: float or None
+        :param drop_extra: drop columns ``records`` does not have instead of raising
+        :type drop_extra: bool
         :return: None
         :rtype: None
         """
         self.insert_records(
             dataframe=pd.DataFrame([row_dict]),
             spec_id=spec_id,
+            spec_name=spec_name,
             flag=flag,
             columns_map=columns_map,
             transform_values=transform_values,
             fill_nan=fill_nan,
+            drop_extra=drop_extra,
         )
         return None
 
     def load_records(
         self,
         files,
-        spec_id,
+        spec_id=None,
+        spec_name=None,
         sep=None,
         flag=None,
         columns_map=None,
         transform_values=True,
         fill_nan=None,
+        drop_extra=False,
     ):
         """
         Load records from a list of CSV files into the ``records`` table.
@@ -692,10 +888,17 @@ class DataBase(MbaE):
         :meth:`insert_records`. See that method for column requirements and
         transform behaviour.
 
+        .. warning::
+
+            Spec ids depend on the order specs were created, so the same id can
+            point to different datasets in two database files. Prefer ``spec_name``.
+
         :param files: paths to CSV files to load
         :type files: list[str or Path]
-        :param spec_id: foreign key referencing the ``specs`` table
-        :type spec_id: int
+        :param spec_id: id of the spec; used only if ``spec_name`` is ``None``
+        :type spec_id: int, optional
+        :param spec_name: name of the spec (preferred); case is ignored
+        :type spec_name: str, optional
         :param sep: column separator; ``None`` uses :attr:`file_csv_sep`
         :type sep: str, optional
         :param flag: if given, overwrite or create the ``flag_value`` column with this constant
@@ -707,6 +910,8 @@ class DataBase(MbaE):
         :type transform_values: bool
         :param fill_nan: fill value for NaN entries in ``value``; if ``None``, NaN rows are dropped
         :type fill_nan: float or None
+        :param drop_extra: drop columns ``records`` does not have instead of raising
+        :type drop_extra: bool
         :return: None
         :rtype: None
         """
@@ -716,10 +921,12 @@ class DataBase(MbaE):
         self.insert_records(
             dataframe=df_all,
             spec_id=spec_id,
+            spec_name=spec_name,
             flag=flag,
             columns_map=columns_map,
             transform_values=transform_values,
             fill_nan=fill_nan,
+            drop_extra=drop_extra,
         )
         return None
 
@@ -736,10 +943,18 @@ class DataBase(MbaE):
         - ``start`` (*str*) — lower datetime bound (inclusive); any format parseable by pandas
         - ``end`` (*str*) — upper datetime bound (inclusive)
         - ``flag_value`` (*int* or *list[int]*) — one or more flag values to include
-        - ``spec_id`` (*int* or *list[int]*) — one or more spec IDs to include
+        - ``spec_name`` (*str* or *list[str]*) — one or more spec names to include (preferred);
+          case is ignored; wins over ``spec_id`` with a warning if both disagree
+        - ``spec_id`` (*int* or *list[int]*) — one or more spec IDs, used only without ``spec_name``
         - ``transform_values`` (*bool*, default ``True``) — reverse the linear transform
           so ``value`` holds actual values via ``actual = (stored - offset) / scale``
         The returned ``datetime`` column is always a timezone-aware (UTC) pandas datetime series.
+        Without ``spec_name`` and ``spec_id``, records of all specs are returned.
+
+        .. warning::
+
+            Spec ids depend on the order specs were created, so the same id can
+            point to different datasets in two database files. Prefer ``spec_name``.
 
         :param query_dict: filter and option keys (see above)
         :type query_dict: dict, optional
@@ -752,7 +967,9 @@ class DataBase(MbaE):
         start = q.get("start")
         end = q.get("end")
         flag_value = q.get("flag_value")
-        spec_id = q.get("spec_id")
+        spec_ids = self._resolve_spec_ids(
+            spec_name=q.get("spec_name"), spec_id=q.get("spec_id"), required=False
+        )
         transform_values = q.get("transform_values", True)
 
         conditions = []
@@ -771,10 +988,9 @@ class DataBase(MbaE):
             conditions.append(f"r.flag_value IN ({','.join('?' * len(vals))})")
             params.extend(vals)
 
-        if spec_id is not None:
-            ids = [spec_id] if isinstance(spec_id, int) else list(spec_id)
-            conditions.append(f"r.spec_id IN ({','.join('?' * len(ids))})")
-            params.extend(ids)
+        if spec_ids is not None:
+            conditions.append(f"r.spec_id IN ({','.join('?' * len(spec_ids))})")
+            params.extend(spec_ids)
 
         sql = "SELECT r.*, s.scale, s.offset FROM records r JOIN specs s ON r.spec_id = s.id"
         if conditions:
