@@ -1,5 +1,14 @@
 # Memory Log
 
+## 2026-11-06 — Phase 4 implemented: void records, `suspect` flag, domain parser with unions; approved changes to both `records.sql`, `base/variables.sql`, `catalogs/flags.csv` and `catalogs/variables.csv`
+`value` is nullable only with flag 0 (schema CHECK). `fill_nan` is removed from `insert_records`, `insert_record` and `load_records` (breaking, agreed), replaced by `nan_policy`; `check_domain=True` is new. Catalog domains changed from `(0U)` to `[0U)`. Domains are validated when `variables` is seeded. Databases without a `suspect` flag skip the check with a warning instead of failing every insert. Tests: `TestDomain`, `TestVoidAndSuspect`.
+
+## 2026-11-06 — Phase 4 decisions: voids stored as NULL `value` with `flag_value = 0` (nullable column plus CHECK), opt-in through `nan_policy`; new flag `suspect` = 2 (`SUS`); domain grammar with "(" inclusive and "[" exclusive, empty side unbounded, `(U)` unbounded
+The 0.0 placeholder was rejected because 0 is a real value for precipitation and raw SQL `AVG` would be wrong. The grammar gets a table with examples in the module docs. Confirmed later the same day: `nan_policy="drop"|"void"` replaces `fill_nan`; the domain check is on by default (`check_domain=False` skips it); the grammar switches to the standard convention ("[" inclusive, "(" exclusive), so the catalog's `(0U)` becomes `[0U)`; domains may be unions of intervals, eg `[-90U-60]U[60U90]`.
+
+## 2026-11-06 — Phase 3 of the databases plan: module header docs, `new()` tests (`TestNew`), new benchmark module `tests/bcmk/test_databases.py`, and a vectorized `_to_epoch`
+The header now covers naming rules, the transform in both directions, the deliberate lack of uniqueness on `records`, `transaction()` usage, and `SemiSpatialDB`. The benchmark prints timings and asserts only row counts. `_to_epoch` used a per-row `apply`; the vectorized version (nullable `Int64`) gives identical epochs and cut 1M string-date inserts from about 9 s to 7 s.
+
 ## 2026-11-06 — `SemiSpatialDB(DataBase)` added (plan Phase 2), with tests in `TestSemiSpatialDB`; approved change to `data/sql/semispatial/records.sql`
 The SQL change fixes indentation and adds the index `(spec_id, geometry_id, datetime)`. The child only sets class attributes and extends `_query_filters`, a new hook split out of `query_records`. Also new: `_RECORD_COLUMNS`. The `geometry_id` filter binds ids as one JSON array through `json_each(?)` instead of the plan's temp table: one parameter, no SQLite cap, and no temp-table writes that would interact with `transaction()`. `EXPLAIN QUERY PLAN` shows the new index in use. Requires JSON1, which is built into SQLite since 3.38 (local 3.49.1).
 

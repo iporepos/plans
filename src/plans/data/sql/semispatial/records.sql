@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS records (
 	inserted INTEGER NOT NULL DEFAULT (unixepoch()),
 	-- record time stamp, also in epoch seconds
 	datetime INTEGER NOT NULL,
-	value REAL NOT NULL,
+	-- stored = actual * scale + offset; NULL only for void records (flag 0)
+	value REAL CHECK (value IS NOT NULL OR flag_value = 0),
 	flag_value INTEGER NOT NULL,
 	spec_id INTEGER NOT NULL,
 	-- spatial geometry key (eg, an H3 cell); geometries live outside the database

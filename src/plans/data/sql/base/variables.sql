@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS variables (
 	units TEXT NOT NULL, -- Units in actual value, eg mm/(dt)
 	dimension TEXT NOT NULL, -- LaTeX, eg, L^{3}/TL^{2}
 	dtype TEXT NOT NULL, -- data type primitive (real, integer, etc)
-	domain TEXT NOT NULL, -- math domain (0U), (0U1), (-273.15U)
+	domain TEXT NOT NULL, -- math domain, eg [0U), [0U1], [-273.15U), (U)
 	theme TEXT NOT NULL, -- Hydrology
 	system TEXT NOT NULL -- Options: flow, storage, parameter
 ) STRICT;

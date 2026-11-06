@@ -9,6 +9,13 @@ SQLite-based database classes for storing and managing hydro-environmental time 
 The base class :class:`DataBase` structures a database around two table categories:
 *catalogue* tables (``variables``, ``flags``, ``sources``, ``statistics``) seeded from
 shipped CSV files, and *operational* tables (``specs``, ``records``) populated per project.
+:class:`SemiSpatialDB` adds a ``geometry_id`` to every record, for statistics on
+regular grids whose geometries are kept outside the database.
+
+Table and column names are lowercase words joined by ``_``; tables are plural,
+and a foreign key is the singular table name plus the target column
+(``variable_name`` points to ``variables.name``). ``geometry_id`` is the exception:
+it points to geometries outside the database.
 
 A new database is created from a TOML (or JSON) setup file::
 
@@ -42,11 +49,55 @@ A JSON specs file is a list of objects, one per dataset::
     ]
 
 Spec names are unique and uppercase (ASCII letters, digits and ``_``, starting
-with a letter). Input names are stripped and uppercased, so ``ppt_monthly_chirps``
-resolves to ``PPT_MONTHLY_CHIRPS``. Public methods take ``spec_name`` (preferred)
-or ``spec_id``; ids are only stable inside one database file.
+with a letter), so they never read like column names. Input names are stripped
+and uppercased, so ``ppt_monthly_chirps`` resolves to ``PPT_MONTHLY_CHIRPS``.
+Public methods take ``spec_name`` (preferred) or ``spec_id``; ids are only
+stable inside one database file.
 
-Values in ``records`` are stored as ``stored = actual * scale + offset``.
+Values in ``records`` are stored as ``stored = actual * scale + offset`` and
+returned as ``actual = (stored - offset) / scale``. The ``records`` table has no
+uniqueness constraint on purpose: replicates at the same datetime are valid
+data (eg, three lab analyses on one day). Preventing a batch from being loaded
+twice is the job of the ingestion script, not of the database.
+
+Each insert call is atomic and commits on its own. Several calls are grouped
+into one all-or-nothing block with :meth:`DataBase.transaction`::
+
+    with db.transaction():
+        for name, df in batches.items():
+            db.insert_records(dataframe=df, spec_name=name, flag=1)
+
+Every record carries a flag from the ``flags`` table. By default, NaN values
+are not stored. With ``nan_policy="void"`` they are stored as NULL with the
+``void`` flag (0), so a gap reported by the source can be told apart from data
+that was never loaded; NULL is the only placeholder, so SQL aggregates and
+pandas skip voids without extra handling. On insert, values outside the
+variable domain turn ``regular`` (1) rows into ``suspect`` (2): the value is
+kept, and a warning reports the count.
+
+Domain notation
+---------------
+The ``domain`` column of ``variables`` holds the valid range of actual values
+as one or more intervals joined by ``U`` (union). Inside an interval, ``U``
+separates the lower and upper bounds. ``[`` and ``]`` include the bound,
+``(`` and ``)`` exclude it, and an empty bound is unbounded.
+
+==========================  =========================================  ======================
+Notation                    Values accepted                            Example use
+==========================  =========================================  ======================
+``[0U)``                    ``0 <= x``                                 precipitation
+``(0U)``                    ``0 < x``                                  strictly positive
+``[0U1]``                   ``0 <= x <= 1``                            fractions
+``[-1U1]``                  ``-1 <= x <= 1``                           NDVI
+``(0U1]``                   ``0 < x <= 1``                             relative humidity
+``[-273.15U)``              ``-273.15 <= x``                           temperature in C
+``(U)``                     any value                                  no constraint
+``[5U5]``                   ``x == 5``                                 a single point
+``[-90U-60]U[60U90]``       ``-90 <= x <= -60`` or ``60 <= x <= 90``   polar latitudes
+==========================  =========================================  ======================
+
+Domains are checked when the ``variables`` table is seeded, so a malformed
+domain fails at database creation.
 """
 
 
@@ -113,6 +164,7 @@ from pathlib import Path
 
 # External imports
 # =======================================================================
+import numpy as np
 import pandas as pd
 
 # ... {develop}
@@ -135,6 +187,12 @@ _EPOCH_COLS = {
 # rows per executemany call in inserts
 _CHUNK_SIZE = 100_000
 
+# domains: one or more intervals like [0U) joined by U; bounds are plain numbers
+_BOUND = r"[^\[\]()U\s]*"
+_INTERVAL_PATTERN = re.compile(rf"([\[(])\s*({_BOUND})\s*U\s*({_BOUND})\s*([\])])")
+_ONE_INTERVAL = rf"[\[(]\s*{_BOUND}\s*U\s*{_BOUND}\s*[\])]"
+_DOMAIN_PATTERN = re.compile(rf"\s*{_ONE_INTERVAL}(?:\s*U\s*{_ONE_INTERVAL})*\s*")
+
 # spec names: uppercase ASCII letters, digits and _, starting with a letter
 _SPEC_NAME_PATTERN = re.compile(r"[A-Z][A-Z0-9_]*")
 
@@ -144,8 +202,10 @@ class DataBase(MbaE):
     Base SQLite database with a structured schema.
 
     Manages catalogue and operational tables for hydro-environmental datasets.
-    Child classes inherit and extend this via :attr:`SQL_DIR` and override
-    methods where the schema diverges.
+    Child classes set :attr:`SQL_DIR` to a folder holding only the ``.sql``
+    files that differ (the rest falls back to ``base/``), extend the class
+    attributes that describe ``records`` (required columns, query keys, row
+    order, wide columns), and override methods where the schema diverges.
 
     :param name: database name
     :type name: str
@@ -466,6 +526,8 @@ class DataBase(MbaE):
         """
         Create a new database file from a setup configuration.
 
+        Creation is all or nothing: on any error the partial file is removed.
+
         Expected configuration structure (TOML example)::
 
             [database]
@@ -484,7 +546,9 @@ class DataBase(MbaE):
         :return: path to the created database file
         :rtype: Path
         :raises FileExistsError: if the database file already exists and ``overwrite`` is ``False``
-        :raises FileNotFoundError: if the specs file does not exist
+        :raises FileNotFoundError: if the specs file or a table's SQL file does not exist
+        :raises ValueError: if a spec has an invalid or duplicated name, unknown
+            columns, unparseable dates, or points to unknown catalogue entries
         """
         cfg = self.parse_setup(setup=config)
         file_db = Path(cfg["database"]["path"])
@@ -536,7 +600,7 @@ class DataBase(MbaE):
 
     @staticmethod
     def _to_epoch(series):
-        # convert a text/datetime series to integer epoch seconds; null values become None
+        # convert a text/datetime series to integer epoch seconds; null values stay null
         if pd.api.types.is_integer_dtype(series):
             return series
         converted = pd.to_datetime(arg=series, utc=True, errors="coerce")
@@ -547,7 +611,9 @@ class DataBase(MbaE):
                 f"{len(bad)} unparseable date(s) in {series.name!r}, "
                 f"eg: {bad.head(3).tolist()}"
             )
-        return converted.apply(lambda x: int(x.timestamp()) if pd.notna(x) else None)
+        # whole seconds since epoch; nullable so missing values stay NULL
+        epoch = (converted - pd.Timestamp(0, tz="UTC")) // pd.Timedelta(seconds=1)
+        return epoch.astype("Int64")
 
     @staticmethod
     def _apply_columns_map(df, columns_map):
@@ -678,6 +744,104 @@ class DataBase(MbaE):
             raise ValueError(f"Unknown spec_id(s): {unknown}. Valid: {valid}")
         return ids_given
 
+    # FLAGS AND DOMAINS
+    # -------------------------------------------------------------------
+    def _flag_value(self, name, required=True):
+        # flag value by flag name; None if absent and not required
+        row = self.conn.execute(
+            "SELECT value FROM flags WHERE name = ?", (name,)
+        ).fetchone()
+        if row is None and required:
+            raise ValueError(f"Flag {name!r} not found in the flags table")
+        return None if row is None else row[0]
+
+    @staticmethod
+    def _parse_domain(domain):
+        """
+        Parse a domain string into a list of intervals.
+
+        See the module notes for the notation. Single points are allowed
+        (``[5U5]``); empty intervals raise.
+
+        :param domain: domain notation, eg ``[0U)`` or ``[-90U-60]U[60U90]``
+        :type domain: str
+        :return: intervals as ``(lower, upper, lower_closed, upper_closed)``;
+            unbounded sides are ``-inf`` and ``inf``
+        :rtype: list[tuple[float, float, bool, bool]]
+        :raises ValueError: if the notation is invalid or an interval is empty
+        """
+        if not isinstance(domain, str) or not _DOMAIN_PATTERN.fullmatch(domain):
+            raise ValueError(
+                f"Invalid domain {domain!r}: use intervals like [0U), (0U1] or (U), "
+                f"joined by U"
+            )
+        intervals = []
+        for left, low, high, right in _INTERVAL_PATTERN.findall(domain):
+            try:
+                lower = float(low) if low else -np.inf
+                upper = float(high) if high else np.inf
+            except ValueError:
+                raise ValueError(f"Invalid bound in domain {domain!r}") from None
+            lower_closed = left == "["
+            upper_closed = right == "]"
+            if lower > upper or (
+                lower == upper and not (lower_closed and upper_closed)
+            ):
+                raise ValueError(f"Empty interval in domain {domain!r}")
+            intervals.append((lower, upper, lower_closed, upper_closed))
+        return intervals
+
+    @staticmethod
+    def _in_domain(values, domain):
+        # boolean array: True where values fall in any interval of the domain
+        v = np.asarray(values, dtype=float)
+        inside = np.zeros(v.shape, dtype=bool)
+        for lower, upper, lower_closed, upper_closed in DataBase._parse_domain(
+            domain=domain
+        ):
+            above = v >= lower if lower_closed else v > lower
+            below = v <= upper if upper_closed else v < upper
+            inside |= above & below
+        return inside
+
+    def _check_variables(self, df):
+        # reject variables whose domain cannot be parsed
+        for name, domain in zip(df["name"], df["domain"]):
+            try:
+                self._parse_domain(domain=domain)
+            except ValueError as e:
+                raise ValueError(f"Variable {name!r}: {e}") from None
+        return df
+
+    def _flag_out_of_domain(self, df, spec_id):
+        # turn regular rows with actual values outside the variable domain into suspect
+        name, domain = self.conn.execute(
+            "SELECT s.name, v.domain FROM specs s "
+            "JOIN variables v ON s.variable_name = v.name WHERE s.id = ?",
+            (spec_id,),
+        ).fetchone()
+        regular = self._flag_value(name="regular", required=False)
+        suspect = self._flag_value(name="suspect", required=False)
+        if regular is None or suspect is None:
+            warnings.warn(
+                "Flags 'regular' or 'suspect' not in this database; domain check skipped",
+                stacklevel=3,
+            )
+            return df
+        values = df["value"]
+        out = (
+            values.notna()
+            & ~self._in_domain(values=values, domain=domain)
+            & (df["flag_value"] == regular)
+        )
+        if out.any():
+            df.loc[out, "flag_value"] = suspect
+            warnings.warn(
+                f"{int(out.sum())} value(s) of {name} outside {domain} flagged suspect",
+                stacklevel=3,
+            )
+        return df
+
     # INSERTS
     # -------------------------------------------------------------------
     @contextmanager
@@ -758,6 +922,8 @@ class DataBase(MbaE):
         df = df.drop(columns=extra)
         if on_table == "specs" and "name" in df.columns:
             df = self._check_specs(df=df)
+        if on_table == "variables" and "domain" in df.columns:
+            df = self._check_variables(df=df)
 
         # python scalars for binding; missing values become NULL
         values = df.astype(object).where(df.notna(), None)
@@ -807,8 +973,9 @@ class DataBase(MbaE):
         flag=None,
         columns_map=None,
         transform_values=True,
-        fill_nan=None,
+        nan_policy="drop",
         drop_extra=False,
+        check_domain=True,
     ):
         """
         Insert records into the ``records`` table for a given spec.
@@ -820,8 +987,13 @@ class DataBase(MbaE):
         optional linear transform (``stored = actual * scale + offset``) is
         resolved from the matching row in ``specs``.
 
-        NaN handling in ``value`` is controlled by ``fill_nan``: ``None`` drops
-        rows with NaN values; any other value fills them before inserting.
+        NaN in ``value`` follows ``nan_policy``: ``"drop"`` skips those rows;
+        ``"void"`` stores them as NULL with the ``void`` flag, overriding the
+        batch flag, so a known gap can be told apart from data never loaded.
+
+        With ``check_domain``, actual values outside the variable domain
+        (see the module notes on domain notation) turn ``regular`` rows into
+        ``suspect`` and issue a warning. Values are kept; other flags are left as given.
 
         Inputs are validated before anything is written: unknown flags,
         unparseable dates and columns ``records`` does not have raise an error.
@@ -846,15 +1018,20 @@ class DataBase(MbaE):
         :type columns_map: dict, optional
         :param transform_values: apply linear transform if True
         :type transform_values: bool
-        :param fill_nan: fill value for NaN entries in ``value``; if ``None``, NaN rows are dropped
-        :type fill_nan: float or None
+        :param nan_policy: ``"drop"`` skips NaN values; ``"void"`` stores them as void records
+        :type nan_policy: str
         :param drop_extra: drop columns ``records`` does not have instead of raising
         :type drop_extra: bool
+        :param check_domain: flag values outside the variable domain as ``suspect``
+        :type check_domain: bool
         :return: None
         :rtype: None
         :raises ValueError: if no spec is given, the spec is unknown, more than one spec
-            is given, a required column is missing, or a flag, date or column is invalid
+            is given, a required column is missing, ``nan_policy`` is unknown, or a
+            flag, date or column is invalid
         """
+        if nan_policy not in ("drop", "void"):
+            raise ValueError(f"nan_policy must be 'drop' or 'void', got {nan_policy!r}")
         ids = self._resolve_spec_ids(spec_name=spec_name, spec_id=spec_id)
         if len(ids) != 1:
             raise ValueError(f"Records are inserted for a single spec, got {len(ids)}")
@@ -872,10 +1049,18 @@ class DataBase(MbaE):
         if flag is not None:
             df["flag_value"] = flag
         df["datetime"] = self._to_epoch(series=df["datetime"])
-        if fill_nan is None:
-            df = df.dropna(subset=["value"])
-        else:
-            df["value"] = df["value"].fillna(fill_nan)
+
+        # NaN values: drop, or keep as void (NULL value, void flag)
+        nan = df["value"].isna()
+        if nan_policy == "drop":
+            df = df[~nan].copy()
+        elif nan.any():
+            df.loc[nan, "flag_value"] = self._flag_value(name="void")
+
+        # domain check on actual values: regular rows outside become suspect
+        if check_domain:
+            df = self._flag_out_of_domain(df=df, spec_id=spec_id)
+
         valid = {r[0] for r in self.conn.execute("SELECT value FROM flags")}
         unknown = set(df["flag_value"].unique()) - valid
         if unknown:
@@ -901,8 +1086,9 @@ class DataBase(MbaE):
         flag=None,
         columns_map=None,
         transform_values=True,
-        fill_nan=None,
+        nan_policy="drop",
         drop_extra=False,
+        check_domain=True,
     ):
         """
         Insert a single record from a plain dict.
@@ -927,10 +1113,12 @@ class DataBase(MbaE):
         :type columns_map: dict, optional
         :param transform_values: apply linear transform if True
         :type transform_values: bool
-        :param fill_nan: fill value for NaN entries in ``value``; if ``None``, NaN rows are dropped
-        :type fill_nan: float or None
+        :param nan_policy: ``"drop"`` skips NaN values; ``"void"`` stores them as void records
+        :type nan_policy: str
         :param drop_extra: drop columns ``records`` does not have instead of raising
         :type drop_extra: bool
+        :param check_domain: flag values outside the variable domain as ``suspect``
+        :type check_domain: bool
         :return: None
         :rtype: None
         """
@@ -941,8 +1129,9 @@ class DataBase(MbaE):
             flag=flag,
             columns_map=columns_map,
             transform_values=transform_values,
-            fill_nan=fill_nan,
+            nan_policy=nan_policy,
             drop_extra=drop_extra,
+            check_domain=check_domain,
         )
         return None
 
@@ -955,8 +1144,9 @@ class DataBase(MbaE):
         flag=None,
         columns_map=None,
         transform_values=True,
-        fill_nan=None,
+        nan_policy="drop",
         drop_extra=False,
+        check_domain=True,
     ):
         """
         Load records from a list of CSV files into the ``records`` table.
@@ -985,10 +1175,12 @@ class DataBase(MbaE):
         :type columns_map: dict, optional
         :param transform_values: apply linear transform if True
         :type transform_values: bool
-        :param fill_nan: fill value for NaN entries in ``value``; if ``None``, NaN rows are dropped
-        :type fill_nan: float or None
+        :param nan_policy: ``"drop"`` skips NaN values; ``"void"`` stores them as void records
+        :type nan_policy: str
         :param drop_extra: drop columns ``records`` does not have instead of raising
         :type drop_extra: bool
+        :param check_domain: flag values outside the variable domain as ``suspect``
+        :type check_domain: bool
         :return: None
         :rtype: None
         """
@@ -1002,8 +1194,9 @@ class DataBase(MbaE):
             flag=flag,
             columns_map=columns_map,
             transform_values=transform_values,
-            fill_nan=fill_nan,
+            nan_policy=nan_policy,
             drop_extra=drop_extra,
+            check_domain=check_domain,
         )
         return None
 

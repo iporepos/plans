@@ -13,6 +13,7 @@ The test suite verifies that:
 * SQL files are resolved in the class ``SQL_DIR`` first, then in ``base/``.
 * A child class with a partial SQL folder creates a full database with ``new()``.
 * A missing ``.sql`` path raises ``FileNotFoundError`` instead of running as SQL text.
+* ``new()`` reads TOML and JSON setup files and respects ``overwrite``.
 * Spec names are normalized, validated and unique, in Python and in the schema.
 * ``spec_name`` and ``spec_id`` resolve to the same specs; the name wins on conflict.
 * Invalid inputs raise clear errors before anything is written: extra columns,
@@ -22,6 +23,8 @@ The test suite verifies that:
   the wide format and spec metadata.
 * ``SemiSpatialDB`` requires ``geometry_id`` on insert, filters by any number of
   ids, and pivots to ``(spec_name, geometry_id)`` columns.
+* Domain notation is parsed and checked; NaN values are dropped or stored as
+  voids, and out-of-domain values are flagged ``suspect``.
 
 Databases are built once per class in a single temporary folder.
 
@@ -187,6 +190,68 @@ class TestSqlResolution(unittest.TestCase):
     def test_query_sql_text(self):
         df = self.db_base.query_sql(sql="SELECT name FROM specs")
         self.assertEqual(df["name"].tolist(), ["PPT_MONTHLY_CHIRPS"])
+
+
+class TestNew(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Runs once before all tests in this class: write a specs file and two setup files.
+        """
+        cls.temp_dir = Path(tempfile.mkdtemp())
+        cls.file_specs = cls.temp_dir / "specs.json"
+        cls.file_specs.write_text(json.dumps(SPECS), encoding="utf-8")
+        cls.file_db = cls.temp_dir / "new.db"
+        # forward slashes keep the TOML string free of escapes
+        cls.file_toml = cls.temp_dir / "setup.toml"
+        cls.file_toml.write_text(
+            f'[database]\npath = "{cls.file_db.as_posix()}"\n\n'
+            f'[specs]\npath = "{cls.file_specs.as_posix()}"\n',
+            encoding="utf-8",
+        )
+        cls.file_json = cls.temp_dir / "setup.json"
+        cls.file_json.write_text(
+            json.dumps(
+                {
+                    "database": {"path": str(cls.file_db)},
+                    "specs": {"path": str(cls.file_specs)},
+                }
+            ),
+            encoding="utf-8",
+        )
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Runs once after all tests in this class.
+        """
+        shutil.rmtree(cls.temp_dir)
+        return None
+
+    def _new(self, config, overwrite):
+        db = DataBase(name="new")
+        db.new(config=config, overwrite=overwrite)
+        names = db.query_sql(sql="SELECT name FROM specs")["name"].tolist()
+        db.close()
+        return names
+
+    def test_from_toml_and_json(self):
+        for config in (self.file_toml, self.file_json):
+            with self.subTest(config=config.suffix):
+                names = self._new(config=config, overwrite=True)
+                self.assertEqual(names, ["PPT_MONTHLY_CHIRPS"])
+
+    def test_overwrite(self):
+        self._new(config=self.file_json, overwrite=True)
+        with self.assertRaises(FileExistsError):
+            self._new(config=self.file_json, overwrite=False)
+        # the existing file is kept
+        self.assertTrue(self.file_db.exists())
+
+    def test_unsupported_setup_format(self):
+        with self.assertRaises(ValueError):
+            DataBase.parse_setup(setup=self.temp_dir / "setup.yaml")
 
 
 class TestSpecNames(unittest.TestCase):
@@ -418,7 +483,7 @@ class TestInsertValidation(unittest.TestCase):
     def test_unknown_flag(self):
         df = self.df.assign(flag_value=np.array([1, 9]))
         self._assert_rejected(
-            dataframe=df, message="Unknown flag_value(s): [9]. Valid: [0, 1]"
+            dataframe=df, message="Unknown flag_value(s): [9]. Valid: [0, 1, 2]"
         )
 
     def test_unparseable_dates(self):
@@ -834,6 +899,196 @@ class TestSemiSpatialDB(unittest.TestCase):
         finally:
             self.db.conn.execute("DELETE FROM records WHERE value = 13.0")
             self.db.conn.commit()
+
+
+class TestDomain(unittest.TestCase):
+
+    def test_parse_valid(self):
+        inf = np.inf
+        for domain, expected in [
+            ("[0U)", [(0.0, inf, True, False)]),
+            ("(0U1]", [(0.0, 1.0, False, True)]),
+            ("[-273.15U)", [(-273.15, inf, True, False)]),
+            ("(U)", [(-inf, inf, False, False)]),
+            ("[5U5]", [(5.0, 5.0, True, True)]),
+            (
+                "[-90U-60]U[60U90]",
+                [(-90.0, -60.0, True, True), (60.0, 90.0, True, True)],
+            ),
+            (" [0U1] U (5U) ", [(0.0, 1.0, True, True), (5.0, inf, False, False)]),
+        ]:
+            with self.subTest(domain=domain):
+                self.assertEqual(DataBase._parse_domain(domain=domain), expected)
+
+    def test_parse_invalid(self):
+        for domain in [
+            "",
+            "0U1",
+            "[0,1]",
+            "[0U1]U",
+            "(0U)(1U2)",
+            "[aU1]",
+            "[2U1]",
+            "(5U5]",
+        ]:
+            with self.subTest(domain=domain):
+                with self.assertRaises(ValueError):
+                    DataBase._parse_domain(domain=domain)
+
+    def test_in_domain(self):
+        v = np.array([-100, -90, -60, -59, 0, 60, 90, 91, np.nan])
+        inside = DataBase._in_domain(values=v, domain="[-90U-60]U[60U90]")
+        self.assertEqual(inside.tolist(), [0, 1, 1, 0, 0, 1, 1, 0, 0])
+        inside = DataBase._in_domain(values=np.array([0.0, 0.5, 1.0]), domain="(0U1]")
+        self.assertEqual(inside.tolist(), [0, 1, 1])
+
+
+class TestVoidAndSuspect(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Runs once before all tests in this class: create one database with spec PPT
+        (precipitation, domain [0U)) and spec SHIFT (offset -100, so stored and
+        actual values differ in sign).
+        """
+        cls.temp_dir = Path(tempfile.mkdtemp())
+        cls.file_specs = cls.temp_dir / "specs.json"
+        specs = [dict(SPECS[0], name="PPT"), dict(SPECS[0], name="SHIFT", offset=-100)]
+        cls.file_specs.write_text(json.dumps(specs), encoding="utf-8")
+        cls.db = DataBase(name="flags")
+        cls.db.new(config=cls._config(name="flags.db"))
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Runs once after all tests in this class.
+        """
+        cls.db.close()
+        shutil.rmtree(cls.temp_dir)
+        return None
+
+    @classmethod
+    def _config(cls, name, catalogs=None):
+        config = {
+            "database": {"path": str(cls.temp_dir / name)},
+            "specs": {"path": str(cls.file_specs)},
+        }
+        if catalogs:
+            config["catalogs"] = catalogs
+        return config
+
+    def setUp(self):
+        # each test starts from an empty records table
+        self.db.conn.execute("DELETE FROM records")
+        self.db.conn.commit()
+
+    def _insert(self, values, **kwargs):
+        dates = pd.date_range("2000-01-01", periods=len(values), freq="D").astype(str)
+        df = pd.DataFrame({"datetime": dates, "value": values})
+        kwargs.setdefault("spec_name", "PPT")
+        kwargs.setdefault("flag", 1)
+        self.db.insert_records(dataframe=df, **kwargs)
+
+    def _stored(self):
+        # raw rows, as SQLite holds them
+        return self.db.conn.execute(
+            "SELECT value, flag_value FROM records ORDER BY datetime"
+        ).fetchall()
+
+    # -------------------------------------------------------------------
+    # nan_policy
+    # -------------------------------------------------------------------
+    def test_nan_dropped_by_default(self):
+        self._insert(values=[1.0, np.nan, 3.0])
+        self.assertEqual(self._stored(), [(1.0, 1), (3.0, 1)])
+
+    def test_nan_void(self):
+        self._insert(values=[1.0, np.nan], nan_policy="void")
+        # NULL value with the void flag, overriding the batch flag
+        self.assertEqual(self._stored(), [(1.0, 1), (None, 0)])
+        df = self.db.query_records(query_dict={"spec_name": "PPT"})
+        self.assertTrue(np.isnan(df["value"].iloc[1]))
+        self.assertEqual(df["flag_value"].tolist(), [1, 0])
+
+    def test_nan_void_with_transform(self):
+        self._insert(values=[np.nan], spec_name="SHIFT", nan_policy="void")
+        self.assertEqual(self._stored(), [(None, 0)])
+
+    def test_nan_policy_invalid(self):
+        with self.assertRaises(ValueError):
+            self._insert(values=[1.0], nan_policy="fill")
+
+    def test_schema_rejects_null_regular(self):
+        with self.assertRaises(sqlite3.IntegrityError):
+            self.db.conn.execute(
+                "INSERT INTO records (datetime, value, flag_value, spec_id) "
+                "VALUES (0, NULL, 1, 1)"
+            )
+        self.db.conn.rollback()
+
+    def test_wide_mean_skips_void(self):
+        df = pd.DataFrame(
+            {"datetime": ["2000-01-01"] * 2, "value": [2.0, np.nan], "flag_value": 1}
+        )
+        self.db.insert_records(dataframe=df, spec_name="PPT", nan_policy="void")
+        wide = self.db.query_records(
+            query_dict={"spec_name": "PPT", "wide": True, "aggfunc": "mean"}
+        )
+        self.assertEqual(wide["PPT"].tolist(), [2.0])
+
+    # -------------------------------------------------------------------
+    # domain check
+    # -------------------------------------------------------------------
+    def test_out_of_domain_suspect(self):
+        with self.assertWarns(UserWarning) as ctx:
+            self._insert(values=[1.0, -1.0, 0.0])
+        self.assertIn("1 value(s) of PPT outside [0U)", str(ctx.warning))
+        # the value is kept; only the flag changes
+        self.assertEqual(self._stored(), [(1.0, 1), (-1.0, 2), (0.0, 1)])
+
+    def test_given_flags_kept(self):
+        df = pd.DataFrame(
+            {"datetime": ["2000-01-01"], "value": [-1.0], "flag_value": [0]}
+        )
+        self.db.insert_records(dataframe=df, spec_name="PPT")
+        self.assertEqual(self._stored(), [(-1.0, 0)])
+
+    def test_check_domain_off(self):
+        self._insert(values=[-1.0], check_domain=False)
+        self.assertEqual(self._stored(), [(-1.0, 1)])
+
+    def test_domain_on_actual_values(self):
+        # actual 50 is stored as -50 (offset -100) and stays regular
+        self._insert(values=[50.0], spec_name="SHIFT")
+        self.assertEqual(self._stored(), [(-50.0, 1)])
+
+    # -------------------------------------------------------------------
+    # catalogs
+    # -------------------------------------------------------------------
+    def test_bad_domain_fails_creation(self):
+        file_vars = self.temp_dir / "variables_bad.csv"
+        df = pd.read_csv(self.db.variables_default, sep=";")
+        df.loc[0, "domain"] = "(0,1)"
+        df.to_csv(file_vars, sep=";", index=False)
+        db = DataBase(name="bad")
+        config = self._config(name="bad.db", catalogs={"variables": str(file_vars)})
+        with self.assertRaises(ValueError) as ctx:
+            db.new(config=config)
+        self.assertIn("precipitation", str(ctx.exception))
+        self.assertFalse((self.temp_dir / "bad.db").exists())
+
+    def test_no_suspect_flag_skips_check(self):
+        file_flags = self.temp_dir / "flags_old.csv"
+        df = pd.read_csv(self.db.flags_default, sep=";")
+        df[df["name"] != "suspect"].to_csv(file_flags, sep=";", index=False)
+        db = DataBase(name="old")
+        db.new(config=self._config(name="old.db", catalogs={"flags": str(file_flags)}))
+        df = pd.DataFrame({"datetime": ["2000-01-01"], "value": [-1.0]})
+        with self.assertWarns(UserWarning) as ctx:
+            db.insert_records(dataframe=df, spec_name="PPT", flag=1)
+        db.close()
+        self.assertIn("domain check skipped", str(ctx.warning))
 
 
 # ... {develop}
