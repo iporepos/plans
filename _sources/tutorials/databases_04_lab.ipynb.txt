@@ -1,0 +1,1324 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "90d02095",
+   "metadata": {},
+   "source": [
+    "# Databases - Laboratory"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "db7d85fc",
+   "metadata": {},
+   "source": [
+    "This tutorial covers `LabDB`, the database for water samples analysed in a laboratory. Data follows a chain:\n",
+    "\n",
+    "1. **sites**: places where field work happens, as points;\n",
+    "2. **samples**: bottles collected at a site, at a sampling time;\n",
+    "3. **mixtures**: what the lab actually analyses, usually one sample alone, sometimes a blend of several;\n",
+    "4. **records**: one result per mixture and parameter, at an analysis time.\n",
+    "\n",
+    "The example is a river monitoring program with four sampling points and four campaigns, analysed for turbidity, pH and sodium.\n",
+    "\n",
+    "```{seealso}\n",
+    "Check out the {doc}`Databases - Spatial <databases_03_spatial>` tutorial first.\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "13d46fb1",
+   "metadata": {},
+   "source": [
+    "## Notebook setup\n",
+    "\n",
+    "For users running this tutorial as a Jupyter Notebook, this cell must be executed first:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "22bed590",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-11-06T21:03:17.501150Z",
+     "iopub.status.busy": "2026-11-06T21:03:17.500975Z",
+     "iopub.status.idle": "2026-11-06T21:03:18.131278Z",
+     "shell.execute_reply": "2026-11-06T21:03:18.130733Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Outputs will be saved to: ./outputs\\databases\n"
+     ]
+    }
+   ],
+   "source": [
+    "import sys\n",
+    "import json\n",
+    "from pathlib import Path\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import matplotlib.pyplot as plt\n",
+    "import geopandas as gpd\n",
+    "\n",
+    "# Install `plans` in `google.colab`.\n",
+    "# Use `pip install plans` for other environments.\n",
+    "\n",
+    "if \"google.colab\" in sys.modules:\n",
+    "    import os\n",
+    "    os.system(f\"{sys.executable} -m pip install -q plans\")\n",
+    "\n",
+    "from plans.databases import LabDB\n",
+    "\n",
+    "# This avoids warnings related to uninstalled fonts\n",
+    "import logging\n",
+    "# Set the matplotlib font manager logger to only show errors (hides warnings)\n",
+    "logging.getLogger('matplotlib.font_manager').setLevel(logging.ERROR)\n",
+    "\n",
+    "# define output folder\n",
+    "OUTPUT_DIR = Path(\"outputs/databases\")\n",
+    "OUTPUT_DIR.mkdir(parents=True, exist_ok=True)\n",
+    "print(f\"Outputs will be saved to: ./{OUTPUT_DIR}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c9c6d579",
+   "metadata": {},
+   "source": [
+    "## Sites and catalogs\n",
+    "\n",
+    "Four sampling points run from upstream (`P1`) to downstream (`P4`), below a town:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "6f7608fe",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-11-06T21:03:18.134168Z",
+     "iopub.status.busy": "2026-11-06T21:03:18.133913Z",
+     "iopub.status.idle": "2026-11-06T21:03:18.184965Z",
+     "shell.execute_reply": "2026-11-06T21:03:18.184453Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "sites = gpd.GeoDataFrame(\n",
+    "    data={\"name\": [\"P1\", \"P2\", \"P3\", \"P4\"]},\n",
+    "    geometry=gpd.points_from_xy(x=[-51.30, -51.22, -51.15, -51.08], y=[-29.90, -29.95, -30.02, -30.05]),\n",
+    "    crs=\"EPSG:4674\",\n",
+    ")\n",
+    "file_sites = OUTPUT_DIR / \"lab_sites.gpkg\"\n",
+    "sites.to_file(filename=file_sites, driver=\"GPKG\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0e096c7d",
+   "metadata": {},
+   "source": [
+    "The specs point to the variables `turbidity`, `ph` and `sodium (physical-chemistry)`, all with the `instant` statistic, since each result is a single analysis, not an aggregate. The sources catalog that ships with `plans` has no laboratory, so the setup points to a custom one. Any catalog can be replaced this way:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "cf3d6a5f",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-11-06T21:03:18.188125Z",
+     "iopub.status.busy": "2026-11-06T21:03:18.187887Z",
+     "iopub.status.idle": "2026-11-06T21:03:18.283184Z",
+     "shell.execute_reply": "2026-11-06T21:03:18.282724Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>name</th>\n",
+       "      <th>units</th>\n",
+       "      <th>domain</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>ph</td>\n",
+       "      <td>-</td>\n",
+       "      <td>[0U14]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>sodium (physical-chemistry)</td>\n",
+       "      <td>mg/L</td>\n",
+       "      <td>[0U)</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>turbidity</td>\n",
+       "      <td>NTU</td>\n",
+       "      <td>[0U)</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                          name units  domain\n",
+       "0                           ph     -  [0U14]\n",
+       "1  sodium (physical-chemistry)  mg/L    [0U)\n",
+       "2                    turbidity   NTU    [0U)"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "file_sources = OUTPUT_DIR / \"lab_sources.csv\"\n",
+    "pd.DataFrame(\n",
+    "    [{\"name\": \"River Survey\", \"alias\": \"RS\", \"title\": \"River monitoring program\", \"abstract\": \"Synthetic campaigns\", \"citation\": None, \"url\": None}]\n",
+    ").to_csv(file_sources, sep=\";\", index=False)\n",
+    "\n",
+    "\n",
+    "def make_spec(name, variable, abstract):\n",
+    "    # one spec of lab results\n",
+    "    return {\n",
+    "        \"name\": name,\n",
+    "        \"abstract\": abstract,\n",
+    "        \"method\": \"laboratory analysis\",\n",
+    "        \"timestep\": \"event\",\n",
+    "        \"extent\": \"sample\",\n",
+    "        \"scale\": 1,\n",
+    "        \"offset\": 0,\n",
+    "        \"start\": \"2024-01-01\",\n",
+    "        \"end\": None,\n",
+    "        \"variable_name\": variable,\n",
+    "        \"statistic_name\": \"instant\",\n",
+    "        \"source_name\": \"River Survey\",\n",
+    "    }\n",
+    "\n",
+    "\n",
+    "specs = [\n",
+    "    make_spec(\"TURB_LAB\", \"turbidity\", \"Turbidity by nephelometry\"),\n",
+    "    make_spec(\"PH_LAB\", \"ph\", \"pH by electrode, in triplicate\"),\n",
+    "    make_spec(\"NA_LAB\", \"sodium (physical-chemistry)\", \"Dissolved sodium by ion chromatography\"),\n",
+    "]\n",
+    "file_specs = OUTPUT_DIR / \"lab_specs.json\"\n",
+    "file_specs.write_text(json.dumps(specs, indent=2), encoding=\"utf-8\")\n",
+    "\n",
+    "db = LabDB(name=\"River Lab\")\n",
+    "db.new(\n",
+    "    config={\n",
+    "        \"database\": {\"path\": str(OUTPUT_DIR / \"lab_db.gpkg\")},\n",
+    "        \"specs\": {\"path\": str(file_specs)},\n",
+    "        \"spatial\": {\"file\": str(file_sites)},\n",
+    "        \"catalogs\": {\"sources\": str(file_sources)},\n",
+    "    },\n",
+    "    overwrite=True,\n",
+    ")\n",
+    "db.query_sql(sql=\"SELECT name, units, domain FROM variables WHERE name IN ('turbidity', 'ph', 'sodium (physical-chemistry)')\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4a5b61fb",
+   "metadata": {},
+   "source": [
+    "## Samples\n",
+    "\n",
+    "Each campaign collects one bottle per site, in the morning, moving downstream. The field sheet of the third campaign lost the time of `P2`; following a common convention, it is set to noon:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "a239033d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-11-06T21:03:18.285562Z",
+     "iopub.status.busy": "2026-11-06T21:03:18.285326Z",
+     "iopub.status.idle": "2026-11-06T21:03:18.298897Z",
+     "shell.execute_reply": "2026-11-06T21:03:18.298446Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>id</th>\n",
+       "      <th>name</th>\n",
+       "      <th>datetime</th>\n",
+       "      <th>site_id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>C1-P1</td>\n",
+       "      <td>2024-02-10 08:30:00</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2</td>\n",
+       "      <td>C1-P2</td>\n",
+       "      <td>2024-02-10 09:30:00</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>3</td>\n",
+       "      <td>C1-P3</td>\n",
+       "      <td>2024-02-10 10:30:00</td>\n",
+       "      <td>3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>4</td>\n",
+       "      <td>C1-P4</td>\n",
+       "      <td>2024-02-10 11:30:00</td>\n",
+       "      <td>4</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>5</td>\n",
+       "      <td>C2-P1</td>\n",
+       "      <td>2024-05-12 08:30:00</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   id   name             datetime  site_id\n",
+       "0   1  C1-P1  2024-02-10 08:30:00        1\n",
+       "1   2  C1-P2  2024-02-10 09:30:00        2\n",
+       "2   3  C1-P3  2024-02-10 10:30:00        3\n",
+       "3   4  C1-P4  2024-02-10 11:30:00        4\n",
+       "4   5  C2-P1  2024-05-12 08:30:00        1"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "campaigns = {\"C1\": \"2024-02-10\", \"C2\": \"2024-05-12\", \"C3\": \"2024-08-14\", \"C4\": \"2024-11-09\"}\n",
+    "rows = []\n",
+    "for campaign, day in campaigns.items():\n",
+    "    for k, site in enumerate(sites[\"name\"]):\n",
+    "        time = \"12:00\" if (campaign, site) == (\"C3\", \"P2\") else f\"{8 + k}:30\"\n",
+    "        rows.append({\"name\": f\"{campaign}-{site}\", \"site_name\": site, \"datetime\": f\"{day} {time}\"})\n",
+    "samples = pd.DataFrame(rows)\n",
+    "db.insert_samples(dataframe=samples)\n",
+    "db.query_sql(sql=\"SELECT id, name, datetime(datetime, 'unixepoch') AS datetime, site_id FROM samples LIMIT 5\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "815a4ca7",
+   "metadata": {},
+   "source": [
+    "## Mixtures\n",
+    "\n",
+    "Usually the lab analyses each bottle alone. Without a `name` column, `.insert_mixtures()` makes one mixture per sample, named after it. In the last campaign, the bottles of `P3` and `P4` were half empty, so the lab blended them into one mixture. A blend takes one row per sample, with the same mixture name:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "e3515c69",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-11-06T21:03:18.301607Z",
+     "iopub.status.busy": "2026-11-06T21:03:18.301436Z",
+     "iopub.status.idle": "2026-11-06T21:03:18.405530Z",
+     "shell.execute_reply": "2026-11-06T21:03:18.404887Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>mixture</th>\n",
+       "      <th>sample</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>C4-P1</td>\n",
+       "      <td>C4-P1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>C4-P2</td>\n",
+       "      <td>C4-P2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>C4-P34</td>\n",
+       "      <td>C4-P3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>C4-P34</td>\n",
+       "      <td>C4-P4</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "  mixture sample\n",
+       "0   C4-P1  C4-P1\n",
+       "1   C4-P2  C4-P2\n",
+       "2  C4-P34  C4-P3\n",
+       "3  C4-P34  C4-P4"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "single = samples.loc[~samples[\"name\"].isin([\"C4-P3\", \"C4-P4\"]), [\"name\"]]\n",
+    "db.insert_mixtures(dataframe=single.rename(columns={\"name\": \"sample_name\"}))\n",
+    "db.insert_mixtures(dataframe=pd.DataFrame({\"name\": \"C4-P34\", \"sample_name\": [\"C4-P3\", \"C4-P4\"]}))\n",
+    "db.query_sql(\n",
+    "    sql=\"SELECT m.name AS mixture, s.name AS sample FROM mixtures m \"\n",
+    "    \"JOIN mixture_samples ms ON ms.mixture_id = m.id JOIN samples s ON s.id = ms.sample_id \"\n",
+    "    \"WHERE m.name LIKE 'C4%'\"\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9f4af23a",
+   "metadata": {},
+   "source": [
+    "## Results\n",
+    "\n",
+    "Lab results usually arrive as one large table. Here, the town raises turbidity and sodium downstream, and pH drops a little. pH is measured three times per mixture. The analyses happen a few days after sampling, but the dates of the third campaign were not recorded:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "6b0c29db",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-11-06T21:03:18.407980Z",
+     "iopub.status.busy": "2026-11-06T21:03:18.407757Z",
+     "iopub.status.idle": "2026-11-06T21:03:18.417846Z",
+     "shell.execute_reply": "2026-11-06T21:03:18.417471Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>mixture_name</th>\n",
+       "      <th>parameter</th>\n",
+       "      <th>value</th>\n",
+       "      <th>datetime</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>C1-P1</td>\n",
+       "      <td>TURB_LAB</td>\n",
+       "      <td>10.500166</td>\n",
+       "      <td>2024-02-12</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>C1-P1</td>\n",
+       "      <td>NA_LAB</td>\n",
+       "      <td>0.567416</td>\n",
+       "      <td>2024-02-12</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>C1-P1</td>\n",
+       "      <td>PH_LAB</td>\n",
+       "      <td>7.370000</td>\n",
+       "      <td>2024-02-12</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>C1-P1</td>\n",
+       "      <td>PH_LAB</td>\n",
+       "      <td>7.390000</td>\n",
+       "      <td>2024-02-12</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>C1-P1</td>\n",
+       "      <td>PH_LAB</td>\n",
+       "      <td>7.370000</td>\n",
+       "      <td>2024-02-12</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>C1-P2</td>\n",
+       "      <td>TURB_LAB</td>\n",
+       "      <td>20.172434</td>\n",
+       "      <td>2024-02-12</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "  mixture_name parameter      value   datetime\n",
+       "0        C1-P1  TURB_LAB  10.500166 2024-02-12\n",
+       "1        C1-P1    NA_LAB   0.567416 2024-02-12\n",
+       "2        C1-P1    PH_LAB   7.370000 2024-02-12\n",
+       "3        C1-P1    PH_LAB   7.390000 2024-02-12\n",
+       "4        C1-P1    PH_LAB   7.370000 2024-02-12\n",
+       "5        C1-P2  TURB_LAB  20.172434 2024-02-12"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "rng = np.random.default_rng(seed=11)  # ensure reproducibility\n",
+    "mixtures = db.query_sql(sql=\"SELECT id, name FROM mixtures\")\n",
+    "results = []\n",
+    "for mixture in mixtures[\"name\"]:\n",
+    "    campaign = mixture[:2]\n",
+    "    position = int(mixture[-1]) - 1  # 0 upstream to 3 downstream\n",
+    "    wet = campaign in (\"C2\", \"C3\")\n",
+    "    analysis = None if campaign == \"C3\" else pd.Timestamp(campaigns[campaign]) + pd.Timedelta(days=int(rng.integers(2, 6)))\n",
+    "    turbidity = (8 + 10 * position) * (1.8 if wet else 1) * rng.lognormal(sigma=0.2)\n",
+    "    sodium = 0.2 + 3 * position + rng.normal(scale=0.3)\n",
+    "    results.append({\"mixture_name\": mixture, \"parameter\": \"TURB_LAB\", \"value\": turbidity, \"datetime\": analysis})\n",
+    "    results.append({\"mixture_name\": mixture, \"parameter\": \"NA_LAB\", \"value\": sodium, \"datetime\": analysis})\n",
+    "    for _ in range(3):\n",
+    "        ph = 7.4 - 0.25 * position + rng.normal(scale=0.05)\n",
+    "        results.append({\"mixture_name\": mixture, \"parameter\": \"PH_LAB\", \"value\": round(ph, 2), \"datetime\": analysis})\n",
+    "results = pd.DataFrame(results)\n",
+    "results.head(6)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2c2213dd",
+   "metadata": {},
+   "source": [
+    "Sodium has a detection limit of 0.5 mg/L. Results below it are *not detected*: they get the `nondetect` flag (`-3`) and keep the limit as their value. All other results are `regular` (`1`). With mixed flags, the flag goes in a `flag_value` column instead of the `flag` argument:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "8129449d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-11-06T21:03:18.419974Z",
+     "iopub.status.busy": "2026-11-06T21:03:18.419804Z",
+     "iopub.status.idle": "2026-11-06T21:03:18.453746Z",
+     "shell.execute_reply": "2026-11-06T21:03:18.453013Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "3 sodium results not detected\n"
+     ]
+    }
+   ],
+   "source": [
+    "lod = 0.5\n",
+    "results[\"flag_value\"] = 1\n",
+    "below = (results[\"parameter\"] == \"NA_LAB\") & (results[\"value\"] < lod)\n",
+    "results.loc[below, [\"value\", \"flag_value\"]] = [lod, -3]\n",
+    "print(f\"{below.sum()} sodium results not detected\")\n",
+    "\n",
+    "for spec_name, group in results.groupby(\"parameter\"):\n",
+    "    db.insert_records(dataframe=group.drop(columns=\"parameter\"), spec_name=spec_name)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d5bdc31a",
+   "metadata": {},
+   "source": [
+    "## Querying\n",
+    "\n",
+    "Records point to mixtures, and queries reach the sites through the chain. Rows come ordered by the sampling time, the time the water was in the river. The `sample_datetime` column holds it, next to the analysis `datetime`, which is empty when unknown:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "6735c2e3",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-11-06T21:03:18.456188Z",
+     "iopub.status.busy": "2026-11-06T21:03:18.455962Z",
+     "iopub.status.idle": "2026-11-06T21:03:18.467012Z",
+     "shell.execute_reply": "2026-11-06T21:03:18.466130Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>sample_datetime</th>\n",
+       "      <th>datetime</th>\n",
+       "      <th>value</th>\n",
+       "      <th>mixture_id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>2024-02-10 08:30:00+00:00</td>\n",
+       "      <td>2024-02-12 00:00:00+00:00</td>\n",
+       "      <td>10.500166</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2024-02-10 09:30:00+00:00</td>\n",
+       "      <td>2024-02-12 00:00:00+00:00</td>\n",
+       "      <td>20.172434</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>2024-02-10 10:30:00+00:00</td>\n",
+       "      <td>2024-02-12 00:00:00+00:00</td>\n",
+       "      <td>32.081521</td>\n",
+       "      <td>3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>2024-02-10 11:30:00+00:00</td>\n",
+       "      <td>2024-02-14 00:00:00+00:00</td>\n",
+       "      <td>36.491530</td>\n",
+       "      <td>4</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>2024-05-12 08:30:00+00:00</td>\n",
+       "      <td>2024-05-15 00:00:00+00:00</td>\n",
+       "      <td>12.592672</td>\n",
+       "      <td>5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>2024-05-12 09:30:00+00:00</td>\n",
+       "      <td>2024-05-16 00:00:00+00:00</td>\n",
+       "      <td>24.038715</td>\n",
+       "      <td>6</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>2024-05-12 10:30:00+00:00</td>\n",
+       "      <td>2024-05-17 00:00:00+00:00</td>\n",
+       "      <td>58.173989</td>\n",
+       "      <td>7</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>2024-05-12 11:30:00+00:00</td>\n",
+       "      <td>2024-05-17 00:00:00+00:00</td>\n",
+       "      <td>58.129293</td>\n",
+       "      <td>8</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>2024-08-14 08:30:00+00:00</td>\n",
+       "      <td>NaT</td>\n",
+       "      <td>12.615240</td>\n",
+       "      <td>9</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>2024-08-14 10:30:00+00:00</td>\n",
+       "      <td>NaT</td>\n",
+       "      <td>61.015327</td>\n",
+       "      <td>11</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>2024-08-14 11:30:00+00:00</td>\n",
+       "      <td>NaT</td>\n",
+       "      <td>73.315998</td>\n",
+       "      <td>12</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>11</th>\n",
+       "      <td>2024-08-14 12:00:00+00:00</td>\n",
+       "      <td>NaT</td>\n",
+       "      <td>27.949531</td>\n",
+       "      <td>10</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12</th>\n",
+       "      <td>2024-11-09 08:30:00+00:00</td>\n",
+       "      <td>2024-11-13 00:00:00+00:00</td>\n",
+       "      <td>9.865340</td>\n",
+       "      <td>13</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>13</th>\n",
+       "      <td>2024-11-09 09:30:00+00:00</td>\n",
+       "      <td>2024-11-13 00:00:00+00:00</td>\n",
+       "      <td>16.216095</td>\n",
+       "      <td>14</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>14</th>\n",
+       "      <td>2024-11-09 11:30:00+00:00</td>\n",
+       "      <td>2024-11-14 00:00:00+00:00</td>\n",
+       "      <td>54.370475</td>\n",
+       "      <td>15</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "             sample_datetime                  datetime      value  mixture_id\n",
+       "0  2024-02-10 08:30:00+00:00 2024-02-12 00:00:00+00:00  10.500166           1\n",
+       "1  2024-02-10 09:30:00+00:00 2024-02-12 00:00:00+00:00  20.172434           2\n",
+       "2  2024-02-10 10:30:00+00:00 2024-02-12 00:00:00+00:00  32.081521           3\n",
+       "3  2024-02-10 11:30:00+00:00 2024-02-14 00:00:00+00:00  36.491530           4\n",
+       "4  2024-05-12 08:30:00+00:00 2024-05-15 00:00:00+00:00  12.592672           5\n",
+       "5  2024-05-12 09:30:00+00:00 2024-05-16 00:00:00+00:00  24.038715           6\n",
+       "6  2024-05-12 10:30:00+00:00 2024-05-17 00:00:00+00:00  58.173989           7\n",
+       "7  2024-05-12 11:30:00+00:00 2024-05-17 00:00:00+00:00  58.129293           8\n",
+       "8  2024-08-14 08:30:00+00:00                       NaT  12.615240           9\n",
+       "9  2024-08-14 10:30:00+00:00                       NaT  61.015327          11\n",
+       "10 2024-08-14 11:30:00+00:00                       NaT  73.315998          12\n",
+       "11 2024-08-14 12:00:00+00:00                       NaT  27.949531          10\n",
+       "12 2024-11-09 08:30:00+00:00 2024-11-13 00:00:00+00:00   9.865340          13\n",
+       "13 2024-11-09 09:30:00+00:00 2024-11-13 00:00:00+00:00  16.216095          14\n",
+       "14 2024-11-09 11:30:00+00:00 2024-11-14 00:00:00+00:00  54.370475          15"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df = db.query_records(query_dict={\"spec_name\": \"TURB_LAB\"})\n",
+    "df[[\"sample_datetime\", \"datetime\", \"value\", \"mixture_id\"]]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2466159d",
+   "metadata": {},
+   "source": [
+    "Filters by site match every mixture that holds a sample from it, so the blend of the last campaign shows up under both `P3` and `P4`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "f2c99a91",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-11-06T21:03:18.469961Z",
+     "iopub.status.busy": "2026-11-06T21:03:18.469741Z",
+     "iopub.status.idle": "2026-11-06T21:03:18.480676Z",
+     "shell.execute_reply": "2026-11-06T21:03:18.480228Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "P3 ['C1-P3', 'C2-P3', 'C3-P3', 'C4-P34']\n",
+      "P4 ['C1-P4', 'C2-P4', 'C3-P4', 'C4-P34']\n"
+     ]
+    }
+   ],
+   "source": [
+    "names = db.query_sql(sql=\"SELECT id, name FROM mixtures\").set_index(\"id\")[\"name\"]\n",
+    "for site in [\"P3\", \"P4\"]:\n",
+    "    df = db.query_records(query_dict={\"spec_name\": \"TURB_LAB\", \"site_name\": site})\n",
+    "    print(site, names[df[\"mixture_id\"]].tolist())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "75371ef6",
+   "metadata": {},
+   "source": [
+    "The `start` and `end` keys filter by sampling time too. Here, the wet season campaigns:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "14e392ae",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-11-06T21:03:18.484593Z",
+     "iopub.status.busy": "2026-11-06T21:03:18.484358Z",
+     "iopub.status.idle": "2026-11-06T21:03:18.494135Z",
+     "shell.execute_reply": "2026-11-06T21:03:18.493382Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>sample_datetime</th>\n",
+       "      <th>value</th>\n",
+       "      <th>flag_value</th>\n",
+       "      <th>mixture_id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>2024-05-12 08:30:00+00:00</td>\n",
+       "      <td>0.500000</td>\n",
+       "      <td>-3</td>\n",
+       "      <td>5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2024-05-12 09:30:00+00:00</td>\n",
+       "      <td>3.210991</td>\n",
+       "      <td>1</td>\n",
+       "      <td>6</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>2024-05-12 10:30:00+00:00</td>\n",
+       "      <td>6.109997</td>\n",
+       "      <td>1</td>\n",
+       "      <td>7</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>2024-05-12 11:30:00+00:00</td>\n",
+       "      <td>9.304295</td>\n",
+       "      <td>1</td>\n",
+       "      <td>8</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>2024-08-14 08:30:00+00:00</td>\n",
+       "      <td>0.500000</td>\n",
+       "      <td>-3</td>\n",
+       "      <td>9</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>2024-08-14 10:30:00+00:00</td>\n",
+       "      <td>5.800406</td>\n",
+       "      <td>1</td>\n",
+       "      <td>11</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>2024-08-14 11:30:00+00:00</td>\n",
+       "      <td>9.124874</td>\n",
+       "      <td>1</td>\n",
+       "      <td>12</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>2024-08-14 12:00:00+00:00</td>\n",
+       "      <td>3.615694</td>\n",
+       "      <td>1</td>\n",
+       "      <td>10</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "            sample_datetime     value  flag_value  mixture_id\n",
+       "0 2024-05-12 08:30:00+00:00  0.500000          -3           5\n",
+       "1 2024-05-12 09:30:00+00:00  3.210991           1           6\n",
+       "2 2024-05-12 10:30:00+00:00  6.109997           1           7\n",
+       "3 2024-05-12 11:30:00+00:00  9.304295           1           8\n",
+       "4 2024-08-14 08:30:00+00:00  0.500000          -3           9\n",
+       "5 2024-08-14 10:30:00+00:00  5.800406           1          11\n",
+       "6 2024-08-14 11:30:00+00:00  9.124874           1          12\n",
+       "7 2024-08-14 12:00:00+00:00  3.615694           1          10"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df = db.query_records(query_dict={\"spec_name\": \"NA_LAB\", \"start\": \"2024-04-01\", \"end\": \"2024-09-30\"})\n",
+    "df[[\"sample_datetime\", \"value\", \"flag_value\", \"mixture_id\"]]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9974e17d",
+   "metadata": {},
+   "source": [
+    "## Storage time\n",
+    "\n",
+    "The gap between sampling and analysis is how long the bottle waited. It should not affect results; a long wait can point to problems in storage. Unknown analysis times stay empty:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "d02d595d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-11-06T21:03:18.496326Z",
+     "iopub.status.busy": "2026-11-06T21:03:18.496136Z",
+     "iopub.status.idle": "2026-11-06T21:03:18.505850Z",
+     "shell.execute_reply": "2026-11-06T21:03:18.505415Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "mixture_id\n",
+       "C1-P1     1.6\n",
+       "C1-P2     1.6\n",
+       "C1-P3     1.6\n",
+       "C1-P4     3.5\n",
+       "C2-P1     2.6\n",
+       "C2-P2     3.6\n",
+       "C2-P3     4.6\n",
+       "C2-P4     4.5\n",
+       "C3-P1     NaN\n",
+       "C3-P2     NaN\n",
+       "C3-P3     NaN\n",
+       "C3-P4     NaN\n",
+       "C4-P1     3.6\n",
+       "C4-P2     3.6\n",
+       "C4-P34    4.5\n",
+       "Name: storage_days, dtype: float64"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df = db.query_records(query_dict={\"spec_name\": \"PH_LAB\"})\n",
+    "df[\"storage_days\"] = (df[\"datetime\"] - df[\"sample_datetime\"]).dt.total_seconds() / 86400\n",
+    "df.groupby(\"mixture_id\")[\"storage_days\"].first().rename(index=names).round(1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5527231d",
+   "metadata": {},
+   "source": [
+    "## Replicates and censored values\n",
+    "\n",
+    "The three pH readings of a mixture are identical in time and place. They are valid replicates, not duplicates, and only the record id tells them apart. The wide format refuses them unless an `aggfunc` combines them. Each mixture then gets one column, with a single value at its sampling time:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "3095c57d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-11-06T21:03:18.508719Z",
+     "iopub.status.busy": "2026-11-06T21:03:18.508558Z",
+     "iopub.status.idle": "2026-11-06T21:03:18.516593Z",
+     "shell.execute_reply": "2026-11-06T21:03:18.516122Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "15 replicated entries, eg: ['PH_LAB / 1 at 2024-02-10 08:30:00+00:00 has 3 values', 'PH_LAB / 2 at 2024-02-10 09:30:00+00:00 has 3 values', 'PH_LAB / 3 at 2024-02-10 10:30:00+00:00 has 3 values']; pass aggfunc to aggregate\n"
+     ]
+    }
+   ],
+   "source": [
+    "try:\n",
+    "    db.query_records(query_dict={\"spec_name\": \"PH_LAB\", \"wide\": True})\n",
+    "except ValueError as error:\n",
+    "    print(error)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "d44cdb6d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-11-06T21:03:18.518620Z",
+     "iopub.status.busy": "2026-11-06T21:03:18.518376Z",
+     "iopub.status.idle": "2026-11-06T21:03:18.534238Z",
+     "shell.execute_reply": "2026-11-06T21:03:18.533808Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "name\n",
+       "C1-P1     7.38\n",
+       "C1-P2     7.16\n",
+       "C1-P3     6.91\n",
+       "C1-P4     6.62\n",
+       "C2-P1     7.36\n",
+       "C2-P2     7.15\n",
+       "C2-P3     6.92\n",
+       "C2-P4     6.65\n",
+       "C3-P1     7.38\n",
+       "C3-P3     6.89\n",
+       "C3-P4     6.66\n",
+       "C3-P2     7.18\n",
+       "C4-P1     7.41\n",
+       "C4-P2     7.17\n",
+       "C4-P34    6.67\n",
+       "dtype: float64"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ph = db.query_records(query_dict={\"spec_name\": \"PH_LAB\", \"wide\": True, \"aggfunc\": \"mean\"})\n",
+    "ph.columns = names[ph.columns.get_level_values(\"mixture_id\")]\n",
+    "ph.mean().round(2)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cae4f070",
+   "metadata": {},
+   "source": [
+    "Censored results hold a limit, not a measurement. Before computing statistics, select records by flag. Here, the mean sodium per site with and without the non-detects:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "39a01cde",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-11-06T21:03:18.537778Z",
+     "iopub.status.busy": "2026-11-06T21:03:18.537563Z",
+     "iopub.status.idle": "2026-11-06T21:03:18.552849Z",
+     "shell.execute_reply": "2026-11-06T21:03:18.552271Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>all records</th>\n",
+       "      <th>regular only</th>\n",
+       "      <th>not detected</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>site</th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>P1</th>\n",
+       "      <td>0.52</td>\n",
+       "      <td>0.57</td>\n",
+       "      <td>3.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>P2</th>\n",
+       "      <td>3.38</td>\n",
+       "      <td>3.38</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>P3</th>\n",
+       "      <td>6.70</td>\n",
+       "      <td>6.70</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>P4</th>\n",
+       "      <td>9.08</td>\n",
+       "      <td>9.08</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "      all records  regular only  not detected\n",
+       "site                                         \n",
+       "P1           0.52          0.57           3.0\n",
+       "P2           3.38          3.38           NaN\n",
+       "P3           6.70          6.70           NaN\n",
+       "P4           9.08          9.08           NaN"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "samples_sites = db.query_sql(\n",
+    "    sql=\"SELECT ms.mixture_id, si.name AS site FROM mixture_samples ms \"\n",
+    "    \"JOIN samples sa ON sa.id = ms.sample_id JOIN sites si ON si.id = sa.site_id\"\n",
+    ")\n",
+    "df = db.query_records(query_dict={\"spec_name\": \"NA_LAB\"}).merge(samples_sites, on=\"mixture_id\")\n",
+    "pd.DataFrame(\n",
+    "    {\n",
+    "        \"all records\": df.groupby(\"site\")[\"value\"].mean(),\n",
+    "        \"regular only\": df[df[\"flag_value\"] == 1].groupby(\"site\")[\"value\"].mean(),\n",
+    "        \"not detected\": df[df[\"flag_value\"] == -3].groupby(\"site\")[\"value\"].count(),\n",
+    "    }\n",
+    ").round(2)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "98e00d5c",
+   "metadata": {},
+   "source": [
+    "Finally, sodium along the river, per campaign. In the last campaign, `P3` and `P4` share one value, the result of their blend:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "69e6458c",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-11-06T21:03:18.555335Z",
+     "iopub.status.busy": "2026-11-06T21:03:18.555127Z",
+     "iopub.status.idle": "2026-11-06T21:03:18.644385Z",
+     "shell.execute_reply": "2026-11-06T21:03:18.643516Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/png": "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",
+      "text/plain": [
+       "<Figure size 600x300 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "fig, ax = plt.subplots(figsize=(6, 3))\n",
+    "df[\"campaign\"] = names[df[\"mixture_id\"]].str[:2].values\n",
+    "for campaign, group in df.groupby(\"campaign\"):\n",
+    "    group = group.sort_values(\"site\")\n",
+    "    ax.plot(group[\"site\"], group[\"value\"], marker=\"o\", label=campaign)\n",
+    "ax.axhline(lod, color=\"gray\", ls=\"--\", lw=0.8)\n",
+    "ax.text(0, lod + 0.2, \"detection limit\", color=\"gray\", fontsize=8)\n",
+    "ax.set_ylabel(\"Sodium (mg/L)\")\n",
+    "ax.legend(frameon=False)\n",
+    "plt.tight_layout()\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "865a5e71",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-11-06T21:03:18.648010Z",
+     "iopub.status.busy": "2026-11-06T21:03:18.647830Z",
+     "iopub.status.idle": "2026-11-06T21:03:18.651014Z",
+     "shell.execute_reply": "2026-11-06T21:03:18.650593Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "db.close()"
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.13.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

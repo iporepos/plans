@@ -1,0 +1,2225 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Variables &#8212; plans 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
+
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'variables';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Statistics" href="statistics.html" />
+    <link rel="prev" title="Projects" href="projects.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-light" alt=""/>
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">plans</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="files.html">Files</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="files.html">Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_structures.html">Data Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="files_index.html">Files Index</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="projects.html">Projects</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="flags.html">Flags</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/project_01.html">Projects - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/univar_01.html">Univariate data - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/univar_02_plots.html">Univariate data - Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/univar_03_geo.html">Univariate data - Geospatial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/databases_01.html">Databases - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/databases_02_semispatial.html">Databases - Station networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/databases_03_spatial.html">Databases - Spatial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/databases_04_lab.html">Databases - Laboratory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/bivar_01.html">Bivariate data - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/bivar_02_models.html">Bivariate data - Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/stochastic_01_arma.html">Stochastic series - AR(1) generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/timeseries_01.html">Time Series - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/timeseries_05_compare.html">Time Series - Comparing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/timeseries_02_upscale.html">Time Series - Upscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/timeseries_06_downscale.html">Time Series - Downscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/timeseries_03_gaps.html">Time Series - Gaps and epochs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/timeseries_04_standardize.html">Time Series - Standardizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/timeseries_07_collection.html">Time Series - Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/timeseries_08_cluster.html">Time Series - Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/timeseries_09_cluster_large.html">Time Series - Large Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/timeseries_10_ensemble.html">Time Series - Ensembles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/timeseries_11_seasonal.html">Time Series - Seasonal ensembles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/timeseries_12_collection_views.html">Time Series - Collection visuals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/timeseries_13_synthetic.html">Time Series - Synthetic series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/visuals_01.html">Visualizations - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/raster_01.html">Raster data - Basics</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-house"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="userguide.html" class="nav-link">User Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Variables</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="variables">
+<span id="id1"></span><h1>Variables<a class="headerlink" href="#variables" title="Link to this heading">#</a></h1>
+<p>The variables catalog defines every quantity a <code class="docutils literal notranslate"><span class="pre">plans</span></code> database can store.
+Each dataset in a database (a <em>spec</em>) points to one variable by its name,
+which fixes the units of the actual values and the domain used to flag
+suspect values on insert. The catalog ships with the package and seeds the
+<code class="docutils literal notranslate"><span class="pre">variables</span></code> table when a database is created. This page is built from the
+same file, so it always matches the installed version.</p>
+<p>Variables are grouped by discipline and, within it, by theme. The domain
+uses the interval notation of <a class="reference internal" href="generated/plans.databases.html#module-plans.databases" title="plans.databases"><code class="xref py py-mod docutils literal notranslate"><span class="pre">plans.databases</span></code></a>: <code class="docutils literal notranslate"><span class="pre">[</span></code> and <code class="docutils literal notranslate"><span class="pre">]</span></code>
+include the bound, <code class="docutils literal notranslate"><span class="pre">(</span></code> and <code class="docutils literal notranslate"><span class="pre">)</span></code> exclude it, an empty bound is unbounded,
+and <code class="docutils literal notranslate"><span class="pre">U</span></code> separates the bounds and joins intervals, so <code class="docutils literal notranslate"><span class="pre">[0U)</span></code> reads as
+zero or more. Categorical results, such as positive and negative tests,
+are stored as integer codes whose meaning is explained by the spec.</p>
+<section id="climatology">
+<h2>Climatology<a class="headerlink" href="#climatology" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Code</p></th>
+<th class="head"><p>Name</p></th>
+<th class="head"><p>Alias</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Domain</p></th>
+<th class="head"><p>Theme</p></th>
+<th class="head"><p>Category</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CLM000</span></code></p></td>
+<td><p>surface air relative humidity</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RHAS</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\phi\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Climatology</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CLM001</span></code></p></td>
+<td><p>surface air temperature</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TAS</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(T\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">degC</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Climatology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CLM002</span></code></p></td>
+<td><p>standard surface air temperature</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TASS</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(T\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">K</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Climatology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CLM003</span></code></p></td>
+<td><p>dew point temperature</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TDP</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(T_{\text{d}}\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">degC</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Climatology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CLM004</span></code></p></td>
+<td><p>land surface temperature</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LST</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(T_{\text{land}}\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">K</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Climatology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CLM005</span></code></p></td>
+<td><p>scalar wind speed</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">WSS</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(W\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m/s</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Climatology</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CLM006</span></code></p></td>
+<td><p>scalar wind gust speed</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">WGS</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(W_{G}\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m/s</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Climatology</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CLM007</span></code></p></td>
+<td><p>wind speed direction</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">WSD</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(W_{\theta}\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">deg</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U360]</span></code></p></td>
+<td><p>Climatology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CLM008</span></code></p></td>
+<td><p>surface atmospheric pressure</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">APS</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(P_{\text{atm}}\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">kPa</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Climatology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CLM009</span></code></p></td>
+<td><p>sunshine duration</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TSUN</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(t_{\text{sun}}\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">h</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Climatology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CLM011</span></code></p></td>
+<td><p>piché evaporation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">EVP</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(E_{\text{Piché}}\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mm/(dt)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Climatology</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CLM012</span></code></p></td>
+<td><p>solar radiation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SR</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(R_s\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">kJ/m^2</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Climatology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CLM013</span></code></p></td>
+<td><p>solar irradiance</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(R_s\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">W/m^2</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Climatology</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CLM100</span></code></p></td>
+<td><p>precipitation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PPT</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(P\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mm/(dt)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Climatology</p></td>
+<td><p>flow</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="geospatial">
+<h2>Geospatial<a class="headerlink" href="#geospatial" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Code</p></th>
+<th class="head"><p>Name</p></th>
+<th class="head"><p>Alias</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Domain</p></th>
+<th class="head"><p>Theme</p></th>
+<th class="head"><p>Category</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RSE001</span></code></p></td>
+<td><p>blue reflectance</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">B</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(B\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Reflectance Bands</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RSE002</span></code></p></td>
+<td><p>green reflectance</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">G</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(G\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Reflectance Bands</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RSE003</span></code></p></td>
+<td><p>red reflectance</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">R</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(R\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Reflectance Bands</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RSE004</span></code></p></td>
+<td><p>near-infrared reflectance</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">NIR</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(NIR\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Reflectance Bands</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RSE005</span></code></p></td>
+<td><p>red-edge reflectance</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RE</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(RE\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Reflectance Bands</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RSE006</span></code></p></td>
+<td><p>shortwave infrared reflectance</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SIR</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(SIR\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Reflectance Bands</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RSE007</span></code></p></td>
+<td><p>thermal infrared brightness temperature</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TIR</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(T_B\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">K</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[200U360]</span></code></p></td>
+<td><p>Reflectance Bands</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RSE100</span></code></p></td>
+<td><p>x-band radar backscatter</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">X-SAR</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\sigma^0_X\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dB</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Reflectance Bands</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RSE101</span></code></p></td>
+<td><p>c-band radar backscatter</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CSAR</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\sigma^0_C\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dB</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Reflectance Bands</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RSE102</span></code></p></td>
+<td><p>l-band radar backscatter</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LSAR</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\sigma^0_L\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dB</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Reflectance Bands</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RSE103</span></code></p></td>
+<td><p>p-band radar backscatter</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PSAR</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\sigma^0_P\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dB</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Reflectance Bands</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RSV001</span></code></p></td>
+<td><p>simple ratio vegetation index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SRVI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(SR\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Spectral Vegetation Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RSV002</span></code></p></td>
+<td><p>normalized difference vegetation index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">NDVI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(NDVI\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[-1U1]</span></code></p></td>
+<td><p>Spectral Vegetation Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RSV003</span></code></p></td>
+<td><p>soil-adjusted vegetation index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SAVI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(SAVI\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[-1U1]</span></code></p></td>
+<td><p>Spectral Vegetation Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RSV004</span></code></p></td>
+<td><p>modified soil-adjusted vegetation index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MSAVI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(MSAVI\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[-1U1]</span></code></p></td>
+<td><p>Spectral Vegetation Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RSV005</span></code></p></td>
+<td><p>enhanced vegetation index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">EVI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(EVI\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[-1U1]</span></code></p></td>
+<td><p>Spectral Vegetation Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RSV006</span></code></p></td>
+<td><p>red-edge normalized difference vegetation index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">NDRE</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(NDRE\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[-1U1]</span></code></p></td>
+<td><p>Spectral Vegetation Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RSV007</span></code></p></td>
+<td><p>chlorophyll index red-edge</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CIre</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(CI_{re}\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Spectral Vegetation Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RSV009</span></code></p></td>
+<td><p>normalized difference water vegetation index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">NDWI-V</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(NDWI_V\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[-1U1]</span></code></p></td>
+<td><p>Spectral Vegetation Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RSV010</span></code></p></td>
+<td><p>vegetation health index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">VHI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(VHI\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U100]</span></code></p></td>
+<td><p>Spectral Vegetation Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RSV011</span></code></p></td>
+<td><p>temperature condition index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TCI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(TCI\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U100]</span></code></p></td>
+<td><p>Spectral Vegetation Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RSV012</span></code></p></td>
+<td><p>vegetation condition index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">VCI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(VCI\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U100]</span></code></p></td>
+<td><p>Spectral Vegetation Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RSW001</span></code></p></td>
+<td><p>normalized difference water body index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">NDWI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(NDWI\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[-1U1]</span></code></p></td>
+<td><p>Spectral Water Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RSW002</span></code></p></td>
+<td><p>normalized difference water body index modified</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MNDWI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(MNDWI\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[-1U1]</span></code></p></td>
+<td><p>Spectral Water Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="hydrology">
+<h2>Hydrology<a class="headerlink" href="#hydrology" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Code</p></th>
+<th class="head"><p>Name</p></th>
+<th class="head"><p>Alias</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Domain</p></th>
+<th class="head"><p>Theme</p></th>
+<th class="head"><p>Category</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">HYD100</span></code></p></td>
+<td><p>rainfall</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RAIN</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(P\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mm/(dt)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Hydrology</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">HYD200</span></code></p></td>
+<td><p>water level</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">H</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(h\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cm</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Hydrology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">HYD201</span></code></p></td>
+<td><p>rating curve coefficient</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">HA</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(a\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m^{3}/s</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Hydrology</p></td>
+<td><p>parameter</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">HYD202</span></code></p></td>
+<td><p>rating curve exponent</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">HB</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(b\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Hydrology</p></td>
+<td><p>parameter</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">HYD203</span></code></p></td>
+<td><p>zero-flow stage</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">H0</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(h_0\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cm</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Hydrology</p></td>
+<td><p>parameter</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">HYD210</span></code></p></td>
+<td><p>streamflow</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">F</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Q\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m^{3}/(dt)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Hydrology</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">HYD211</span></code></p></td>
+<td><p>standard streamflow</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FS</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Q\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m^{3}/s</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Hydrology</p></td>
+<td><p>flow</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">HYD212</span></code></p></td>
+<td><p>drainage area</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">A</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(A_d\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">km^{2}</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Hydrology</p></td>
+<td><p>boundary</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">HYD213</span></code></p></td>
+<td><p>specific streamflow</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Q</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Q\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mm/(dt)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Hydrology</p></td>
+<td><p>flow</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="water-quality">
+<h2>Water Quality<a class="headerlink" href="#water-quality" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Code</p></th>
+<th class="head"><p>Name</p></th>
+<th class="head"><p>Alias</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Domain</p></th>
+<th class="head"><p>Theme</p></th>
+<th class="head"><p>Category</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQB001</span></code></p></td>
+<td><p>pseudomonas monteilii</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pmon</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(P. mon.\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQB002</span></code></p></td>
+<td><p>enterobacter hormaechei</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ehor</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(E. hor.\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQB003</span></code></p></td>
+<td><p>pseudomonas putida</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pput</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(P. put.\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQB004</span></code></p></td>
+<td><p>stenotrophomonas maltophilia</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">smal</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(S. mal.\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQB005</span></code></p></td>
+<td><p>siccibacter turicensis</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">stur</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(S. tur.\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQB006</span></code></p></td>
+<td><p>empedobacter falsenii</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">efal</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(E. fal.\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQB007</span></code></p></td>
+<td><p>pseudomonas protegens</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ppro</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(P. pro.\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQB008</span></code></p></td>
+<td><p>antibiogram results for amikacin</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">antibio_akc</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(AKC\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[1U3]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQB009</span></code></p></td>
+<td><p>antibiogram results for gentamicin</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">antibio_gmc</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(GMC\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[1U3]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQB010</span></code></p></td>
+<td><p>antibiogram results for tigecycline</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">antibio_tgc</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(TGC\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[1U3]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQB011</span></code></p></td>
+<td><p>antibiogram results for sulfamethoxazole-trimethoprim</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">antibio_sxt</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(SXT\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[1U3]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQB012</span></code></p></td>
+<td><p>antibiogram results for ciprofloxacin</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">antibio_cip</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(CIP\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[1U3]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQB013</span></code></p></td>
+<td><p>antibiogram results for meropenem</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">antibio_mem</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(MEM\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[1U3]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQB014</span></code></p></td>
+<td><p>antibiogram results for amoxicillin-clavulanic acid</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">antibio_amc</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(AMC\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[1U3]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQB015</span></code></p></td>
+<td><p>antibiogram results for piperacillin-tazobactam</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">antibio_ptz</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(PTZ\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[1U3]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQB016</span></code></p></td>
+<td><p>antibiogram results for cefepime</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">antibio_cep</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(CEP\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[1U3]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQB017</span></code></p></td>
+<td><p>antibiogram results for cefotaxime</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">antibio_ctx</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(CTX\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[1U3]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQB018</span></code></p></td>
+<td><p>antibiogram results for ceftazidime</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">antibio_caz</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(CAZ\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[1U3]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQB019</span></code></p></td>
+<td><p>carbapenemase testing for blakpc</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">carbap_blaKPC</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(blaKPC\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQB020</span></code></p></td>
+<td><p>carbapenemase testing for blandm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">carbap_blaNDM</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(blaNDM\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQB021</span></code></p></td>
+<td><p>carbapenemase testing for blaimp</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">carbap_blaIMP</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(blaIMP\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQB022</span></code></p></td>
+<td><p>carbapenemase testing for blavim</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">carbap_blaVIM</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(blaVIM\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQB023</span></code></p></td>
+<td><p>carbapenemase testing for blages</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">carbap_blaGES</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(blaGES\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQB024</span></code></p></td>
+<td><p>carbapenemase testing for blaoxa-48</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">carbap_blaOXA-48</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(blaOXA-48\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQB025</span></code></p></td>
+<td><p>total coliforms</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tcoli</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(T. coli.\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MPN/100</span> <span class="pre">mL</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQB026</span></code></p></td>
+<td><p>escherichia coli</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ecoli</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(E. coli.\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MPN/100</span> <span class="pre">mL</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQB027</span></code></p></td>
+<td><p>norovirus gi</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">noro1</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Noro 1\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQB028</span></code></p></td>
+<td><p>norovirus gii</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">noro2</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Noro 2\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQB029</span></code></p></td>
+<td><p>sars-cov-2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sarscov2</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(SARS-CoV-2\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQB030</span></code></p></td>
+<td><p>hepatitis a</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">hav</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(HAV\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQB031</span></code></p></td>
+<td><p>hepatitis e</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">hev</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(HEV\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQB032</span></code></p></td>
+<td><p>daphnia magna</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">daphnia</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(D. magna\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQB033</span></code></p></td>
+<td><p>pseudomonas koreensis</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pkor</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(P. kor.\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQB034</span></code></p></td>
+<td><p>klebsiella pneumoniae</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">kpneu</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(K. pneu.\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U1]</span></code></p></td>
+<td><p>Microbiology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQE001</span></code></p></td>
+<td><p>yield of phytoplankton</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">yielda</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Yield_A\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RFU</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Ecology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQE002</span></code></p></td>
+<td><p>yield of cyanobacteria</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">yieldc</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Yield_C\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RFU</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Ecology</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQG001</span></code></p></td>
+<td><p>swimmability</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">swim</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Swimm.\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Management</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQG002</span></code></p></td>
+<td><p>number of parameters framed as class 1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">classe1_n</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Class 1\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">count</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Management</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQG003</span></code></p></td>
+<td><p>number of parameters framed as class 2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">classe2_n</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Class 2\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">count</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Management</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQG004</span></code></p></td>
+<td><p>number of parameters framed as class 3</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">classe3_n</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Class 3\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">count</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Management</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQG005</span></code></p></td>
+<td><p>number of parameters framed as class 4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">classe34_n</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Class 3-4\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">count</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Management</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQM001</span></code></p></td>
+<td><p>silver</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ag</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Ag\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQM002</span></code></p></td>
+<td><p>aluminum</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">al</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Al\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQM003</span></code></p></td>
+<td><p>arsenic</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">as</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(As\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQM004</span></code></p></td>
+<td><p>boron</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">b</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(B\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQM005</span></code></p></td>
+<td><p>barium</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ba</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Ba\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQM006</span></code></p></td>
+<td><p>bismuth</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bi</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Bi\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQM007</span></code></p></td>
+<td><p>calcium (metals)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ca_met</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Ca\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQM008</span></code></p></td>
+<td><p>cobalt</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">co</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Co\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQM009</span></code></p></td>
+<td><p>chromium</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cr</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Cr\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQM010</span></code></p></td>
+<td><p>copper</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cu</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Cu\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQM011</span></code></p></td>
+<td><p>iron</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fe</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Fe\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQM012</span></code></p></td>
+<td><p>mercury</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">hg</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Hg\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQM013</span></code></p></td>
+<td><p>indium</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">in</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(In\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQM014</span></code></p></td>
+<td><p>potassium (metals)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">k_met</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(K\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQM015</span></code></p></td>
+<td><p>lithium (metals)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">li_met</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Li\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQM016</span></code></p></td>
+<td><p>magnesium (metals)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg_met</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Mg\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQM017</span></code></p></td>
+<td><p>manganese</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mn</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Mn\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQM018</span></code></p></td>
+<td><p>sodium (metals)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">na_met</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Na\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQM019</span></code></p></td>
+<td><p>nickel</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ni</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Ni\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQM020</span></code></p></td>
+<td><p>lead</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pb</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Pb\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQM021</span></code></p></td>
+<td><p>tin</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sn</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Sn\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQM022</span></code></p></td>
+<td><p>strontium</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sr</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Sr\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQM023</span></code></p></td>
+<td><p>zinc</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">zn</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Zn\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Metals</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQP001</span></code></p></td>
+<td><p>ph</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ph</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(pH\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U14]</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQP002</span></code></p></td>
+<td><p>electrical conductivity</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ec</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(EC\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">uS/cm</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQP003</span></code></p></td>
+<td><p>turbidity</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">turbidity</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Turbidity\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">NTU</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQP004</span></code></p></td>
+<td><p>apparent color</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">colora</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(App. Color\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQP005</span></code></p></td>
+<td><p>true color</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">colort</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(True Color\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQP006</span></code></p></td>
+<td><p>settleable solids</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ss</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(SS\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mL/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQP007</span></code></p></td>
+<td><p>total suspended solids</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tss</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(TSS\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQP008</span></code></p></td>
+<td><p>fixed suspended solids</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fss</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(FSS\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQP009</span></code></p></td>
+<td><p>volatile suspended solids</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">vss</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(VSS\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQP010</span></code></p></td>
+<td><p>total solids</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ts</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(TS\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQP011</span></code></p></td>
+<td><p>total fixed solids</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tfs</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(TFS\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQP012</span></code></p></td>
+<td><p>total volatile solids</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tvs</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(TVS\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQP013</span></code></p></td>
+<td><p>total dissolved solids</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tds</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(TDS\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQP014</span></code></p></td>
+<td><p>dissolved fixed solids</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dfs</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(DFS\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQP015</span></code></p></td>
+<td><p>dissolved volatile solids</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dvs</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(DVS\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQP016</span></code></p></td>
+<td><p>total phosphorus</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tp</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(TP\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQP017</span></code></p></td>
+<td><p>dissolved carbon</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dc</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(DC\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQP018</span></code></p></td>
+<td><p>dissolved organic carbon</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">doc</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(DOC\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQP019</span></code></p></td>
+<td><p>dissolved inorganic carbon</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dic</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(DIC\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQP020</span></code></p></td>
+<td><p>chemical oxygen demand</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cod</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(COD\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQP021</span></code></p></td>
+<td><p>fluoride</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fluoride</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(F^-\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQP022</span></code></p></td>
+<td><p>chloride</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">chloride</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Cl^-\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQP023</span></code></p></td>
+<td><p>nitrite</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">no2</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(NO_2\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQP024</span></code></p></td>
+<td><p>nitrate</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">no3</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(NO_3\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQP025</span></code></p></td>
+<td><p>phosphate</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">po4</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(PO_4\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQP026</span></code></p></td>
+<td><p>sulfate</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">so4</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(SO_4\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQP027</span></code></p></td>
+<td><p>lithium (physical-chemistry)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">li_pch</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Li\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQP028</span></code></p></td>
+<td><p>sodium (physical-chemistry)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">na_pch</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Na\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQP029</span></code></p></td>
+<td><p>ammonia</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">nh3</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(NH_3\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQP030</span></code></p></td>
+<td><p>ammonium</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">nh4</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(NH_4\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQP031</span></code></p></td>
+<td><p>potassium (physical-chemistry)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">k_pch</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(K\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WQP032</span></code></p></td>
+<td><p>magnesium (physical-chemistry)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg_pch</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Mg\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WQP033</span></code></p></td>
+<td><p>calcium (physical-chemistry)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ca_pch</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Ca\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mg/L</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Physical-Chemistry</p></td>
+<td><p>level</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="water-resources">
+<h2>Water Resources<a class="headerlink" href="#water-resources" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Code</p></th>
+<th class="head"><p>Name</p></th>
+<th class="head"><p>Alias</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Domain</p></th>
+<th class="head"><p>Theme</p></th>
+<th class="head"><p>Category</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WRD001</span></code></p></td>
+<td><p>standardized precipitation index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SPI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(SPI\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Drought Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WRD002</span></code></p></td>
+<td><p>aggregate drought index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ADI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(ADI\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Drought Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WRD003</span></code></p></td>
+<td><p>standardized streamflow index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SSFI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(SSFI\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Drought Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WRD004</span></code></p></td>
+<td><p>standardized runoff index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SRI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(SRI\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Drought Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WRD005</span></code></p></td>
+<td><p>standardized precipitation evapotranspiration index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SPEI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(SPEI\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Drought Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WRD006</span></code></p></td>
+<td><p>composite drought index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CDI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(CDI\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0U)</span></code></p></td>
+<td><p>Drought Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WRD007</span></code></p></td>
+<td><p>soil water deficit index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SWDI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(SWDI\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U10]</span></code></p></td>
+<td><p>Drought Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WRD008</span></code></p></td>
+<td><p>evaporative stress index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ESI</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(ESI\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(U)</span></code></p></td>
+<td><p>Drought Indices</p></td>
+<td><p>ratio</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="projects.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Projects</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="statistics.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Statistics</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#climatology">Climatology</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geospatial">Geospatial</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hydrology">Hydrology</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#water-quality">Water Quality</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#water-resources">Water Resources</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/variables.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Iporã Possantti.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
