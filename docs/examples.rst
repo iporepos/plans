@@ -26,6 +26,10 @@ Available tutorials
    tutorials/univar_01
    tutorials/univar_02_plots
    tutorials/univar_03_geo
+   tutorials/databases_01
+   tutorials/databases_02_semispatial
+   tutorials/databases_03_spatial
+   tutorials/databases_04_lab
    tutorials/bivar_01
    tutorials/bivar_02_models
    tutorials/stochastic_01_arma

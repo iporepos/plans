@@ -130,7 +130,9 @@ def build_catalog_pages():
         "Abstract": lambda r: rst_text(r["abstract"]),
     }
     lines = list_table(rows=read_catalog(name="statistics"), columns=columns)
-    (CATALOG_PAGES_DIR / "statistics.rst").write_text("\n".join(lines), encoding="utf-8")
+    (CATALOG_PAGES_DIR / "statistics.rst").write_text(
+        "\n".join(lines), encoding="utf-8"
+    )
 
     # flags: a single table, highest value first
     flags = sorted(read_catalog(name="flags"), key=lambda r: -int(r["value"]))

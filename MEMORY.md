@@ -1,5 +1,15 @@
 # Memory Log
 
+## 2026-11-06 — Four database tutorials added to `docs/tutorials` and listed in `examples.rst` after `univar_03_geo`
+- `databases_01`: DataBase, one station, monthly temperature and rain; void and suspect flags, long and wide queries, metadata.
+- `databases_02_semispatial`: a 30-station network; external station GeoPackage joined with `merge`; GeoUnivar map; spatial selection to ids.
+- `databases_03_spatial`: ZonesDB grid, PathsDB river network, SitesDB with `insert_features` from UTM, and SpatialDB with mixed geometries.
+- `databases_04_lab`: LabDB with turbidity, pH (triplicate) and sodium (non-detects at LOD 0.5); a custom sources catalog; a blended mixture; unknown analysis dates; storage time.
+
+The notebooks were generated from cell lists in the scratchpad and executed with nbclient, so they are saved with outputs. They render without warnings in an isolated myst-nb build.
+
+**Found:** `GeoUnivar`'s default `edgecolor_map="none"` makes lines invisible (the edge color is the line color). The tutorial sets it to `None`; this is a candidate fix in `analyst.py`. Also fixed the `pH` title (had been capitalized to `PH`) in `catalogs/variables.csv`.
+
 ## 2026-11-06 — Docs: catalog pages `variables`, `statistics` and `flags`, generated from the shipped CSVs on every Sphinx build
 `dev/docs.py` was left untouched (hard rule). Instead, `docs/conf.py` runs `build_catalog_pages()` at import: stdlib `csv`, since conf mocks pandas. It writes list-table includes to `docs/generated/catalogs/` (git-ignored, and added to `exclude_patterns`). Pages are `docs/variables.rst`, `statistics.rst` and `flags.rst`, published at the site root and linked from a new "Catalogs" section and toctree in `userguide.rst`. Variables get one table per discipline. A hidden RST comment in `system.rst` notes that the model variables must move to the catalog later (Ipo: leave that page as is for now). Checked with an isolated Sphinx build in the scratchpad (no warnings); the full site build was not run because it executes the notebooks.
 
