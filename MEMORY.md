@@ -1,5 +1,8 @@
 # Memory Log
 
+## 2026-11-06 — `SemiSpatialDB(DataBase)` added (plan Phase 2), with tests in `TestSemiSpatialDB`; approved change to `data/sql/semispatial/records.sql`
+The SQL change fixes indentation and adds the index `(spec_id, geometry_id, datetime)`. The child only sets class attributes and extends `_query_filters`, a new hook split out of `query_records`. Also new: `_RECORD_COLUMNS`. The `geometry_id` filter binds ids as one JSON array through `json_each(?)` instead of the plan's temp table: one parameter, no SQLite cap, and no temp-table writes that would interact with `transaction()`. `EXPLAIN QUERY PLAN` shows the new index in use. Requires JSON1, which is built into SQLite since 3.38 (local 3.49.1).
+
 ## 2026-11-06 — `query_records` rejects unknown keys and returns rows ordered by spec then datetime, with a `spec_name` column (`spec_id` kept); new `wide`, `aggfunc` and `with_meta` keys (plan item 5.5), with tests in `TestQueryRecords`
 Child-class hooks are the class attributes `_QUERY_KEYS`, `_ORDER_BY` and `_WIDE_COLUMNS`, so `SemiSpatialDB` adds `geometry_id` without rewriting the query. In wide format, columns follow spec order, not alphabetical. `with_meta` adds variable, units, statistic and source. The plan listed no statistic; it was added because mean and sum are otherwise indistinguishable. `spec_id` stays in the output because it is still public.
 

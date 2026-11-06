@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS records (
 	value REAL NOT NULL,
 	flag_value INTEGER NOT NULL,
 	spec_id INTEGER NOT NULL,
-    geometry_id INTEGER NOT NULL, -- spatial geometry key
+	-- spatial geometry key (eg, an H3 cell); geometries live outside the database
+	geometry_id INTEGER NOT NULL,
 	FOREIGN KEY (flag_value) REFERENCES flags(value),
 	FOREIGN KEY (spec_id) REFERENCES specs(id)
 ) STRICT;
@@ -17,3 +18,5 @@ CREATE TABLE IF NOT EXISTS records (
 CREATE INDEX IF NOT EXISTS idx_records_spec_datetime ON records(spec_id, datetime);
 -- standalone index for time-range queries across all specs
 CREATE INDEX IF NOT EXISTS idx_records_datetime ON records(datetime);
+-- composite index for one or more geometries of a spec over time
+CREATE INDEX IF NOT EXISTS idx_records_spec_geometry_datetime ON records(spec_id, geometry_id, datetime);

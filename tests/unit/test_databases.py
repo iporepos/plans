@@ -20,6 +20,8 @@ The test suite verifies that:
 * Inserts are atomic; ``transaction()`` groups them, rolls back on failure and nests.
 * ``query_records`` validates keys, orders rows, reverses the transform and builds
   the wide format and spec metadata.
+* ``SemiSpatialDB`` requires ``geometry_id`` on insert, filters by any number of
+  ids, and pivots to ``(spec_name, geometry_id)`` columns.
 
 Databases are built once per class in a single temporary folder.
 
@@ -47,7 +49,7 @@ import pandas as pd
 # Project-level imports
 # =======================================================================
 import plans.databases
-from plans.databases import DataBase, DATA_SQL_DIR, _TABLE_ORDER
+from plans.databases import DataBase, SemiSpatialDB, DATA_SQL_DIR, _TABLE_ORDER
 
 # ... {develop}
 
@@ -90,11 +92,6 @@ SQL_INSERT_SPEC = (
 # ***********************************************************************
 
 
-class _ChildDB(DataBase):
-    # child with a partial SQL folder (only records.sql)
-    SQL_DIR = DATA_SQL_DIR / "semispatial"
-
-
 class TestSqlResolution(unittest.TestCase):
 
     @classmethod
@@ -108,7 +105,7 @@ class TestSqlResolution(unittest.TestCase):
 
         cls.db_base = DataBase(name="base")
         cls.db_base.new(config=cls._config(name="base.db"))
-        cls.db_child = _ChildDB(name="child")
+        cls.db_child = SemiSpatialDB(name="child")
         cls.db_child.new(config=cls._config(name="child.db"))
 
     @classmethod
@@ -721,6 +718,122 @@ class TestQueryRecords(unittest.TestCase):
         self.assertEqual(
             meta["variable_name"].tolist(), ["precipitation", "streamflow"]
         )
+
+
+class TestSemiSpatialDB(unittest.TestCase):
+
+    # H3-sized ids: 3 small cells and 33,000 cells, above the SQLite parameter cap
+    CELLS = np.array([3, 1, 2], dtype="int64") + 600_000_000_000_000_000
+    MANY = np.arange(33_000, dtype="int64") + 700_000_000_000_000_000
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Runs once before all tests in this class: create a semispatial database with
+        3 cells x 2 months in spec CELLS and 33,000 cells x 1 month in spec MANY.
+        """
+        cls.temp_dir = Path(tempfile.mkdtemp())
+        file_specs = cls.temp_dir / "specs.json"
+        specs = [dict(SPECS[0], name="CELLS"), dict(SPECS[0], name="MANY")]
+        file_specs.write_text(json.dumps(specs), encoding="utf-8")
+        cls.db = SemiSpatialDB(name="semi")
+        cls.db.new(
+            config={
+                "database": {"path": str(cls.temp_dir / "semi.db")},
+                "specs": {"path": str(file_specs)},
+            }
+        )
+        # value = cell position * 10 + month
+        cls.db.insert_records(
+            dataframe=pd.DataFrame(
+                {
+                    "datetime": ["2000-01-01", "2000-02-01"] * 3,
+                    "value": [11.0, 12.0, 21.0, 22.0, 31.0, 32.0],
+                    "geometry_id": np.repeat(cls.CELLS, 2),
+                }
+            ),
+            spec_name="CELLS",
+            flag=1,
+        )
+        cls.db.insert_records(
+            dataframe=pd.DataFrame(
+                {"datetime": "2000-01-01", "value": 1.0, "geometry_id": cls.MANY}
+            ),
+            spec_name="MANY",
+            flag=1,
+        )
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Runs once after all tests in this class.
+        """
+        cls.db.close()
+        shutil.rmtree(cls.temp_dir)
+        return None
+
+    def _query(self, query_dict):
+        return self.db.query_records(query_dict=query_dict)
+
+    # -------------------------------------------------------------------
+    # schema and insert
+    # -------------------------------------------------------------------
+    def test_geometry_index_exists(self):
+        df = self.db.query_sql(sql="PRAGMA index_list(records)")
+        self.assertIn("idx_records_spec_geometry_datetime", df["name"].tolist())
+
+    def test_insert_missing_geometry_id(self):
+        df = pd.DataFrame({"datetime": ["2000-01-01"], "value": [1.0]})
+        with self.assertRaises(ValueError) as ctx:
+            self.db.insert_records(dataframe=df, spec_name="CELLS", flag=1)
+        self.assertIn("geometry_id", str(ctx.exception))
+
+    def test_inspect_records(self):
+        output = self.db.inspect_records(head=2, tail=2, quiet=True)
+        self.assertIn("geometry_id", output)
+
+    # -------------------------------------------------------------------
+    # query
+    # -------------------------------------------------------------------
+    def test_filter_small_list(self):
+        ids = self.CELLS[:2].tolist()
+        df = self._query(query_dict={"spec_name": "CELLS", "geometry_id": ids})
+        self.assertEqual(set(df["geometry_id"]), set(ids))
+        self.assertEqual(len(df), 4)
+
+    def test_filter_numpy_scalar(self):
+        df = self._query(query_dict={"geometry_id": self.CELLS[0]})
+        self.assertEqual(df["value"].tolist(), [11.0, 12.0])
+
+    def test_filter_above_parameter_cap(self):
+        df = self._query(query_dict={"spec_name": "MANY", "geometry_id": self.MANY})
+        self.assertEqual(len(df), len(self.MANY))
+
+    def test_long_order(self):
+        df = self._query(query_dict={"spec_name": "CELLS"})
+        # ordered by geometry_id, then datetime
+        self.assertEqual(df["value"].tolist(), [21.0, 22.0, 31.0, 32.0, 11.0, 12.0])
+
+    def test_wide_multiindex(self):
+        df = self._query(query_dict={"spec_name": "CELLS", "wide": True})
+        self.assertEqual(df.columns.names, ["spec_name", "geometry_id"])
+        self.assertEqual(df.shape, (2, 3))
+        self.assertEqual(df[("CELLS", int(self.CELLS[0]))].tolist(), [11.0, 12.0])
+
+    def test_wide_replicates(self):
+        # a replicate in one cell raises without aggfunc; removed afterwards
+        row = {"datetime": "2000-01-01", "value": 13.0, "geometry_id": self.CELLS[0]}
+        self.db.insert_record(row_dict=row, spec_name="CELLS", flag=1)
+        try:
+            with self.assertRaises(ValueError):
+                self._query(query_dict={"spec_name": "CELLS", "wide": True})
+            df = self._query(
+                query_dict={"spec_name": "CELLS", "wide": True, "aggfunc": "mean"}
+            )
+            self.assertEqual(df[("CELLS", int(self.CELLS[0]))].iloc[0], 12.0)
+        finally:
+            self.db.conn.execute("DELETE FROM records WHERE value = 13.0")
+            self.db.conn.commit()
 
 
 # ... {develop}

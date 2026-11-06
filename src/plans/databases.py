@@ -53,29 +53,23 @@ Values in ``records`` are stored as ``stored = actual * scale + offset``.
 # todo next steps
 
 """
-DataBase() naturally evolves to the Semi-Spatial DataBase
+Done: DataBase() and SemiSpatialDB() (records carry geometry_id;
+geometries and the spatial join stay outside the database).
 
-SemiSpatialDB()
-Expected to hold spatial information.
-Geometries are not materialized in the database itself.
+Next: SpatialDB()
+A true spatial DB holds the geometries in a GeoPackage table,
+named by geometry kind (zones, paths, sites) with at least:
 
-Example for a great case: H3 indexing.
-All other cases when the spatial join can be left outside.
-
-This includes the in the record.values:
-geometry_id INTEGER NOT NULL.
-
-Then this evolves to the SpatialDB()
-A true spatial DB holds the spatial information on a spatial
-table. The geometry is materialized.
-
-This requires the 'geometries' table with at least:
-
-id 
+id
 geometry (actual geometry)
 
-This is deployed first via geopandas during creation.
-The user must provide the layer with all extra columns
+The layer is written first via geopandas during creation
+(FID="id", GEOMETRY_NAME="geometry"), then the standard tables
+are added to the same file. Do not rebuild the layer with plain
+SQL: it removes the GDAL triggers and rtree index.
+See prompts/new_features_ideas/plans_databases.md, section 10.
+
+The user provides the layer with all extra columns
 in the config.toml file.
 
 Like : spatial: file and layer (gpkg path and layer name)
@@ -161,6 +155,9 @@ class DataBase(MbaE):
 
     # this is /src/plans/data/sql/base
     SQL_DIR = DATA_SQL_DIR / "base"
+
+    # insert_records: columns the input data must carry (flag_value aside)
+    _RECORD_COLUMNS = ("datetime", "value")
 
     # query_records: accepted keys, row order and wide-format column keys
     _QUERY_KEYS = (
@@ -834,8 +831,9 @@ class DataBase(MbaE):
             Spec ids depend on the order specs were created, so the same id can
             point to different datasets in two database files. Prefer ``spec_name``.
 
-        :param dataframe: source data; must contain at least ``datetime`` and ``value``;
-            ``flag_value`` is also required unless ``flag`` is provided
+        :param dataframe: source data; must contain the columns in :attr:`_RECORD_COLUMNS`
+            (``datetime`` and ``value`` in the base class); ``flag_value`` is also
+            required unless ``flag`` is provided
         :type dataframe: pandas.DataFrame
         :param spec_id: id of the spec; used only if ``spec_name`` is ``None``
         :type spec_id: int, optional
@@ -855,7 +853,7 @@ class DataBase(MbaE):
         :return: None
         :rtype: None
         :raises ValueError: if no spec is given, the spec is unknown, more than one spec
-            is given, or a flag, date or column is invalid
+            is given, a required column is missing, or a flag, date or column is invalid
         """
         ids = self._resolve_spec_ids(spec_name=spec_name, spec_id=spec_id)
         if len(ids) != 1:
@@ -864,7 +862,7 @@ class DataBase(MbaE):
         df = dataframe.copy()
         if columns_map:
             df = self._apply_columns_map(df=df, columns_map=columns_map)
-        required = {"datetime", "value"}
+        required = set(self._RECORD_COLUMNS)
         if flag is None:
             required.add("flag_value")
         missing = required - set(df.columns)
@@ -1075,12 +1073,6 @@ class DataBase(MbaE):
             raise ValueError(
                 f"Unknown query key(s): {unknown}. Valid: {list(self._QUERY_KEYS)}"
             )
-        start = q.get("start")
-        end = q.get("end")
-        flag_value = q.get("flag_value")
-        spec_ids = self._resolve_spec_ids(
-            spec_name=q.get("spec_name"), spec_id=q.get("spec_id"), required=False
-        )
         transform_values = q.get("transform_values", True)
         wide = q.get("wide", False)
         aggfunc = q.get("aggfunc")
@@ -1088,28 +1080,7 @@ class DataBase(MbaE):
         if aggfunc is not None and not wide:
             raise ValueError("aggfunc requires wide=True")
 
-        # filters
-        # -------------------------------------------------------------------
-        conditions = []
-        params = []
-
-        if start is not None:
-            conditions.append("r.datetime >= ?")
-            params.append(int(pd.Timestamp(start, tz="UTC").timestamp()))
-
-        if end is not None:
-            conditions.append("r.datetime <= ?")
-            params.append(int(pd.Timestamp(end, tz="UTC").timestamp()))
-
-        if flag_value is not None:
-            vals = [operator.index(v) for v in self._as_list(flag_value)]
-            conditions.append(f"r.flag_value IN ({','.join('?' * len(vals))})")
-            params.extend(vals)
-
-        if spec_ids is not None:
-            conditions.append(f"r.spec_id IN ({','.join('?' * len(spec_ids))})")
-            params.extend(spec_ids)
-
+        conditions, params = self._query_filters(query_dict=q)
         sql = (
             "SELECT r.*, s.name AS spec_name, s.scale, s.offset "
             "FROM records r JOIN specs s ON r.spec_id = s.id"
@@ -1142,6 +1113,43 @@ class DataBase(MbaE):
         if not quiet:
             print(f"[query_records] {len(df)} rows in {elapsed:.3f}s")
         return df
+
+    def _query_filters(self, query_dict):
+        """
+        Build the WHERE conditions of :meth:`query_records`.
+
+        Child classes extend this to add their own filter keys.
+
+        :param query_dict: validated query keys
+        :type query_dict: dict
+        :return: SQL conditions (combined with AND) and their bound parameters
+        :rtype: tuple[list[str], list]
+        """
+        q = query_dict
+        conditions = []
+        params = []
+
+        if q.get("start") is not None:
+            conditions.append("r.datetime >= ?")
+            params.append(int(pd.Timestamp(q["start"], tz="UTC").timestamp()))
+
+        if q.get("end") is not None:
+            conditions.append("r.datetime <= ?")
+            params.append(int(pd.Timestamp(q["end"], tz="UTC").timestamp()))
+
+        if q.get("flag_value") is not None:
+            vals = [operator.index(v) for v in self._as_list(q["flag_value"])]
+            conditions.append(f"r.flag_value IN ({','.join('?' * len(vals))})")
+            params.extend(vals)
+
+        spec_ids = self._resolve_spec_ids(
+            spec_name=q.get("spec_name"), spec_id=q.get("spec_id"), required=False
+        )
+        if spec_ids is not None:
+            conditions.append(f"r.spec_id IN ({','.join('?' * len(spec_ids))})")
+            params.extend(spec_ids)
+
+        return conditions, params
 
     def _spec_meta(self, names):
         # one row per spec name, in the given order: variable, units, statistic, source
@@ -1194,3 +1202,66 @@ class DataBase(MbaE):
         else:
             order = pd.MultiIndex.from_frame(order)
         return wide.reindex(columns=order)
+
+
+class SemiSpatialDB(DataBase):
+    """
+    Database whose records carry a ``geometry_id``.
+
+    Geometries are not stored in the database: ``geometry_id`` is an integer
+    key (eg, an H3 cell index or a grid cell id) that points to a layer kept
+    elsewhere. Spatial selection happens outside, and the selected ids are
+    passed to :meth:`query_records`.
+
+    Only ``records`` differs from :class:`DataBase`; all other tables come
+    from the base schema.
+
+    :param name: database name
+    :type name: str
+    :param alias: short alias
+    :type alias: str, optional
+
+    :Example:
+
+    .. code-block:: python
+
+        import geopandas as gpd
+
+        cells = gpd.read_file("grid.gpkg", layer="cells")
+        basin = gpd.read_file("basin.gpkg")
+        ids = gpd.sjoin(cells, basin, predicate="intersects")["id"].tolist()
+
+        df = db.query_records(
+            query_dict={"spec_name": "PPT_MONTHLY_CHIRPS", "geometry_id": ids}
+        )
+        basin_mean = df.groupby("datetime")["value"].mean()
+    """
+
+    # this is /src/plans/data/sql/semispatial
+    SQL_DIR = DATA_SQL_DIR / "semispatial"
+
+    _RECORD_COLUMNS = DataBase._RECORD_COLUMNS + ("geometry_id",)
+    _QUERY_KEYS = DataBase._QUERY_KEYS + ("geometry_id",)
+    _ORDER_BY = ("spec_id", "geometry_id", "datetime")
+    _WIDE_COLUMNS = ("spec_name", "geometry_id")
+
+    def _query_filters(self, query_dict):
+        """
+        Build the WHERE conditions of :meth:`query_records`, adding ``geometry_id``.
+
+        ``geometry_id`` takes an int or any iterable of ints (numpy included).
+        The ids are bound as one JSON array, so their number is not limited by
+        the SQLite cap on bound parameters.
+
+        :param query_dict: validated query keys
+        :type query_dict: dict
+        :return: SQL conditions (combined with AND) and their bound parameters
+        :rtype: tuple[list[str], list]
+        """
+        conditions, params = super()._query_filters(query_dict=query_dict)
+        geometry_id = query_dict.get("geometry_id")
+        if geometry_id is not None:
+            ids = [operator.index(i) for i in self._as_list(geometry_id)]
+            conditions.append("r.geometry_id IN (SELECT value FROM json_each(?))")
+            params.append(json.dumps(ids))
+        return conditions, params
