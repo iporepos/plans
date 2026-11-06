@@ -17,6 +17,9 @@ The test suite verifies that:
 * ``spec_name`` and ``spec_id`` resolve to the same specs; the name wins on conflict.
 * Invalid inputs raise clear errors before anything is written: extra columns,
   unknown flags, unparseable dates and specs pointing to unknown catalogue entries.
+* Inserts are atomic; ``transaction()`` groups them, rolls back on failure and nests.
+* ``query_records`` validates keys, orders rows, reverses the transform and builds
+  the wide format and spec metadata.
 
 Databases are built once per class in a single temporary folder.
 
@@ -30,6 +33,7 @@ Databases are built once per class in a single temporary folder.
 import unittest
 import json, shutil, sqlite3, tempfile
 from pathlib import Path
+from unittest import mock
 
 # ... {develop}
 
@@ -42,6 +46,7 @@ import pandas as pd
 
 # Project-level imports
 # =======================================================================
+import plans.databases
 from plans.databases import DataBase, DATA_SQL_DIR, _TABLE_ORDER
 
 # ... {develop}
@@ -472,6 +477,250 @@ class TestInsertValidation(unittest.TestCase):
     def test_specs_unparseable_start(self):
         spec = dict(SPECS[0], start="not a date")
         self._assert_new_rejected(specs=[spec], message="in 'start'")
+
+
+class TestTransactions(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Runs once before all tests in this class: create one database with specs A, B, C.
+        """
+        cls.temp_dir = Path(tempfile.mkdtemp())
+        file_specs = cls.temp_dir / "specs.json"
+        specs = [dict(SPECS[0], name=n) for n in ("A", "B", "C")]
+        file_specs.write_text(json.dumps(specs), encoding="utf-8")
+        cls.file_db = cls.temp_dir / "tx.db"
+        cls.db = DataBase(name="tx")
+        cls.db.new(
+            config={
+                "database": {"path": str(cls.file_db)},
+                "specs": {"path": str(file_specs)},
+            }
+        )
+        cls.good = pd.DataFrame(
+            {
+                "datetime": ["2000-01-01", "2000-02-01", "2000-03-01"],
+                "value": [1.0, 2.0, 3.0],
+                "flag_value": [1, 1, 1],
+            }
+        )
+        cls.bad = cls.good.assign(flag_value=[1, 1, 9])
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Runs once after all tests in this class.
+        """
+        cls.db.close()
+        shutil.rmtree(cls.temp_dir)
+        return None
+
+    def setUp(self):
+        # each test starts from an empty records table
+        self.db.conn.execute("DELETE FROM records")
+        self.db.conn.commit()
+
+    def _committed(self):
+        # count rows as seen by another connection (committed rows only)
+        with sqlite3.connect(self.file_db) as conn:
+            n = conn.execute("SELECT COUNT(*) FROM records").fetchone()[0]
+        conn.close()
+        return n
+
+    def test_single_insert_commits(self):
+        self.db.insert_records(dataframe=self.good, spec_name="A")
+        self.assertEqual(self._committed(), 3)
+        self.assertFalse(self.db.conn.in_transaction)
+
+    def test_single_insert_atomic_across_chunks(self):
+        # the database rejects the last row (unknown flag) after earlier chunks went in
+        df = pd.DataFrame(
+            {
+                "datetime": [1, 2, 3, 4, 5],
+                "value": [1.0] * 5,
+                "flag_value": [1, 1, 1, 1, 5],
+                "spec_id": [1] * 5,
+            }
+        )
+        with mock.patch.object(plans.databases, "_CHUNK_SIZE", 2):
+            with self.assertRaises(sqlite3.IntegrityError):
+                self.db.insert_rows(dataframe=df, on_table="records")
+        self.assertEqual(self._committed(), 0)
+        self.assertFalse(self.db.conn.in_transaction)
+
+    def test_block_rolls_back_all(self):
+        with self.assertRaises(ValueError):
+            with self.db.transaction():
+                self.db.insert_records(dataframe=self.good, spec_name="A")
+                self.db.insert_records(dataframe=self.good, spec_name="B")
+                self.db.insert_records(dataframe=self.bad, spec_name="C")
+        self.assertEqual(self._committed(), 0)
+        self.assertFalse(self.db.conn.in_transaction)
+
+    def test_block_commits_at_end(self):
+        with self.db.transaction():
+            self.db.insert_records(dataframe=self.good, spec_name="A")
+            # not visible to other connections until the block ends
+            self.assertEqual(self._committed(), 0)
+            self.db.insert_records(dataframe=self.good, spec_name="B")
+        self.assertEqual(self._committed(), 6)
+
+    def test_nested_inner_failure(self):
+        with self.db.transaction():
+            self.db.insert_records(dataframe=self.good, spec_name="A")
+            with self.assertRaises(RuntimeError):
+                with self.db.transaction():
+                    self.db.insert_records(dataframe=self.good, spec_name="B")
+                    raise RuntimeError("inner fails")
+            self.db.insert_records(dataframe=self.good, spec_name="C")
+        df = self.db.query_records(query_dict={"spec_name": ["A", "B", "C"]})
+        self.assertEqual(df.groupby("spec_id").size().to_dict(), {1: 3, 3: 3})
+        self.assertEqual(self._committed(), 6)
+
+    def test_replicates_stored_twice(self):
+        # no uniqueness on records, by design
+        self.db.insert_records(dataframe=self.good, spec_name="A")
+        self.db.insert_records(dataframe=self.good, spec_name="A")
+        self.assertEqual(self._committed(), 6)
+
+
+class TestQueryRecords(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Runs once before all tests in this class: create specs B_SECOND (id 1) and
+        A_FIRST (id 2, with a transform), insert out of order, with one replicate.
+        """
+        cls.temp_dir = Path(tempfile.mkdtemp())
+        file_specs = cls.temp_dir / "specs.json"
+        specs = [
+            dict(SPECS[0], name="B_SECOND"),
+            dict(
+                SPECS[0],
+                name="A_FIRST",
+                scale=10,
+                offset=5,
+                variable_name="streamflow",
+                source_name="ANA",
+            ),
+        ]
+        file_specs.write_text(json.dumps(specs), encoding="utf-8")
+        cls.db = DataBase(name="query")
+        cls.db.new(
+            config={
+                "database": {"path": str(cls.temp_dir / "query.db")},
+                "specs": {"path": str(file_specs)},
+            }
+        )
+        cls.db.insert_records(
+            dataframe=pd.DataFrame(
+                {
+                    "datetime": ["2000-01-03", "2000-01-01", "2000-01-02"],
+                    "value": [3.0, 1.0, 2.0],
+                }
+            ),
+            spec_name="A_FIRST",
+            flag=1,
+        )
+        # B_SECOND has a replicate at 2000-01-01 (10 and 30)
+        cls.db.insert_records(
+            dataframe=pd.DataFrame(
+                {
+                    "datetime": ["2000-01-02", "2000-01-01", "2000-01-01"],
+                    "value": [20.0, 10.0, 30.0],
+                }
+            ),
+            spec_name="B_SECOND",
+            flag=1,
+        )
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Runs once after all tests in this class.
+        """
+        cls.db.close()
+        shutil.rmtree(cls.temp_dir)
+        return None
+
+    def _query(self, query_dict):
+        return self.db.query_records(query_dict=query_dict)
+
+    # -------------------------------------------------------------------
+    # keys
+    # -------------------------------------------------------------------
+    def test_unknown_key_raises(self):
+        with self.assertRaises(ValueError) as ctx:
+            self._query(query_dict={"variable_name": "precipitation"})
+        self.assertIn("variable_name", str(ctx.exception))
+
+    def test_aggfunc_without_wide_raises(self):
+        with self.assertRaises(ValueError):
+            self._query(query_dict={"aggfunc": "mean"})
+
+    def test_numpy_flag_value(self):
+        df = self._query(query_dict={"flag_value": np.int64(1)})
+        self.assertEqual(len(df), 6)
+        df = self._query(query_dict={"flag_value": np.array([0])})
+        self.assertEqual(len(df), 0)
+
+    # -------------------------------------------------------------------
+    # long format
+    # -------------------------------------------------------------------
+    def test_long_order_and_spec_name(self):
+        df = self._query(query_dict={})
+        self.assertEqual(df["spec_name"].tolist(), ["B_SECOND"] * 3 + ["A_FIRST"] * 3)
+        self.assertEqual(df["spec_id"].tolist(), [1, 1, 1, 2, 2, 2])
+        self.assertTrue(df.groupby("spec_id")["datetime"].is_monotonic_increasing.all())
+        # replicates keep insertion order
+        self.assertEqual(df["value"].tolist()[:2], [10.0, 30.0])
+
+    def test_transform_round_trip(self):
+        df = self._query(query_dict={"spec_name": "A_FIRST"})
+        self.assertEqual(df["value"].tolist(), [1.0, 2.0, 3.0])
+        raw = self._query(
+            query_dict={"spec_name": "A_FIRST", "transform_values": False}
+        )
+        # stored = actual * scale + offset
+        self.assertEqual(raw["value"].tolist(), [15.0, 25.0, 35.0])
+
+    def test_with_meta_long(self):
+        df = self._query(query_dict={"spec_name": "A_FIRST", "with_meta": True})
+        self.assertEqual(set(df["variable_name"]), {"streamflow"})
+        self.assertEqual(set(df["source_name"]), {"ANA"})
+        self.assertIn("units", df.columns)
+
+    # -------------------------------------------------------------------
+    # wide format
+    # -------------------------------------------------------------------
+    def test_wide_unique(self):
+        df = self._query(query_dict={"spec_name": "A_FIRST", "wide": True})
+        self.assertEqual(df.columns.tolist(), ["A_FIRST"])
+        self.assertEqual(df.index.name, "datetime")
+        self.assertEqual(df["A_FIRST"].tolist(), [1.0, 2.0, 3.0])
+
+    def test_wide_replicates_raise(self):
+        with self.assertRaises(ValueError) as ctx:
+            self._query(query_dict={"wide": True})
+        self.assertIn("B_SECOND", str(ctx.exception))
+        self.assertIn("has 2 values", str(ctx.exception))
+
+    def test_wide_aggfunc(self):
+        df = self._query(query_dict={"wide": True, "aggfunc": "mean"})
+        # columns follow spec order, not alphabetical order
+        self.assertEqual(df.columns.tolist(), ["B_SECOND", "A_FIRST"])
+        self.assertEqual(df["B_SECOND"].tolist()[:2], [20.0, 20.0])
+        self.assertTrue(np.isnan(df["B_SECOND"].iloc[2]))
+
+    def test_with_meta_wide(self):
+        df = self._query(query_dict={"wide": True, "aggfunc": "max", "with_meta": True})
+        meta = df.attrs["specs"]
+        self.assertEqual(meta["spec_name"].tolist(), df.columns.tolist())
+        self.assertEqual(
+            meta["variable_name"].tolist(), ["precipitation", "streamflow"]
+        )
 
 
 # ... {develop}

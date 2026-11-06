@@ -112,6 +112,7 @@ import time
 import re
 import operator
 import warnings
+from contextlib import contextmanager
 from pathlib import Path
 
 # ... {develop}
@@ -137,6 +138,9 @@ _EPOCH_COLS = {
     "specs": ("start", "end"),
 }
 
+# rows per executemany call in inserts
+_CHUNK_SIZE = 100_000
+
 # spec names: uppercase ASCII letters, digits and _, starting with a letter
 _SPEC_NAME_PATTERN = re.compile(r"[A-Z][A-Z0-9_]*")
 
@@ -158,6 +162,21 @@ class DataBase(MbaE):
     # this is /src/plans/data/sql/base
     SQL_DIR = DATA_SQL_DIR / "base"
 
+    # query_records: accepted keys, row order and wide-format column keys
+    _QUERY_KEYS = (
+        "spec_name",
+        "spec_id",
+        "start",
+        "end",
+        "flag_value",
+        "transform_values",
+        "wide",
+        "aggfunc",
+        "with_meta",
+    )
+    _ORDER_BY = ("spec_id", "datetime")
+    _WIDE_COLUMNS = ("spec_name",)
+
     def __init__(self, name, alias=None):
         super().__init__(name, alias)
 
@@ -168,6 +187,7 @@ class DataBase(MbaE):
         self.sources_default = DATA_CATALOGS_DIR / "sources.csv"
 
         self.conn = None  # active sqlite3.Connection
+        self._tx_depth = 0  # open transaction() blocks
 
     def connect(self, file_db):
         """
@@ -182,6 +202,7 @@ class DataBase(MbaE):
         """
         self.conn = sqlite3.connect(database=file_db)
         self.conn.execute("PRAGMA foreign_keys = ON")
+        self._tx_depth = 0
         return self.conn
 
     def close(self):
@@ -638,7 +659,9 @@ class DataBase(MbaE):
             else [operator.index(i) for i in self._as_list(spec_id)]
         )
         if spec_name is not None:
-            names = [self._normalize_spec_name(name=n) for n in self._as_list(spec_name)]
+            names = [
+                self._normalize_spec_name(name=n) for n in self._as_list(spec_name)
+            ]
             unknown = [n for n in names if n not in lookup]
             if unknown:
                 raise ValueError(
@@ -660,6 +683,48 @@ class DataBase(MbaE):
 
     # INSERTS
     # -------------------------------------------------------------------
+    @contextmanager
+    def transaction(self):
+        """
+        Group several inserts into one atomic block.
+
+        The block commits on success and rolls back on any exception, which is
+        re-raised. Blocks can be nested: a failed inner block rolls back only its
+        own changes, and only the outermost block commits. Outside a block, each
+        public insert commits on its own.
+
+        Do not call :meth:`execute_sql` inside a block: ``executescript`` commits
+        any pending transaction first.
+
+        :return: this database
+        :rtype: DataBase
+
+        :Example:
+
+        .. code-block:: python
+
+            with db.transaction():
+                for name, df in batches.items():
+                    db.insert_records(dataframe=df, spec_name=name)
+        """
+        # savepoints nest; releasing the outermost one ends the transaction
+        name = f"tx_{self._tx_depth}"
+        self.conn.execute(f"SAVEPOINT {name}")
+        self._tx_depth += 1
+        try:
+            yield self
+        except BaseException:
+            self.conn.execute(f"ROLLBACK TO {name}")
+            self.conn.execute(f"RELEASE {name}")
+            raise
+        else:
+            self.conn.execute(f"RELEASE {name}")
+        finally:
+            self._tx_depth -= 1
+        # commit a transaction opened before the block (eg, by raw sql)
+        if self._tx_depth == 0 and self.conn.in_transaction:
+            self.conn.commit()
+
     def insert_rows(self, dataframe, on_table, columns_map=None, drop_extra=False):
         """
         Insert DataFrame rows into a table.
@@ -667,6 +732,9 @@ class DataBase(MbaE):
         Columns the target table does not have raise an error, unless
         ``drop_extra`` is ``True``. Rows for ``specs`` get their ``name``
         normalized and checked for duplicates and unknown catalogue entries.
+
+        The insert is atomic: a failure leaves no rows. It commits at the end,
+        unless it runs inside :meth:`transaction`.
 
         :param dataframe: source data
         :type dataframe: pandas.DataFrame
@@ -693,7 +761,16 @@ class DataBase(MbaE):
         df = df.drop(columns=extra)
         if on_table == "specs" and "name" in df.columns:
             df = self._check_specs(df=df)
-        df.to_sql(name=on_table, con=self.conn, if_exists="append", index=False)
+
+        # python scalars for binding; missing values become NULL
+        values = df.astype(object).where(df.notna(), None)
+        cols = ", ".join(f'"{c}"' for c in df.columns)
+        marks = ", ".join("?" * len(df.columns))
+        sql = f'INSERT INTO "{on_table}" ({cols}) VALUES ({marks})'
+        with self.transaction():
+            for i in range(0, len(values), _CHUNK_SIZE):
+                chunk = values.iloc[i : i + _CHUNK_SIZE]
+                self.conn.executemany(sql, chunk.itertuples(index=False, name=None))
         return None
 
     def insert_row(self, row_dict, on_table, columns_map=None, drop_extra=False):
@@ -805,7 +882,9 @@ class DataBase(MbaE):
         unknown = set(df["flag_value"].unique()) - valid
         if unknown:
             unknown = [v.item() if hasattr(v, "item") else v for v in unknown]
-            raise ValueError(f"Unknown flag_value(s): {unknown}. Valid: {sorted(valid)}")
+            raise ValueError(
+                f"Unknown flag_value(s): {unknown}. Valid: {sorted(valid)}"
+            )
         if transform_values and "value" in df.columns:
             row = self.conn.execute(
                 "SELECT scale, offset FROM specs WHERE id = ?", (spec_id,)
@@ -936,20 +1015,31 @@ class DataBase(MbaE):
 
         Filters and options are passed as a single dict so the interface stays
         stable as new keys are added. All keys are optional; an empty or absent
-        dict returns the full table.
+        dict returns the full table. Unknown keys raise an error.
 
-        Supported keys:
+        Filter keys:
 
+        - ``spec_name`` (*str* or *list[str]*) — one or more spec names (preferred);
+          case is ignored; wins over ``spec_id`` with a warning if both disagree
+        - ``spec_id`` (*int* or *list[int]*) — one or more spec ids, used only without ``spec_name``
         - ``start`` (*str*) — lower datetime bound (inclusive); any format parseable by pandas
         - ``end`` (*str*) — upper datetime bound (inclusive)
         - ``flag_value`` (*int* or *list[int]*) — one or more flag values to include
-        - ``spec_name`` (*str* or *list[str]*) — one or more spec names to include (preferred);
-          case is ignored; wins over ``spec_id`` with a warning if both disagree
-        - ``spec_id`` (*int* or *list[int]*) — one or more spec IDs, used only without ``spec_name``
+
+        Option keys:
+
         - ``transform_values`` (*bool*, default ``True``) — reverse the linear transform
           so ``value`` holds actual values via ``actual = (stored - offset) / scale``
-        The returned ``datetime`` column is always a timezone-aware (UTC) pandas datetime series.
-        Without ``spec_name`` and ``spec_id``, records of all specs are returned.
+        - ``wide`` (*bool*, default ``False``) — one column per spec, indexed by ``datetime``
+        - ``aggfunc`` (*str* or *callable*, default ``None``) — with ``wide``, aggregate
+          replicates at the same datetime (eg, ``"mean"``); ``None`` raises on replicates
+        - ``with_meta`` (*bool*, default ``False``) — add variable, units, statistic and
+          source; as columns in long format, as ``df.attrs["specs"]`` in wide format
+
+        The long format is ordered by spec, then datetime, and carries both
+        ``spec_name`` and ``spec_id``. Without ``spec_name`` and ``spec_id``,
+        records of all specs are returned. ``datetime`` is always a
+        timezone-aware (UTC) pandas datetime.
 
         .. warning::
 
@@ -960,10 +1050,31 @@ class DataBase(MbaE):
         :type query_dict: dict, optional
         :param quiet: if ``False``, prints elapsed query time to stdout
         :type quiet: bool
-        :return: matching rows with ``datetime`` as UTC-aware pandas Timestamps
+        :return: matching records, in long or wide format
         :rtype: pandas.DataFrame
+        :raises ValueError: if a key is unknown, ``aggfunc`` is given without ``wide``,
+            or ``wide`` meets replicates without ``aggfunc``
+
+        :Example:
+
+        .. code-block:: python
+
+            df = db.query_records(
+                query_dict={
+                    "spec_name": ["PPT_MONTHLY_CHIRPS", "Q_MONTHLY_ANA"],
+                    "start": "2000-01-01",
+                    "wide": True,
+                    "with_meta": True,
+                }
+            )
+            meta = df.attrs["specs"]
         """
         q = query_dict or {}
+        unknown = sorted(set(q) - set(self._QUERY_KEYS))
+        if unknown:
+            raise ValueError(
+                f"Unknown query key(s): {unknown}. Valid: {list(self._QUERY_KEYS)}"
+            )
         start = q.get("start")
         end = q.get("end")
         flag_value = q.get("flag_value")
@@ -971,7 +1082,14 @@ class DataBase(MbaE):
             spec_name=q.get("spec_name"), spec_id=q.get("spec_id"), required=False
         )
         transform_values = q.get("transform_values", True)
+        wide = q.get("wide", False)
+        aggfunc = q.get("aggfunc")
+        with_meta = q.get("with_meta", False)
+        if aggfunc is not None and not wide:
+            raise ValueError("aggfunc requires wide=True")
 
+        # filters
+        # -------------------------------------------------------------------
         conditions = []
         params = []
 
@@ -984,7 +1102,7 @@ class DataBase(MbaE):
             params.append(int(pd.Timestamp(end, tz="UTC").timestamp()))
 
         if flag_value is not None:
-            vals = [flag_value] if isinstance(flag_value, int) else list(flag_value)
+            vals = [operator.index(v) for v in self._as_list(flag_value)]
             conditions.append(f"r.flag_value IN ({','.join('?' * len(vals))})")
             params.extend(vals)
 
@@ -992,19 +1110,87 @@ class DataBase(MbaE):
             conditions.append(f"r.spec_id IN ({','.join('?' * len(spec_ids))})")
             params.extend(spec_ids)
 
-        sql = "SELECT r.*, s.scale, s.offset FROM records r JOIN specs s ON r.spec_id = s.id"
+        sql = (
+            "SELECT r.*, s.name AS spec_name, s.scale, s.offset "
+            "FROM records r JOIN specs s ON r.spec_id = s.id"
+        )
         if conditions:
             sql += " WHERE " + " AND ".join(conditions)
+        # r.id keeps replicates in insertion order
+        sql += " ORDER BY " + ", ".join(f"r.{c}" for c in self._ORDER_BY) + ", r.id"
 
         t0 = time.perf_counter()
         df = pd.read_sql(sql=sql, con=self.conn, params=params)
         elapsed = time.perf_counter() - t0
 
+        # output
+        # -------------------------------------------------------------------
         df["datetime"] = pd.to_datetime(df["datetime"], unit="s", utc=True)
         df["inserted"] = pd.to_datetime(df["inserted"], unit="s", utc=True)
         if transform_values:
             df["value"] = (df["value"] - df["offset"]) / df["scale"]
         df = df.drop(columns=["scale", "offset"])
+
+        meta = self._spec_meta(names=df["spec_name"].unique()) if with_meta else None
+        if wide:
+            df = self._to_wide(df=df, aggfunc=aggfunc)
+            if with_meta:
+                df.attrs["specs"] = meta
+        elif with_meta:
+            df = df.merge(meta, on="spec_name", how="left")
+
         if not quiet:
             print(f"[query_records] {len(df)} rows in {elapsed:.3f}s")
         return df
+
+    def _spec_meta(self, names):
+        # one row per spec name, in the given order: variable, units, statistic, source
+        sql = (
+            "SELECT s.name AS spec_name, s.variable_name, v.units, "
+            "s.statistic_name, s.source_name "
+            "FROM specs s JOIN variables v ON s.variable_name = v.name"
+        )
+        meta = pd.read_sql(sql=sql, con=self.conn).set_index("spec_name")
+        return meta.loc[list(names)].reset_index()
+
+    def _to_wide(self, df, aggfunc=None):
+        """
+        Pivot long records to a wide table indexed by ``datetime``.
+
+        Columns are keyed by :attr:`_WIDE_COLUMNS`, in order of appearance.
+        Replicates on the same keys and datetime raise unless ``aggfunc`` is given.
+
+        :param df: long-format records from :meth:`query_records`
+        :type df: pandas.DataFrame
+        :param aggfunc: pandas aggregation name (eg, ``"mean"``) or callable
+        :type aggfunc: str or callable, optional
+        :return: wide table, one column per key combination
+        :rtype: pandas.DataFrame
+        :raises ValueError: if there are replicates and ``aggfunc`` is ``None``
+        """
+        keys = list(self._WIDE_COLUMNS)
+        columns = keys[0] if len(keys) == 1 else keys
+        if aggfunc is None:
+            dups = df[df.duplicated(subset=keys + ["datetime"], keep=False)]
+            if len(dups):
+                counts = dups.groupby(keys + ["datetime"]).size()
+                examples = [
+                    f"{' / '.join(map(str, k[:-1]))} at {k[-1]} has {n} values"
+                    for k, n in counts.head(3).items()
+                ]
+                raise ValueError(
+                    f"{len(counts)} replicated entries, eg: {examples}; "
+                    f"pass aggfunc to aggregate"
+                )
+            wide = df.pivot(index="datetime", columns=columns, values="value")
+        else:
+            wide = df.pivot_table(
+                index="datetime", columns=columns, values="value", aggfunc=aggfunc
+            )
+        # keep the query order (spec, then extra keys) instead of sorted columns
+        order = df[keys].drop_duplicates()
+        if len(keys) == 1:
+            order = pd.Index(order[keys[0]], name=keys[0])
+        else:
+            order = pd.MultiIndex.from_frame(order)
+        return wide.reindex(columns=order)

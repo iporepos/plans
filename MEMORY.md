@@ -1,5 +1,11 @@
 # Memory Log
 
+## 2026-11-06 — `query_records` rejects unknown keys and returns rows ordered by spec then datetime, with a `spec_name` column (`spec_id` kept); new `wide`, `aggfunc` and `with_meta` keys (plan item 5.5), with tests in `TestQueryRecords`
+Child-class hooks are the class attributes `_QUERY_KEYS`, `_ORDER_BY` and `_WIDE_COLUMNS`, so `SemiSpatialDB` adds `geometry_id` without rewriting the query. In wide format, columns follow spec order, not alphabetical. `with_meta` adds variable, units, statistic and source. The plan listed no statistic; it was added because mean and sum are otherwise indistinguishable. `spec_id` stays in the output because it is still public.
+
+## 2026-11-06 — Inserts use `executemany` in 100k-row chunks inside a SQLite savepoint; new public `transaction()` context manager that nests (plan item 5.4), with tests in `TestTransactions`
+Savepoints, not a depth counter with a single commit: a failed inner block rolls back only itself, and releasing the outermost savepoint commits. Works in Python 3.11 legacy transaction mode (no `autocommit` attribute). The plan's 2.4x speedup did not reproduce with pandas 3.0.5; nearly all time is SQLite writing, so speed is about the same and the gain is commit control.
+
 ## 2026-11-06 — Inserts validate before writing: unknown flags, unparseable dates, extra columns, and specs pointing to unknown catalogue entries (plan item 5.3), with tests in `TestInsertValidation`
 `_to_epoch` raises on non-null inputs that fail to parse, instead of coercing them to `None`. Null `end` in specs stays valid. `drop_extra` is on `insert_rows`, `insert_row`, `insert_records`, `insert_record` and `load_records`.
 
