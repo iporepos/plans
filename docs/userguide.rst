@@ -159,6 +159,19 @@ Tables are formatted in ``.csv`` and raster files are formatted in ``.tif``.
    Check out the :ref:`files` page for more details on how to setup input data.
 
 
+.. _user guide catalogs:
+
+Catalogs
+***********************************************************************
+
+Databases in ``plans`` share three catalogs that ship with the package. The
+:ref:`variables` catalog defines what can be stored, with units and valid
+domains. The :ref:`statistics` catalog tells how stored values were obtained
+from the source data. The :ref:`flags` catalog qualifies each stored value.
+The pages are generated from the catalog files on every build of this
+website.
+
+
 .. _user guide examples:
 
 Tutorials
@@ -178,4 +191,7 @@ Tutorials
 
    files
    projects
+   variables
+   statistics
+   flags
    examples

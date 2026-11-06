@@ -1,5 +1,76 @@
 # Memory Log
 
+## 2026-11-06 — Docs: catalog pages `variables`, `statistics` and `flags`, generated from the shipped CSVs on every Sphinx build
+`dev/docs.py` was left untouched (hard rule). Instead, `docs/conf.py` runs `build_catalog_pages()` at import: stdlib `csv`, since conf mocks pandas. It writes list-table includes to `docs/generated/catalogs/` (git-ignored, and added to `exclude_patterns`). Pages are `docs/variables.rst`, `statistics.rst` and `flags.rst`, published at the site root and linked from a new "Catalogs" section and toctree in `userguide.rst`. Variables get one table per discipline. A hidden RST comment in `system.rst` notes that the model variables must move to the catalog later (Ipo: leave that page as is for now). Checked with an isolated Sphinx build in the scratchpad (no warnings); the full site build was not run because it executes the notebooks.
+
+## 2026-11-06 — `LabDB(SitesDB)` implemented; approved new data folder `sql/lab/` (`samples`, `mixtures`, `mixture_samples`, `records`)
+**New `DataBase` hooks:**
+- `_sql_path` follows the class hierarchy (child `SQL_DIR` first, down to `base/`), replacing the fixed base fallback.
+- `_TABLES` (per-class creation order).
+- `_query_source()`, `_TIME_SQL`, `_EPOCH_OUTPUT` and `_WIDE_INDEX` for query_records. `ORDER BY` now uses result-column names.
+- `_check_records` became `_prepare_records(df) -> df`, run before the required-columns check. `SpatialDB` uses it to accept a name column (eg `zone_name`, `mixture_name`) in place of the key.
+- `SpatialDB._KEY_TABLE` (the table records point to; the layer by default), plus generic `_name_lookup` and `_resolve_names`.
+
+**Rule change:** `__init_subclass__` now renames only inherited hooks; hooks written in a child's body are used as written. This was needed for LabDB's `site_*` query keys. `test_extended_hook_and_grandchild` was replaced by `test_own_hook_and_grandchild`.
+
+**LabDB:**
+- `insert_samples` (`site_name` or `site_id`) and `insert_mixtures` (one row per mixture–sample link; without a `name`, each sample becomes its own mixture).
+- Queries sort and filter by `sample_datetime` (latest sample of the mixture) and accept `mixture_*` and `site_*` keys. Wide format is indexed by `sample_datetime`.
+- 9 tests in `TestLabDB`; 108 tests pass.
+
+## 2026-11-06 — Statistics catalog: `instant`, `sd`, `variance`, `mode` and `count` added after `maximum` (approved data change)
+`instant` (alias `inst`) covers non-aggregated values, such as a lab analysis or a station reading, because `specs.statistic_name` is required. `sd` and `variance` are sample estimates (n−1). The aliases are `sd`, `var`, `mode` and `count`. The catalog now has 32 rows; 99 tests pass.
+
+## 2026-11-06 — Statistics catalog: 23 percentiles added to `catalogs/statistics.csv` (approved data change); schema unchanged
+Levels are p000, p001, p005 to p095 in steps of 5, p099 and p100, as Ipo specified. Name and alias are both `pNNN`; the symbol is `P_{N}`; the formula is the quantile definition `\inf\{x : F(x) \geq q\}`. p000, p050 and p100 note that they equal the minimum, median and maximum. The catalog now has 27 rows; 99 tests pass.
+
+## 2026-11-06 — Variables catalog rebuilt from the Obsidian vault (55 notes) and the climasano `glossary` layer (97 water quality parameters), 152 variables in all; approved changes to `catalogs/variables.csv` and `sql/base/variables.sql`
+- **Schema:** `system` renamed to `category` (vault values: flow, level, ratio, parameter, boundary). New columns: `discipline` (top vault folder, eg Geospatial), `source` and `url`. `theme` is the vault `subject` (eg Spectral Vegetation Indices).
+- **Ipo's decisions:** names are lowercased; the glossary goes straight into the CSV, and Ipo will later turn it into vault notes; water quality codes are WQP/WQM/WQB/WQE/WQG plus 3 digits; a one-off builder in the scratchpad, not a module.
+- **Fixes made in the CSV only (to mirror in the vault):**
+  - HYC100 Discharge left out: a stub with no units or abstract.
+  - Duplicated aliases renamed: HYD100 Rainfall PPT→RAIN, HYD211 Standard Streamflow F→FS, RSV001 Simple Ratio SR→SRVI.
+  - The 5 glossary parameters listed under both Physical-Chemistry and Metals are named by theme, eg `calcium (metals)` with alias `ca_met`.
+- **Assumptions to review:** antibiograms are integer `[1U3]` (S/I/R); presence tests are integer `[0U1]`; daphnia and swim are `(U)` (codes unknown); all water quality rows have category `level`; glossary aliases are its lowercase `parameter`, to match the lab tables.
+- `test_bad_domain_fails_creation` now targets the precipitation row by name instead of row 0. 99 tests pass.
+
+## 2026-11-06 — Flags catalog extended; approved changes to `catalogs/flags.csv` and the `CHECK` in all three `records.sql` (base, semispatial, spatial)
+- **Positive flags carry a value:** regular 1, suspect 2, raw 3, consisted 4.
+- **Flags of 0 or below mean no measured value** and are the only ones allowing NULL: void 0, notanalysed -1, notapplicable -2, nondetect -3 (may hold the detection limit), notanalysed_brcast -4, notanalysed_zone -5. The common ones come first, as Ipo asked. The CHECK is now `value IS NOT NULL OR flag_value <= 0`.
+- **`nan_policy` now applies only to NaN rows with a positive flag.** Rows already flagged 0 or below are kept as given; before, `drop` would have lost explicit `notanalysed`/`nondetect` rows. New test `test_no_value_flags_kept`; 99 tests pass.
+- **Also decided for LabDB:** `records.datetime` is nullable (NULL = unknown analysis time); lab queries filter and sort by the sampling datetime and return both datetimes. Categorical results (P/N, S/I/R) are coded values explained by the spec, not flags. Unknown units belong to metadata, not to record flags.
+- Next: the variables catalog upgrade (Ipo will explain the source), then the LabDB SQL files and class.
+
+## 2026-11-06 — LabDB design decisions (from `prompts/new_features_ideas/plans_databases_sites.md`); `FieldDB(SitesDB)` added as an empty class
+The `SitesDB` branch splits into `FieldDB` (in situ) and `LabDB` (laboratory). The LabDB chain is `sites -> samples -> mixtures -> records`.
+- `mixture_samples` is a link table (many-to-many), because a mixture with `sample_id` on its own row cannot hold a blend.
+- No aliquot table: Ipo's real data comes as one large results table plus the samples used, so the mixture is the abstraction for aliquots and records carry `mixture_id`.
+- `LabDB` gets its own SQL files. Mixtures have no datetime: the mix is assumed to be made just before analysis.
+- The flags catalog needs to be extended for the lab cases (eg, not detected). Flag set pending Ipo's approval.
+
+## 2026-11-06 — "Feature" naming across the spatial family: `geometry_id` becomes `feature_id` in `SemiSpatialDB`; `SpatialDB` is now concrete (any geometry type, a generic `features` layer, `feature_id`/`feature_name`); approved change to `data/sql/semispatial/records.sql`
+Ipo preferred `features`/`feature_id` to `geometries`/`geometry_id`: it follows the naming rules (singular `feature`) and is GeoPackage's own term.
+- Renamed: `_GEOMETRY_KEY` to `_FEATURE_KEY`, `insert_geometries` to `insert_features`, `get_geometries` to `get_features`, plus the internals and the semispatial index (`idx_records_spec_feature_id_datetime`). `_GEOMETRY_TYPES` kept its name; `None` now means any type.
+- The generic layer is written with `geometry_type="Unknown"` so it is declared `GEOMETRY` and not typed by the first rows (scratchpad probe: a mixed polygon/point/line layer kept correct counts).
+- Breaking: old `SemiSpatialDB` files keep `geometry_id`.
+- 98 unit tests pass. Benchmark timings (10 s and 15 s) looked slower than the last session, but an A/B run against `HEAD` showed the first run in a process takes about 5.4 s and later runs 8–9 s, whatever the version. This is machine noise, not a regression.
+
+## 2026-11-06 — `SpatialDB` (abstract) with `ZonesDB`, `PathsDB` and `SitesDB`; approved new data folder `sql/spatial/` (`records.sql` and `layer.sql` templates)
+Ipo chose one template over three plain copies. The `{layer}` and `{key}` placeholders are filled with `str.replace`, because base SQL comments hold LaTeX braces that `str.format` would break. New no-op hooks in `DataBase`: `_create_table`, `_prepare_file`, `_finalize_file` and `_check_records`.
+- `new()` writes the source layer through geopandas first (`FID="id"`, so a source `id` column is kept). It then creates the tables, adds the unique index on `name` and registers the plain tables in `gpkg_contents`.
+- The `__init_subclass__` swap also renames the `_name` key (`geometry_name` to `zone_name`).
+- `insert_geometries` refuses to run inside a transaction, rejects names already taken and reprojects to the layer CRS. `get_geometries` returns `id` as the first column.
+- Tests: `TestZonesDB` (one temp folder) plus `test_spatial_children`. 97 tests pass. A scratchpad check confirmed GDAL lists all tables and keeps feature counts after an append.
+
+## 2026-11-06 — `_GEOMETRY_KEY` refactor of `SemiSpatialDB`; STRICT kept for the spatial family
+`__init_subclass__` replaces the inherited key with the child's own in `_RECORD_COLUMNS`, `_QUERY_KEYS`, `_ORDER_BY` and `_WIDE_COLUMNS`. It also renames hooks the child extends from its parent, and it works for grandchildren. `_query_filters` reads the key from the class. Existing semispatial tests pass unchanged; new `TestGeometryKey` (3 tests, no files). STRICT was kept because no old-reader case was named; the limitation will go in the `SpatialDB` docstring.
+
+## 2026-11-06 — Spatial stage scope agreed: geopandas imported at module level (already a runtime dependency in `pyproject.toml`, as in `geo.py`); one layer per database; a name-based query key (`zone_name` etc.); this session covers the `_GEOMETRY_KEY` refactor plus `SpatialDB` and `ZonesDB`
+A scratchpad probe (GDAL 3.11.4, SQLite 3.49.1) checked the following. A UNIQUE index on `zones.name` is enforced when appending through geopandas: the append raises `FeatureError` and the feature count stays correct. The `records.zone_id` foreign key rejects unknown ids. A STRICT plain table registered in `gpkg_contents` is read by pyogrio. Still open: older readers, since SQLite before 3.37 cannot open a file that has STRICT tables.
+
+## 2026-11-06 — Spatial stage decision: child classes rename `geometry_id` to `zone_id`, `path_id` and `site_id`
+This closes the open point in plan section 11 and follows naming Rule 5. Unlike the semispatial key, the renamed key becomes a real foreign key to the layer table. Next step: a recap of the plan for the spatial child classes, sent for Ipo's review before any code.
+
 ## 2026-11-06 — Phase 4 implemented: void records, `suspect` flag, domain parser with unions; approved changes to both `records.sql`, `base/variables.sql`, `catalogs/flags.csv` and `catalogs/variables.csv`
 `value` is nullable only with flag 0 (schema CHECK). `fill_nan` is removed from `insert_records`, `insert_record` and `load_records` (breaking, agreed), replaced by `nan_policy`; `check_domain=True` is new. Catalog domains changed from `(0U)` to `[0U)`. Domains are validated when `variables` is seeded. Databases without a `suspect` flag skip the check with a warning instead of failing every insert. Tests: `TestDomain`, `TestVoidAndSuspect`.
 

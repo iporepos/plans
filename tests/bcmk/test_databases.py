@@ -136,14 +136,14 @@ class TestDataBasePerformance(unittest.TestCase):
             {
                 "datetime": np.tile(months, ncell),
                 "value": np.random.rand(ncell * len(months)),
-                "geometry_id": np.repeat(cells, len(months)),
+                "feature_id": np.repeat(cells, len(months)),
             }
         )
         timed(
             label=f"insert {len(df):,} rows ({ncell:,} cells)",
             func=lambda: db.insert_records(dataframe=df, spec_name="BENCH", flag=1),
         )
-        query = {"spec_name": "BENCH", "geometry_id": cells[:40_000]}
+        query = {"spec_name": "BENCH", "feature_id": cells[:40_000]}
         result = timed(
             label="query 40,000 cells",
             func=lambda: db.query_records(query_dict=query),

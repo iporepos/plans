@@ -40,6 +40,10 @@ They hold numerical values for storage levels, as well as the instantaneous
 flows at each time step of the model simulation. Together, they describe
 how the system evolves over time.
 
+.. maintainers note (not rendered): these model variables must move to the
+   variables catalog (src/plans/data/catalogs/variables.csv) later, so this
+   table can be generated from it like the variables page.
+
 .. csv-table::
    :file: ./data/system_variables.csv
    :header-rows: 1

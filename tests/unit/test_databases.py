@@ -10,7 +10,8 @@ Features
 --------
 The test suite verifies that:
 
-* SQL files are resolved in the class ``SQL_DIR`` first, then in ``base/``.
+* SQL files are resolved along the class hierarchy: the class ``SQL_DIR`` first,
+  then the parents' folders down to ``base/``.
 * A child class with a partial SQL folder creates a full database with ``new()``.
 * A missing ``.sql`` path raises ``FileNotFoundError`` instead of running as SQL text.
 * ``new()`` reads TOML and JSON setup files and respects ``overwrite``.
@@ -21,8 +22,12 @@ The test suite verifies that:
 * Inserts are atomic; ``transaction()`` groups them, rolls back on failure and nests.
 * ``query_records`` validates keys, orders rows, reverses the transform and builds
   the wide format and spec metadata.
-* ``SemiSpatialDB`` requires ``geometry_id`` on insert, filters by any number of
-  ids, and pivots to ``(spec_name, geometry_id)`` columns.
+* ``SemiSpatialDB`` requires ``feature_id`` on insert, filters by any number of
+  ids, and pivots to ``(spec_name, feature_id)`` columns.
+* ``LabDB`` links samples to mixtures, keeps unknown analysis times, and
+  queries by sampling time and by site through the mixture chain.
+* ``SpatialDB`` and its children write the features layer through geopandas,
+  keep a real foreign key from records, and query by feature name.
 * Domain notation is parsed and checked; NaN values are dropped or stored as
   voids, and out-of-domain values are flagged ``suspect``.
 
@@ -46,13 +51,26 @@ from unittest import mock
 # =======================================================================
 import numpy as np
 import pandas as pd
+import geopandas as gpd
+from shapely.geometry import MultiPolygon, Point, box
 
 # ... {develop}
 
 # Project-level imports
 # =======================================================================
 import plans.databases
-from plans.databases import DataBase, SemiSpatialDB, DATA_SQL_DIR, _TABLE_ORDER
+from plans.databases import (
+    DataBase,
+    SemiSpatialDB,
+    SpatialDB,
+    ZonesDB,
+    PathsDB,
+    SitesDB,
+    FieldDB,
+    LabDB,
+    DATA_SQL_DIR,
+    _TABLE_ORDER,
+)
 
 # ... {develop}
 
@@ -162,13 +180,13 @@ class TestSqlResolution(unittest.TestCase):
     def test_new_base_schema(self):
         self.assertTrue(set(_TABLE_ORDER) <= self._tables(db=self.db_base))
         cols = self._columns(db=self.db_base, table="records")
-        self.assertNotIn("geometry_id", cols)
+        self.assertNotIn("feature_id", cols)
 
     def test_new_child_schema(self):
         # records from semispatial/, all other tables from base/
         self.assertTrue(set(_TABLE_ORDER) <= self._tables(db=self.db_child))
         cols = self._columns(db=self.db_child, table="records")
-        self.assertIn("geometry_id", cols)
+        self.assertIn("feature_id", cols)
 
     # -------------------------------------------------------------------
     # execute_sql and query_sql
@@ -483,7 +501,8 @@ class TestInsertValidation(unittest.TestCase):
     def test_unknown_flag(self):
         df = self.df.assign(flag_value=np.array([1, 9]))
         self._assert_rejected(
-            dataframe=df, message="Unknown flag_value(s): [9]. Valid: [0, 1, 2]"
+            dataframe=df,
+            message="Unknown flag_value(s): [9]. Valid: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4]",
         )
 
     def test_unparseable_dates(self):
@@ -491,8 +510,8 @@ class TestInsertValidation(unittest.TestCase):
         self._assert_rejected(dataframe=df, message="1 unparseable date(s)")
 
     def test_extra_column_raises(self):
-        df = self.df.assign(geometry_id=5)
-        self._assert_rejected(dataframe=df, message="['geometry_id']")
+        df = self.df.assign(feature_id=5)
+        self._assert_rejected(dataframe=df, message="['feature_id']")
 
     def test_extra_column_dropped(self):
         n0 = self._count()
@@ -814,7 +833,7 @@ class TestSemiSpatialDB(unittest.TestCase):
                 {
                     "datetime": ["2000-01-01", "2000-02-01"] * 3,
                     "value": [11.0, 12.0, 21.0, 22.0, 31.0, 32.0],
-                    "geometry_id": np.repeat(cls.CELLS, 2),
+                    "feature_id": np.repeat(cls.CELLS, 2),
                 }
             ),
             spec_name="CELLS",
@@ -822,7 +841,7 @@ class TestSemiSpatialDB(unittest.TestCase):
         )
         cls.db.insert_records(
             dataframe=pd.DataFrame(
-                {"datetime": "2000-01-01", "value": 1.0, "geometry_id": cls.MANY}
+                {"datetime": "2000-01-01", "value": 1.0, "feature_id": cls.MANY}
             ),
             spec_name="MANY",
             flag=1,
@@ -843,51 +862,51 @@ class TestSemiSpatialDB(unittest.TestCase):
     # -------------------------------------------------------------------
     # schema and insert
     # -------------------------------------------------------------------
-    def test_geometry_index_exists(self):
+    def test_feature_index_exists(self):
         df = self.db.query_sql(sql="PRAGMA index_list(records)")
-        self.assertIn("idx_records_spec_geometry_datetime", df["name"].tolist())
+        self.assertIn("idx_records_spec_feature_id_datetime", df["name"].tolist())
 
-    def test_insert_missing_geometry_id(self):
+    def test_insert_missing_feature_id(self):
         df = pd.DataFrame({"datetime": ["2000-01-01"], "value": [1.0]})
         with self.assertRaises(ValueError) as ctx:
             self.db.insert_records(dataframe=df, spec_name="CELLS", flag=1)
-        self.assertIn("geometry_id", str(ctx.exception))
+        self.assertIn("feature_id", str(ctx.exception))
 
     def test_inspect_records(self):
         output = self.db.inspect_records(head=2, tail=2, quiet=True)
-        self.assertIn("geometry_id", output)
+        self.assertIn("feature_id", output)
 
     # -------------------------------------------------------------------
     # query
     # -------------------------------------------------------------------
     def test_filter_small_list(self):
         ids = self.CELLS[:2].tolist()
-        df = self._query(query_dict={"spec_name": "CELLS", "geometry_id": ids})
-        self.assertEqual(set(df["geometry_id"]), set(ids))
+        df = self._query(query_dict={"spec_name": "CELLS", "feature_id": ids})
+        self.assertEqual(set(df["feature_id"]), set(ids))
         self.assertEqual(len(df), 4)
 
     def test_filter_numpy_scalar(self):
-        df = self._query(query_dict={"geometry_id": self.CELLS[0]})
+        df = self._query(query_dict={"feature_id": self.CELLS[0]})
         self.assertEqual(df["value"].tolist(), [11.0, 12.0])
 
     def test_filter_above_parameter_cap(self):
-        df = self._query(query_dict={"spec_name": "MANY", "geometry_id": self.MANY})
+        df = self._query(query_dict={"spec_name": "MANY", "feature_id": self.MANY})
         self.assertEqual(len(df), len(self.MANY))
 
     def test_long_order(self):
         df = self._query(query_dict={"spec_name": "CELLS"})
-        # ordered by geometry_id, then datetime
+        # ordered by feature_id, then datetime
         self.assertEqual(df["value"].tolist(), [21.0, 22.0, 31.0, 32.0, 11.0, 12.0])
 
     def test_wide_multiindex(self):
         df = self._query(query_dict={"spec_name": "CELLS", "wide": True})
-        self.assertEqual(df.columns.names, ["spec_name", "geometry_id"])
+        self.assertEqual(df.columns.names, ["spec_name", "feature_id"])
         self.assertEqual(df.shape, (2, 3))
         self.assertEqual(df[("CELLS", int(self.CELLS[0]))].tolist(), [11.0, 12.0])
 
     def test_wide_replicates(self):
         # a replicate in one cell raises without aggfunc; removed afterwards
-        row = {"datetime": "2000-01-01", "value": 13.0, "geometry_id": self.CELLS[0]}
+        row = {"datetime": "2000-01-01", "value": 13.0, "feature_id": self.CELLS[0]}
         self.db.insert_record(row_dict=row, spec_name="CELLS", flag=1)
         try:
             with self.assertRaises(ValueError):
@@ -899,6 +918,400 @@ class TestSemiSpatialDB(unittest.TestCase):
         finally:
             self.db.conn.execute("DELETE FROM records WHERE value = 13.0")
             self.db.conn.commit()
+
+
+class TestFeatureKey(unittest.TestCase):
+    """Children of SemiSpatialDB rename the key through _FEATURE_KEY only."""
+
+    def test_hooks_follow_key(self):
+        class _ZoneDB(SemiSpatialDB):
+            _FEATURE_KEY = "zone_id"
+
+        self.assertEqual(_ZoneDB._RECORD_COLUMNS, ("datetime", "value", "zone_id"))
+        self.assertEqual(_ZoneDB._ORDER_BY, ("spec_id", "zone_id", "datetime"))
+        self.assertEqual(_ZoneDB._WIDE_COLUMNS, ("spec_name", "zone_id"))
+        self.assertIn("zone_id", _ZoneDB._QUERY_KEYS)
+        self.assertNotIn("feature_id", _ZoneDB._QUERY_KEYS)
+        # the parent is untouched
+        self.assertIn("feature_id", SemiSpatialDB._QUERY_KEYS)
+
+    def test_own_hook_and_grandchild(self):
+        # a hook written in the child's body is used as written; a grandchild
+        # with the same key inherits it unchanged
+        class _ZoneDB(SemiSpatialDB):
+            _FEATURE_KEY = "zone_id"
+            _QUERY_KEYS = DataBase._QUERY_KEYS + ("zone_id", "site_id")
+
+        class _SubZoneDB(_ZoneDB):
+            pass
+
+        for cls in (_ZoneDB, _SubZoneDB):
+            self.assertEqual(cls._QUERY_KEYS[-2:], ("zone_id", "site_id"))
+            self.assertEqual(cls._ORDER_BY, ("spec_id", "zone_id", "datetime"))
+
+    def test_filter_uses_key(self):
+        class _ZoneDB(SemiSpatialDB):
+            _FEATURE_KEY = "zone_id"
+
+        db = _ZoneDB(name="zones")
+        conditions, params = db._query_filters(query_dict={"zone_id": [1, 2]})
+        self.assertIn("r.zone_id IN (SELECT value FROM json_each(?))", conditions)
+        self.assertEqual(params[-1], "[1, 2]")
+
+    def test_spatial_children(self):
+        # the name key follows the record key, from SpatialDB down to its children
+        cases = (
+            (SpatialDB, "feature"),
+            (ZonesDB, "zone"),
+            (PathsDB, "path"),
+            (SitesDB, "site"),
+            (FieldDB, "site"),
+        )
+        for cls, kind in cases:
+            self.assertEqual(cls._RECORD_COLUMNS[-1], f"{kind}_id")
+            self.assertEqual(cls._QUERY_KEYS[-2:], (f"{kind}_id", f"{kind}_name"))
+            self.assertEqual(cls._WIDE_COLUMNS, ("spec_name", f"{kind}_id"))
+
+
+class TestSpatialDB(unittest.TestCase):
+    """SpatialDB keeps any geometry type in one generic features layer."""
+
+    def test_mixed_features(self):
+        temp_dir = Path(tempfile.mkdtemp())
+        db = SpatialDB(name="features")
+        try:
+            file_specs = temp_dir / "specs.json"
+            file_specs.write_text(
+                json.dumps([dict(SPECS[0], name="PPT")]), encoding="utf-8"
+            )
+            # polygons only at creation, so the layer must not be typed by them
+            file_source = temp_dir / "source.gpkg"
+            gpd.GeoDataFrame(
+                {"name": ["A"]}, geometry=[box(0, 0, 1, 1)], crs="EPSG:4326"
+            ).to_file(filename=file_source, driver="GPKG")
+            db.new(
+                config={
+                    "database": {"path": str(temp_dir / "features.gpkg")},
+                    "specs": {"path": str(file_specs)},
+                    "spatial": {"file": str(file_source)},
+                }
+            )
+            db.insert_features(
+                gdf=gpd.GeoDataFrame(
+                    {"name": ["P"]}, geometry=[Point(5, 5)], crs="EPSG:4326"
+                )
+            )
+            kind = db.conn.execute(
+                "SELECT geometry_type_name FROM gpkg_geometry_columns"
+            ).fetchone()[0]
+            self.assertEqual(kind, "GEOMETRY")
+            self.assertEqual(
+                db.get_features()["geometry"].geom_type.tolist(), ["Polygon", "Point"]
+            )
+            # records point to features by feature_id, and queries take feature_name
+            db.insert_record(
+                row_dict={"datetime": "2000-01-01", "value": 1.0, "feature_id": 2},
+                spec_name="PPT",
+                flag=1,
+            )
+            df = db.query_records(query_dict={"feature_name": "P"})
+            self.assertEqual(df["feature_id"].tolist(), [2])
+        finally:
+            db.close()
+            shutil.rmtree(temp_dir)
+
+
+class TestZonesDB(unittest.TestCase):
+    """
+    End-to-end GeoPackage tests, run on ZonesDB; PathsDB and SitesDB differ
+    only in class attributes.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Runs once before all tests in this class: create a zones database from
+        a source layer with ids 10 (A, polygon) and 20 (B, multi-polygon), and
+        two months of records for each zone.
+        """
+        cls.temp_dir = Path(tempfile.mkdtemp())
+        cls.file_specs = cls.temp_dir / "specs.json"
+        cls.file_specs.write_text(
+            json.dumps([dict(SPECS[0], name="PPT")]), encoding="utf-8"
+        )
+        cls.file_source = cls.temp_dir / "source.gpkg"
+        gpd.GeoDataFrame(
+            {"id": [10, 20], "name": ["A", "B"], "code": ["a", "b"]},
+            geometry=[
+                box(0, 0, 1, 1),
+                MultiPolygon([box(2, 0, 3, 1), box(4, 0, 5, 1)]),
+            ],
+            crs="EPSG:4326",
+        ).to_file(filename=cls.file_source, layer="basins", driver="GPKG")
+        cls.db = ZonesDB(name="zones")
+        cls.db.new(config=cls._config(path=cls.temp_dir / "zones.gpkg"))
+        cls.db.insert_records(
+            dataframe=pd.DataFrame(
+                {
+                    "datetime": ["2000-01-01", "2000-02-01"] * 2,
+                    "value": [11.0, 12.0, 21.0, 22.0],
+                    "zone_id": [10, 10, 20, 20],
+                }
+            ),
+            spec_name="PPT",
+            flag=1,
+        )
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Runs once after all tests in this class.
+        """
+        cls.db.close()
+        shutil.rmtree(cls.temp_dir)
+        return None
+
+    @classmethod
+    def _config(cls, path, spatial=True):
+        # setup dict; spatial=False leaves out the [spatial] section
+        cfg = {"database": {"path": str(path)}, "specs": {"path": str(cls.file_specs)}}
+        if spatial:
+            cfg["spatial"] = {"file": str(cls.file_source), "layer": "basins"}
+        return cfg
+
+    # -------------------------------------------------------------------
+    # creation
+    # -------------------------------------------------------------------
+    def test_layer_keeps_ids_and_columns(self):
+        gdf = self.db.get_features(names=["A", "B"])
+        self.assertEqual(gdf["id"].tolist(), [10, 20])
+        self.assertEqual(gdf["code"].tolist(), ["a", "b"])
+        self.assertEqual(set(gdf.geom_type), {"MultiPolygon"})
+
+    def test_schema(self):
+        fks = self.db.query_sql(sql="PRAGMA foreign_key_list(records)")
+        self.assertIn("zones", fks["table"].tolist())
+        indexes = self.db.query_sql(sql="PRAGMA index_list(records)")["name"].tolist()
+        self.assertIn("idx_records_spec_zone_id_datetime", indexes)
+        indexes = self.db.query_sql(sql="PRAGMA index_list(zones)")["name"].tolist()
+        self.assertIn("idx_zones_name", indexes)
+
+    def test_tables_registered(self):
+        df = self.db.query_sql(sql="SELECT table_name, data_type FROM gpkg_contents")
+        kinds = dict(zip(df["table_name"], df["data_type"]))
+        self.assertEqual(kinds["zones"], "features")
+        for table in _TABLE_ORDER:
+            self.assertEqual(kinds[table], "attributes")
+
+    def test_new_failures_leave_no_file(self):
+        bad = {
+            "no_spatial": self._config(path=self.temp_dir / "x.gpkg", spatial=False),
+            "not_gpkg": self._config(path=self.temp_dir / "x.db"),
+        }
+        for label, cfg in bad.items():
+            with self.subTest(label=label):
+                with self.assertRaises(ValueError):
+                    ZonesDB(name="bad").new(config=cfg)
+                self.assertFalse(Path(cfg["database"]["path"]).exists())
+
+    # -------------------------------------------------------------------
+    # geometries
+    # -------------------------------------------------------------------
+    def test_insert_features(self):
+        # a zone in web mercator is reprojected; its name is then taken
+        gdf = gpd.GeoDataFrame(
+            {"name": ["C"]}, geometry=[box(0, 0, 1000, 1000)], crs="EPSG:3857"
+        )
+        self.db.insert_features(gdf=gdf)
+        zone = self.db.get_features(names="C")
+        self.assertEqual(zone["id"].iloc[0], 21)
+        self.assertLess(zone.geometry.iloc[0].bounds[2], 1)  # degrees, not meters
+        with self.assertRaises(ValueError) as ctx:
+            self.db.insert_features(gdf=gdf)
+        self.assertIn("already", str(ctx.exception))
+
+    def test_insert_features_rejects(self):
+        cases = {
+            "point": gpd.GeoDataFrame(
+                {"name": ["P"]}, geometry=[Point(0, 0)], crs="EPSG:4326"
+            ),
+            "duplicate": gpd.GeoDataFrame(
+                {"name": ["D", "D"]}, geometry=[box(0, 0, 1, 1)] * 2, crs="EPSG:4326"
+            ),
+            "no_name": gpd.GeoDataFrame(geometry=[box(0, 0, 1, 1)], crs="EPSG:4326"),
+            "no_crs": gpd.GeoDataFrame({"name": ["E"]}, geometry=[box(0, 0, 1, 1)]),
+        }
+        for label, gdf in cases.items():
+            with self.subTest(label=label):
+                with self.assertRaises(ValueError):
+                    self.db.insert_features(gdf=gdf)
+
+    def test_get_features_unknown(self):
+        with self.assertRaises(ValueError):
+            self.db.get_features(names="NOPE")
+
+    # -------------------------------------------------------------------
+    # records
+    # -------------------------------------------------------------------
+    def test_insert_unknown_zone_id(self):
+        df = pd.DataFrame({"datetime": ["2000-01-01"], "value": [1.0], "zone_id": [99]})
+        with self.assertRaises(ValueError) as ctx:
+            self.db.insert_records(dataframe=df, spec_name="PPT", flag=1)
+        self.assertIn("zone_id", str(ctx.exception))
+
+    def test_query_by_name_and_id(self):
+        df = self.db.query_records(query_dict={"zone_name": "B"})
+        self.assertEqual(df["value"].tolist(), [21.0, 22.0])
+        df = self.db.query_records(query_dict={"zone_name": "B", "zone_id": 10})
+        self.assertEqual(len(df), 0)  # filters combine with AND
+        with self.assertRaises(ValueError):
+            self.db.query_records(query_dict={"zone_name": "NOPE"})
+
+    def test_wide(self):
+        df = self.db.query_records(query_dict={"spec_name": "PPT", "wide": True})
+        self.assertEqual(df.columns.names, ["spec_name", "zone_id"])
+        self.assertEqual(df[("PPT", 20)].tolist(), [21.0, 22.0])
+
+
+class TestLabDB(unittest.TestCase):
+    """
+    LabDB chain sites -> samples -> mixtures -> records, built once:
+    samples B1 (S1, Mar 1), B2 (S2, Mar 2) and B3 (S1, Mar 5); mixtures B1 and
+    B2 hold one sample each, MIX blends B2 and B3. Records: a triplicate 7.0 on
+    B1, 6.5 on B2 with unknown analysis time, and 6.0 on MIX.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Runs once before all tests in this class.
+        """
+        cls.temp_dir = Path(tempfile.mkdtemp())
+        file_specs = cls.temp_dir / "specs.json"
+        file_specs.write_text(
+            json.dumps([dict(SPECS[0], name="LAB")]), encoding="utf-8"
+        )
+        file_sites = cls.temp_dir / "sites.gpkg"
+        gpd.GeoDataFrame(
+            {"name": ["S1", "S2"]}, geometry=[Point(0, 0), Point(1, 1)], crs="EPSG:4326"
+        ).to_file(filename=file_sites, driver="GPKG")
+        cls.db = LabDB(name="lab")
+        cls.db.new(
+            config={
+                "database": {"path": str(cls.temp_dir / "lab.gpkg")},
+                "specs": {"path": str(file_specs)},
+                "spatial": {"file": str(file_sites)},
+            }
+        )
+        cls.db.insert_samples(
+            dataframe=pd.DataFrame(
+                {
+                    "name": ["B1", "B2", "B3"],
+                    "site_name": ["S1", "S2", "S1"],
+                    "datetime": ["2024-03-01", "2024-03-02", "2024-03-05"],
+                }
+            )
+        )
+        cls.db.insert_mixtures(dataframe=pd.DataFrame({"sample_name": ["B1", "B2"]}))
+        cls.db.insert_mixtures(
+            dataframe=pd.DataFrame({"name": "MIX", "sample_name": ["B2", "B3"]})
+        )
+        cls.db.insert_records(
+            dataframe=pd.DataFrame(
+                {
+                    "mixture_name": ["B1", "B1", "B1", "B2", "MIX"],
+                    "value": [7.0, 7.0, 7.0, 6.5, 6.0],
+                    "datetime": ["2024-03-04"] * 3 + [None, "2024-03-10"],
+                }
+            ),
+            spec_name="LAB",
+            flag=1,
+        )
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Runs once after all tests in this class.
+        """
+        cls.db.close()
+        shutil.rmtree(cls.temp_dir)
+        return None
+
+    def _query(self, **query):
+        return self.db.query_records(query_dict=query)
+
+    # -------------------------------------------------------------------
+    # schema and inserts
+    # -------------------------------------------------------------------
+    def test_hooks(self):
+        self.assertEqual(LabDB._RECORD_COLUMNS[-1], "mixture_id")
+        self.assertEqual(LabDB._WIDE_COLUMNS, ("spec_name", "mixture_id"))
+
+    def test_tables_registered(self):
+        df = self.db.query_sql(sql="SELECT table_name FROM gpkg_contents")
+        for table in ("sites", "samples", "mixtures", "mixture_samples", "records"):
+            self.assertIn(table, df["table_name"].tolist())
+
+    def test_analysis_time_nullable(self):
+        cols = self.db.query_sql(sql="PRAGMA table_info(records)").set_index("name")
+        self.assertEqual(cols.loc["datetime", "notnull"], 0)
+
+    def test_mixture_links(self):
+        df = self.db.query_sql(
+            sql="SELECT m.name, COUNT(*) AS n FROM mixtures m "
+            "JOIN mixture_samples ms ON ms.mixture_id = m.id GROUP BY m.name"
+        )
+        self.assertEqual(dict(zip(df["name"], df["n"])), {"B1": 1, "B2": 1, "MIX": 2})
+
+    def test_insert_rejects(self):
+        with self.assertRaises(ValueError):
+            self.db.insert_samples(
+                dataframe=pd.DataFrame(
+                    {"name": ["X"], "site_name": ["NOPE"], "datetime": ["2024-01-01"]}
+                )
+            )
+        with self.assertRaises(ValueError):
+            self.db.insert_mixtures(dataframe=pd.DataFrame({"sample_name": ["NOPE"]}))
+        with self.assertRaises(ValueError):
+            self.db.insert_records(
+                dataframe=pd.DataFrame(
+                    {"mixture_name": ["NOPE"], "value": [1.0], "datetime": [None]}
+                ),
+                spec_name="LAB",
+                flag=1,
+            )
+
+    # -------------------------------------------------------------------
+    # query
+    # -------------------------------------------------------------------
+    def test_sampling_time_and_order(self):
+        # ordered by sampling time; MIX takes its latest sample (B3, Mar 5)
+        df = self._query()
+        self.assertEqual(df["value"].tolist(), [7.0, 7.0, 7.0, 6.5, 6.0])
+        self.assertEqual(
+            df["sample_datetime"].iloc[-1], pd.Timestamp("2024-03-05", tz="UTC")
+        )
+        self.assertTrue(pd.isna(df["datetime"].iloc[3]))  # unknown analysis time
+
+    def test_start_filters_sampling_time(self):
+        # B1 was analysed on Mar 4 but sampled on Mar 1, so it is left out
+        df = self._query(start="2024-03-02")
+        self.assertEqual(df["value"].tolist(), [6.5, 6.0])
+
+    def test_site_filters(self):
+        # a blend shows up under every site it holds
+        self.assertEqual(
+            self._query(site_name="S1")["value"].tolist(), [7.0] * 3 + [6.0]
+        )
+        self.assertEqual(self._query(site_name="S2")["value"].tolist(), [6.5, 6.0])
+        self.assertEqual(len(self._query(site_id=2, mixture_name="B1")), 0)
+
+    def test_wide_replicates(self):
+        with self.assertRaises(ValueError):
+            self._query(wide=True)
+        df = self._query(wide=True, aggfunc="mean")
+        self.assertEqual(df.index.name, "sample_datetime")
+        self.assertEqual(df.columns.names, ["spec_name", "mixture_id"])
 
 
 class TestDomain(unittest.TestCase):
@@ -1015,6 +1428,19 @@ class TestVoidAndSuspect(unittest.TestCase):
         self._insert(values=[np.nan], spec_name="SHIFT", nan_policy="void")
         self.assertEqual(self._stored(), [(None, 0)])
 
+    def test_no_value_flags_kept(self):
+        # NaN rows already flagged <= 0 survive both policies with their flag;
+        # nondetect may carry the detection limit instead of NULL
+        df = pd.DataFrame(
+            {
+                "datetime": ["2000-01-01", "2000-01-02", "2000-01-03"],
+                "value": [np.nan, np.nan, 0.01],
+                "flag_value": [-1, -3, -3],
+            }
+        )
+        self.db.insert_records(dataframe=df, spec_name="PPT")
+        self.assertEqual(self._stored(), [(None, -1), (None, -3), (0.01, -3)])
+
     def test_nan_policy_invalid(self):
         with self.assertRaises(ValueError):
             self._insert(values=[1.0], nan_policy="fill")
@@ -1069,7 +1495,7 @@ class TestVoidAndSuspect(unittest.TestCase):
     def test_bad_domain_fails_creation(self):
         file_vars = self.temp_dir / "variables_bad.csv"
         df = pd.read_csv(self.db.variables_default, sep=";")
-        df.loc[0, "domain"] = "(0,1)"
+        df.loc[df["name"] == "precipitation", "domain"] = "(0,1)"
         df.to_csv(file_vars, sep=";", index=False)
         db = DataBase(name="bad")
         config = self._config(name="bad.db", catalogs={"variables": str(file_vars)})
