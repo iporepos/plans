@@ -31,6 +31,7 @@ Available tutorials
    tutorials/databases_03_spatial
    tutorials/databases_04_lab
    tutorials/databases_05_hydrology
+   tutorials/databases_06_dense
    tutorials/bivar_01
    tutorials/bivar_02_models
    tutorials/stochastic_01_arma

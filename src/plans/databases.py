@@ -16,8 +16,10 @@ regular grids whose features are kept outside the database.
 :class:`PathsDB` and :class:`SitesDB` accept polygons, lines or points only,
 and records point to them by ``zone_id``, ``path_id`` or ``site_id``.
 :class:`SitesDB` branches into :class:`FieldDB` (in situ measurements), itself
-extended by :class:`HydrologyDB` (river reaches with optional catchments), and
-:class:`LabDB` (laboratory analyses of samples taken at the sites).
+extended by :class:`HydrologyDB` (river reaches with optional catchments) and
+:class:`DenseFieldDB` (a wide layout for dense series), joined in
+:class:`HydrologyDenseDB`, and :class:`LabDB` (laboratory analyses of samples
+taken at the sites).
 
 Table and column names are lowercase words joined by ``_``; tables are plural,
 and a foreign key is the singular table name plus the target column
@@ -154,6 +156,7 @@ See prompts/new_features_ideas/plans_databases.md, section 10.
 
 FieldDB() (SitesDB for in situ data; no changes yet).
 HydrologyDB() (FieldDB with an optional catchments layer).
+DenseFieldDB() (wide records) and HydrologyDenseDB() (both together).
 LabDB() (sites -> samples -> mixtures -> records; no aliquot table),
 see prompts/new_features_ideas/plans_databases_sites.md
 
@@ -273,6 +276,8 @@ class DataBase(MbaE):
     _TIME_SQL = "r.datetime"
     _EPOCH_OUTPUT = ("datetime", "inserted")
     _WIDE_INDEX = "datetime"
+    # physical order of the rows of records
+    _ROW_ORDER = ("id",)
 
     def __init__(self, name, alias=None):
         super().__init__(name, alias)
@@ -458,8 +463,10 @@ class DataBase(MbaE):
             lines.append(self._fmt_records(df=df).to_string(index=False))
             lines.append("")
         if tail is not None:
+            down = ", ".join(f"{col} DESC" for col in self._ROW_ORDER)
+            up = ", ".join(self._ROW_ORDER)
             df = pd.read_sql(
-                sql=f"SELECT * FROM (SELECT * FROM records ORDER BY id DESC LIMIT {tail}) ORDER BY id ASC",
+                sql=f"SELECT * FROM (SELECT * FROM records ORDER BY {down} LIMIT {tail}) ORDER BY {up}",
                 con=self.conn,
             )
             lines.append(f"  tail ({tail})")
@@ -1165,6 +1172,11 @@ class DataBase(MbaE):
             if row:
                 scale, offset = row
                 df["value"] = df["value"] * scale + offset
+        self._write_records(df=df, drop_extra=drop_extra)
+        return None
+
+    def _write_records(self, df, drop_extra=False):
+        # store records already in their final form, with spec_id and flag_value
         self.insert_rows(dataframe=df, on_table="records", drop_extra=drop_extra)
         return None
 
@@ -1363,15 +1375,8 @@ class DataBase(MbaE):
         if aggfunc is not None and not wide:
             raise ValueError("aggfunc requires wide=True")
 
-        conditions, params = self._query_filters(query_dict=q)
-        sql = self._query_source()
-        if conditions:
-            sql += " WHERE " + " AND ".join(conditions)
-        # result columns; r.id keeps replicates in insertion order
-        sql += " ORDER BY " + ", ".join(self._ORDER_BY) + ", r.id"
-
         t0 = time.perf_counter()
-        df = pd.read_sql(sql=sql, con=self.conn, params=params)
+        df = self._read_records(query_dict=q)
         elapsed = time.perf_counter() - t0
 
         # output
@@ -1393,6 +1398,16 @@ class DataBase(MbaE):
         if not quiet:
             print(f"[query_records] {len(df)} rows in {elapsed:.3f}s")
         return df
+
+    def _read_records(self, query_dict):
+        # the rows of query_records in long format, with scale and offset
+        conditions, params = self._query_filters(query_dict=query_dict)
+        sql = self._query_source()
+        if conditions:
+            sql += " WHERE " + " AND ".join(conditions)
+        # result columns; r.id keeps replicates in insertion order
+        sql += " ORDER BY " + ", ".join(self._ORDER_BY) + ", r.id"
+        return pd.read_sql(sql=sql, con=self.conn, params=params)
 
     def _query_source(self):
         # SELECT and FROM of query_records; records are aliased r, specs s
@@ -2493,6 +2508,311 @@ class HydrologyDB(FieldDB):
             f"(SELECT name FROM {self._CATCHMENTS}) ORDER BY id"
         )
         return df["name"].tolist()
+
+
+class DenseFieldDB(FieldDB):
+    """
+    Field database in a wide layout, for dense and regular series (eg, hourly).
+
+    ``records`` holds one row per site and time, with one column per spec, instead
+    of one row per value. The columns are created from the specs, each named after
+    its spec in lowercase. Rows are stored by site and then time, so a station
+    series reads fast, while one variable over all stations scans the table.
+
+    Values are ``regular`` unless ``record_flags`` says otherwise, so flags take no
+    space until a value needs one. :meth:`query_records` keeps its keys and output,
+    without the ``id`` and ``inserted`` columns of the long layout.
+
+    Each spec loads on its own, in any order, into its column: a value fills the
+    row of its site and time, which is created if missing. There are no
+    replicates: a second value for the same spec, site and time raises. Specs
+    cannot be added after creation yet.
+
+    Specs may mix timesteps. A coarse value sits on one row, and the rows between
+    two values keep an empty cell, about one byte each: a monthly spec next to daily
+    ones costs about 30 bytes per value, close to the long layout. This suits a few
+    coarse specs next to many fine ones (eg, yearly land use next to daily
+    series). Many coarse specs, or a step far finer than the rest (eg, monthly next
+    to hourly), are better kept in a separate database. Coarse values should share
+    the timestamps of the fine rows (eg, the first day of the month at 00:00), or
+    each adds a row of its own.
+
+    ``records`` and ``record_flags`` are ``WITHOUT ROWID`` tables, which GDAL cannot
+    open, so a GIS shows the sites and the catalogs but reads no records; they are
+    read through :meth:`query_records` or SQL. Queries build long rows in pandas, so
+    one variable over all sites and all times takes memory in proportion; filter by
+    site or time for large files.
+
+    :param name: database name
+    :type name: str
+    :param alias: short alias
+    :type alias: str, optional
+
+    :Example:
+
+    .. code-block:: python
+
+        db.insert_wide(
+            dataframe=pd.DataFrame(
+                {
+                    "site_name": ["A001", "A001"],
+                    "datetime": ["2019-01-01 00:00", "2019-01-01 01:00"],
+                    "PPT_HOURLY": [1.0, 0.0],
+                    "TAS_HOURLY": [18.5, 18.4],
+                }
+            )
+        )
+        df = db.query_records(query_dict={"site_name": "A001", "wide": True})
+    """
+
+    # records comes last, since its columns are created from the seeded specs
+    _TABLES = _TABLE_ORDER[:-1]
+    _EPOCH_OUTPUT = ("datetime",)
+    _ROW_ORDER = ("site_id", "datetime")
+
+    # FILE CREATION
+    # -------------------------------------------------------------------
+    def _spec_columns(self):
+        # spec ids by name; the columns of records are the names in lowercase
+        return dict(self.conn.execute("SELECT name, id FROM specs ORDER BY id"))
+
+    def _finalize_file(self, cfg):
+        # the wide tables, once the specs are in; GDAL cannot open WITHOUT ROWID
+        # tables, so they stay out of gpkg_contents and read through SQL only
+        super()._finalize_file(cfg=cfg)
+        columns = "".join(
+            f'\t"{name.lower()}" REAL,\n' for name in self._spec_columns()
+        )
+        key = self._FEATURE_KEY
+        self.conn.executescript(
+            f"""
+            CREATE TABLE IF NOT EXISTS records (
+                {key} INTEGER NOT NULL,
+                datetime INTEGER NOT NULL,
+                {columns}
+                PRIMARY KEY ({key}, datetime),
+                FOREIGN KEY ({key}) REFERENCES {self._LAYER}(id)
+            ) STRICT, WITHOUT ROWID;
+
+            CREATE TABLE IF NOT EXISTS record_flags (
+                spec_id INTEGER NOT NULL,
+                {key} INTEGER NOT NULL,
+                datetime INTEGER NOT NULL,
+                flag_value INTEGER NOT NULL,
+                PRIMARY KEY (spec_id, {key}, datetime),
+                FOREIGN KEY (spec_id) REFERENCES specs(id),
+                FOREIGN KEY ({key}) REFERENCES {self._LAYER}(id),
+                FOREIGN KEY (flag_value) REFERENCES flags(value)
+            ) STRICT, WITHOUT ROWID;
+            """
+        )
+        return None
+
+    # INSERT
+    # -------------------------------------------------------------------
+    def _write_records(self, df, drop_extra=False):
+        # one spec into its column; only rows that are not regular reach the flags
+        key = self._FEATURE_KEY
+        extra = set(df.columns) - {"datetime", "value", "flag_value", "spec_id", key}
+        if extra and not drop_extra:
+            raise ValueError(f"Columns not in records: {sorted(extra)}")
+        if df.empty:
+            return None
+        spec_id = int(df["spec_id"].iloc[0])
+        names = {i: n for n, i in self._spec_columns().items()}
+        column = names[spec_id].lower()
+        regular = self._flag_value(name="regular")
+        values = df[df["value"].notna()]
+        flagged = df[df["flag_value"] != regular]
+        with self.transaction():
+            # the condition leaves a value already there untouched, and uncounted
+            changed = self.conn.executemany(
+                f'INSERT INTO records ({key}, datetime, "{column}") VALUES (?, ?, ?) '
+                f'ON CONFLICT ({key}, datetime) DO UPDATE SET "{column}" = excluded."{column}" '
+                f'WHERE "{column}" IS NULL',
+                zip(
+                    values[key].astype("int64").tolist(),
+                    values["datetime"].astype("int64").tolist(),
+                    values["value"].astype("float64").tolist(),
+                ),
+            ).rowcount
+            if changed != len(values):
+                raise ValueError(
+                    f"{len(values) - changed} replicated value(s) in {column}; "
+                    "a value already exists for that site and time"
+                )
+            self.conn.executemany(
+                f"INSERT INTO record_flags (spec_id, {key}, datetime, flag_value) "
+                "VALUES (?, ?, ?, ?)",
+                zip(
+                    [spec_id] * len(flagged),
+                    flagged[key].astype("int64").tolist(),
+                    flagged["datetime"].astype("int64").tolist(),
+                    flagged["flag_value"].astype("int64").tolist(),
+                ),
+            )
+        return None
+
+    def insert_wide(self, dataframe, transform_values=True, check_domain=True):
+        """
+        Insert a wide table, the fast path for bulk loads.
+
+        Columns are ``datetime``, the site as ``site_id`` or ``site_name``, and one
+        column per spec, named after it in any case. Empty cells store nothing.
+        Values outside the domain of their variable become ``suspect``, and all
+        others ``regular``.
+
+        :param dataframe: one row per site and time
+        :type dataframe: pandas.DataFrame
+        :param transform_values: apply the spec transform; ``False`` means values
+            are already stored numbers
+        :type transform_values: bool
+        :param check_domain: flag values outside the variable domain; it reads actual
+            values, so it needs ``transform_values``
+        :type check_domain: bool
+        :return: None
+        :rtype: None
+        :raises ValueError: if a column names no spec, the site or datetime is
+            missing, or a site and time already exist
+        """
+        key = self._FEATURE_KEY
+        if check_domain and not transform_values:
+            raise ValueError("check_domain reads actual values; use transform_values")
+        df = self._prepare_records(df=dataframe.copy())
+        missing = {key, "datetime"} - set(df.columns)
+        if missing:
+            raise ValueError(f"Missing required columns: {sorted(missing)}")
+        df = df.rename(
+            columns={
+                col: self._normalize_spec_name(name=col)
+                for col in df.columns
+                if col not in (key, "datetime")
+            }
+        )
+        specs = self._spec_columns()
+        columns = [col for col in df.columns if col not in (key, "datetime")]
+        unknown = sorted(set(columns) - set(specs))
+        if unknown:
+            raise ValueError(f"Column(s) {unknown} name no spec")
+        df["datetime"] = self._to_epoch(series=df["datetime"])
+        df = df.dropna(subset=columns, how="all")
+        df = df.sort_values([key, "datetime"], ignore_index=True)
+        flagged = []
+        for col in columns:
+            spec_id = specs[col]
+            if check_domain:
+                part = df.loc[df[col].notna(), [key, "datetime", col]]
+                part = part.rename(columns={col: "value"}).assign(flag_value=1)
+                part = self._flag_out_of_domain(df=part, spec_id=spec_id)
+                part = part[part["flag_value"] != 1]
+                flagged.append(part.assign(spec_id=spec_id))
+            if transform_values:
+                scale, offset = self.conn.execute(
+                    "SELECT scale, offset FROM specs WHERE id = ?", (spec_id,)
+                ).fetchone()
+                df[col] = df[col] * scale + offset
+        names = ", ".join(f'"{col.lower()}"' for col in columns)
+        marks = ", ".join("?" * (len(columns) + 2))
+        with self.transaction():
+            self.conn.executemany(
+                f"INSERT INTO records ({key}, datetime, {names}) VALUES ({marks})",
+                zip(
+                    df[key].astype("int64").tolist(),
+                    df["datetime"].astype("int64").tolist(),
+                    *[df[col].astype("float64").tolist() for col in columns],
+                ),
+            )
+            for part in flagged:
+                self.conn.executemany(
+                    f"INSERT INTO record_flags (spec_id, {key}, datetime, flag_value) "
+                    "VALUES (?, ?, ?, ?)",
+                    zip(
+                        part["spec_id"].tolist(),
+                        part[key].astype("int64").tolist(),
+                        part["datetime"].astype("int64").tolist(),
+                        part["flag_value"].tolist(),
+                    ),
+                )
+        return None
+
+    # QUERY
+    # -------------------------------------------------------------------
+    def _read_records(self, query_dict):
+        # read the columns asked for, then build the long rows of query_records
+        key = self._FEATURE_KEY
+        specs = pd.read_sql(
+            sql="SELECT id AS spec_id, name AS spec_name, scale, offset FROM specs",
+            con=self.conn,
+        )
+        ids = self._resolve_spec_ids(
+            spec_name=query_dict.get("spec_name"),
+            spec_id=query_dict.get("spec_id"),
+            required=False,
+        )
+        if ids is not None:
+            specs = specs[specs["spec_id"].isin(ids)]
+        # time and site filters apply to both tables; specs and flags are handled here
+        filters = {
+            k: v
+            for k, v in query_dict.items()
+            if k not in ("spec_name", "spec_id", "flag_value")
+        }
+        conditions, params = self._query_filters(query_dict=filters)
+        # one column at a time, skipping empty cells, so the wide table is never
+        # held whole in memory
+        frames = []
+        for name in specs["spec_name"]:
+            where = " AND ".join([f'r."{name.lower()}" IS NOT NULL', *conditions])
+            part = pd.read_sql(
+                sql=f'SELECT r.{key}, r.datetime, r."{name.lower()}" AS value '
+                f"FROM records r WHERE {where}",
+                con=self.conn,
+                params=params,
+            )
+            frames.append(part.assign(spec_name=name))
+        df = pd.concat(frames, ignore_index=True)
+        marks = ",".join("?" * len(specs))
+        flags = pd.read_sql(
+            sql=f"SELECT s.name AS spec_name, r.{key}, r.datetime, r.flag_value "
+            f"FROM record_flags r JOIN specs s ON s.id = r.spec_id "
+            f"WHERE r.spec_id IN ({marks})" + "".join(f" AND {c}" for c in conditions),
+            con=self.conn,
+            params=[*specs["spec_id"].tolist(), *params],
+        )
+        # a flag may stand alone, as a void has no value; most queries have none
+        regular = self._flag_value(name="regular")
+        if len(flags):
+            df = df.merge(flags, on=["spec_name", key, "datetime"], how="outer")
+            df["flag_value"] = df["flag_value"].fillna(regular).astype("int64")
+        else:
+            df["flag_value"] = regular
+        lookup = specs.set_index("spec_name")
+        for col in ("spec_id", "scale", "offset"):
+            df[col] = df["spec_name"].map(lookup[col])
+        chosen = query_dict.get("flag_value")
+        if chosen is not None:
+            df = df[df["flag_value"].isin(self._as_list(chosen))]
+        return df.sort_values(list(self._ORDER_BY), ignore_index=True)
+
+
+class HydrologyDenseDB(HydrologyDB, DenseFieldDB):
+    """
+    Hydrology database in the wide layout: reaches, optional catchments, dense series.
+
+    It joins :class:`HydrologyDB` and :class:`DenseFieldDB`. Sites, catchments, the
+    ``catchments`` setup section and the catchment methods work as in the first;
+    records, :meth:`insert_wide` and queries as in the second. It suits catchment
+    datasets with many specs over the same days (eg, rain, streamflow and
+    evapotranspiration from several sources), where most rows are filled.
+
+    Specs may mix timesteps, as in :class:`DenseFieldDB`, which suits daily series
+    with a few pentad, monthly or yearly specs (eg, land use shares).
+
+    :param name: database name
+    :type name: str
+    :param alias: short alias
+    :type alias: str, optional
+    """
 
 
 class LabDB(SitesDB):

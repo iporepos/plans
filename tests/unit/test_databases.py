@@ -68,6 +68,8 @@ from plans.databases import (
     SitesDB,
     FieldDB,
     HydrologyDB,
+    DenseFieldDB,
+    HydrologyDenseDB,
     LabDB,
     DATA_SQL_DIR,
     _TABLE_ORDER,
@@ -1768,6 +1770,315 @@ class TestHydrologyDB(unittest.TestCase):
         self.assertEqual(df["site_id"].tolist(), [7])
         fks = self.db.query_sql(sql="PRAGMA foreign_key_list(records)")
         self.assertIn("sites", fks["table"].tolist())
+
+
+class TestDenseFieldDB(unittest.TestCase):
+    """
+    Wide layout, built once next to a FieldDB with the same records: sites S1
+    and S2, specs TAS and HUR (scaled), PPT; HUR at S1 has one value outside its
+    domain and PPT at S2 one void. Tests that insert use times of their own.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Runs once before all tests in this class.
+        """
+        cls.temp_dir = Path(tempfile.mkdtemp())
+        base = dict(SPECS[0], timestep="1h", offset=0, statistic_name="instant")
+        cls.specs = [
+            dict(base, name="TAS", variable_name="surface air temperature", scale=10),
+            dict(
+                base,
+                name="HUR",
+                variable_name="surface air relative humidity",
+                scale=100,
+            ),
+            dict(base, name="PPT", variable_name="precipitation", scale=1),
+        ]
+        cls.file_specs = cls.temp_dir / "specs.json"
+        cls.file_specs.write_text(json.dumps(cls.specs), encoding="utf-8")
+        cls.file_sites = cls.temp_dir / "sites.gpkg"
+        gpd.GeoDataFrame(
+            {"name": ["S1", "S2"]},
+            geometry=[Point(0, 0), Point(1, 1)],
+            crs="EPSG:4326",
+        ).to_file(filename=cls.file_sites, driver="GPKG")
+        times = ["2019-01-01 00:00", "2019-01-01 01:00"]
+        loads = {
+            "TAS": pd.DataFrame(
+                {"datetime": times, "value": [18.5, 19.0], "site_name": "S1"}
+            ),
+            "HUR": pd.DataFrame(
+                {"datetime": times, "value": [0.9, 1.5], "site_name": "S1"}
+            ),
+            "PPT": pd.DataFrame(
+                {"datetime": times, "value": [2.0, np.nan], "site_name": "S2"}
+            ),
+        }
+        cls.dense = DenseFieldDB(name="dense")
+        cls.long = FieldDB(name="long")
+        with warnings.catch_warnings():
+            warnings.simplefilter(action="ignore")
+            for db in (cls.dense, cls.long):
+                db.new(config=cls._config(path=cls.temp_dir / f"{db.name}.gpkg"))
+                for spec, df in loads.items():
+                    db.insert_records(
+                        dataframe=df, spec_name=spec, flag=1, nan_policy="void"
+                    )
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Runs once after all tests in this class.
+        """
+        cls.dense.close()
+        cls.long.close()
+        shutil.rmtree(cls.temp_dir)
+        return None
+
+    @classmethod
+    def _config(cls, path, file_specs=None):
+        # setup dict
+        return {
+            "database": {"path": str(path)},
+            "specs": {"path": str(file_specs or cls.file_specs)},
+            "spatial": {"file": str(cls.file_sites)},
+        }
+
+    def test_schema(self):
+        info = self.dense.query_sql(sql="PRAGMA table_info(records)")
+        self.assertEqual(
+            info["name"].tolist(), ["site_id", "datetime", "tas", "hur", "ppt"]
+        )
+        sql = self.dense.query_sql(
+            sql="SELECT sql FROM sqlite_master WHERE name = 'records'"
+        )["sql"].iloc[0]
+        self.assertIn("WITHOUT ROWID", sql)
+        # values are stored scaled, and only flags that are not regular take rows
+        stored = self.dense.conn.execute(
+            "SELECT tas, hur FROM records WHERE site_id = 1 ORDER BY datetime"
+        ).fetchall()
+        self.assertEqual(stored, [(185.0, 90.0), (190.0, 150.0)])
+        flags = self.dense.query_sql(
+            sql="SELECT flag_value FROM record_flags WHERE datetime < 1577836800"
+        )
+        self.assertEqual(sorted(flags["flag_value"].tolist()), [0, 2])
+
+    def test_queries_match_long_layout(self):
+        columns = ["spec_name", "site_id", "datetime", "value", "flag_value"]
+        queries = {
+            "all": {},
+            "site": {"site_name": "S1"},
+            "spec": {"spec_name": "HUR"},
+            "time": {"start": "2019-01-01 01:00"},
+            "suspect": {"flag_value": 2},
+            "void": {"flag_value": 0},
+            "stored": {"site_name": "S1", "transform_values": False},
+        }
+        for label, query in queries.items():
+            with self.subTest(label=label):
+                # bounded to the setup records, as other tests insert later ones
+                query = {"end": "2019-12-31", **query}
+                a, b = [
+                    db.query_records(query_dict=query)[columns].sort_values(
+                        columns[:3], ignore_index=True
+                    )
+                    for db in (self.dense, self.long)
+                ]
+                pd.testing.assert_frame_equal(a, b, check_dtype=False)
+        wide = self.dense.query_records(
+            query_dict={"site_name": "S1", "spec_name": ["TAS", "HUR"], "wide": True}
+        )
+        self.assertEqual(wide[("HUR", 1)].tolist(), [0.9, 1.5])
+
+    def test_insert_wide(self):
+        # lower-case names, an empty row and a value outside the domain
+        with self.assertWarns(UserWarning):
+            self.dense.insert_wide(
+                dataframe=pd.DataFrame(
+                    {
+                        "site_name": ["S2", "S2", "S2"],
+                        "datetime": [
+                            "2020-01-01 00:00",
+                            "2020-01-01 01:00",
+                            "2020-01-01 02:00",
+                        ],
+                        "tas": [10.1, np.nan, np.nan],
+                        "hur": [0.5, 2.0, np.nan],
+                    }
+                )
+            )
+        df = self.dense.query_records(query_dict={"start": "2020-01-01"})
+        self.assertEqual(len(df), 3)
+        self.assertEqual(df.loc[df["value"] == 2.0, "flag_value"].tolist(), [2])
+        rows = self.dense.conn.execute(
+            "SELECT COUNT(*) FROM records WHERE datetime >= 1577836800"
+        ).fetchone()[0]
+        self.assertEqual(rows, 2)
+
+    def test_refuses(self):
+        cases = {
+            "replicate": lambda: self.dense.insert_records(
+                dataframe=pd.DataFrame(
+                    {
+                        "datetime": ["2019-01-01 00:00"],
+                        "value": [1.0],
+                        "site_name": "S1",
+                    }
+                ),
+                spec_name="TAS",
+                flag=1,
+            ),
+            "replicate_in_batch": lambda: self.dense.insert_records(
+                dataframe=pd.DataFrame(
+                    {
+                        "datetime": ["2021-01-01"] * 2,
+                        "value": [1.0, 2.0],
+                        "site_name": "S2",
+                    }
+                ),
+                spec_name="TAS",
+                flag=1,
+            ),
+            "unknown_spec": lambda: self.dense.insert_wide(
+                dataframe=pd.DataFrame(
+                    {"datetime": ["2021-01-01"], "site_id": [1], "NOPE": [1.0]}
+                )
+            ),
+        }
+        for label, insert in cases.items():
+            with self.subTest(label=label):
+                with self.assertRaises(ValueError):
+                    insert()
+        # the first value stays, and the refused batch left nothing
+        tas = self.dense.query_records(
+            query_dict={"spec_name": "TAS", "site_name": "S1", "end": "2019-01-01"}
+        )
+        self.assertEqual(tas["value"].tolist(), [18.5])
+        late = self.dense.query_records(query_dict={"start": "2021-01-01"})
+        self.assertEqual(len(late), 0)
+
+    def test_mixed_timesteps(self):
+        # a monthly spec loads alone: into the rows of daily values, or new rows
+        file_specs = self.temp_dir / "mixed.json"
+        mixed = [
+            dict(self.specs[2], timestep="1D"),
+            dict(self.specs[2], name="PET", timestep="1M", statistic_name="sum"),
+        ]
+        file_specs.write_text(json.dumps(mixed), encoding="utf-8")
+        db = DenseFieldDB(name="mixed")
+        db.new(
+            config=self._config(
+                path=self.temp_dir / "mixed.gpkg", file_specs=file_specs
+            )
+        )
+        try:
+            days = pd.date_range(start="2020-01-01", periods=40, freq="D")
+            db.insert_records(
+                dataframe=pd.DataFrame(
+                    {"datetime": days, "value": 1.0, "site_name": "S1"}
+                ),
+                spec_name="PPT",
+                flag=1,
+            )
+            db.insert_records(
+                dataframe=pd.DataFrame(
+                    {
+                        "datetime": ["2020-01-01", "2020-02-01", "2020-03-01"],
+                        "value": [90.0, 80.0, 70.0],
+                        "site_name": "S1",
+                    }
+                ),
+                spec_name="PET",
+                flag=1,
+            )
+            rows = db.conn.execute("SELECT COUNT(*) FROM records").fetchone()[0]
+            self.assertEqual(rows, 41)  # March is past the daily values
+            pet = db.query_records(query_dict={"spec_name": "PET"})
+            self.assertEqual(pet["value"].tolist(), [90.0, 80.0, 70.0])
+            wide = db.query_records(query_dict={"site_name": "S1", "wide": True})
+            self.assertEqual(int(wide[("PET", 1)].notna().sum()), 3)
+        finally:
+            db.close()
+
+
+class TestHydrologyDenseDB(unittest.TestCase):
+    """
+    The joined class, in one end-to-end test: catchments from the parent, wide
+    records from the other, with a daily and a monthly spec.
+    """
+
+    def test_end_to_end(self):
+        temp_dir = Path(tempfile.mkdtemp())
+        try:
+            base = dict(SPECS[0], offset=0, scale=10)
+            specs = [
+                dict(base, name="PPT", timestep="1D"),
+                dict(base, name="PET", timestep="1M"),
+            ]
+            file_specs = temp_dir / "specs.json"
+            file_specs.write_text(json.dumps(specs), encoding="utf-8")
+            file_sites = temp_dir / "sites.gpkg"
+            gpd.GeoDataFrame(
+                {"name": ["G1", "G2"]},
+                geometry=[Point(0, 0), Point(1, 1)],
+                crs="EPSG:4326",
+            ).to_file(filename=file_sites, driver="GPKG")
+            file_catchments = temp_dir / "catchments.gpkg"
+            gpd.GeoDataFrame(
+                {"name": ["G1"], "area_km2": [10.0]},
+                geometry=[box(0, 0, 1, 1)],
+                crs="EPSG:4326",
+            ).to_file(filename=file_catchments, driver="GPKG")
+            db = HydrologyDenseDB(name="hydro")
+            db.new(
+                config={
+                    "database": {"path": str(temp_dir / "hydro.gpkg")},
+                    "specs": {"path": str(file_specs)},
+                    "spatial": {"file": str(file_sites)},
+                    "catchments": {
+                        "file": str(file_catchments),
+                        "columns_map": {"area_km2": "area_km2"},
+                    },
+                }
+            )
+            try:
+                self.assertEqual(db.missing_catchments(), ["G2"])
+                self.assertEqual(db.get_catchments()["area_km2"].tolist(), [10.0])
+                columns = db.query_sql(sql="PRAGMA table_info(records)")["name"]
+                self.assertEqual(
+                    columns.tolist(), ["site_id", "datetime", "ppt", "pet"]
+                )
+                db.insert_wide(
+                    dataframe=pd.DataFrame(
+                        {
+                            "site_name": ["G1", "G1"],
+                            "datetime": ["2020-01-01", "2020-01-02"],
+                            "ppt": [3.2, 0.0],
+                        }
+                    )
+                )
+                db.insert_records(
+                    dataframe=pd.DataFrame(
+                        {
+                            "site_name": ["G1"],
+                            "datetime": ["2020-01-01"],
+                            "value": [95.0],
+                        }
+                    ),
+                    spec_name="PET",
+                    flag=1,
+                )
+                df = db.query_records(query_dict={"site_name": "G1"})
+                self.assertEqual(
+                    sorted(zip(df["spec_name"], df["value"])),
+                    [("PET", 95.0), ("PPT", 0.0), ("PPT", 3.2)],
+                )
+            finally:
+                db.close()
+        finally:
+            shutil.rmtree(temp_dir)
 
 
 class TestLabDB(unittest.TestCase):
