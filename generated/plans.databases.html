@@ -436,8 +436,10 @@ regular grids whose features are kept outside the database.
 <a class="reference internal" href="#plans.databases.PathsDB" title="plans.databases.PathsDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathsDB</span></code></a> and <a class="reference internal" href="#plans.databases.SitesDB" title="plans.databases.SitesDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">SitesDB</span></code></a> accept polygons, lines or points only,
 and records point to them by <code class="docutils literal notranslate"><span class="pre">zone_id</span></code>, <code class="docutils literal notranslate"><span class="pre">path_id</span></code> or <code class="docutils literal notranslate"><span class="pre">site_id</span></code>.
 <a class="reference internal" href="#plans.databases.SitesDB" title="plans.databases.SitesDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">SitesDB</span></code></a> branches into <a class="reference internal" href="#plans.databases.FieldDB" title="plans.databases.FieldDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDB</span></code></a> (in situ measurements), itself
-extended by <a class="reference internal" href="#plans.databases.HydrologyDB" title="plans.databases.HydrologyDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">HydrologyDB</span></code></a> (river reaches with optional catchments), and
-<a class="reference internal" href="#plans.databases.LabDB" title="plans.databases.LabDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabDB</span></code></a> (laboratory analyses of samples taken at the sites).</p>
+extended by <a class="reference internal" href="#plans.databases.HydrologyDB" title="plans.databases.HydrologyDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">HydrologyDB</span></code></a> (river reaches with optional catchments) and
+<a class="reference internal" href="#plans.databases.DenseFieldDB" title="plans.databases.DenseFieldDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">DenseFieldDB</span></code></a> (a wide layout for dense series), joined in
+<a class="reference internal" href="#plans.databases.HydrologyDenseDB" title="plans.databases.HydrologyDenseDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">HydrologyDenseDB</span></code></a>, and <a class="reference internal" href="#plans.databases.LabDB" title="plans.databases.LabDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabDB</span></code></a> (laboratory analyses of samples
+taken at the sites).</p>
 <p>Table and column names are lowercase words joined by <code class="docutils literal notranslate"><span class="pre">_</span></code>; tables are plural,
 and a foreign key is the singular table name plus the target column
 (<code class="docutils literal notranslate"><span class="pre">variable_name</span></code> points to <code class="docutils literal notranslate"><span class="pre">variables.name</span></code>). In <a class="reference internal" href="#plans.databases.SemiSpatialDB" title="plans.databases.SemiSpatialDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">SemiSpatialDB</span></code></a>,
@@ -587,11 +589,17 @@ domain fails at database creation.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#plans.databases.DataBase" title="plans.databases.DataBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataBase</span></code></a>(name[, alias])</p></td>
 <td><p>Base SQLite database with a structured schema.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#plans.databases.FieldDB" title="plans.databases.FieldDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FieldDB</span></code></a>(name[, alias])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.databases.DenseFieldDB" title="plans.databases.DenseFieldDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DenseFieldDB</span></code></a>(name[, alias])</p></td>
+<td><p>Field database in a wide layout, for dense and regular series (eg, hourly).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.databases.FieldDB" title="plans.databases.FieldDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FieldDB</span></code></a>(name[, alias])</p></td>
 <td><p>Sites database for in situ measurements (eg, a climate station network).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#plans.databases.HydrologyDB" title="plans.databases.HydrologyDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HydrologyDB</span></code></a>(name[, alias])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.databases.HydrologyDB" title="plans.databases.HydrologyDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HydrologyDB</span></code></a>(name[, alias])</p></td>
 <td><p>Sites database for water body reaches, with an optional catchment per site.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.databases.HydrologyDenseDB" title="plans.databases.HydrologyDenseDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HydrologyDenseDB</span></code></a>(name[, alias])</p></td>
+<td><p>Hydrology database in the wide layout: reaches, optional catchments, dense series.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#plans.databases.LabDB" title="plans.databases.LabDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LabDB</span></code></a>(name[, alias])</p></td>
 <td><p>Sites database for laboratory analyses of field samples.</p></td>
@@ -677,6 +685,11 @@ columns), and override methods where the schema diverges.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="plans.databases.DataBase._WIDE_INDEX">
 <span class="sig-name descname"><span class="pre">_WIDE_INDEX</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'datetime'</span></span><a class="headerlink" href="#plans.databases.DataBase._WIDE_INDEX" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.DataBase._ROW_ORDER">
+<span class="sig-name descname"><span class="pre">_ROW_ORDER</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('id',)</span></span><a class="headerlink" href="#plans.databases.DataBase._ROW_ORDER" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1199,6 +1212,11 @@ flag, date or column is invalid</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.DataBase._write_records">
+<span class="sig-name descname"><span class="pre">_write_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_extra</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#DataBase._write_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.DataBase._write_records" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="plans.databases.DataBase.insert_record">
 <span class="sig-name descname"><span class="pre">insert_record</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nan_policy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'drop'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_extra</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#DataBase.insert_record"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.DataBase.insert_record" title="Link to this definition">#</a></dt>
 <dd><p>Insert a single record from a plain dict.</p>
@@ -1336,6 +1354,11 @@ or <code class="docutils literal notranslate"><span class="pre">wide</span></cod
 </pre></div>
 </div>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.DataBase._read_records">
+<span class="sig-name descname"><span class="pre">_read_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#DataBase._read_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.DataBase._read_records" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.databases.DataBase._query_source">
@@ -2347,6 +2370,188 @@ is repeated, or a column or geometry does not fit the layer</p></li>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="plans.databases.DenseFieldDB">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">plans.databases.</span></span><span class="sig-name descname"><span class="pre">DenseFieldDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#DenseFieldDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.DenseFieldDB" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#plans.databases.FieldDB" title="plans.databases.FieldDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDB</span></code></a></p>
+<p>Field database in a wide layout, for dense and regular series (eg, hourly).</p>
+<p><code class="docutils literal notranslate"><span class="pre">records</span></code> holds one row per site and time, with one column per spec, instead
+of one row per value. The columns are created from the specs, each named after
+its spec in lowercase. Rows are stored by site and then time, so a station
+series reads fast, while one variable over all stations scans the table.</p>
+<p>Values are <code class="docutils literal notranslate"><span class="pre">regular</span></code> unless <code class="docutils literal notranslate"><span class="pre">record_flags</span></code> says otherwise, so flags take no
+space until a value needs one. <code class="xref py py-meth docutils literal notranslate"><span class="pre">query_records()</span></code> keeps its keys and output,
+without the <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">inserted</span></code> columns of the long layout.</p>
+<p>Each spec loads on its own, in any order, into its column: a value fills the
+row of its site and time, which is created if missing. There are no
+replicates: a second value for the same spec, site and time raises. Specs
+cannot be added after creation yet.</p>
+<p>Specs may mix timesteps. A coarse value sits on one row, and the rows between
+two values keep an empty cell, about one byte each: a monthly spec next to daily
+ones costs about 30 bytes per value, close to the long layout. This suits a few
+coarse specs next to many fine ones (eg, yearly land use next to daily
+series). Many coarse specs, or a step far finer than the rest (eg, monthly next
+to hourly), are better kept in a separate database. Coarse values should share
+the timestamps of the fine rows (eg, the first day of the month at 00:00), or
+each adds a row of its own.</p>
+<p><code class="docutils literal notranslate"><span class="pre">records</span></code> and <code class="docutils literal notranslate"><span class="pre">record_flags</span></code> are <code class="docutils literal notranslate"><span class="pre">WITHOUT</span> <span class="pre">ROWID</span></code> tables, which GDAL cannot
+open, so a GIS shows the sites and the catalogs but reads no records; they are
+read through <code class="xref py py-meth docutils literal notranslate"><span class="pre">query_records()</span></code> or SQL. Queries build long rows in pandas, so
+one variable over all sites and all times takes memory in proportion; filter by
+site or time for large files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – database name</p></li>
+<li><p><strong>alias</strong> (<em>str</em><em>, </em><em>optional</em>) – short alias</p></li>
+</ul>
+</dd>
+<dt class="field-even">Example<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">db</span><span class="o">.</span><span class="n">insert_wide</span><span class="p">(</span>
+    <span class="n">dataframe</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">"site_name"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"A001"</span><span class="p">,</span> <span class="s2">"A001"</span><span class="p">],</span>
+            <span class="s2">"datetime"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"2019-01-01 00:00"</span><span class="p">,</span> <span class="s2">"2019-01-01 01:00"</span><span class="p">],</span>
+            <span class="s2">"PPT_HOURLY"</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+            <span class="s2">"TAS_HOURLY"</span><span class="p">:</span> <span class="p">[</span><span class="mf">18.5</span><span class="p">,</span> <span class="mf">18.4</span><span class="p">],</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query_records</span><span class="p">(</span><span class="n">query_dict</span><span class="o">=</span><span class="p">{</span><span class="s2">"site_name"</span><span class="p">:</span> <span class="s2">"A001"</span><span class="p">,</span> <span class="s2">"wide"</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.DenseFieldDB._TABLES">
+<span class="sig-name descname"><span class="pre">_TABLES</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('variables',</span> <span class="pre">'flags',</span> <span class="pre">'sources',</span> <span class="pre">'statistics',</span> <span class="pre">'specs')</span></span><a class="headerlink" href="#plans.databases.DenseFieldDB._TABLES" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.DenseFieldDB._EPOCH_OUTPUT">
+<span class="sig-name descname"><span class="pre">_EPOCH_OUTPUT</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('datetime',)</span></span><a class="headerlink" href="#plans.databases.DenseFieldDB._EPOCH_OUTPUT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.DenseFieldDB._ROW_ORDER">
+<span class="sig-name descname"><span class="pre">_ROW_ORDER</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('site_id',</span> <span class="pre">'datetime')</span></span><a class="headerlink" href="#plans.databases.DenseFieldDB._ROW_ORDER" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.DenseFieldDB._spec_columns">
+<span class="sig-name descname"><span class="pre">_spec_columns</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#DenseFieldDB._spec_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.DenseFieldDB._spec_columns" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.DenseFieldDB._finalize_file">
+<span class="sig-name descname"><span class="pre">_finalize_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#DenseFieldDB._finalize_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.DenseFieldDB._finalize_file" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.DenseFieldDB._write_records">
+<span class="sig-name descname"><span class="pre">_write_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_extra</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#DenseFieldDB._write_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.DenseFieldDB._write_records" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.DenseFieldDB.insert_wide">
+<span class="sig-name descname"><span class="pre">insert_wide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#DenseFieldDB.insert_wide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.DenseFieldDB.insert_wide" title="Link to this definition">#</a></dt>
+<dd><p>Insert a wide table, the fast path for bulk loads.</p>
+<p>Columns are <code class="docutils literal notranslate"><span class="pre">datetime</span></code>, the site as <code class="docutils literal notranslate"><span class="pre">site_id</span></code> or <code class="docutils literal notranslate"><span class="pre">site_name</span></code>, and one
+column per spec, named after it in any case. Empty cells store nothing.
+Values outside the domain of their variable become <code class="docutils literal notranslate"><span class="pre">suspect</span></code>, and all
+others <code class="docutils literal notranslate"><span class="pre">regular</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataframe</strong> (<em>pandas.DataFrame</em>) – one row per site and time</p></li>
+<li><p><strong>transform_values</strong> (<em>bool</em>) – apply the spec transform; <code class="docutils literal notranslate"><span class="pre">False</span></code> means values
+are already stored numbers</p></li>
+<li><p><strong>check_domain</strong> (<em>bool</em>) – flag values outside the variable domain; it reads actual
+values, so it needs <code class="docutils literal notranslate"><span class="pre">transform_values</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if a column names no spec, the site or datetime is
+missing, or a site and time already exist</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.DenseFieldDB._read_records">
+<span class="sig-name descname"><span class="pre">_read_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#DenseFieldDB._read_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.DenseFieldDB._read_records" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.DenseFieldDB._ORDER_BY">
+<span class="sig-name descname"><span class="pre">_ORDER_BY</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('spec_id',</span> <span class="pre">'site_id',</span> <span class="pre">'datetime')</span></span><a class="headerlink" href="#plans.databases.DenseFieldDB._ORDER_BY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.DenseFieldDB._QUERY_KEYS">
+<span class="sig-name descname"><span class="pre">_QUERY_KEYS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('spec_name',</span> <span class="pre">'spec_id',</span> <span class="pre">'start',</span> <span class="pre">'end',</span> <span class="pre">'flag_value',</span> <span class="pre">'transform_values',</span> <span class="pre">'wide',</span> <span class="pre">'aggfunc',</span> <span class="pre">'with_meta',</span> <span class="pre">'site_id',</span> <span class="pre">'site_name')</span></span><a class="headerlink" href="#plans.databases.DenseFieldDB._QUERY_KEYS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.DenseFieldDB._RECORD_COLUMNS">
+<span class="sig-name descname"><span class="pre">_RECORD_COLUMNS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('datetime',</span> <span class="pre">'value',</span> <span class="pre">'site_id')</span></span><a class="headerlink" href="#plans.databases.DenseFieldDB._RECORD_COLUMNS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.DenseFieldDB._WIDE_COLUMNS">
+<span class="sig-name descname"><span class="pre">_WIDE_COLUMNS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('spec_name',</span> <span class="pre">'site_id')</span></span><a class="headerlink" href="#plans.databases.DenseFieldDB._WIDE_COLUMNS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDenseDB">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">plans.databases.</span></span><span class="sig-name descname"><span class="pre">HydrologyDenseDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#HydrologyDenseDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.HydrologyDenseDB" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#plans.databases.HydrologyDB" title="plans.databases.HydrologyDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">HydrologyDB</span></code></a>, <a class="reference internal" href="#plans.databases.DenseFieldDB" title="plans.databases.DenseFieldDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">DenseFieldDB</span></code></a></p>
+<p>Hydrology database in the wide layout: reaches, optional catchments, dense series.</p>
+<p>It joins <a class="reference internal" href="#plans.databases.HydrologyDB" title="plans.databases.HydrologyDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">HydrologyDB</span></code></a> and <a class="reference internal" href="#plans.databases.DenseFieldDB" title="plans.databases.DenseFieldDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">DenseFieldDB</span></code></a>. Sites, catchments, the
+<code class="docutils literal notranslate"><span class="pre">catchments</span></code> setup section and the catchment methods work as in the first;
+records, <code class="xref py py-meth docutils literal notranslate"><span class="pre">insert_wide()</span></code> and queries as in the second. It suits catchment
+datasets with many specs over the same days (eg, rain, streamflow and
+evapotranspiration from several sources), where most rows are filled.</p>
+<p>Specs may mix timesteps, as in <a class="reference internal" href="#plans.databases.DenseFieldDB" title="plans.databases.DenseFieldDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">DenseFieldDB</span></code></a>, which suits daily series
+with a few pentad, monthly or yearly specs (eg, land use shares).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – database name</p></li>
+<li><p><strong>alias</strong> (<em>str</em><em>, </em><em>optional</em>) – short alias</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDenseDB._ORDER_BY">
+<span class="sig-name descname"><span class="pre">_ORDER_BY</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('spec_id',</span> <span class="pre">'site_id',</span> <span class="pre">'datetime')</span></span><a class="headerlink" href="#plans.databases.HydrologyDenseDB._ORDER_BY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDenseDB._QUERY_KEYS">
+<span class="sig-name descname"><span class="pre">_QUERY_KEYS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('spec_name',</span> <span class="pre">'spec_id',</span> <span class="pre">'start',</span> <span class="pre">'end',</span> <span class="pre">'flag_value',</span> <span class="pre">'transform_values',</span> <span class="pre">'wide',</span> <span class="pre">'aggfunc',</span> <span class="pre">'with_meta',</span> <span class="pre">'site_id',</span> <span class="pre">'site_name')</span></span><a class="headerlink" href="#plans.databases.HydrologyDenseDB._QUERY_KEYS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDenseDB._RECORD_COLUMNS">
+<span class="sig-name descname"><span class="pre">_RECORD_COLUMNS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('datetime',</span> <span class="pre">'value',</span> <span class="pre">'site_id')</span></span><a class="headerlink" href="#plans.databases.HydrologyDenseDB._RECORD_COLUMNS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDenseDB._WIDE_COLUMNS">
+<span class="sig-name descname"><span class="pre">_WIDE_COLUMNS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('spec_name',</span> <span class="pre">'site_id')</span></span><a class="headerlink" href="#plans.databases.HydrologyDenseDB._WIDE_COLUMNS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="plans.databases.LabDB">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">plans.databases.</span></span><span class="sig-name descname"><span class="pre">LabDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#LabDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.LabDB" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#plans.databases.SitesDB" title="plans.databases.SitesDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">SitesDB</span></code></a></p>
@@ -2581,6 +2786,7 @@ least one sample from those sites.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase._TIME_SQL"><code class="docutils literal notranslate"><span class="pre">DataBase._TIME_SQL</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase._EPOCH_OUTPUT"><code class="docutils literal notranslate"><span class="pre">DataBase._EPOCH_OUTPUT</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase._WIDE_INDEX"><code class="docutils literal notranslate"><span class="pre">DataBase._WIDE_INDEX</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase._ROW_ORDER"><code class="docutils literal notranslate"><span class="pre">DataBase._ROW_ORDER</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase.__init__"><code class="docutils literal notranslate"><span class="pre">DataBase.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase.connect"><code class="docutils literal notranslate"><span class="pre">DataBase.connect()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase.close"><code class="docutils literal notranslate"><span class="pre">DataBase.close()</span></code></a></li>
@@ -2615,9 +2821,11 @@ least one sample from those sites.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase.insert_rows"><code class="docutils literal notranslate"><span class="pre">DataBase.insert_rows()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase.insert_row"><code class="docutils literal notranslate"><span class="pre">DataBase.insert_row()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase.insert_records"><code class="docutils literal notranslate"><span class="pre">DataBase.insert_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase._write_records"><code class="docutils literal notranslate"><span class="pre">DataBase._write_records()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase.insert_record"><code class="docutils literal notranslate"><span class="pre">DataBase.insert_record()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase.load_records"><code class="docutils literal notranslate"><span class="pre">DataBase.load_records()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase.query_records"><code class="docutils literal notranslate"><span class="pre">DataBase.query_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase._read_records"><code class="docutils literal notranslate"><span class="pre">DataBase._read_records()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase._query_source"><code class="docutils literal notranslate"><span class="pre">DataBase._query_source()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase._query_filters"><code class="docutils literal notranslate"><span class="pre">DataBase._query_filters()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DataBase._spec_meta"><code class="docutils literal notranslate"><span class="pre">DataBase._spec_meta()</span></code></a></li>
@@ -2731,6 +2939,28 @@ least one sample from those sites.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB._QUERY_KEYS"><code class="docutils literal notranslate"><span class="pre">HydrologyDB._QUERY_KEYS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB._RECORD_COLUMNS"><code class="docutils literal notranslate"><span class="pre">HydrologyDB._RECORD_COLUMNS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB._WIDE_COLUMNS"><code class="docutils literal notranslate"><span class="pre">HydrologyDB._WIDE_COLUMNS</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DenseFieldDB"><code class="docutils literal notranslate"><span class="pre">DenseFieldDB</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DenseFieldDB._TABLES"><code class="docutils literal notranslate"><span class="pre">DenseFieldDB._TABLES</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DenseFieldDB._EPOCH_OUTPUT"><code class="docutils literal notranslate"><span class="pre">DenseFieldDB._EPOCH_OUTPUT</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DenseFieldDB._ROW_ORDER"><code class="docutils literal notranslate"><span class="pre">DenseFieldDB._ROW_ORDER</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DenseFieldDB._spec_columns"><code class="docutils literal notranslate"><span class="pre">DenseFieldDB._spec_columns()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DenseFieldDB._finalize_file"><code class="docutils literal notranslate"><span class="pre">DenseFieldDB._finalize_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DenseFieldDB._write_records"><code class="docutils literal notranslate"><span class="pre">DenseFieldDB._write_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DenseFieldDB.insert_wide"><code class="docutils literal notranslate"><span class="pre">DenseFieldDB.insert_wide()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DenseFieldDB._read_records"><code class="docutils literal notranslate"><span class="pre">DenseFieldDB._read_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DenseFieldDB._ORDER_BY"><code class="docutils literal notranslate"><span class="pre">DenseFieldDB._ORDER_BY</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DenseFieldDB._QUERY_KEYS"><code class="docutils literal notranslate"><span class="pre">DenseFieldDB._QUERY_KEYS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DenseFieldDB._RECORD_COLUMNS"><code class="docutils literal notranslate"><span class="pre">DenseFieldDB._RECORD_COLUMNS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.DenseFieldDB._WIDE_COLUMNS"><code class="docutils literal notranslate"><span class="pre">DenseFieldDB._WIDE_COLUMNS</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDenseDB"><code class="docutils literal notranslate"><span class="pre">HydrologyDenseDB</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDenseDB._ORDER_BY"><code class="docutils literal notranslate"><span class="pre">HydrologyDenseDB._ORDER_BY</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDenseDB._QUERY_KEYS"><code class="docutils literal notranslate"><span class="pre">HydrologyDenseDB._QUERY_KEYS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDenseDB._RECORD_COLUMNS"><code class="docutils literal notranslate"><span class="pre">HydrologyDenseDB._RECORD_COLUMNS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDenseDB._WIDE_COLUMNS"><code class="docutils literal notranslate"><span class="pre">HydrologyDenseDB._WIDE_COLUMNS</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.LabDB"><code class="docutils literal notranslate"><span class="pre">LabDB</span></code></a><ul class="nav section-nav flex-column">
