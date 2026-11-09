@@ -15,7 +15,8 @@ regular grids whose features are kept outside the database.
 ``features`` layer of any geometry type. Its children :class:`ZonesDB`,
 :class:`PathsDB` and :class:`SitesDB` accept polygons, lines or points only,
 and records point to them by ``zone_id``, ``path_id`` or ``site_id``.
-:class:`SitesDB` branches into :class:`FieldDB` (in situ measurements) and
+:class:`SitesDB` branches into :class:`FieldDB` (in situ measurements), itself
+extended by :class:`HydrologyDB` (river reaches with optional catchments), and
 :class:`LabDB` (laboratory analyses of samples taken at the sites).
 
 Table and column names are lowercase words joined by ``_``; tables are plural,
@@ -23,16 +24,42 @@ and a foreign key is the singular table name plus the target column
 (``variable_name`` points to ``variables.name``). In :class:`SemiSpatialDB`,
 ``feature_id`` is the exception: it points to features outside the database.
 
-A new database is created from a TOML (or JSON) setup file::
+A new database is created from a setup, given as a dict or as the path to a TOML
+or JSON file with the same structure:
 
-    [database]
-    path = "hydro.db"
+.. tab-set::
+    :sync-group: setup
 
-    [specs]
-    path = "my_specs.json"      # .csv also accepted; format inferred from extension
+    .. tab-item:: TOML
+        :sync: toml
 
-    [catalogs]                  # optional overrides; omitted keys fall back to defaults
-    variables = "my_vars.csv"
+        .. code-block:: toml
+
+            [database]
+            path = "hydro.db"
+
+            [specs]
+            path = "my_specs.json"
+
+            [catalogs]
+            variables = "my_vars.csv"
+
+    .. tab-item:: JSON
+        :sync: json
+
+        .. code-block:: json
+
+            {
+              "database": {"path": "hydro.db"},
+              "specs": {"path": "my_specs.json"},
+              "catalogs": {"variables": "my_vars.csv"}
+            }
+
+The specs file may be JSON or CSV, told apart by its extension. The ``catalogs``
+section is optional, and omitted keys fall back to the shipped catalogs. Relative
+paths follow the working directory, not the setup file. Both formats refuse single
+backslashes, so Windows paths are written with forward slashes.
+:class:`SpatialDB` adds a ``spatial`` section.
 
 The ``specs`` table describes every dataset stored in ``records``.
 A JSON specs file is a list of objects, one per dataset::
@@ -41,9 +68,9 @@ A JSON specs file is a list of objects, one per dataset::
       {
         "name": "PPT_MONTHLY_CHIRPS",
         "abstract": "Monthly precipitation from CHIRPS v2.0",
-        "method": "spatial average over watershed",
+        "method": "spatial average over catchment",
         "timestep": "1M",
-        "extent": "watershed",
+        "extent": "catchment",
         "scale": 1,
         "offset": 0,
         "start": "1995-01-01",
@@ -126,6 +153,7 @@ triggers and rtree index.
 See prompts/new_features_ideas/plans_databases.md, section 10.
 
 FieldDB() (SitesDB for in situ data; no changes yet).
+HydrologyDB() (FieldDB with an optional catchments layer).
 LabDB() (sites -> samples -> mixtures -> records; no aliquot table),
 see prompts/new_features_ideas/plans_databases_sites.md
 
@@ -140,9 +168,7 @@ FieldDB()
 ---- ClimateDB()
 ---- RainDB()
 
----- HydroDB() this one includes other table with the basins
-
-LabDB() 
+LabDB()
 -- In situ data sampled in the field but generated in the Lab
 More complex schema.
 To be developed
@@ -563,16 +589,39 @@ class DataBase(MbaE):
 
         Creation is all or nothing: on any error the partial file is removed.
 
-        Expected configuration structure (TOML example)::
+        The setup has the same structure as a dict or as a file. Besides the
+        sections below, spatial databases need the one in :class:`SpatialDB`:
 
-            [database]
-            path = "path/to/hydro.db"
+        .. tab-set::
+            :sync-group: setup
 
-            [specs]
-            path = "path/to/my_specs.csv"   # or .json — format detected by extension
+            .. tab-item:: TOML
+                :sync: toml
 
-            [catalogs]           # optional overrides; omitted keys fall back to defaults
-            variables = "path/to/my_variables.csv"
+                .. code-block:: toml
+
+                    [database]
+                    path = "path/to/hydro.db"
+
+                    [specs]
+                    path = "path/to/my_specs.csv"
+
+                    [catalogs]
+                    variables = "path/to/my_variables.csv"
+
+            .. tab-item:: JSON
+                :sync: json
+
+                .. code-block:: json
+
+                    {
+                      "database": {"path": "path/to/hydro.db"},
+                      "specs": {"path": "path/to/my_specs.csv"},
+                      "catalogs": {"variables": "path/to/my_variables.csv"}
+                    }
+
+        The ``catalogs`` section is optional, and omitted keys fall back to the
+        shipped catalogs.
 
         :param config: setup dict or path to a TOML/JSON file
         :type config: dict, str, or Path
@@ -1472,13 +1521,13 @@ class SemiSpatialDB(DataBase):
         import geopandas as gpd
 
         cells = gpd.read_file("grid.gpkg", layer="cells")
-        basin = gpd.read_file("basin.gpkg")
-        ids = gpd.sjoin(cells, basin, predicate="intersects")["id"].tolist()
+        catchment = gpd.read_file("catchment.gpkg")
+        ids = gpd.sjoin(cells, catchment, predicate="intersects")["id"].tolist()
 
         df = db.query_records(
             query_dict={"spec_name": "PPT_MONTHLY_CHIRPS", "feature_id": ids}
         )
-        basin_mean = df.groupby("datetime")["value"].mean()
+        catchment_mean = df.groupby("datetime")["value"].mean()
     """
 
     # this is /src/plans/data/sql/semispatial
@@ -1560,23 +1609,97 @@ class SpatialDB(SemiSpatialDB):
     cannot insert into it, because the GeoPackage triggers call functions that
     only GDAL defines. All other tables work as in :class:`DataBase`.
 
-    The setup file adds a ``[spatial]`` section with the source geometries::
+    The setup adds a ``spatial`` section to those of :meth:`DataBase.new`, and
+    the database path must end in ``.gpkg``:
 
-        [database]
-        path = "basins.gpkg"        # must be a .gpkg file
+    .. tab-set::
+        :sync-group: setup
 
-        [spatial]
-        file = "my_basins.shp"      # any format geopandas reads
-        layer = "basins"            # optional, for files with several layers
+        .. tab-item:: TOML
+            :sync: toml
 
-        [spatial.columns_map]       # optional, {layer column: source column}
-        name = "BasinCode"          # the unique key; defaults to a "name" column
-        basin_code = "BasinCode"    # a source column may be used more than once
-        basin_title = "BasinName"
+            .. code-block:: toml
 
-    Only mapped columns enter the layer. Names are stripped text, from text or
-    integer sources, and must be unique. Ids are generated and only stable inside
-    one file, so a source id worth keeping must be mapped as an attribute.
+                [database]
+                path = "catchments.gpkg"
+
+                [specs]
+                path = "catchments_specs.json"
+
+                [spatial]
+                file = "hydrology.gpkg"
+                layer = "catchments"
+
+                [spatial.columns_map]
+                name = "CatchmentCode"
+                catchment_code = "CatchmentCode"
+                catchment_title = "CatchmentName"
+
+        .. tab-item:: JSON
+            :sync: json
+
+            .. code-block:: json
+
+                {
+                  "database": {"path": "catchments.gpkg"},
+                  "specs": {"path": "catchments_specs.json"},
+                  "spatial": {
+                    "file": "hydrology.gpkg",
+                    "layer": "catchments",
+                    "columns_map": {
+                      "name": "CatchmentCode",
+                      "catchment_code": "CatchmentCode",
+                      "catchment_title": "CatchmentName"
+                    }
+                  }
+                }
+
+    The ``file`` is the source of the features, in any format geopandas reads. The
+    ``layer`` picks one layer of a file with several; without it, the first layer
+    is read, with only a warning.
+
+    The optional ``columns_map`` declares ``{layer column: source column}``, and a
+    source column may be used more than once. Only mapped columns enter the layer.
+    The ``name`` key is the unique key of the features, and defaults to a source
+    column called ``name``. Names are stripped text, from text or integer sources.
+    Ids are generated and only stable inside one file, so a source id worth keeping
+    must be mapped as an attribute.
+
+    A shapefile holds one layer, so the setup leaves ``layer`` out and ``file``
+    points to the ``.shp``, next to its companion files. Shapefile field names stop
+    at 10 characters and the map must use them as read, so a field written as
+    ``CatchmentCode`` is mapped as ``CatchmentC``. Without a ``.prj``, the layer has
+    no CRS:
+
+    .. tab-set::
+        :sync-group: setup
+
+        .. tab-item:: TOML
+            :sync: toml
+
+            .. code-block:: toml
+
+                [spatial]
+                file = "catchments.shp"
+
+                [spatial.columns_map]
+                name = "CatchmentC"
+                catchment_title = "CatchmentN"
+
+        .. tab-item:: JSON
+            :sync: json
+
+            .. code-block:: json
+
+                {
+                  "spatial": {
+                    "file": "catchments.shp",
+                    "columns_map": {
+                      "name": "CatchmentC",
+                      "catchment_title": "CatchmentN"
+                    }
+                  }
+                }
 
     .. warning::
 
@@ -1644,9 +1767,11 @@ class SpatialDB(SemiSpatialDB):
                 "Missing [spatial] section with the source 'file' (and optional 'layer')"
             )
         gdf = gpd.read_file(filename=spatial["file"], layer=spatial.get("layer"))
-        gdf = self._select_columns(gdf=gdf, columns_map=spatial.get("columns_map"))
-        self._check_features(gdf=gdf)
-        self._write_layer(gdf=gdf, file_db=file_db, mode="w")
+        gdf = self._select_columns(
+            gdf=gdf, columns_map=spatial.get("columns_map"), layer=self._LAYER
+        )
+        self._check_features(gdf=gdf, layer=self._LAYER)
+        self._write_layer(gdf=gdf, file_db=file_db, mode="w", layer=self._LAYER)
         return None
 
     def _finalize_file(self, cfg):
@@ -1661,17 +1786,21 @@ class SpatialDB(SemiSpatialDB):
 
     # FEATURES
     # -------------------------------------------------------------------
-    def _clean_names(self, names):
+    def _layer_geometry(self, layer):
+        # accepted geometry types (None: any) and multi-part writing of a layer
+        return self._GEOMETRY_TYPES, self._PROMOTE_TO_MULTI
+
+    def _clean_names(self, names, layer):
         # stripped text from text or integers; floats are refused ("83377.0")
         is_text = pd.api.types.is_string_dtype(names)
         if names.isna().any() or not (is_text or pd.api.types.is_integer_dtype(names)):
-            raise ValueError(f"Every row of {self._LAYER} needs a text or integer name")
+            raise ValueError(f"Every row of {layer} needs a text or integer name")
         names = names.astype(str).str.strip()
         if (names == "").any():
-            raise ValueError(f"Empty name(s) in {self._LAYER}")
+            raise ValueError(f"Empty name(s) in {layer}")
         return names
 
-    def _select_columns(self, gdf, columns_map=None):
+    def _select_columns(self, gdf, columns_map, layer):
         # keep the declared columns only; the id is left for GDAL to generate
         columns_map = {"name": "name", **(columns_map or {})}
         reserved = {col.lower() for col in columns_map} & set(self._RESERVED_COLUMNS)
@@ -1687,22 +1816,38 @@ class SpatialDB(SemiSpatialDB):
             )
         gdf = gdf.reset_index(drop=True)
         data = {col: gdf[source] for col, source in columns_map.items()}
-        data["name"] = self._clean_names(names=data["name"])
+        data["name"] = self._clean_names(names=data["name"], layer=layer)
         return gpd.GeoDataFrame(data, geometry=gdf.geometry.values)
 
-    def _layer_fields(self):
+    def _layer_fields(self, layer):
         # layer columns and declared types, in field order; pandas dtypes of the
         # layer are no use here, since one NULL turns an integer column to float
-        info = self.query_sql(sql=f"PRAGMA table_info({self._LAYER})")
+        info = self.query_sql(sql=f"PRAGMA table_info({layer})")
         info = info[~info["name"].isin(self._RESERVED_COLUMNS)]
         return dict(zip(info["name"], info["type"]))
 
-    def _check_attributes(self, gdf, fields):
+    def _add_columns(self, gdf, fields, layer):
+        # new layer columns, typed from their values; old rows stay NULL
+        for col in gdf.columns.drop(labels="geometry"):
+            if col not in fields:
+                kind = "TEXT"
+                if pd.api.types.is_bool_dtype(gdf[col]):
+                    kind = "BOOLEAN"
+                elif pd.api.types.is_integer_dtype(gdf[col]):
+                    kind = "INTEGER"
+                elif pd.api.types.is_float_dtype(gdf[col]):
+                    kind = "REAL"
+                name = col.replace('"', '""')
+                self.conn.execute(f'ALTER TABLE {layer} ADD COLUMN "{name}" {kind}')
+        self.conn.commit()
+        return self._layer_fields(layer=layer)
+
+    def _check_attributes(self, gdf, fields, layer):
         # GDAL would not refuse these: it writes by position, and coerces
         # text in numeric fields to 0.0 and cuts fractions in integer fields
         unknown = sorted(set(gdf.columns) - set(fields) - {"geometry"})
         if unknown:
-            raise ValueError(f"Column(s) {unknown} not in the {self._LAYER} layer")
+            raise ValueError(f"Column(s) {unknown} not in the {layer} layer")
         for col in gdf.columns.drop(labels=["name", "geometry"]):
             values, kind = gdf[col].dropna(), fields[col].upper()
             is_int = "INT" in kind
@@ -1713,42 +1858,48 @@ class SpatialDB(SemiSpatialDB):
             )
             if not fits:
                 raise ValueError(
-                    f"Values of {col!r} do not fit its {kind} field in {self._LAYER}"
+                    f"Values of {col!r} do not fit its {kind} field in {layer}"
                 )
         return None
 
-    def _check_features(self, gdf):
+    def _check_features(self, gdf, layer):
         # require unique names and non-empty geometries of the accepted types
         names = gdf["name"]
         dups = sorted(set(names[names.duplicated()]))
         if dups:
-            raise ValueError(f"Duplicate {self._LAYER} name(s): {dups}")
+            raise ValueError(f"Duplicate {layer} name(s): {dups}")
         empty = gdf.geometry.isna() | gdf.geometry.is_empty
         if empty.any():
             raise ValueError(
                 f"{int(empty.sum())} row(s) without geometry, eg: "
                 f"{names[empty].head(3).tolist()}"
             )
-        if self._GEOMETRY_TYPES is None:
+        types, _ = self._layer_geometry(layer=layer)
+        if types is None:
             return None
-        bad = sorted(set(gdf.geom_type) - set(self._GEOMETRY_TYPES))
+        bad = sorted(set(gdf.geom_type) - set(types))
         if bad:
             raise ValueError(
-                f"Geometry type(s) {bad} not accepted in {self._LAYER}. "
-                f"Valid: {list(self._GEOMETRY_TYPES)}"
+                f"Geometry type(s) {bad} not accepted in {layer}. "
+                f"Valid: {list(types)}"
             )
         return None
 
-    def _write_layer(self, gdf, file_db, mode):
+    def _write_layer(self, gdf, file_db, mode, layer):
         # GDAL keeps the GeoPackage triggers and the spatial index up to date;
-        # a layer open to any type is declared generic, not typed by its first rows
+        # a layer open to any type is declared generic, not typed by its first
+        # rows, and an empty layer has no rows to be typed by
+        types, promote = self._layer_geometry(layer=layer)
+        geometry_type = "Unknown" if types is None else None
+        if gdf.empty and types is not None:
+            geometry_type = types[-1]
         gdf.to_file(
             filename=file_db,
-            layer=self._LAYER,
+            layer=layer,
             driver="GPKG",
             mode=mode,
-            geometry_type="Unknown" if self._GEOMETRY_TYPES is None else None,
-            promote_to_multi=self._PROMOTE_TO_MULTI,
+            geometry_type=geometry_type,
+            promote_to_multi=promote and not gdf.empty,
             FID="id",
             GEOMETRY_NAME="geometry",
         )
@@ -1794,29 +1945,58 @@ class SpatialDB(SemiSpatialDB):
             accepted, or ``gdf`` has no CRS while the layer has one
         :raises RuntimeError: if called inside an open transaction
         """
+        self._check_no_transaction(method="insert_features")
+        gdf = self._select_columns(gdf=gdf, columns_map=columns_map, layer=self._LAYER)
+        self._append_layer(gdf=gdf, layer=self._LAYER)
+        return None
+
+    def _check_no_transaction(self, method):
+        # GDAL writes through its own connection, which an open block would lock
         if self._tx_depth or self.conn.in_transaction:
             raise RuntimeError(
-                "insert_features cannot run inside an open transaction; "
+                f"{method} cannot run inside an open transaction; "
                 "GDAL writes through its own connection"
             )
-        gdf = self._select_columns(gdf=gdf, columns_map=columns_map)
-        self._check_features(gdf=gdf)
-        taken = sorted(set(gdf["name"]) & set(self._name_lookup(table=self._LAYER)))
+
+    @staticmethod
+    def _match_crs(gdf, crs):
+        # reproject to a layer CRS; None means the layer has no CRS to follow
+        if crs is None:
+            return gdf
+        if gdf.crs is None:
+            raise ValueError(
+                f"Geometries have no CRS; the layer uses {crs.to_string()}"
+            )
+        return gdf.to_crs(crs=crs)
+
+    def _append_layer(self, gdf, layer, add_columns=False):
+        # check and write rows already reduced to the layer columns
+        self._check_features(gdf=gdf, layer=layer)
+        taken = sorted(set(gdf["name"]) & set(self._name_lookup(table=layer)))
         if taken:
-            raise ValueError(f"{self._LAYER} name(s) already in the database: {taken}")
-        fields = self._layer_fields()
-        self._check_attributes(gdf=gdf, fields=fields)
-        crs = gpd.read_file(filename=self.file_db, layer=self._LAYER, rows=1).crs
-        if crs is not None:
-            if gdf.crs is None:
-                raise ValueError(
-                    f"Geometries have no CRS; the layer uses {crs.to_string()}"
-                )
-            gdf = gdf.to_crs(crs=crs)
+            raise ValueError(f"{layer} name(s) already in the database: {taken}")
+        fields = self._layer_fields(layer=layer)
+        if add_columns:
+            fields = self._add_columns(gdf=gdf, fields=fields, layer=layer)
+        self._check_attributes(gdf=gdf, fields=fields, layer=layer)
+        crs = gpd.read_file(filename=self.file_db, layer=layer, rows=1).crs
+        gdf = self._match_crs(gdf=gdf, crs=crs)
         # GDAL appends by position, so columns must follow the layer order
         gdf = gdf.reindex(columns=[*fields, "geometry"])
-        self._write_layer(gdf=gdf, file_db=self.file_db, mode="a")
+        self._write_layer(gdf=gdf, file_db=self.file_db, mode="a", layer=layer)
         return None
+
+    def _read_layer(self, names, layer):
+        # layer rows with id as the first column; unknown names raise
+        gdf = gpd.read_file(filename=self.file_db, layer=layer, fid_as_index=True)
+        gdf = gdf.rename_axis(index="id").reset_index()
+        if names is not None:
+            names = self._as_list(names)
+            unknown = sorted(set(names) - set(gdf["name"]))
+            if unknown:
+                raise ValueError(f"Unknown {layer} name(s): {unknown}")
+            gdf = gdf[gdf["name"].isin(names)].reset_index(drop=True)
+        return gdf
 
     def get_features(self, names=None):
         """
@@ -1828,15 +2008,7 @@ class SpatialDB(SemiSpatialDB):
         :rtype: geopandas.GeoDataFrame
         :raises ValueError: if a name is unknown
         """
-        gdf = gpd.read_file(filename=self.file_db, layer=self._LAYER, fid_as_index=True)
-        gdf = gdf.rename_axis(index="id").reset_index()
-        if names is not None:
-            names = self._as_list(names)
-            unknown = sorted(set(names) - set(gdf["name"]))
-            if unknown:
-                raise ValueError(f"Unknown {self._LAYER} name(s): {unknown}")
-            gdf = gdf[gdf["name"].isin(names)].reset_index(drop=True)
-        return gdf
+        return self._read_layer(names=names, layer=self._LAYER)
 
     # RECORDS
     # -------------------------------------------------------------------
@@ -1885,7 +2057,8 @@ class SpatialDB(SemiSpatialDB):
 
 class ZonesDB(SpatialDB):
     """
-    Spatial database of polygons (eg, basins or municipalities), in the ``zones`` layer.
+    Spatial database of polygons (eg, catchments or municipalities), in the
+    ``zones`` layer.
 
     Records carry ``zone_id``, and queries also accept ``zone_name``.
     Polygons are written as multi-polygons, so single and multi-part zones
@@ -1953,6 +2126,373 @@ class FieldDB(SitesDB):
     :param alias: short alias
     :type alias: str, optional
     """
+
+
+class HydrologyDB(FieldDB):
+    """
+    Sites database for water body reaches, with an optional catchment per site.
+
+    A site is a point that stands for a reach (eg, its gauge or outlet). The
+    ``catchments`` layer holds the polygon draining to it, in the file next to
+    ``sites``, with attributes of that area. Each catchment takes the ``name`` of
+    its site. Every catchment needs a site, a site has at most one catchment, and
+    a site may have none, so catchments can be added as they become available.
+
+    Records carry ``site_id``. An areal series, such as catchment rainfall, is a
+    record of the site whose spec tells it apart (eg, ``extent`` is ``catchment``).
+
+    The setup takes an optional ``catchments`` section, read like ``spatial``:
+
+    .. tab-set::
+        :sync-group: setup
+
+        .. tab-item:: TOML
+            :sync: toml
+
+            .. code-block:: toml
+
+                [database]
+                path = "reaches.gpkg"
+
+                [specs]
+                path = "reaches_specs.json"
+
+                [spatial]
+                file = "gauges.gpkg"
+                layer = "gauges"
+
+                [spatial.columns_map]
+                name = "GaugeCode"
+                gauge_title = "GaugeName"
+
+                [catchments]
+                file = "hydrology.gpkg"
+                layer = "catchments"
+                skip_unmatched = true
+
+                [catchments.columns_map]
+                name = "GaugeCode"
+                area_km2 = "AreaKm2"
+
+        .. tab-item:: JSON
+            :sync: json
+
+            .. code-block:: json
+
+                {
+                  "database": {"path": "reaches.gpkg"},
+                  "specs": {"path": "reaches_specs.json"},
+                  "spatial": {
+                    "file": "gauges.gpkg",
+                    "layer": "gauges",
+                    "columns_map": {
+                      "name": "GaugeCode",
+                      "gauge_title": "GaugeName"
+                    }
+                  },
+                  "catchments": {
+                    "file": "hydrology.gpkg",
+                    "layer": "catchments",
+                    "skip_unmatched": true,
+                    "columns_map": {
+                      "name": "GaugeCode",
+                      "area_km2": "AreaKm2"
+                    }
+                  }
+                }
+
+    In the map, ``name`` is the source column holding the site names. Features
+    naming no site are skipped with a warning, unless ``skip_unmatched`` is
+    ``false``; no match at all is an error, as it usually points to a wrong
+    column. Without the section the layer starts empty, with ``name`` alone, in
+    the CRS of the sites. The columns set at creation are kept unless an append
+    asks for more.
+
+    :param name: database name
+    :type name: str
+    :param alias: short alias
+    :type alias: str, optional
+
+    :Example:
+
+    .. code-block:: python
+
+        # a polygon drawn in a GIS: one feature, no useful columns
+        db.append_catchment(
+            name="CODE002",
+            file="drawn.gpkg",
+            attributes={"area_km2": 120.5},
+        )
+        # one feature of a larger file, with attributes from its columns
+        db.append_catchment(
+            name="CODE003",
+            file="hydrology.gpkg",
+            layer="catchments",
+            columns_map={"name": "GaugeCode", "area_km2": "AreaKm2"},
+        )
+        db.missing_catchments()
+    """
+
+    # this is /src/plans/data/sql/hydrology (rules of the catchments layer)
+    SQL_DIR = DATA_SQL_DIR / "hydrology"
+
+    _CATCHMENTS = "catchments"
+    _CATCHMENT_TYPES = ("Polygon", "MultiPolygon")
+    # temporary source column holding clean site names
+    _SOURCE_KEY = "_site_key"
+
+    # FILE CREATION
+    # -------------------------------------------------------------------
+    def _layer_geometry(self, layer):
+        # catchments are written as multi-polygons, as in ZonesDB
+        if layer == self._CATCHMENTS:
+            return self._CATCHMENT_TYPES, True
+        return super()._layer_geometry(layer=layer)
+
+    def _prepare_file(self, cfg, file_db):
+        # the sites come first: catchments are matched to them and follow their CRS
+        super()._prepare_file(cfg=cfg, file_db=file_db)
+        sites = gpd.read_file(filename=file_db, layer=self._LAYER)
+        section = cfg.get(self._CATCHMENTS)
+        if section is None:
+            gdf = gpd.GeoDataFrame(
+                {"name": pd.Series(dtype="str")},
+                geometry=gpd.GeoSeries([], crs=sites.crs),
+            )
+        else:
+            if "file" not in section:
+                raise ValueError("The [catchments] section needs the source 'file'")
+            source = gpd.read_file(filename=section["file"], layer=section.get("layer"))
+            gdf = self._match_sites(
+                gdf=source,
+                columns_map=section.get("columns_map"),
+                sites=set(sites["name"]),
+                skip_unmatched=section.get("skip_unmatched", True),
+            )
+            self._check_features(gdf=gdf, layer=self._CATCHMENTS)
+            gdf = self._match_crs(gdf=gdf, crs=sites.crs)
+        self._write_layer(gdf=gdf, file_db=file_db, mode="w", layer=self._CATCHMENTS)
+        return None
+
+    def _finalize_file(self, cfg):
+        # the rules of the catchments layer, which GDAL has already registered
+        super()._finalize_file(cfg=cfg)
+        self._create_table(table=self._CATCHMENTS)
+        return None
+
+    # SOURCE FEATURES
+    # -------------------------------------------------------------------
+    def _source_keys(self, names):
+        # clean site names of a source, indexed by row; rows with no name are out.
+        # An integer column with a gap reads as float, so whole floats are integers
+        keys = names.dropna()
+        if pd.api.types.is_float_dtype(keys) and (keys % 1 == 0).all():
+            keys = keys.astype("int64")
+        if pd.api.types.is_string_dtype(keys):
+            keys = keys[keys.str.strip() != ""]
+        return self._clean_names(names=keys, layer=self._CATCHMENTS)
+
+    def _match_sites(self, gdf, columns_map, sites, skip_unmatched):
+        # reduce a source to the layer columns of the features that name a site
+        columns_map = dict(columns_map or {})
+        source = columns_map.get("name", "name")
+        if source not in gdf.columns:
+            raise ValueError(
+                f"Source column {source!r} not found; set the site names with "
+                f"columns_map. Available: {list(gdf.columns)}"
+            )
+        gdf = gdf.reset_index(drop=True)
+        keys = self._source_keys(names=gdf[source])
+        matched = keys[keys.isin(sites)]
+        skipped = len(gdf) - len(matched)
+        if matched.empty:
+            raise ValueError(f"No value of source column {source!r} names a site")
+        if skipped and not skip_unmatched:
+            unknown = keys[~keys.isin(sites)].head(5).tolist()
+            raise ValueError(f"{skipped} feature(s) name no site, eg: {unknown}")
+        if skipped:
+            warnings.warn(
+                f"{skipped} feature(s) naming no site were skipped", stacklevel=3
+            )
+        return self._select_columns(
+            gdf=gdf.loc[matched.index].assign(**{self._SOURCE_KEY: matched}),
+            columns_map={**columns_map, "name": self._SOURCE_KEY},
+            layer=self._CATCHMENTS,
+        )
+
+    def _pick_feature(self, name, file, layer, columns_map):
+        # one feature of a source: only its key column is read to find the row,
+        # and then only that row, so a large file is never loaded whole
+        source = columns_map.get("name")
+        if source is None:
+            gdf = gpd.read_file(filename=file, layer=layer, rows=2)
+            if len(gdf) != 1:
+                raise ValueError(
+                    f"Without a 'name' in columns_map, {file} must hold one feature"
+                )
+            return gdf
+        table = gpd.read_file(
+            filename=file, layer=layer, columns=[source], ignore_geometry=True
+        )
+        if source not in table.columns:
+            available = gpd.read_file(filename=file, layer=layer, rows=1).columns
+            raise ValueError(
+                f"Source column {source!r} not found. Available: {list(available)}"
+            )
+        keys = self._source_keys(names=table[source])
+        rows = keys.index[keys == name]
+        if len(rows) != 1:
+            raise ValueError(
+                f"{len(rows)} feature(s) of {file} have {source} equal to {name!r}; "
+                "expected one"
+            )
+        row = int(rows[0])
+        return gpd.read_file(filename=file, layer=layer, rows=slice(row, row + 1))
+
+    # CATCHMENTS
+    # -------------------------------------------------------------------
+    def append_catchment(
+        self,
+        name,
+        file,
+        layer=None,
+        columns_map=None,
+        attributes=None,
+        add_columns=False,
+        overwrite=False,
+    ):
+        """
+        Append the catchment of one site from a spatial file.
+
+        The geometry comes from ``file``. With ``name`` in ``columns_map``, that
+        source column picks the feature; without it, the file must hold exactly
+        one feature, as in a polygon just drawn. Attributes may come from other
+        ``columns_map`` entries or from ``attributes``, and layer columns left out
+        are stored as NULL. Geometries are reprojected to the layer CRS.
+
+        The write goes through geopandas on its own connection, so it cannot run
+        inside a :meth:`transaction` block.
+
+        :param name: site name
+        :type name: str
+        :param file: source file, in any format geopandas reads
+        :type file: str or Path
+        :param layer: source layer, for files with several
+        :type layer: str, optional
+        :param columns_map: column mapping ``{layer_col: source_col}``
+        :type columns_map: dict, optional
+        :param attributes: attribute values ``{layer_col: value}``
+        :type attributes: dict, optional
+        :param add_columns: add attribute columns the layer does not have, typed
+            from their values; existing rows stay NULL
+        :type add_columns: bool
+        :param overwrite: replace the catchment of the site, if any; its own ``id``
+            changes, which records do not depend on
+        :type overwrite: bool
+        :return: None
+        :rtype: None
+        :raises ValueError: if the site is unknown or has a catchment, the source
+            does not give one feature, a column is unknown, reserved or set twice,
+            or a value or geometry does not fit the layer
+        :raises RuntimeError: if called inside an open transaction
+        """
+        self._check_no_transaction(method="append_catchment")
+        name = str(name).strip()
+        if name not in self._name_lookup(table=self._LAYER):
+            raise ValueError(f"Name {name!r} not in the {self._LAYER} layer")
+        columns_map = dict(columns_map or {})
+        attributes = dict(attributes or {})
+        clash = set(attributes) & {*columns_map, "name", *self._RESERVED_COLUMNS}
+        if clash:
+            raise ValueError(f"Attribute(s) {sorted(clash)} cannot be set by value")
+        exists = name in self._name_lookup(table=self._CATCHMENTS)
+        if exists and not overwrite:
+            raise ValueError(f"Site {name!r} already has a catchment")
+        source = self._pick_feature(
+            name=name, file=file, layer=layer, columns_map=columns_map
+        )
+        gdf = self._select_columns(
+            gdf=source.assign(**{self._SOURCE_KEY: name}),
+            columns_map={**columns_map, "name": self._SOURCE_KEY},
+            layer=self._CATCHMENTS,
+        ).assign(**attributes)
+        previous = self.get_catchments(names=name) if exists else None
+        if exists:
+            self.conn.execute(f"DELETE FROM {self._CATCHMENTS} WHERE name = ?", (name,))
+            self.conn.commit()
+        # two connections cannot share a transaction, so a failed write restores
+        try:
+            self._append_layer(gdf=gdf, layer=self._CATCHMENTS, add_columns=add_columns)
+        except Exception:
+            if exists:
+                self._append_layer(
+                    gdf=previous.drop(columns="id"), layer=self._CATCHMENTS
+                )
+            raise
+        return None
+
+    def insert_catchments(
+        self, gdf, columns_map=None, skip_unmatched=True, add_columns=False
+    ):
+        """
+        Append several catchments, eg generated in Python.
+
+        In the map, ``name`` is the source column holding the site names. Layer
+        columns left out are stored as NULL. Geometries are reprojected to the
+        layer CRS. All rows are checked before the write, and sites that already
+        have a catchment raise; use :meth:`append_catchment` to replace one.
+
+        :param gdf: source features
+        :type gdf: geopandas.GeoDataFrame
+        :param columns_map: column mapping ``{layer_col: source_col}``; ``name``
+            defaults to a source column of that name
+        :type columns_map: dict, optional
+        :param skip_unmatched: skip features naming no site, with a warning,
+            instead of raising
+        :type skip_unmatched: bool
+        :param add_columns: add attribute columns the layer does not have, typed
+            from their values; existing rows stay NULL
+        :type add_columns: bool
+        :return: None
+        :rtype: None
+        :raises ValueError: if no feature names a site, a site has a catchment or
+            is repeated, or a column or geometry does not fit the layer
+        :raises RuntimeError: if called inside an open transaction
+        """
+        self._check_no_transaction(method="insert_catchments")
+        gdf = self._match_sites(
+            gdf=gdf,
+            columns_map=columns_map,
+            sites=set(self._name_lookup(table=self._LAYER)),
+            skip_unmatched=skip_unmatched,
+        )
+        self._append_layer(gdf=gdf, layer=self._CATCHMENTS, add_columns=add_columns)
+        return None
+
+    def get_catchments(self, names=None):
+        """
+        Read the catchments layer as a GeoDataFrame.
+
+        :param names: one or more site names; ``None`` returns the whole layer
+        :type names: str or list[str], optional
+        :return: layer rows; ``id`` belongs to the catchment, not to the site
+        :rtype: geopandas.GeoDataFrame
+        :raises ValueError: if a name has no catchment
+        """
+        return self._read_layer(names=names, layer=self._CATCHMENTS)
+
+    def missing_catchments(self):
+        """
+        List the sites without a catchment.
+
+        :return: site names
+        :rtype: list[str]
+        """
+        df = self.query_sql(
+            sql=f"SELECT name FROM {self._LAYER} WHERE name NOT IN "
+            f"(SELECT name FROM {self._CATCHMENTS}) ORDER BY id"
+        )
+        return df["name"].tolist()
 
 
 class LabDB(SitesDB):

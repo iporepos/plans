@@ -41,7 +41,7 @@ Databases are built once per class in a single temporary folder.
 # Native imports
 # =======================================================================
 import unittest
-import json, shutil, sqlite3, tempfile
+import json, shutil, sqlite3, tempfile, warnings
 from pathlib import Path
 from unittest import mock
 
@@ -67,6 +67,7 @@ from plans.databases import (
     PathsDB,
     SitesDB,
     FieldDB,
+    HydrologyDB,
     LabDB,
     DATA_SQL_DIR,
     _TABLE_ORDER,
@@ -1243,9 +1244,7 @@ class TestSpatialColumns(unittest.TestCase):
         # append one row per value of the first column
         rows = len(next(iter(data.values())))
         self.db.insert_features(
-            gdf=gpd.GeoDataFrame(
-                data, geometry=[Point(2, 2)] * rows, crs="EPSG:4326"
-            ),
+            gdf=gpd.GeoDataFrame(data, geometry=[Point(2, 2)] * rows, crs="EPSG:4326"),
             columns_map=columns_map,
         )
 
@@ -1263,6 +1262,47 @@ class TestSpatialColumns(unittest.TestCase):
         self.assertEqual(row["title"], "Official A")
         self.assertNotIn("junk", row)
         self.assertNotIn("StationCode", row)
+
+    def test_new_from_setup_files(self):
+        # a shapefile source, whose long field names are read cut at 10 characters
+        file_shp = self.temp_dir / "stations.shp"
+        with warnings.catch_warnings():
+            warnings.simplefilter(action="ignore")
+            gpd.GeoDataFrame(
+                {"StationCode": ["00047"], "Title": ["T"]},
+                geometry=[Point(0, 0)],
+                crs="EPSG:4326",
+            ).to_file(filename=file_shp)
+        spatial = (
+            f'file = "{file_shp.as_posix()}"\n\n[spatial.columns_map]\n'
+            'name = "StationCod"\ntitle = "Title"\n'
+        )
+        toml_text = (
+            f'[database]\npath = "{(self.temp_dir / "toml.gpkg").as_posix()}"\n\n'
+            f'[specs]\npath = "{self.file_specs.as_posix()}"\n\n[spatial]\n{spatial}'
+        )
+        json_cfg = {
+            "database": {"path": str(self.temp_dir / "json.gpkg")},
+            "specs": {"path": str(self.file_specs)},
+            "spatial": {
+                "file": str(file_shp),
+                "columns_map": {"name": "StationCod", "title": "Title"},
+            },
+        }
+        setups = {"setup.toml": toml_text, "setup.json": json.dumps(json_cfg)}
+        for file_name, text in setups.items():
+            with self.subTest(file_name=file_name):
+                file_setup = self.temp_dir / file_name
+                file_setup.write_text(text, encoding="utf-8")
+                db = SitesDB(name="from_file")
+                db.new(config=file_setup)
+                try:
+                    row = db.get_features().iloc[0]
+                    self.assertEqual(row["name"], "00047")
+                    self.assertEqual(row["title"], "T")
+                    self.assertEqual(db.get_features().crs.to_epsg(), 4326)
+                finally:
+                    db.close()
 
     def test_new_failure_leaves_no_file(self):
         path = self.temp_dir / "x.gpkg"
@@ -1310,9 +1350,7 @@ class TestSpatialColumns(unittest.TestCase):
                     )
                 self.assertNotIn(label, self.db.get_features()["name"].tolist())
         # a whole number still fits, as sources with gaps read integers as float
-        self._insert(
-            data={"name": ["WHOLE"], "c": [7.0]}, columns_map={"count": "c"}
-        )
+        self._insert(data={"name": ["WHOLE"], "c": [7.0]}, columns_map={"count": "c"})
         self.assertEqual(self._row(name="WHOLE")["count"], 7)
 
     # -------------------------------------------------------------------
@@ -1358,6 +1396,378 @@ class TestSpatialColumns(unittest.TestCase):
         )
         df = self.db.query_records(query_dict={"site_name": "83378"})
         self.assertEqual(df["site_id"].tolist(), [2])
+
+
+class TestHydrologyDB(unittest.TestCase):
+    """
+    Sites and the optional catchments layer, built once: eight sites, of which
+    the regional source covers S1 and S2. Tests take a site of their own, since
+    they share the layer.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Runs once before all tests in this class.
+        """
+        cls.temp_dir = Path(tempfile.mkdtemp())
+        cls.file_specs = cls.temp_dir / "specs.json"
+        cls.file_specs.write_text(
+            json.dumps([dict(SPECS[0], name="PPT")]), encoding="utf-8"
+        )
+        cls.names = [f"S{i}" for i in range(1, 8)] + ["101"]
+        cls.file_sites = cls.temp_dir / "sites.gpkg"
+        gpd.GeoDataFrame(
+            {"name": cls.names},
+            geometry=[Point(i, i) for i in range(8)],
+            crs="EPSG:4326",
+        ).to_file(filename=cls.file_sites, driver="GPKG")
+        # regional source in another CRS: two sites, one stranger, two without a key
+        cls.file_region = cls.temp_dir / "region.gpkg"
+        gpd.GeoDataFrame(
+            {
+                "Code": ["S1", "S2", "XX", None, "  "],
+                "Area": [10.0, 20.0, 30.0, 40.0, 50.0],
+                "Junk": list("vwxyz"),
+            },
+            geometry=[box(i, 0, i + 1, 1) for i in range(5)],
+            crs="EPSG:4326",
+        ).to_crs("EPSG:3857").to_file(
+            filename=cls.file_region, layer="all", driver="GPKG"
+        )
+        # one feature, no useful columns, as in a polygon just drawn
+        cls.file_drawn = cls.temp_dir / "drawn.gpkg"
+        gpd.GeoDataFrame(
+            {"x": [1]}, geometry=[box(5, 5, 6, 6)], crs="EPSG:3857"
+        ).to_file(filename=cls.file_drawn, driver="GPKG")
+        # a padded text key next to integers with a gap, which read as float
+        cls.file_picks = cls.temp_dir / "picks.gpkg"
+        gpd.GeoDataFrame(
+            {
+                "Code": [" S3 ", "S3B"],
+                "Num": [101.0, None],
+                "Twice": ["S7", "S7"],
+                "Area": [7.0, 8.0],
+            },
+            geometry=[box(0, 0, 1, 1), box(1, 1, 2, 2)],
+            crs="EPSG:4326",
+        ).to_file(filename=cls.file_picks, driver="GPKG")
+        cls.db = HydrologyDB(name="hydrology")
+        with warnings.catch_warnings(record=True) as cls.new_warnings:
+            warnings.simplefilter(action="always")
+            cls.db.new(
+                config=cls._config(
+                    path=cls.temp_dir / "hydrology.gpkg", catchments=cls._section()
+                )
+            )
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Runs once after all tests in this class.
+        """
+        cls.db.close()
+        shutil.rmtree(cls.temp_dir)
+        return None
+
+    @classmethod
+    def _section(cls, **extra):
+        # the catchments section of the setup
+        return {
+            "file": str(cls.file_region),
+            "layer": "all",
+            "columns_map": {"name": "Code", "area_km2": "Area"},
+            **extra,
+        }
+
+    @classmethod
+    def _config(cls, path, catchments=None):
+        # setup dict; catchments=None leaves out the section
+        cfg = {
+            "database": {"path": str(path)},
+            "specs": {"path": str(cls.file_specs)},
+            "spatial": {"file": str(cls.file_sites)},
+        }
+        if catchments is not None:
+            cfg["catchments"] = catchments
+        return cfg
+
+    def _generated(self, names):
+        # catchments made in Python, in the CRS of the sites
+        return gpd.GeoDataFrame(
+            {"code": names},
+            geometry=[box(0, 0, 1, 1)] * len(names),
+            crs="EPSG:4326",
+        )
+
+    # -------------------------------------------------------------------
+    # creation
+    # -------------------------------------------------------------------
+    def test_new_matches_sites(self):
+        gdf = self.db.get_catchments(names=["S1", "S2"])
+        self.assertEqual(gdf["area_km2"].tolist(), [10.0, 20.0])
+        self.assertNotIn("Junk", gdf.columns)
+        self.assertEqual(set(gdf.geom_type), {"MultiPolygon"})
+        self.assertEqual(gdf.crs.to_epsg(), 4326)  # the CRS of the sites
+        self.assertLess(gdf.geometry.iloc[0].bounds[2], 1.01)  # degrees, not meters
+        # the stranger and the two rows without a key
+        self.assertEqual(len(self.new_warnings), 1)
+        self.assertIn("3 feature(s)", str(self.new_warnings[0].message))
+
+    def test_new_without_section_starts_empty(self):
+        db = HydrologyDB(name="empty")
+        db.new(config=self._config(path=self.temp_dir / "empty.gpkg"))
+        try:
+            self.assertEqual(len(db.get_catchments()), 0)
+            self.assertEqual(db.missing_catchments(), self.names)
+            kinds = dict(
+                db.conn.execute(
+                    "SELECT table_name, geometry_type_name FROM gpkg_geometry_columns"
+                ).fetchall()
+            )
+            self.assertEqual(kinds["catchments"], "MULTIPOLYGON")
+            # sites and catchments are both geometry layers of the file
+            self.assertEqual(kinds["sites"], "POINT")
+        finally:
+            db.close()
+
+    def test_new_failures_leave_no_file(self):
+        cases = {
+            "strict": self._section(skip_unmatched=False),
+            "wrong_key": self._section(columns_map={"name": "Junk"}),
+            "missing_key": self._section(columns_map={"name": "Nope"}),
+            "no_file": {"layer": "all"},
+        }
+        for label, section in cases.items():
+            with self.subTest(label=label):
+                path = self.temp_dir / f"{label}.gpkg"
+                with self.assertRaises(ValueError):
+                    HydrologyDB(name="bad").new(
+                        config=self._config(path=path, catchments=section)
+                    )
+                self.assertFalse(path.exists())
+
+    # -------------------------------------------------------------------
+    # append
+    # -------------------------------------------------------------------
+    def test_append_drawn_with_values(self):
+        self.db.append_catchment(
+            name="S4", file=self.file_drawn, attributes={"area_km2": 120.5}
+        )
+        row = self.db.get_catchments(names="S4").iloc[0]
+        self.assertEqual(row["area_km2"], 120.5)
+        self.assertLess(row["geometry"].bounds[2], 1)  # reprojected from meters
+
+    def test_append_geometry_only_leaves_null(self):
+        self.db.append_catchment(name="S5", file=self.file_drawn)
+        self.assertTrue(pd.isna(self.db.get_catchments(names="S5")["area_km2"].iloc[0]))
+
+    def test_append_picks_one_feature(self):
+        # a padded key matches the clean site name, and only its row is written
+        self.db.append_catchment(
+            name="S3",
+            file=self.file_picks,
+            columns_map={"name": "Code", "area_km2": "Area"},
+        )
+        self.assertEqual(self.db.get_catchments(names="S3")["area_km2"].iloc[0], 7.0)
+        # an integer key with a gap still matches, though it reads as float
+        self.db.append_catchment(
+            name="101",
+            file=self.file_picks,
+            columns_map={"name": "Num", "area_km2": "Area"},
+        )
+        self.assertEqual(self.db.get_catchments(names="101")["area_km2"].iloc[0], 7.0)
+
+    def test_append_refuses(self):
+        cases = {
+            "unknown_site": {"name": "NOPE", "file": self.file_drawn},
+            "has_catchment": {"name": "S1", "file": self.file_drawn},
+            "many_features": {"name": "S7", "file": self.file_region, "layer": "all"},
+            "no_feature": {
+                "name": "S7",
+                "file": self.file_region,
+                "layer": "all",
+                "columns_map": {"name": "Code"},
+            },
+            "missing_key_column": {
+                "name": "S7",
+                "file": self.file_picks,
+                "columns_map": {"name": "Nope"},
+            },
+            "repeated_key": {
+                "name": "S7",
+                "file": self.file_picks,
+                "columns_map": {"name": "Twice"},
+            },
+            "unknown_column": {
+                "name": "S7",
+                "file": self.file_drawn,
+                "attributes": {"not_a_column": 1},
+            },
+            "unfit_value": {
+                "name": "S7",
+                "file": self.file_drawn,
+                "attributes": {"area_km2": "big"},
+            },
+            "reserved_value": {
+                "name": "S7",
+                "file": self.file_drawn,
+                "attributes": {"id": 1},
+            },
+            "name_by_value": {
+                "name": "S7",
+                "file": self.file_drawn,
+                "attributes": {"name": "S1"},
+            },
+            "set_twice": {
+                "name": "S7",
+                "file": self.file_drawn,
+                "columns_map": {"area_km2": "x"},
+                "attributes": {"area_km2": 1.0},
+            },
+        }
+        for label, kwargs in cases.items():
+            with self.subTest(label=label):
+                with self.assertRaises(ValueError):
+                    self.db.append_catchment(**kwargs)
+                self.assertIn("S7", self.db.missing_catchments())
+
+    def test_overwrite(self):
+        # a refused replacement keeps what was there, and a valid one replaces it
+        self.db.append_catchment(
+            name="S6", file=self.file_drawn, attributes={"area_km2": 1.0}
+        )
+        with self.assertRaises(ValueError):
+            self.db.append_catchment(
+                name="S6",
+                file=self.file_drawn,
+                attributes={"area_km2": "big"},
+                overwrite=True,
+            )
+        self.assertEqual(self.db.get_catchments(names="S6")["area_km2"].iloc[0], 1.0)
+        self.db.append_catchment(
+            name="S6",
+            file=self.file_drawn,
+            attributes={"area_km2": 2.0},
+            overwrite=True,
+        )
+        gdf = self.db.get_catchments(names="S6")
+        self.assertEqual(gdf["area_km2"].tolist(), [2.0])
+
+    def test_add_columns(self):
+        # a separate database, since new columns would reach the shared layer
+        db = HydrologyDB(name="columns")
+        db.new(config=self._config(path=self.temp_dir / "columns.gpkg"))
+        try:
+            db.append_catchment(name="S1", file=self.file_drawn)
+            values = {"owner": "ana", "count": 3, "share": 0.5}
+            with self.assertRaises(ValueError):
+                db.append_catchment(name="S2", file=self.file_drawn, attributes=values)
+            db.append_catchment(
+                name="S2", file=self.file_drawn, attributes=values, add_columns=True
+            )
+            info = db.query_sql(sql="PRAGMA table_info(catchments)")
+            kinds = dict(zip(info["name"], info["type"]))
+            self.assertEqual(
+                [kinds[col] for col in values], ["TEXT", "INTEGER", "REAL"]
+            )
+            old, new = db.get_catchments(names="S1"), db.get_catchments(names="S2")
+            self.assertTrue(pd.isna(old["owner"].iloc[0]))
+            self.assertEqual(new["owner"].iloc[0], "ana")
+            self.assertEqual(new["count"].iloc[0], 3)
+            # an existing layer still writes by name, with the new columns in it
+            db.append_catchment(
+                name="S3", file=self.file_drawn, attributes={"share": 0.25}
+            )
+            self.assertEqual(db.get_catchments(names="S3")["share"].iloc[0], 0.25)
+        finally:
+            db.close()
+
+    # -------------------------------------------------------------------
+    # bulk
+    # -------------------------------------------------------------------
+    def test_insert_catchments(self):
+        db = HydrologyDB(name="bulk")
+        db.new(config=self._config(path=self.temp_dir / "bulk.gpkg"))
+        try:
+            gdf = self._generated(names=["S1", "S2", "XX"])
+            columns_map = {"name": "code"}
+            with self.assertRaises(ValueError):
+                db.insert_catchments(
+                    gdf=gdf, columns_map=columns_map, skip_unmatched=False
+                )
+            self.assertEqual(len(db.get_catchments()), 0)
+            with self.assertWarns(UserWarning):
+                db.insert_catchments(gdf=gdf, columns_map=columns_map)
+            self.assertEqual(db.get_catchments()["name"].tolist(), ["S1", "S2"])
+            cases = {
+                "repeated": self._generated(names=["S1"]),
+                "no_match": self._generated(names=["XX"]),
+                "same_site_twice": self._generated(names=["S3", "S3"]),
+            }
+            for label, source in cases.items():
+                with self.subTest(label=label):
+                    with self.assertRaises(ValueError):
+                        db.insert_catchments(gdf=source, columns_map=columns_map)
+            with self.assertRaises(ValueError):
+                db.insert_catchments(
+                    gdf=gpd.GeoDataFrame(
+                        {"name": ["S3"]}, geometry=[Point(0, 0)], crs="EPSG:4326"
+                    )
+                )
+        finally:
+            db.close()
+
+    def test_transaction_guard(self):
+        with self.assertRaises(RuntimeError):
+            with self.db.transaction():
+                self.db.insert_catchments(gdf=self._generated(names=["S1"]))
+
+    # -------------------------------------------------------------------
+    # rules and records
+    # -------------------------------------------------------------------
+    def test_rules_refuse_direct_writes(self):
+        # the rules live in the file, so they also hold outside the Python checks
+        db = HydrologyDB(name="rules")
+        file_db = self.temp_dir / "rules.gpkg"
+        db.new(config=self._config(path=file_db))
+        try:
+            for label, names in {"no_site": ["NOPE"], "second": ["S1", "S1"]}.items():
+                with self.subTest(label=label):
+                    with self.assertRaises(Exception):
+                        for name in names:
+                            gpd.GeoDataFrame(
+                                {"name": [name]},
+                                geometry=[MultiPolygon([box(0, 0, 1, 1)])],
+                                crs="EPSG:4326",
+                            ).to_file(
+                                filename=file_db,
+                                layer="catchments",
+                                driver="GPKG",
+                                mode="a",
+                            )
+            self.assertEqual(db.get_catchments()["name"].tolist(), ["S1"])
+        finally:
+            db.close()
+
+    def test_missing_catchments(self):
+        missing = set(self.db.missing_catchments())
+        held = set(self.db.get_catchments()["name"])
+        self.assertFalse(missing & held)
+        self.assertEqual(missing | held, set(self.names))
+
+    def test_records_stay_on_sites(self):
+        self.db.insert_records(
+            dataframe=pd.DataFrame(
+                {"datetime": ["2000-01-01"], "value": [1.0], "site_name": ["S7"]}
+            ),
+            spec_name="PPT",
+            flag=1,
+        )
+        df = self.db.query_records(query_dict={"site_name": "S7"})
+        self.assertEqual(df["site_id"].tolist(), [7])
+        fks = self.db.query_sql(sql="PRAGMA foreign_key_list(records)")
+        self.assertIn("sites", fks["table"].tolist())
 
 
 class TestLabDB(unittest.TestCase):
