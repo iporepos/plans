@@ -435,32 +435,56 @@ regular grids whose features are kept outside the database.
 <code class="docutils literal notranslate"><span class="pre">features</span></code> layer of any geometry type. Its children <a class="reference internal" href="#plans.databases.ZonesDB" title="plans.databases.ZonesDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZonesDB</span></code></a>,
 <a class="reference internal" href="#plans.databases.PathsDB" title="plans.databases.PathsDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathsDB</span></code></a> and <a class="reference internal" href="#plans.databases.SitesDB" title="plans.databases.SitesDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">SitesDB</span></code></a> accept polygons, lines or points only,
 and records point to them by <code class="docutils literal notranslate"><span class="pre">zone_id</span></code>, <code class="docutils literal notranslate"><span class="pre">path_id</span></code> or <code class="docutils literal notranslate"><span class="pre">site_id</span></code>.
-<a class="reference internal" href="#plans.databases.SitesDB" title="plans.databases.SitesDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">SitesDB</span></code></a> branches into <a class="reference internal" href="#plans.databases.FieldDB" title="plans.databases.FieldDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDB</span></code></a> (in situ measurements) and
+<a class="reference internal" href="#plans.databases.SitesDB" title="plans.databases.SitesDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">SitesDB</span></code></a> branches into <a class="reference internal" href="#plans.databases.FieldDB" title="plans.databases.FieldDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDB</span></code></a> (in situ measurements), itself
+extended by <a class="reference internal" href="#plans.databases.HydrologyDB" title="plans.databases.HydrologyDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">HydrologyDB</span></code></a> (river reaches with optional catchments), and
 <a class="reference internal" href="#plans.databases.LabDB" title="plans.databases.LabDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabDB</span></code></a> (laboratory analyses of samples taken at the sites).</p>
 <p>Table and column names are lowercase words joined by <code class="docutils literal notranslate"><span class="pre">_</span></code>; tables are plural,
 and a foreign key is the singular table name plus the target column
 (<code class="docutils literal notranslate"><span class="pre">variable_name</span></code> points to <code class="docutils literal notranslate"><span class="pre">variables.name</span></code>). In <a class="reference internal" href="#plans.databases.SemiSpatialDB" title="plans.databases.SemiSpatialDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">SemiSpatialDB</span></code></a>,
 <code class="docutils literal notranslate"><span class="pre">feature_id</span></code> is the exception: it points to features outside the database.</p>
-<p>A new database is created from a TOML (or JSON) setup file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">database</span><span class="p">]</span>
-<span class="n">path</span> <span class="o">=</span> <span class="s2">"hydro.db"</span>
+<p>A new database is created from a setup, given as a dict or as the path to a TOML
+or JSON file with the same structure:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="setup" data-sync-id="toml" for="sd-tab-item-0">
+TOML</label><div class="sd-tab-content docutils">
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[database]</span>
+<span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"hydro.db"</span>
 
-<span class="p">[</span><span class="n">specs</span><span class="p">]</span>
-<span class="n">path</span> <span class="o">=</span> <span class="s2">"my_specs.json"</span>      <span class="c1"># .csv also accepted; format inferred from extension</span>
+<span class="k">[specs]</span>
+<span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"my_specs.json"</span>
 
-<span class="p">[</span><span class="n">catalogs</span><span class="p">]</span>                  <span class="c1"># optional overrides; omitted keys fall back to defaults</span>
-<span class="n">variables</span> <span class="o">=</span> <span class="s2">"my_vars.csv"</span>
+<span class="k">[catalogs]</span>
+<span class="n">variables</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"my_vars.csv"</span>
 </pre></div>
 </div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="setup" data-sync-id="json" for="sd-tab-item-1">
+JSON</label><div class="sd-tab-content docutils">
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"database"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hydro.db"</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"specs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my_specs.json"</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"catalogs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"variables"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my_vars.csv"</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The specs file may be JSON or CSV, told apart by its extension. The <code class="docutils literal notranslate"><span class="pre">catalogs</span></code>
+section is optional, and omitted keys fall back to the shipped catalogs. Relative
+paths follow the working directory, not the setup file. Both formats refuse single
+backslashes, so Windows paths are written with forward slashes.
+<a class="reference internal" href="#plans.databases.SpatialDB" title="plans.databases.SpatialDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpatialDB</span></code></a> adds a <code class="docutils literal notranslate"><span class="pre">spatial</span></code> section.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">specs</span></code> table describes every dataset stored in <code class="docutils literal notranslate"><span class="pre">records</span></code>.
 A JSON specs file is a list of objects, one per dataset:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
   <span class="p">{</span>
     <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"PPT_MONTHLY_CHIRPS"</span><span class="p">,</span>
     <span class="s2">"abstract"</span><span class="p">:</span> <span class="s2">"Monthly precipitation from CHIRPS v2.0"</span><span class="p">,</span>
-    <span class="s2">"method"</span><span class="p">:</span> <span class="s2">"spatial average over watershed"</span><span class="p">,</span>
+    <span class="s2">"method"</span><span class="p">:</span> <span class="s2">"spatial average over catchment"</span><span class="p">,</span>
     <span class="s2">"timestep"</span><span class="p">:</span> <span class="s2">"1M"</span><span class="p">,</span>
-    <span class="s2">"extent"</span><span class="p">:</span> <span class="s2">"watershed"</span><span class="p">,</span>
+    <span class="s2">"extent"</span><span class="p">:</span> <span class="s2">"catchment"</span><span class="p">,</span>
     <span class="s2">"scale"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="s2">"offset"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s2">"start"</span><span class="p">:</span> <span class="s2">"1995-01-01"</span><span class="p">,</span>
@@ -566,23 +590,26 @@ domain fails at database creation.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#plans.databases.FieldDB" title="plans.databases.FieldDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FieldDB</span></code></a>(name[, alias])</p></td>
 <td><p>Sites database for in situ measurements (eg, a climate station network).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#plans.databases.LabDB" title="plans.databases.LabDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LabDB</span></code></a>(name[, alias])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.databases.HydrologyDB" title="plans.databases.HydrologyDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HydrologyDB</span></code></a>(name[, alias])</p></td>
+<td><p>Sites database for water body reaches, with an optional catchment per site.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.databases.LabDB" title="plans.databases.LabDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LabDB</span></code></a>(name[, alias])</p></td>
 <td><p>Sites database for laboratory analyses of field samples.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#plans.databases.PathsDB" title="plans.databases.PathsDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PathsDB</span></code></a>(name[, alias])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.databases.PathsDB" title="plans.databases.PathsDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PathsDB</span></code></a>(name[, alias])</p></td>
 <td><p>Spatial database of lines (eg, rivers or transects), in the <code class="docutils literal notranslate"><span class="pre">paths</span></code> layer.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#plans.databases.SemiSpatialDB" title="plans.databases.SemiSpatialDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SemiSpatialDB</span></code></a>(name[, alias])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.databases.SemiSpatialDB" title="plans.databases.SemiSpatialDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SemiSpatialDB</span></code></a>(name[, alias])</p></td>
 <td><p>Database whose records carry a <code class="docutils literal notranslate"><span class="pre">feature_id</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#plans.databases.SitesDB" title="plans.databases.SitesDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SitesDB</span></code></a>(name[, alias])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.databases.SitesDB" title="plans.databases.SitesDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SitesDB</span></code></a>(name[, alias])</p></td>
 <td><p>Spatial database of points (eg, stations or wells), in the <code class="docutils literal notranslate"><span class="pre">sites</span></code> layer.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#plans.databases.SpatialDB" title="plans.databases.SpatialDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpatialDB</span></code></a>(name[, alias])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#plans.databases.SpatialDB" title="plans.databases.SpatialDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpatialDB</span></code></a>(name[, alias])</p></td>
 <td><p>GeoPackage database whose records point to features stored in the same file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#plans.databases.ZonesDB" title="plans.databases.ZonesDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ZonesDB</span></code></a>(name[, alias])</p></td>
-<td><p>Spatial database of polygons (eg, basins or municipalities), in the <code class="docutils literal notranslate"><span class="pre">zones</span></code> layer.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#plans.databases.ZonesDB" title="plans.databases.ZonesDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ZonesDB</span></code></a>(name[, alias])</p></td>
+<td><p>Spatial database of polygons (eg, catchments or municipalities), in the <code class="docutils literal notranslate"><span class="pre">zones</span></code> layer.</p></td>
 </tr>
 </tbody>
 </table>
@@ -873,17 +900,37 @@ remain as integers unless the SQL itself handles the transformation</p>
 <span class="sig-name descname"><span class="pre">new</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#DataBase.new"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.DataBase.new" title="Link to this definition">#</a></dt>
 <dd><p>Create a new database file from a setup configuration.</p>
 <p>Creation is all or nothing: on any error the partial file is removed.</p>
-<p>Expected configuration structure (TOML example):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">database</span><span class="p">]</span>
-<span class="n">path</span> <span class="o">=</span> <span class="s2">"path/to/hydro.db"</span>
+<p>The setup has the same structure as a dict or as a file. Besides the
+sections below, spatial databases need the one in <a class="reference internal" href="#plans.databases.SpatialDB" title="plans.databases.SpatialDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpatialDB</span></code></a>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="setup" data-sync-id="toml" for="sd-tab-item-2">
+TOML</label><div class="sd-tab-content docutils">
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[database]</span>
+<span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"path/to/hydro.db"</span>
 
-<span class="p">[</span><span class="n">specs</span><span class="p">]</span>
-<span class="n">path</span> <span class="o">=</span> <span class="s2">"path/to/my_specs.csv"</span>   <span class="c1"># or .json — format detected by extension</span>
+<span class="k">[specs]</span>
+<span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"path/to/my_specs.csv"</span>
 
-<span class="p">[</span><span class="n">catalogs</span><span class="p">]</span>           <span class="c1"># optional overrides; omitted keys fall back to defaults</span>
-<span class="n">variables</span> <span class="o">=</span> <span class="s2">"path/to/my_variables.csv"</span>
+<span class="k">[catalogs]</span>
+<span class="n">variables</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"path/to/my_variables.csv"</span>
 </pre></div>
 </div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="setup" data-sync-id="json" for="sd-tab-item-3">
+JSON</label><div class="sd-tab-content docutils">
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"database"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"path/to/hydro.db"</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"specs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"path/to/my_specs.csv"</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"catalogs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"variables"</span><span class="p">:</span><span class="w"> </span><span class="s2">"path/to/my_variables.csv"</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">catalogs</span></code> section is optional, and omitted keys fall back to the
+shipped catalogs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1371,13 +1418,13 @@ the record, query, ordering and wide-format hooks follow it.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
 
 <span class="n">cells</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">"grid.gpkg"</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="s2">"cells"</span><span class="p">)</span>
-<span class="n">basin</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">"basin.gpkg"</span><span class="p">)</span>
-<span class="n">ids</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">sjoin</span><span class="p">(</span><span class="n">cells</span><span class="p">,</span> <span class="n">basin</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="s2">"intersects"</span><span class="p">)[</span><span class="s2">"id"</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">catchment</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">"catchment.gpkg"</span><span class="p">)</span>
+<span class="n">ids</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">sjoin</span><span class="p">(</span><span class="n">cells</span><span class="p">,</span> <span class="n">catchment</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="s2">"intersects"</span><span class="p">)[</span><span class="s2">"id"</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query_records</span><span class="p">(</span>
     <span class="n">query_dict</span><span class="o">=</span><span class="p">{</span><span class="s2">"spec_name"</span><span class="p">:</span> <span class="s2">"PPT_MONTHLY_CHIRPS"</span><span class="p">,</span> <span class="s2">"feature_id"</span><span class="p">:</span> <span class="n">ids</span><span class="p">}</span>
 <span class="p">)</span>
-<span class="n">basin_mean</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"datetime"</span><span class="p">)[</span><span class="s2">"value"</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">catchment_mean</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"datetime"</span><span class="p">)[</span><span class="s2">"value"</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 </pre></div>
 </div>
 <dl class="py attribute">
@@ -1448,9 +1495,9 @@ is not limited by the SQLite cap on bound parameters.</p>
 <dd><p>Bases: <a class="reference internal" href="#plans.databases.SemiSpatialDB" title="plans.databases.SemiSpatialDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">SemiSpatialDB</span></code></a></p>
 <p>GeoPackage database whose records point to features stored in the same file.</p>
 <p>The file holds one layer of features next to the standard tables. Each
-feature has an <code class="docutils literal notranslate"><span class="pre">id</span></code>, a unique <code class="docutils literal notranslate"><span class="pre">name</span></code>, a <code class="docutils literal notranslate"><span class="pre">geometry</span></code> and any extra
-columns of the source. Records carry <code class="docutils literal notranslate"><span class="pre">feature_id</span></code>, a real foreign key to
-the layer, so a record cannot point to a missing feature.</p>
+feature has a generated <code class="docutils literal notranslate"><span class="pre">id</span></code>, a unique <code class="docutils literal notranslate"><span class="pre">name</span></code>, a <code class="docutils literal notranslate"><span class="pre">geometry</span></code> and the
+attributes declared in the columns map. Records carry <code class="docutils literal notranslate"><span class="pre">feature_id</span></code>, a real
+foreign key to the layer, so a record cannot point to a missing feature.</p>
 <p>This class stores any geometry type, mixed in one <code class="docutils literal notranslate"><span class="pre">features</span></code> layer.
 Its children <a class="reference internal" href="#plans.databases.ZonesDB" title="plans.databases.ZonesDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZonesDB</span></code></a>, <a class="reference internal" href="#plans.databases.PathsDB" title="plans.databases.PathsDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathsDB</span></code></a> and <a class="reference internal" href="#plans.databases.SitesDB" title="plans.databases.SitesDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">SitesDB</span></code></a>
 accept one kind only and rename the layer and key after it (eg, <code class="docutils literal notranslate"><span class="pre">zones</span></code>
@@ -1460,17 +1507,92 @@ from them.</p>
 <p>The layer is written and extended through geopandas only. Plain SQLite
 cannot insert into it, because the GeoPackage triggers call functions that
 only GDAL defines. All other tables work as in <a class="reference internal" href="#plans.databases.DataBase" title="plans.databases.DataBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataBase</span></code></a>.</p>
-<p>The setup file adds a <code class="docutils literal notranslate"><span class="pre">[spatial]</span></code> section with the source geometries:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">database</span><span class="p">]</span>
-<span class="n">path</span> <span class="o">=</span> <span class="s2">"basins.gpkg"</span>        <span class="c1"># must be a .gpkg file</span>
+<p>The setup adds a <code class="docutils literal notranslate"><span class="pre">spatial</span></code> section to those of <a class="reference internal" href="#plans.databases.DataBase.new" title="plans.databases.DataBase.new"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DataBase.new()</span></code></a>, and
+the database path must end in <code class="docutils literal notranslate"><span class="pre">.gpkg</span></code>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="setup" data-sync-id="toml" for="sd-tab-item-4">
+TOML</label><div class="sd-tab-content docutils">
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[database]</span>
+<span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"catchments.gpkg"</span>
 
-<span class="p">[</span><span class="n">spatial</span><span class="p">]</span>
-<span class="n">file</span> <span class="o">=</span> <span class="s2">"my_basins.shp"</span>      <span class="c1"># any format geopandas reads</span>
-<span class="n">layer</span> <span class="o">=</span> <span class="s2">"basins"</span>            <span class="c1"># optional, for files with several layers</span>
+<span class="k">[specs]</span>
+<span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"catchments_specs.json"</span>
+
+<span class="k">[spatial]</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"hydrology.gpkg"</span>
+<span class="n">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"catchments"</span>
+
+<span class="k">[spatial.columns_map]</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"CatchmentCode"</span>
+<span class="n">catchment_code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"CatchmentCode"</span>
+<span class="n">catchment_title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"CatchmentName"</span>
 </pre></div>
 </div>
-<p>The source needs a <code class="docutils literal notranslate"><span class="pre">name</span></code> column with unique values. An integer <code class="docutils literal notranslate"><span class="pre">id</span></code>
-column, if present, is kept as the feature id.</p>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="setup" data-sync-id="json" for="sd-tab-item-5">
+JSON</label><div class="sd-tab-content docutils">
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"database"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"catchments.gpkg"</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"specs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"catchments_specs.json"</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"spatial"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hydrology.gpkg"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"layer"</span><span class="p">:</span><span class="w"> </span><span class="s2">"catchments"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"columns_map"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CatchmentCode"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"catchment_code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CatchmentCode"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"catchment_title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CatchmentName"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">file</span></code> is the source of the features, in any format geopandas reads. The
+<code class="docutils literal notranslate"><span class="pre">layer</span></code> picks one layer of a file with several; without it, the first layer
+is read, with only a warning.</p>
+<p>The optional <code class="docutils literal notranslate"><span class="pre">columns_map</span></code> declares <code class="docutils literal notranslate"><span class="pre">{layer</span> <span class="pre">column:</span> <span class="pre">source</span> <span class="pre">column}</span></code>, and a
+source column may be used more than once. Only mapped columns enter the layer.
+The <code class="docutils literal notranslate"><span class="pre">name</span></code> key is the unique key of the features, and defaults to a source
+column called <code class="docutils literal notranslate"><span class="pre">name</span></code>. Names are stripped text, from text or integer sources.
+Ids are generated and only stable inside one file, so a source id worth keeping
+must be mapped as an attribute.</p>
+<p>A shapefile holds one layer, so the setup leaves <code class="docutils literal notranslate"><span class="pre">layer</span></code> out and <code class="docutils literal notranslate"><span class="pre">file</span></code>
+points to the <code class="docutils literal notranslate"><span class="pre">.shp</span></code>, next to its companion files. Shapefile field names stop
+at 10 characters and the map must use them as read, so a field written as
+<code class="docutils literal notranslate"><span class="pre">CatchmentCode</span></code> is mapped as <code class="docutils literal notranslate"><span class="pre">CatchmentC</span></code>. Without a <code class="docutils literal notranslate"><span class="pre">.prj</span></code>, the layer has
+no CRS:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="setup" data-sync-id="toml" for="sd-tab-item-6">
+TOML</label><div class="sd-tab-content docutils">
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[spatial]</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"catchments.shp"</span>
+
+<span class="k">[spatial.columns_map]</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"CatchmentC"</span>
+<span class="n">catchment_title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"CatchmentN"</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="setup" data-sync-id="json" for="sd-tab-item-7">
+JSON</label><div class="sd-tab-content docutils">
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"spatial"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"catchments.shp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"columns_map"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CatchmentC"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"catchment_title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CatchmentN"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Tables are STRICT, a feature of SQLite 3.37 (2021). Readers built on an
@@ -1507,6 +1629,11 @@ older SQLite (eg, an old QGIS or GDAL) cannot open the file at all.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="plans.databases.SpatialDB._KEY_TABLE">
 <span class="sig-name descname"><span class="pre">_KEY_TABLE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#plans.databases.SpatialDB._KEY_TABLE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.SpatialDB._RESERVED_COLUMNS">
+<span class="sig-name descname"><span class="pre">_RESERVED_COLUMNS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('id',</span> <span class="pre">'geometry')</span></span><a class="headerlink" href="#plans.databases.SpatialDB._RESERVED_COLUMNS" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1558,13 +1685,43 @@ older SQLite (eg, an old QGIS or GDAL) cannot open the file at all.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.SpatialDB._layer_geometry">
+<span class="sig-name descname"><span class="pre">_layer_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#SpatialDB._layer_geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.SpatialDB._layer_geometry" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.SpatialDB._clean_names">
+<span class="sig-name descname"><span class="pre">_clean_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#SpatialDB._clean_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.SpatialDB._clean_names" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.SpatialDB._select_columns">
+<span class="sig-name descname"><span class="pre">_select_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#SpatialDB._select_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.SpatialDB._select_columns" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.SpatialDB._layer_fields">
+<span class="sig-name descname"><span class="pre">_layer_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#SpatialDB._layer_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.SpatialDB._layer_fields" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.SpatialDB._add_columns">
+<span class="sig-name descname"><span class="pre">_add_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#SpatialDB._add_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.SpatialDB._add_columns" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.SpatialDB._check_attributes">
+<span class="sig-name descname"><span class="pre">_check_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#SpatialDB._check_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.SpatialDB._check_attributes" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="plans.databases.SpatialDB._check_features">
-<span class="sig-name descname"><span class="pre">_check_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#SpatialDB._check_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.SpatialDB._check_features" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">_check_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#SpatialDB._check_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.SpatialDB._check_features" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.databases.SpatialDB._write_layer">
-<span class="sig-name descname"><span class="pre">_write_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#SpatialDB._write_layer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.SpatialDB._write_layer" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">_write_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#SpatialDB._write_layer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.SpatialDB._write_layer" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1584,14 +1741,20 @@ older SQLite (eg, an old QGIS or GDAL) cannot open the file at all.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.databases.SpatialDB.insert_features">
-<span class="sig-name descname"><span class="pre">insert_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#SpatialDB.insert_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.SpatialDB.insert_features" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">insert_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#SpatialDB.insert_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.SpatialDB.insert_features" title="Link to this definition">#</a></dt>
 <dd><p>Append features to the layer.</p>
-<p>Names must be new to the layer. Geometries are reprojected to the layer
-CRS. The write goes through geopandas on its own connection, so it cannot
-run inside a <code class="xref py py-meth docutils literal notranslate"><span class="pre">transaction()</span></code> block.</p>
+<p>Names must be new to the layer, and ids are generated. Only mapped
+columns are read: they must exist in the layer, and layer columns left
+out are stored as NULL. Geometries are reprojected to the layer CRS. The
+write goes through geopandas on its own connection, so it cannot run
+inside a <code class="xref py py-meth docutils literal notranslate"><span class="pre">transaction()</span></code> block.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>gdf</strong> (<em>geopandas.GeoDataFrame</em>) – features with a <code class="docutils literal notranslate"><span class="pre">name</span></code> column and optional extra columns</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gdf</strong> (<em>geopandas.GeoDataFrame</em>) – source features</p></li>
+<li><p><strong>columns_map</strong> (<em>dict</em><em>, </em><em>optional</em>) – column mapping <code class="docutils literal notranslate"><span class="pre">{layer_col:</span> <span class="pre">source_col}</span></code>; <code class="docutils literal notranslate"><span class="pre">name</span></code>
+defaults to a source column of that name</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -1601,13 +1764,34 @@ run inside a <code class="xref py py-meth docutils literal notranslate"><span cl
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – if names are missing, repeated or taken, geometry types
-are not accepted, or <code class="docutils literal notranslate"><span class="pre">gdf</span></code> has no CRS while the layer has one</p></li>
+<li><p><strong>ValueError</strong> – if names are missing, repeated or taken, a mapped column
+is reserved, missing or not fit for the layer, geometry types are not
+accepted, or <code class="docutils literal notranslate"><span class="pre">gdf</span></code> has no CRS while the layer has one</p></li>
 <li><p><strong>RuntimeError</strong> – if called inside an open transaction</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.SpatialDB._check_no_transaction">
+<span class="sig-name descname"><span class="pre">_check_no_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#SpatialDB._check_no_transaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.SpatialDB._check_no_transaction" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.SpatialDB._match_crs">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">_match_crs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#SpatialDB._match_crs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.SpatialDB._match_crs" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.SpatialDB._append_layer">
+<span class="sig-name descname"><span class="pre">_append_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#SpatialDB._append_layer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.SpatialDB._append_layer" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.SpatialDB._read_layer">
+<span class="sig-name descname"><span class="pre">_read_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#SpatialDB._read_layer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.SpatialDB._read_layer" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="plans.databases.SpatialDB.get_features">
@@ -1674,7 +1858,8 @@ ids through the table the records point to; unknown names raise.</p>
 <dt class="sig sig-object py" id="plans.databases.ZonesDB">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">plans.databases.</span></span><span class="sig-name descname"><span class="pre">ZonesDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#ZonesDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.ZonesDB" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#plans.databases.SpatialDB" title="plans.databases.SpatialDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpatialDB</span></code></a></p>
-<p>Spatial database of polygons (eg, basins or municipalities), in the <code class="docutils literal notranslate"><span class="pre">zones</span></code> layer.</p>
+<p>Spatial database of polygons (eg, catchments or municipalities), in the
+<code class="docutils literal notranslate"><span class="pre">zones</span></code> layer.</p>
 <p>Records carry <code class="docutils literal notranslate"><span class="pre">zone_id</span></code>, and queries also accept <code class="docutils literal notranslate"><span class="pre">zone_name</span></code>.
 Polygons are written as multi-polygons, so single and multi-part zones
 share one layer.</p>
@@ -1871,6 +2056,292 @@ branch for features specific to field data.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="plans.databases.FieldDB._WIDE_COLUMNS">
 <span class="sig-name descname"><span class="pre">_WIDE_COLUMNS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('spec_name',</span> <span class="pre">'site_id')</span></span><a class="headerlink" href="#plans.databases.FieldDB._WIDE_COLUMNS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">plans.databases.</span></span><span class="sig-name descname"><span class="pre">HydrologyDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#HydrologyDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.HydrologyDB" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#plans.databases.FieldDB" title="plans.databases.FieldDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDB</span></code></a></p>
+<p>Sites database for water body reaches, with an optional catchment per site.</p>
+<p>A site is a point that stands for a reach (eg, its gauge or outlet). The
+<code class="docutils literal notranslate"><span class="pre">catchments</span></code> layer holds the polygon draining to it, in the file next to
+<code class="docutils literal notranslate"><span class="pre">sites</span></code>, with attributes of that area. Each catchment takes the <code class="docutils literal notranslate"><span class="pre">name</span></code> of
+its site. Every catchment needs a site, a site has at most one catchment, and
+a site may have none, so catchments can be added as they become available.</p>
+<p>Records carry <code class="docutils literal notranslate"><span class="pre">site_id</span></code>. An areal series, such as catchment rainfall, is a
+record of the site whose spec tells it apart (eg, <code class="docutils literal notranslate"><span class="pre">extent</span></code> is <code class="docutils literal notranslate"><span class="pre">catchment</span></code>).</p>
+<p>The setup takes an optional <code class="docutils literal notranslate"><span class="pre">catchments</span></code> section, read like <code class="docutils literal notranslate"><span class="pre">spatial</span></code>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="setup" data-sync-id="toml" for="sd-tab-item-8">
+TOML</label><div class="sd-tab-content docutils">
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[database]</span>
+<span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"reaches.gpkg"</span>
+
+<span class="k">[specs]</span>
+<span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"reaches_specs.json"</span>
+
+<span class="k">[spatial]</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gauges.gpkg"</span>
+<span class="n">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gauges"</span>
+
+<span class="k">[spatial.columns_map]</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"GaugeCode"</span>
+<span class="n">gauge_title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"GaugeName"</span>
+
+<span class="k">[catchments]</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"hydrology.gpkg"</span>
+<span class="n">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"catchments"</span>
+<span class="n">skip_unmatched</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+
+<span class="k">[catchments.columns_map]</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"GaugeCode"</span>
+<span class="n">area_km2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"AreaKm2"</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="setup" data-sync-id="json" for="sd-tab-item-9">
+JSON</label><div class="sd-tab-content docutils">
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"database"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"reaches.gpkg"</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"specs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"reaches_specs.json"</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"spatial"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"gauges.gpkg"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"layer"</span><span class="p">:</span><span class="w"> </span><span class="s2">"gauges"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"columns_map"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GaugeCode"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"gauge_title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GaugeName"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"catchments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hydrology.gpkg"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"layer"</span><span class="p">:</span><span class="w"> </span><span class="s2">"catchments"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"skip_unmatched"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"columns_map"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GaugeCode"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"area_km2"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AreaKm2"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In the map, <code class="docutils literal notranslate"><span class="pre">name</span></code> is the source column holding the site names. Features
+naming no site are skipped with a warning, unless <code class="docutils literal notranslate"><span class="pre">skip_unmatched</span></code> is
+<code class="docutils literal notranslate"><span class="pre">false</span></code>; no match at all is an error, as it usually points to a wrong
+column. Without the section the layer starts empty, with <code class="docutils literal notranslate"><span class="pre">name</span></code> alone, in
+the CRS of the sites. The columns set at creation are kept unless an append
+asks for more.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – database name</p></li>
+<li><p><strong>alias</strong> (<em>str</em><em>, </em><em>optional</em>) – short alias</p></li>
+</ul>
+</dd>
+<dt class="field-even">Example<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># a polygon drawn in a GIS: one feature, no useful columns</span>
+<span class="n">db</span><span class="o">.</span><span class="n">append_catchment</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"CODE002"</span><span class="p">,</span>
+    <span class="n">file</span><span class="o">=</span><span class="s2">"drawn.gpkg"</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">"area_km2"</span><span class="p">:</span> <span class="mf">120.5</span><span class="p">},</span>
+<span class="p">)</span>
+<span class="c1"># one feature of a larger file, with attributes from its columns</span>
+<span class="n">db</span><span class="o">.</span><span class="n">append_catchment</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"CODE003"</span><span class="p">,</span>
+    <span class="n">file</span><span class="o">=</span><span class="s2">"hydrology.gpkg"</span><span class="p">,</span>
+    <span class="n">layer</span><span class="o">=</span><span class="s2">"catchments"</span><span class="p">,</span>
+    <span class="n">columns_map</span><span class="o">=</span><span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"GaugeCode"</span><span class="p">,</span> <span class="s2">"area_km2"</span><span class="p">:</span> <span class="s2">"AreaKm2"</span><span class="p">},</span>
+<span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">missing_catchments</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB.SQL_DIR">
+<span class="sig-name descname"><span class="pre">SQL_DIR</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('/home/runner/work/plans/plans/src/plans/data/sql/hydrology')</span></span><a class="headerlink" href="#plans.databases.HydrologyDB.SQL_DIR" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB._CATCHMENTS">
+<span class="sig-name descname"><span class="pre">_CATCHMENTS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'catchments'</span></span><a class="headerlink" href="#plans.databases.HydrologyDB._CATCHMENTS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB._CATCHMENT_TYPES">
+<span class="sig-name descname"><span class="pre">_CATCHMENT_TYPES</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('Polygon',</span> <span class="pre">'MultiPolygon')</span></span><a class="headerlink" href="#plans.databases.HydrologyDB._CATCHMENT_TYPES" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB._SOURCE_KEY">
+<span class="sig-name descname"><span class="pre">_SOURCE_KEY</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'_site_key'</span></span><a class="headerlink" href="#plans.databases.HydrologyDB._SOURCE_KEY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB._layer_geometry">
+<span class="sig-name descname"><span class="pre">_layer_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#HydrologyDB._layer_geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.HydrologyDB._layer_geometry" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB._prepare_file">
+<span class="sig-name descname"><span class="pre">_prepare_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_db</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#HydrologyDB._prepare_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.HydrologyDB._prepare_file" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB._finalize_file">
+<span class="sig-name descname"><span class="pre">_finalize_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#HydrologyDB._finalize_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.HydrologyDB._finalize_file" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB._source_keys">
+<span class="sig-name descname"><span class="pre">_source_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#HydrologyDB._source_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.HydrologyDB._source_keys" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB._match_sites">
+<span class="sig-name descname"><span class="pre">_match_sites</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_unmatched</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#HydrologyDB._match_sites"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.HydrologyDB._match_sites" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB._pick_feature">
+<span class="sig-name descname"><span class="pre">_pick_feature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns_map</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#HydrologyDB._pick_feature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.HydrologyDB._pick_feature" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB.append_catchment">
+<span class="sig-name descname"><span class="pre">append_catchment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#HydrologyDB.append_catchment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.HydrologyDB.append_catchment" title="Link to this definition">#</a></dt>
+<dd><p>Append the catchment of one site from a spatial file.</p>
+<p>The geometry comes from <code class="docutils literal notranslate"><span class="pre">file</span></code>. With <code class="docutils literal notranslate"><span class="pre">name</span></code> in <code class="docutils literal notranslate"><span class="pre">columns_map</span></code>, that
+source column picks the feature; without it, the file must hold exactly
+one feature, as in a polygon just drawn. Attributes may come from other
+<code class="docutils literal notranslate"><span class="pre">columns_map</span></code> entries or from <code class="docutils literal notranslate"><span class="pre">attributes</span></code>, and layer columns left out
+are stored as NULL. Geometries are reprojected to the layer CRS.</p>
+<p>The write goes through geopandas on its own connection, so it cannot run
+inside a <code class="xref py py-meth docutils literal notranslate"><span class="pre">transaction()</span></code> block.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – site name</p></li>
+<li><p><strong>file</strong> (<em>str</em><em> or </em><em>Path</em>) – source file, in any format geopandas reads</p></li>
+<li><p><strong>layer</strong> (<em>str</em><em>, </em><em>optional</em>) – source layer, for files with several</p></li>
+<li><p><strong>columns_map</strong> (<em>dict</em><em>, </em><em>optional</em>) – column mapping <code class="docutils literal notranslate"><span class="pre">{layer_col:</span> <span class="pre">source_col}</span></code></p></li>
+<li><p><strong>attributes</strong> (<em>dict</em><em>, </em><em>optional</em>) – attribute values <code class="docutils literal notranslate"><span class="pre">{layer_col:</span> <span class="pre">value}</span></code></p></li>
+<li><p><strong>add_columns</strong> (<em>bool</em>) – add attribute columns the layer does not have, typed
+from their values; existing rows stay NULL</p></li>
+<li><p><strong>overwrite</strong> (<em>bool</em>) – replace the catchment of the site, if any; its own <code class="docutils literal notranslate"><span class="pre">id</span></code>
+changes, which records do not depend on</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – if the site is unknown or has a catchment, the source
+does not give one feature, a column is unknown, reserved or set twice,
+or a value or geometry does not fit the layer</p></li>
+<li><p><strong>RuntimeError</strong> – if called inside an open transaction</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB.insert_catchments">
+<span class="sig-name descname"><span class="pre">insert_catchments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_unmatched</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#HydrologyDB.insert_catchments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.HydrologyDB.insert_catchments" title="Link to this definition">#</a></dt>
+<dd><p>Append several catchments, eg generated in Python.</p>
+<p>In the map, <code class="docutils literal notranslate"><span class="pre">name</span></code> is the source column holding the site names. Layer
+columns left out are stored as NULL. Geometries are reprojected to the
+layer CRS. All rows are checked before the write, and sites that already
+have a catchment raise; use <a class="reference internal" href="#plans.databases.HydrologyDB.append_catchment" title="plans.databases.HydrologyDB.append_catchment"><code class="xref py py-meth docutils literal notranslate"><span class="pre">append_catchment()</span></code></a> to replace one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gdf</strong> (<em>geopandas.GeoDataFrame</em>) – source features</p></li>
+<li><p><strong>columns_map</strong> (<em>dict</em><em>, </em><em>optional</em>) – column mapping <code class="docutils literal notranslate"><span class="pre">{layer_col:</span> <span class="pre">source_col}</span></code>; <code class="docutils literal notranslate"><span class="pre">name</span></code>
+defaults to a source column of that name</p></li>
+<li><p><strong>skip_unmatched</strong> (<em>bool</em>) – skip features naming no site, with a warning,
+instead of raising</p></li>
+<li><p><strong>add_columns</strong> (<em>bool</em>) – add attribute columns the layer does not have, typed
+from their values; existing rows stay NULL</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – if no feature names a site, a site has a catchment or
+is repeated, or a column or geometry does not fit the layer</p></li>
+<li><p><strong>RuntimeError</strong> – if called inside an open transaction</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB.get_catchments">
+<span class="sig-name descname"><span class="pre">get_catchments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#HydrologyDB.get_catchments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.HydrologyDB.get_catchments" title="Link to this definition">#</a></dt>
+<dd><p>Read the catchments layer as a GeoDataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>names</strong> (<em>str</em><em> or </em><em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – one or more site names; <code class="docutils literal notranslate"><span class="pre">None</span></code> returns the whole layer</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>layer rows; <code class="docutils literal notranslate"><span class="pre">id</span></code> belongs to the catchment, not to the site</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>geopandas.GeoDataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if a name has no catchment</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB.missing_catchments">
+<span class="sig-name descname"><span class="pre">missing_catchments</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plans/databases.html#HydrologyDB.missing_catchments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plans.databases.HydrologyDB.missing_catchments" title="Link to this definition">#</a></dt>
+<dd><p>List the sites without a catchment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>site names</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB._ORDER_BY">
+<span class="sig-name descname"><span class="pre">_ORDER_BY</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('spec_id',</span> <span class="pre">'site_id',</span> <span class="pre">'datetime')</span></span><a class="headerlink" href="#plans.databases.HydrologyDB._ORDER_BY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB._QUERY_KEYS">
+<span class="sig-name descname"><span class="pre">_QUERY_KEYS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('spec_name',</span> <span class="pre">'spec_id',</span> <span class="pre">'start',</span> <span class="pre">'end',</span> <span class="pre">'flag_value',</span> <span class="pre">'transform_values',</span> <span class="pre">'wide',</span> <span class="pre">'aggfunc',</span> <span class="pre">'with_meta',</span> <span class="pre">'site_id',</span> <span class="pre">'site_name')</span></span><a class="headerlink" href="#plans.databases.HydrologyDB._QUERY_KEYS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB._RECORD_COLUMNS">
+<span class="sig-name descname"><span class="pre">_RECORD_COLUMNS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('datetime',</span> <span class="pre">'value',</span> <span class="pre">'site_id')</span></span><a class="headerlink" href="#plans.databases.HydrologyDB._RECORD_COLUMNS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="plans.databases.HydrologyDB._WIDE_COLUMNS">
+<span class="sig-name descname"><span class="pre">_WIDE_COLUMNS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('spec_name',</span> <span class="pre">'site_id')</span></span><a class="headerlink" href="#plans.databases.HydrologyDB._WIDE_COLUMNS" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2170,6 +2641,7 @@ least one sample from those sites.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._GEOMETRY_TYPES"><code class="docutils literal notranslate"><span class="pre">SpatialDB._GEOMETRY_TYPES</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._PROMOTE_TO_MULTI"><code class="docutils literal notranslate"><span class="pre">SpatialDB._PROMOTE_TO_MULTI</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._KEY_TABLE"><code class="docutils literal notranslate"><span class="pre">SpatialDB._KEY_TABLE</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._RESERVED_COLUMNS"><code class="docutils literal notranslate"><span class="pre">SpatialDB._RESERVED_COLUMNS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._QUERY_KEYS"><code class="docutils literal notranslate"><span class="pre">SpatialDB._QUERY_KEYS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB.__init__"><code class="docutils literal notranslate"><span class="pre">SpatialDB.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB.connect"><code class="docutils literal notranslate"><span class="pre">SpatialDB.connect()</span></code></a></li>
@@ -2177,12 +2649,22 @@ least one sample from those sites.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._create_table"><code class="docutils literal notranslate"><span class="pre">SpatialDB._create_table()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._prepare_file"><code class="docutils literal notranslate"><span class="pre">SpatialDB._prepare_file()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._finalize_file"><code class="docutils literal notranslate"><span class="pre">SpatialDB._finalize_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._layer_geometry"><code class="docutils literal notranslate"><span class="pre">SpatialDB._layer_geometry()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._clean_names"><code class="docutils literal notranslate"><span class="pre">SpatialDB._clean_names()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._select_columns"><code class="docutils literal notranslate"><span class="pre">SpatialDB._select_columns()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._layer_fields"><code class="docutils literal notranslate"><span class="pre">SpatialDB._layer_fields()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._add_columns"><code class="docutils literal notranslate"><span class="pre">SpatialDB._add_columns()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._check_attributes"><code class="docutils literal notranslate"><span class="pre">SpatialDB._check_attributes()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._check_features"><code class="docutils literal notranslate"><span class="pre">SpatialDB._check_features()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._write_layer"><code class="docutils literal notranslate"><span class="pre">SpatialDB._write_layer()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._name_lookup"><code class="docutils literal notranslate"><span class="pre">SpatialDB._name_lookup()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._resolve_names"><code class="docutils literal notranslate"><span class="pre">SpatialDB._resolve_names()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._key_table"><code class="docutils literal notranslate"><span class="pre">SpatialDB._key_table</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB.insert_features"><code class="docutils literal notranslate"><span class="pre">SpatialDB.insert_features()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._check_no_transaction"><code class="docutils literal notranslate"><span class="pre">SpatialDB._check_no_transaction()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._match_crs"><code class="docutils literal notranslate"><span class="pre">SpatialDB._match_crs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._append_layer"><code class="docutils literal notranslate"><span class="pre">SpatialDB._append_layer()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._read_layer"><code class="docutils literal notranslate"><span class="pre">SpatialDB._read_layer()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB.get_features"><code class="docutils literal notranslate"><span class="pre">SpatialDB.get_features()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._prepare_records"><code class="docutils literal notranslate"><span class="pre">SpatialDB._prepare_records()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.SpatialDB._query_filters"><code class="docutils literal notranslate"><span class="pre">SpatialDB._query_filters()</span></code></a></li>
@@ -2228,6 +2710,27 @@ least one sample from those sites.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.FieldDB._QUERY_KEYS"><code class="docutils literal notranslate"><span class="pre">FieldDB._QUERY_KEYS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.FieldDB._RECORD_COLUMNS"><code class="docutils literal notranslate"><span class="pre">FieldDB._RECORD_COLUMNS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.FieldDB._WIDE_COLUMNS"><code class="docutils literal notranslate"><span class="pre">FieldDB._WIDE_COLUMNS</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB"><code class="docutils literal notranslate"><span class="pre">HydrologyDB</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB.SQL_DIR"><code class="docutils literal notranslate"><span class="pre">HydrologyDB.SQL_DIR</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB._CATCHMENTS"><code class="docutils literal notranslate"><span class="pre">HydrologyDB._CATCHMENTS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB._CATCHMENT_TYPES"><code class="docutils literal notranslate"><span class="pre">HydrologyDB._CATCHMENT_TYPES</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB._SOURCE_KEY"><code class="docutils literal notranslate"><span class="pre">HydrologyDB._SOURCE_KEY</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB._layer_geometry"><code class="docutils literal notranslate"><span class="pre">HydrologyDB._layer_geometry()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB._prepare_file"><code class="docutils literal notranslate"><span class="pre">HydrologyDB._prepare_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB._finalize_file"><code class="docutils literal notranslate"><span class="pre">HydrologyDB._finalize_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB._source_keys"><code class="docutils literal notranslate"><span class="pre">HydrologyDB._source_keys()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB._match_sites"><code class="docutils literal notranslate"><span class="pre">HydrologyDB._match_sites()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB._pick_feature"><code class="docutils literal notranslate"><span class="pre">HydrologyDB._pick_feature()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB.append_catchment"><code class="docutils literal notranslate"><span class="pre">HydrologyDB.append_catchment()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB.insert_catchments"><code class="docutils literal notranslate"><span class="pre">HydrologyDB.insert_catchments()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB.get_catchments"><code class="docutils literal notranslate"><span class="pre">HydrologyDB.get_catchments()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB.missing_catchments"><code class="docutils literal notranslate"><span class="pre">HydrologyDB.missing_catchments()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB._ORDER_BY"><code class="docutils literal notranslate"><span class="pre">HydrologyDB._ORDER_BY</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB._QUERY_KEYS"><code class="docutils literal notranslate"><span class="pre">HydrologyDB._QUERY_KEYS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB._RECORD_COLUMNS"><code class="docutils literal notranslate"><span class="pre">HydrologyDB._RECORD_COLUMNS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.HydrologyDB._WIDE_COLUMNS"><code class="docutils literal notranslate"><span class="pre">HydrologyDB._WIDE_COLUMNS</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plans.databases.LabDB"><code class="docutils literal notranslate"><span class="pre">LabDB</span></code></a><ul class="nav section-nav flex-column">

@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Databases - Hydrology &#8212; plans 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/databases_05_hydrology';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Bivariate data - Basics" href="bivar_01.html" />
+    <link rel="prev" title="Databases - Laboratory" href="databases_04_lab.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-light" alt=""/>
+    <img src="https://github.com/iporepos/plans-assets/blob/main/docs/figs/logo.jpg?raw=true" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">plans</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    Home
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../userguide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/iporepos/plans" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../files.html">Files</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../files.html">Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_structures.html">Data Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../files_index.html">Files Index</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Projects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../variables.html">Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../flags.html">Flags</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="project_01.html">Projects - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="univar_01.html">Univariate data - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="univar_02_plots.html">Univariate data - Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="univar_03_geo.html">Univariate data - Geospatial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="databases_01.html">Databases - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="databases_02_semispatial.html">Databases - Station networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="databases_03_spatial.html">Databases - Spatial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="databases_04_lab.html">Databases - Laboratory</a></li>
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Databases - Hydrology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bivar_01.html">Bivariate data - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bivar_02_models.html">Bivariate data - Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochastic_01_arma.html">Stochastic series - AR(1) generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_01.html">Time Series - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_05_compare.html">Time Series - Comparing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_02_upscale.html">Time Series - Upscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_06_downscale.html">Time Series - Downscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_03_gaps.html">Time Series - Gaps and epochs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_04_standardize.html">Time Series - Standardizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_07_collection.html">Time Series - Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_08_cluster.html">Time Series - Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_09_cluster_large.html">Time Series - Large Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_10_ensemble.html">Time Series - Ensembles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_11_seasonal.html">Time Series - Seasonal ensembles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_12_collection_views.html">Time Series - Collection visuals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeseries_13_synthetic.html">Time Series - Synthetic series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visuals_01.html">Visualizations - Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="raster_01.html">Raster data - Basics</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-house"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../userguide.html" class="nav-link">User Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../examples.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Databases - Hydrology</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="databases-hydrology">
+<h1>Databases - Hydrology<a class="headerlink" href="#databases-hydrology" title="Link to this heading">#</a></h1>
+<p>This tutorial covers <code class="docutils literal notranslate"><span class="pre">HydrologyDB</span></code>, the database for river reaches. Each reach is a site, a point at its gauge or outlet, and it may have a <em>catchment</em>, the polygon that drains to it. Sites and catchments are two layers of the same GeoPackage. Every catchment needs a site, and a site has at most one catchment, but it may have none. That matters in practice: gauges are usually known from the start, while catchments arrive over time, as someone draws or generates them.</p>
+<p>The example is a river with six gauges, of which a regional dataset covers only three.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>Check out the <a class="reference internal" href="databases_03_spatial.html"><span class="doc">Databases - Spatial</span></a> tutorial first, which introduces the <code class="docutils literal notranslate"><span class="pre">columns_map</span></code> and setup files.</p>
+</div>
+<section id="notebook-setup">
+<h2>Notebook setup<a class="headerlink" href="#notebook-setup" title="Link to this heading">#</a></h2>
+<p>For users running this tutorial as a Jupyter Notebook, this cell must be executed first:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">box</span>
+
+<span class="c1"># Install `plans` in `google.colab`.</span>
+<span class="c1"># Use `pip install plans` for other environments.</span>
+
+<span class="k">if</span> <span class="s2">"google.colab"</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="si">}</span><span class="s2"> -m pip install -q plans"</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">plans.databases</span><span class="w"> </span><span class="kn">import</span> <span class="n">HydrologyDB</span>
+
+<span class="c1"># This avoids warnings related to uninstalled fonts</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="c1"># Set the matplotlib font manager logger to only show errors (hides warnings)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">'matplotlib.font_manager'</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+
+<span class="c1"># define output folder</span>
+<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"outputs/databases"</span><span class="p">)</span>
+<span class="n">OUTPUT_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Outputs will be saved to: ./</span><span class="si">{</span><span class="n">OUTPUT_DIR</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Outputs will be saved to: ./outputs/databases
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-sources">
+<h2>The sources<a class="headerlink" href="#the-sources" title="Link to this heading">#</a></h2>
+<p>The gauges run along the river from west to east. Each catchment is simplified to a box, from the headwaters down to its gauge, so catchments overlap as they nest downstream. Lets keep a helper that makes one, with its area, in a metric CRS. The gauges come in one file, and the regional dataset in another, in a different CRS. It holds three of our gauges and two from another river:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">CRS</span> <span class="o">=</span> <span class="s2">"EPSG:4674"</span>  <span class="c1"># SIRGAS 2000, geographic</span>
+<span class="n">CRS_METRIC</span> <span class="o">=</span> <span class="s2">"EPSG:31982"</span>  <span class="c1"># SIRGAS 2000 / UTM zone 22S</span>
+
+<span class="n">codes</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"R00</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">)]</span>
+<span class="n">x_gauge</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">codes</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">53.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">52.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">52.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">51.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">51.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.5</span><span class="p">]))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_catchment</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">"Code"</span><span class="p">):</span>
+    <span class="c1"># a box from the headwaters to the gauge, with its area in km2</span>
+    <span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">({</span><span class="n">column</span><span class="p">:</span> <span class="p">[</span><span class="n">code</span><span class="p">]},</span> <span class="n">geometry</span><span class="o">=</span><span class="p">[</span><span class="n">box</span><span class="p">(</span><span class="o">-</span><span class="mf">53.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">30.4</span><span class="p">,</span> <span class="n">x_gauge</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="o">-</span><span class="mf">53.2</span><span class="p">),</span> <span class="o">-</span><span class="mf">29.6</span><span class="p">)],</span> <span class="n">crs</span><span class="o">=</span><span class="n">CRS</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gdf</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">Area</span><span class="o">=</span><span class="n">gdf</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="n">CRS_METRIC</span><span class="p">)</span><span class="o">.</span><span class="n">area</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">)</span>
+
+
+<span class="n">gauges</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">"GaugeCode"</span><span class="p">:</span> <span class="n">codes</span><span class="p">,</span> <span class="s2">"GaugeName"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Upper"</span><span class="p">,</span> <span class="s2">"Bend"</span><span class="p">,</span> <span class="s2">"Mill"</span><span class="p">,</span> <span class="s2">"Bridge"</span><span class="p">,</span> <span class="s2">"Ferry"</span><span class="p">,</span> <span class="s2">"Mouth"</span><span class="p">]},</span>
+    <span class="n">geometry</span><span class="o">=</span><span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">x_gauge</span><span class="p">[</span><span class="n">c</span><span class="p">],</span> <span class="o">-</span><span class="mf">30.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">],</span>
+    <span class="n">crs</span><span class="o">=</span><span class="n">CRS</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">file_gauges</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"gauges.gpkg"</span>
+<span class="n">gauges</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">file_gauges</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="s2">"gauges"</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="s2">"GPKG"</span><span class="p">)</span>
+
+<span class="n">regional</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">make_catchment</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">"GaugeCode"</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"R001"</span><span class="p">,</span> <span class="s2">"R002"</span><span class="p">,</span> <span class="s2">"R003"</span><span class="p">,</span> <span class="s2">"R901"</span><span class="p">,</span> <span class="s2">"R902"</span><span class="p">]],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">regional</span> <span class="o">=</span> <span class="n">regional</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">"Area"</span><span class="p">:</span> <span class="s2">"AreaKm2"</span><span class="p">})</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">Survey</span><span class="o">=</span><span class="mi">2019</span><span class="p">)</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="n">CRS_METRIC</span><span class="p">)</span>
+<span class="n">file_regional</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"regional.gpkg"</span>
+<span class="n">regional</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">file_regional</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="s2">"catchments"</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="s2">"GPKG"</span><span class="p">)</span>
+<span class="n">regional</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">"geometry"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>GaugeCode</th>
+      <th>AreaKm2</th>
+      <th>Survey</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>R001</td>
+      <td>4280.0</td>
+      <td>2019</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>R002</td>
+      <td>8558.0</td>
+      <td>2019</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>R003</td>
+      <td>12834.0</td>
+      <td>2019</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>R901</td>
+      <td>2568.0</td>
+      <td>2019</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>R902</td>
+      <td>2568.0</td>
+      <td>2019</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Two datasets will live here. Streamflow is measured at the gauge, while rainfall is averaged over the catchment. Both are records of the site, and the <code class="docutils literal notranslate"><span class="pre">extent</span></code> of the spec tells which is which:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">make_spec</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">abstract</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">statistic</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">extent</span><span class="p">):</span>
+    <span class="c1"># one monthly spec</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">"name"</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+        <span class="s2">"abstract"</span><span class="p">:</span> <span class="n">abstract</span><span class="p">,</span>
+        <span class="s2">"method"</span><span class="p">:</span> <span class="s2">"synthetic"</span><span class="p">,</span>
+        <span class="s2">"timestep"</span><span class="p">:</span> <span class="s2">"1M"</span><span class="p">,</span>
+        <span class="s2">"extent"</span><span class="p">:</span> <span class="n">extent</span><span class="p">,</span>
+        <span class="s2">"scale"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"offset"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">"start"</span><span class="p">:</span> <span class="s2">"2016-01-01"</span><span class="p">,</span>
+        <span class="s2">"end"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">"variable_name"</span><span class="p">:</span> <span class="n">variable</span><span class="p">,</span>
+        <span class="s2">"statistic_name"</span><span class="p">:</span> <span class="n">statistic</span><span class="p">,</span>
+        <span class="s2">"source_name"</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
+<span class="n">specs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">make_spec</span><span class="p">(</span><span class="s2">"Q_MONTHLY"</span><span class="p">,</span> <span class="s2">"Monthly mean streamflow"</span><span class="p">,</span> <span class="s2">"standard streamflow"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">,</span> <span class="s2">"ANA"</span><span class="p">,</span> <span class="s2">"gauge"</span><span class="p">),</span>
+    <span class="n">make_spec</span><span class="p">(</span><span class="s2">"PPT_MONTHLY_AREAL"</span><span class="p">,</span> <span class="s2">"Monthly rainfall over the catchment"</span><span class="p">,</span> <span class="s2">"precipitation"</span><span class="p">,</span> <span class="s2">"sum"</span><span class="p">,</span> <span class="s2">"CHIRPS v2.0"</span><span class="p">,</span> <span class="s2">"catchment"</span><span class="p">),</span>
+<span class="p">]</span>
+<span class="n">file_specs</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"reaches_specs.json"</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">file_specs</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">specs</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="creating-the-database">
+<h2>Creating the database<a class="headerlink" href="#creating-the-database" title="Link to this heading">#</a></h2>
+<p>The setup takes an optional <code class="docutils literal notranslate"><span class="pre">catchments</span></code> section, read like <code class="docutils literal notranslate"><span class="pre">spatial</span></code>. In its <code class="docutils literal notranslate"><span class="pre">columns_map</span></code>, the <code class="docutils literal notranslate"><span class="pre">name</span></code> entry is the source column holding the site names, here also called <code class="docutils literal notranslate"><span class="pre">GaugeCode</span></code>, and each catchment takes the name of its site. As anywhere in a setup, it can be a dict or a file:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="setup" data-sync-id="toml" for="sd-tab-item-0">
+TOML</label><div class="sd-tab-content docutils">
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[database]</span>
+<span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"outputs/databases/reaches_db.gpkg"</span>
+
+<span class="k">[specs]</span>
+<span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"outputs/databases/reaches_specs.json"</span>
+
+<span class="k">[spatial]</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"outputs/databases/gauges.gpkg"</span>
+<span class="n">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gauges"</span>
+
+<span class="k">[spatial.columns_map]</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"GaugeCode"</span>
+<span class="n">gauge_title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"GaugeName"</span>
+
+<span class="k">[catchments]</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"outputs/databases/regional.gpkg"</span>
+<span class="n">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"catchments"</span>
+
+<span class="k">[catchments.columns_map]</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"GaugeCode"</span>
+<span class="n">area_km2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"AreaKm2"</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="setup" data-sync-id="json" for="sd-tab-item-1">
+JSON</label><div class="sd-tab-content docutils">
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"database"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"outputs/databases/reaches_db.gpkg"</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"specs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"outputs/databases/reaches_specs.json"</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"spatial"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"outputs/databases/gauges.gpkg"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"layer"</span><span class="p">:</span><span class="w"> </span><span class="s2">"gauges"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"columns_map"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GaugeCode"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"gauge_title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GaugeName"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"catchments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"outputs/databases/regional.gpkg"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"layer"</span><span class="p">:</span><span class="w"> </span><span class="s2">"catchments"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"columns_map"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GaugeCode"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"area_km2"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AreaKm2"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>When catchments are not available yet, the section is simply left out, and the layer starts empty. Lets write the TOML version and pass its path to <code class="docutils literal notranslate"><span class="pre">.new()</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file_setup</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"reaches_setup.toml"</span>
+<span class="n">file_setup</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">"""[database]</span>
+<span class="s2">path = "</span><span class="si">{</span><span class="p">(</span><span class="n">OUTPUT_DIR</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s1">'reaches_db.gpkg'</span><span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
+
+<span class="s2">[specs]</span>
+<span class="s2">path = "</span><span class="si">{</span><span class="n">file_specs</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
+
+<span class="s2">[spatial]</span>
+<span class="s2">file = "</span><span class="si">{</span><span class="n">file_gauges</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
+<span class="s2">layer = "gauges"</span>
+
+<span class="s2">[spatial.columns_map]</span>
+<span class="s2">name = "GaugeCode"</span>
+<span class="s2">gauge_title = "GaugeName"</span>
+
+<span class="s2">[catchments]</span>
+<span class="s2">file = "</span><span class="si">{</span><span class="n">file_regional</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
+<span class="s2">layer = "catchments"</span>
+
+<span class="s2">[catchments.columns_map]</span>
+<span class="s2">name = "GaugeCode"</span>
+<span class="s2">area_km2 = "AreaKm2"</span>
+<span class="s2">"""</span><span class="p">,</span>
+    <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">HydrologyDB</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"River"</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">(</span><span class="n">record</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">caught</span><span class="p">:</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">"always"</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">file_setup</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">w</span><span class="o">.</span><span class="n">message</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">caught</span><span class="p">],</span> <span class="n">sep</span><span class="o">=</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2 feature(s) naming no site were skipped
+</pre></div>
+</div>
+</div>
+</div>
+<p>The two features from the other river name no site, so they were skipped with a warning. With <code class="docutils literal notranslate"><span class="pre">skip_unmatched</span> <span class="pre">=</span> <span class="pre">false</span></code> in the section, they would be an error instead. If nothing matched at all, it is an error either way, since that usually means the <code class="docutils literal notranslate"><span class="pre">name</span></code> entry points to the wrong column.</p>
+<p>The layer holds what matched, reprojected to the CRS of the sites. The <code class="docutils literal notranslate"><span class="pre">Survey</span></code> column stayed out, as it is not in the map. The <code class="docutils literal notranslate"><span class="pre">.missing_catchments()</span></code> method tells which sites still have none:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Missing:"</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">missing_catchments</span><span class="p">())</span>
+<span class="n">db</span><span class="o">.</span><span class="n">get_catchments</span><span class="p">()</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">"geometry"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Missing: ['R004', 'R005', 'R006']
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>name</th>
+      <th>area_km2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>R001</td>
+      <td>4280.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>R002</td>
+      <td>8558.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>R003</td>
+      <td>12834.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot_network</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
+    <span class="c1"># shaded catchments, with the gauges on top</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">get_catchments</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">"tab:blue"</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"tab:blue"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+    <span class="n">sites</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_features</span><span class="p">()</span>
+    <span class="n">sites</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="n">sites</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">site</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">site</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">site</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">textcoords</span><span class="o">=</span><span class="s2">"offset points"</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">"center"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mf">53.7</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.3</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">30.6</span><span class="p">,</span> <span class="o">-</span><span class="mf">29.4</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+<span class="n">plot_network</span><span class="p">(</span><span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/49ecab177a2f510c972c248d7b3d355b004d2e81cf24492f23547f2b310534d9.png" src="../_images/49ecab177a2f510c972c248d7b3d355b004d2e81cf24492f23547f2b310534d9.png" />
+</div>
+</div>
+</section>
+<section id="adding-catchments-later">
+<h2>Adding catchments later<a class="headerlink" href="#adding-catchments-later" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">.append_catchment()</span></code> method adds one catchment to one site, and keeps the geometry apart from the attributes. The geometry always comes from a spatial file. Attributes may come from that file or from a dict, and anything left out stays empty.</p>
+<section id="a-drawn-polygon">
+<h3>A drawn polygon<a class="headerlink" href="#a-drawn-polygon" title="Link to this heading">#</a></h3>
+<p>Someone draws the catchment of <code class="docutils literal notranslate"><span class="pre">R004</span></code> in a GIS and saves it. The file holds one feature, with no code and no area, so the site is given by <code class="docutils literal notranslate"><span class="pre">name</span></code>, and the area by value. The polygon comes in another CRS here, and is reprojected to the layer:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">drawn</span> <span class="o">=</span> <span class="n">make_catchment</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s2">"R004"</span><span class="p">)</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="n">CRS_METRIC</span><span class="p">)</span>
+<span class="n">area_drawn</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">drawn</span><span class="p">[</span><span class="s2">"Area"</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">file_drawn</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"drawn.gpkg"</span>
+<span class="n">drawn</span><span class="p">[[</span><span class="s2">"geometry"</span><span class="p">]]</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">file_drawn</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="s2">"GPKG"</span><span class="p">)</span>
+
+<span class="n">db</span><span class="o">.</span><span class="n">append_catchment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"R004"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file_drawn</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">"area_km2"</span><span class="p">:</span> <span class="n">area_drawn</span><span class="p">})</span>
+<span class="n">db</span><span class="o">.</span><span class="n">get_catchments</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="s2">"R004"</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">"geometry"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>name</th>
+      <th>area_km2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>4</td>
+      <td>R004</td>
+      <td>17110.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="one-feature-of-a-larger-file">
+<h3>One feature of a larger file<a class="headerlink" href="#one-feature-of-a-larger-file" title="Link to this heading">#</a></h3>
+<p>Later, a national dataset with many catchments comes along. With <code class="docutils literal notranslate"><span class="pre">name</span></code> in the <code class="docutils literal notranslate"><span class="pre">columns_map</span></code>, that source column picks the feature. The method first reads only that column to find the row, and then reads only that row, so the rest of the file is never loaded. No match, or more than one, is an error:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">national</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">make_catchment</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"R005"</span><span class="p">,</span> <span class="s2">"R006"</span><span class="p">,</span> <span class="s2">"R903"</span><span class="p">,</span> <span class="s2">"R904"</span><span class="p">]],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">file_national</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"national.gpkg"</span>
+<span class="n">national</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">file_national</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="s2">"GPKG"</span><span class="p">)</span>
+
+<span class="n">db</span><span class="o">.</span><span class="n">append_catchment</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"R005"</span><span class="p">,</span>
+    <span class="n">file</span><span class="o">=</span><span class="n">file_national</span><span class="p">,</span>
+    <span class="n">layer</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
+    <span class="n">columns_map</span><span class="o">=</span><span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"Code"</span><span class="p">,</span> <span class="s2">"area_km2"</span><span class="p">:</span> <span class="s2">"Area"</span><span class="p">},</span>
+<span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">get_catchments</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="s2">"R005"</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">"geometry"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>name</th>
+      <th>area_km2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>5</td>
+      <td>R005</td>
+      <td>21385.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="generated-in-python">
+<h3>Generated in Python<a class="headerlink" href="#generated-in-python" title="Link to this heading">#</a></h3>
+<p>A catchment generated by a script is already a <code class="docutils literal notranslate"><span class="pre">GeoDataFrame</span></code>, so <code class="docutils literal notranslate"><span class="pre">.insert_catchments()</span></code> takes it directly. It also takes many at once, which suits bulk loads better than repeated appends, and skips features naming no site, as at creation:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">generated</span> <span class="o">=</span> <span class="n">make_catchment</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="s2">"R006"</span><span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">insert_catchments</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">generated</span><span class="p">,</span> <span class="n">columns_map</span><span class="o">=</span><span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"Code"</span><span class="p">,</span> <span class="s2">"area_km2"</span><span class="p">:</span> <span class="s2">"Area"</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Missing:"</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">missing_catchments</span><span class="p">())</span>
+<span class="n">plot_network</span><span class="p">(</span><span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Missing: []
+</pre></div>
+</div>
+<img alt="../_images/007d9b884aa84b68f41e5320a9f529c1cc7ac2eac33c1a802ef02ca006e4dbdf.png" src="../_images/007d9b884aa84b68f41e5320a9f529c1cc7ac2eac33c1a802ef02ca006e4dbdf.png" />
+</div>
+</div>
+</section>
+<section id="what-is-refused">
+<h3>What is refused<a class="headerlink" href="#what-is-refused" title="Link to this heading">#</a></h3>
+<p>Catchments without a site and second catchments for a site are refused. These rules also live in the file itself, as a unique index and a trigger, so they hold for any tool writing through GDAL:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"R999"</span><span class="p">,</span> <span class="s2">"R001"</span><span class="p">]:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">append_catchment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file_drawn</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Name 'R999' not in the sites layer
+Site 'R001' already has a catchment
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="replacing-and-new-attributes">
+<h3>Replacing and new attributes<a class="headerlink" href="#replacing-and-new-attributes" title="Link to this heading">#</a></h3>
+<p>A better delineation replaces the old one with <code class="docutils literal notranslate"><span class="pre">overwrite=True</span></code>. By default, the layer keeps the columns it was created with, so an unknown attribute is refused, and a typo does not become a column. With <code class="docutils literal notranslate"><span class="pre">add_columns=True</span></code>, the column is added, typed from its value, and the other rows stay empty:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"area_km2"</span><span class="p">:</span> <span class="n">area_drawn</span><span class="p">,</span> <span class="s2">"delineation"</span><span class="p">:</span> <span class="s2">"manual"</span><span class="p">}</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">append_catchment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"R004"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file_drawn</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+
+<span class="n">db</span><span class="o">.</span><span class="n">append_catchment</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"R004"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file_drawn</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">add_columns</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">get_catchments</span><span class="p">()</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">"geometry"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Column(s) ['delineation'] not in the catchments layer
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>name</th>
+      <th>area_km2</th>
+      <th>delineation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>R001</td>
+      <td>4280.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>R002</td>
+      <td>8558.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>R003</td>
+      <td>12834.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>5</td>
+      <td>R005</td>
+      <td>21385.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>6</td>
+      <td>R006</td>
+      <td>25660.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>8</td>
+      <td>R004</td>
+      <td>17110.0</td>
+      <td>manual</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>A replacement is written as a new row, so the catchment takes a new <code class="docutils literal notranslate"><span class="pre">id</span></code>. Nothing depends on it: catchments are linked to sites by <code class="docutils literal notranslate"><span class="pre">name</span></code>, and the <code class="docutils literal notranslate"><span class="pre">id</span></code> of a catchment is not the <code class="docutils literal notranslate"><span class="pre">id</span></code> of its site.</p>
+</section>
+</section>
+<section id="records">
+<h2>Records<a class="headerlink" href="#records" title="Link to this heading">#</a></h2>
+<p>Records always point to the site, by <code class="docutils literal notranslate"><span class="pre">site_id</span></code> or <code class="docutils literal notranslate"><span class="pre">site_name</span></code>, whichever spec they belong to. Rainfall falls over the catchment and streamflow is read at the gauge, but both are loaded the same way:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># ensure reproducibility</span>
+<span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">"2016-01-01"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"2020-12-01"</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"MS"</span><span class="p">)</span>
+<span class="n">season</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">dates</span><span class="o">.</span><span class="n">month</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">12</span><span class="p">)</span>
+<span class="n">seconds</span> <span class="o">=</span> <span class="n">dates</span><span class="o">.</span><span class="n">days_in_month</span> <span class="o">*</span> <span class="mi">86400</span>
+
+<span class="n">areas</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_catchments</span><span class="p">()</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)[</span><span class="s2">"area_km2"</span><span class="p">]</span>
+<span class="n">rain</span> <span class="o">=</span> <span class="mi">130</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">season</span><span class="p">)</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">gamma</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">))</span>
+<span class="n">frames_q</span><span class="p">,</span> <span class="n">frames_p</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">:</span>
+    <span class="n">flow</span> <span class="o">=</span> <span class="n">areas</span><span class="p">[</span><span class="n">code</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e6</span> <span class="o">*</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">rain</span> <span class="o">/</span> <span class="mi">1000</span> <span class="o">/</span> <span class="n">seconds</span>
+    <span class="n">frames_q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"datetime"</span><span class="p">:</span> <span class="n">dates</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">:</span> <span class="n">flow</span><span class="p">,</span> <span class="s2">"site_name"</span><span class="p">:</span> <span class="n">code</span><span class="p">}))</span>
+    <span class="n">frames_p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"datetime"</span><span class="p">:</span> <span class="n">dates</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">:</span> <span class="n">rain</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)),</span> <span class="s2">"site_name"</span><span class="p">:</span> <span class="n">code</span><span class="p">}))</span>
+<span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">insert_records</span><span class="p">(</span><span class="n">dataframe</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">frames_q</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">spec_name</span><span class="o">=</span><span class="s2">"Q_MONTHLY"</span><span class="p">,</span> <span class="n">flag</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">insert_records</span><span class="p">(</span><span class="n">dataframe</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">frames_p</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">spec_name</span><span class="o">=</span><span class="s2">"PPT_MONTHLY_AREAL"</span><span class="p">,</span> <span class="n">flag</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">query_records</span><span class="p">(</span><span class="n">query_dict</span><span class="o">=</span><span class="p">{</span><span class="s2">"site_name"</span><span class="p">:</span> <span class="s2">"R004"</span><span class="p">,</span> <span class="s2">"start"</span><span class="p">:</span> <span class="s2">"2016-01-01"</span><span class="p">,</span> <span class="s2">"end"</span><span class="p">:</span> <span class="s2">"2016-02-01"</span><span class="p">})[[</span><span class="s2">"datetime"</span><span class="p">,</span> <span class="s2">"spec_name"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">,</span> <span class="s2">"site_id"</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>datetime</th>
+      <th>spec_name</th>
+      <th>value</th>
+      <th>site_id</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2016-01-01 00:00:00+00:00</td>
+      <td>Q_MONTHLY</td>
+      <td>153.624864</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2016-02-01 00:00:00+00:00</td>
+      <td>Q_MONTHLY</td>
+      <td>223.226031</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2016-01-01 00:00:00+00:00</td>
+      <td>PPT_MONTHLY_AREAL</td>
+      <td>58.200084</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2016-02-01 00:00:00+00:00</td>
+      <td>PPT_MONTHLY_AREAL</td>
+      <td>84.652797</td>
+      <td>4</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Joining the three pieces goes through the names. Sites map <code class="docutils literal notranslate"><span class="pre">site_id</span></code> to <code class="docutils literal notranslate"><span class="pre">name</span></code>, and catchments map <code class="docutils literal notranslate"><span class="pre">name</span></code> to their attributes. Dividing the mean flow by the area gives the specific discharge, which is about the same along the river, as this synthetic runoff should be:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">flow</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query_records</span><span class="p">(</span><span class="n">query_dict</span><span class="o">=</span><span class="p">{</span><span class="s2">"spec_name"</span><span class="p">:</span> <span class="s2">"Q_MONTHLY"</span><span class="p">})</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"site_id"</span><span class="p">)[</span><span class="s2">"value"</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">"q_m3s"</span><span class="p">)</span>
+<span class="n">table</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">get_features</span><span class="p">()[[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="s2">"gauge_title"</span><span class="p">]]</span>
+    <span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">flow</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s2">"id"</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">get_catchments</span><span class="p">()[[</span><span class="s2">"name"</span><span class="p">,</span> <span class="s2">"area_km2"</span><span class="p">]],</span> <span class="n">on</span><span class="o">=</span><span class="s2">"name"</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">"left"</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">table</span><span class="p">[</span><span class="s2">"q_ls_km2"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">table</span><span class="p">[</span><span class="s2">"q_m3s"</span><span class="p">]</span> <span class="o">/</span> <span class="n">table</span><span class="p">[</span><span class="s2">"area_km2"</span><span class="p">]</span>
+<span class="n">table</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>name</th>
+      <th>gauge_title</th>
+      <th>q_m3s</th>
+      <th>area_km2</th>
+      <th>q_ls_km2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>R001</td>
+      <td>Upper</td>
+      <td>80.9</td>
+      <td>4280.0</td>
+      <td>18.9</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>R002</td>
+      <td>Bend</td>
+      <td>161.7</td>
+      <td>8558.0</td>
+      <td>18.9</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>R003</td>
+      <td>Mill</td>
+      <td>242.5</td>
+      <td>12834.0</td>
+      <td>18.9</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4</td>
+      <td>R004</td>
+      <td>Bridge</td>
+      <td>323.3</td>
+      <td>17110.0</td>
+      <td>18.9</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5</td>
+      <td>R005</td>
+      <td>Ferry</td>
+      <td>404.1</td>
+      <td>21385.0</td>
+      <td>18.9</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>6</td>
+      <td>R006</td>
+      <td>Mouth</td>
+      <td>484.9</td>
+      <td>25660.0</td>
+      <td>18.9</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>The left join keeps every site, so a site still missing its catchment would show an empty area, instead of dropping out of the table.</p>
+<p>The file holds both layers, and both open in QGIS next to the tables of the database:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">gpd</span><span class="o">.</span><span class="n">list_layers</span><span class="p">(</span><span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"reaches_db.gpkg"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>geometry_type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>sites</td>
+      <td>Point</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>catchments</td>
+      <td>MultiPolygon</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>variables</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>flags</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>sources</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>statistics</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>specs</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>records</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="databases_04_lab.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Databases - Laboratory</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="bivar_01.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Bivariate data - Basics</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notebook-setup">Notebook setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-sources">The sources</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-the-database">Creating the database</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-catchments-later">Adding catchments later</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-drawn-polygon">A drawn polygon</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#one-feature-of-a-larger-file">One feature of a larger file</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generated-in-python">Generated in Python</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-refused">What is refused</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#replacing-and-new-attributes">Replacing and new attributes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#records">Records</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/tutorials/databases_05_hydrology.ipynb.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Iporã Possantti.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

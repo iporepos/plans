@@ -419,7 +419,8 @@
 <span class="sd">``features`` layer of any geometry type. Its children :class:`ZonesDB`,</span>
 <span class="sd">:class:`PathsDB` and :class:`SitesDB` accept polygons, lines or points only,</span>
 <span class="sd">and records point to them by ``zone_id``, ``path_id`` or ``site_id``.</span>
-<span class="sd">:class:`SitesDB` branches into :class:`FieldDB` (in situ measurements) and</span>
+<span class="sd">:class:`SitesDB` branches into :class:`FieldDB` (in situ measurements), itself</span>
+<span class="sd">extended by :class:`HydrologyDB` (river reaches with optional catchments), and</span>
 <span class="sd">:class:`LabDB` (laboratory analyses of samples taken at the sites).</span>
 
 <span class="sd">Table and column names are lowercase words joined by ``_``; tables are plural,</span>
@@ -427,16 +428,42 @@
 <span class="sd">(``variable_name`` points to ``variables.name``). In :class:`SemiSpatialDB`,</span>
 <span class="sd">``feature_id`` is the exception: it points to features outside the database.</span>
 
-<span class="sd">A new database is created from a TOML (or JSON) setup file::</span>
+<span class="sd">A new database is created from a setup, given as a dict or as the path to a TOML</span>
+<span class="sd">or JSON file with the same structure:</span>
 
-<span class="sd">    [database]</span>
-<span class="sd">    path = "hydro.db"</span>
+<span class="sd">.. tab-set::</span>
+<span class="sd">    :sync-group: setup</span>
 
-<span class="sd">    [specs]</span>
-<span class="sd">    path = "my_specs.json"      # .csv also accepted; format inferred from extension</span>
+<span class="sd">    .. tab-item:: TOML</span>
+<span class="sd">        :sync: toml</span>
 
-<span class="sd">    [catalogs]                  # optional overrides; omitted keys fall back to defaults</span>
-<span class="sd">    variables = "my_vars.csv"</span>
+<span class="sd">        .. code-block:: toml</span>
+
+<span class="sd">            [database]</span>
+<span class="sd">            path = "hydro.db"</span>
+
+<span class="sd">            [specs]</span>
+<span class="sd">            path = "my_specs.json"</span>
+
+<span class="sd">            [catalogs]</span>
+<span class="sd">            variables = "my_vars.csv"</span>
+
+<span class="sd">    .. tab-item:: JSON</span>
+<span class="sd">        :sync: json</span>
+
+<span class="sd">        .. code-block:: json</span>
+
+<span class="sd">            {</span>
+<span class="sd">              "database": {"path": "hydro.db"},</span>
+<span class="sd">              "specs": {"path": "my_specs.json"},</span>
+<span class="sd">              "catalogs": {"variables": "my_vars.csv"}</span>
+<span class="sd">            }</span>
+
+<span class="sd">The specs file may be JSON or CSV, told apart by its extension. The ``catalogs``</span>
+<span class="sd">section is optional, and omitted keys fall back to the shipped catalogs. Relative</span>
+<span class="sd">paths follow the working directory, not the setup file. Both formats refuse single</span>
+<span class="sd">backslashes, so Windows paths are written with forward slashes.</span>
+<span class="sd">:class:`SpatialDB` adds a ``spatial`` section.</span>
 
 <span class="sd">The ``specs`` table describes every dataset stored in ``records``.</span>
 <span class="sd">A JSON specs file is a list of objects, one per dataset::</span>
@@ -445,9 +472,9 @@
 <span class="sd">      {</span>
 <span class="sd">        "name": "PPT_MONTHLY_CHIRPS",</span>
 <span class="sd">        "abstract": "Monthly precipitation from CHIRPS v2.0",</span>
-<span class="sd">        "method": "spatial average over watershed",</span>
+<span class="sd">        "method": "spatial average over catchment",</span>
 <span class="sd">        "timestep": "1M",</span>
-<span class="sd">        "extent": "watershed",</span>
+<span class="sd">        "extent": "catchment",</span>
 <span class="sd">        "scale": 1,</span>
 <span class="sd">        "offset": 0,</span>
 <span class="sd">        "start": "1995-01-01",</span>
@@ -530,6 +557,7 @@
 <span class="sd">See prompts/new_features_ideas/plans_databases.md, section 10.</span>
 
 <span class="sd">FieldDB() (SitesDB for in situ data; no changes yet).</span>
+<span class="sd">HydrologyDB() (FieldDB with an optional catchments layer).</span>
 <span class="sd">LabDB() (sites -&gt; samples -&gt; mixtures -&gt; records; no aliquot table),</span>
 <span class="sd">see prompts/new_features_ideas/plans_databases_sites.md</span>
 
@@ -544,9 +572,7 @@
 <span class="sd">---- ClimateDB()</span>
 <span class="sd">---- RainDB()</span>
 
-<span class="sd">---- HydroDB() this one includes other table with the basins</span>
-
-<span class="sd">LabDB() </span>
+<span class="sd">LabDB()</span>
 <span class="sd">-- In situ data sampled in the field but generated in the Lab</span>
 <span class="sd">More complex schema.</span>
 <span class="sd">To be developed</span>
@@ -1019,16 +1045,39 @@
 
 <span class="sd">        Creation is all or nothing: on any error the partial file is removed.</span>
 
-<span class="sd">        Expected configuration structure (TOML example)::</span>
+<span class="sd">        The setup has the same structure as a dict or as a file. Besides the</span>
+<span class="sd">        sections below, spatial databases need the one in :class:`SpatialDB`:</span>
 
-<span class="sd">            [database]</span>
-<span class="sd">            path = "path/to/hydro.db"</span>
+<span class="sd">        .. tab-set::</span>
+<span class="sd">            :sync-group: setup</span>
 
-<span class="sd">            [specs]</span>
-<span class="sd">            path = "path/to/my_specs.csv"   # or .json — format detected by extension</span>
+<span class="sd">            .. tab-item:: TOML</span>
+<span class="sd">                :sync: toml</span>
 
-<span class="sd">            [catalogs]           # optional overrides; omitted keys fall back to defaults</span>
-<span class="sd">            variables = "path/to/my_variables.csv"</span>
+<span class="sd">                .. code-block:: toml</span>
+
+<span class="sd">                    [database]</span>
+<span class="sd">                    path = "path/to/hydro.db"</span>
+
+<span class="sd">                    [specs]</span>
+<span class="sd">                    path = "path/to/my_specs.csv"</span>
+
+<span class="sd">                    [catalogs]</span>
+<span class="sd">                    variables = "path/to/my_variables.csv"</span>
+
+<span class="sd">            .. tab-item:: JSON</span>
+<span class="sd">                :sync: json</span>
+
+<span class="sd">                .. code-block:: json</span>
+
+<span class="sd">                    {</span>
+<span class="sd">                      "database": {"path": "path/to/hydro.db"},</span>
+<span class="sd">                      "specs": {"path": "path/to/my_specs.csv"},</span>
+<span class="sd">                      "catalogs": {"variables": "path/to/my_variables.csv"}</span>
+<span class="sd">                    }</span>
+
+<span class="sd">        The ``catalogs`` section is optional, and omitted keys fall back to the</span>
+<span class="sd">        shipped catalogs.</span>
 
 <span class="sd">        :param config: setup dict or path to a TOML/JSON file</span>
 <span class="sd">        :type config: dict, str, or Path</span>
@@ -2004,13 +2053,13 @@
 <span class="sd">        import geopandas as gpd</span>
 
 <span class="sd">        cells = gpd.read_file("grid.gpkg", layer="cells")</span>
-<span class="sd">        basin = gpd.read_file("basin.gpkg")</span>
-<span class="sd">        ids = gpd.sjoin(cells, basin, predicate="intersects")["id"].tolist()</span>
+<span class="sd">        catchment = gpd.read_file("catchment.gpkg")</span>
+<span class="sd">        ids = gpd.sjoin(cells, catchment, predicate="intersects")["id"].tolist()</span>
 
 <span class="sd">        df = db.query_records(</span>
 <span class="sd">            query_dict={"spec_name": "PPT_MONTHLY_CHIRPS", "feature_id": ids}</span>
 <span class="sd">        )</span>
-<span class="sd">        basin_mean = df.groupby("datetime")["value"].mean()</span>
+<span class="sd">        catchment_mean = df.groupby("datetime")["value"].mean()</span>
 <span class="sd">    """</span>
 
     <span class="c1"># this is /src/plans/data/sql/semispatial</span>
@@ -2086,9 +2135,9 @@
 <span class="sd">    GeoPackage database whose records point to features stored in the same file.</span>
 
 <span class="sd">    The file holds one layer of features next to the standard tables. Each</span>
-<span class="sd">    feature has an ``id``, a unique ``name``, a ``geometry`` and any extra</span>
-<span class="sd">    columns of the source. Records carry ``feature_id``, a real foreign key to</span>
-<span class="sd">    the layer, so a record cannot point to a missing feature.</span>
+<span class="sd">    feature has a generated ``id``, a unique ``name``, a ``geometry`` and the</span>
+<span class="sd">    attributes declared in the columns map. Records carry ``feature_id``, a real</span>
+<span class="sd">    foreign key to the layer, so a record cannot point to a missing feature.</span>
 
 <span class="sd">    This class stores any geometry type, mixed in one ``features`` layer.</span>
 <span class="sd">    Its children :class:`ZonesDB`, :class:`PathsDB` and :class:`SitesDB`</span>
@@ -2101,17 +2150,97 @@
 <span class="sd">    cannot insert into it, because the GeoPackage triggers call functions that</span>
 <span class="sd">    only GDAL defines. All other tables work as in :class:`DataBase`.</span>
 
-<span class="sd">    The setup file adds a ``[spatial]`` section with the source geometries::</span>
+<span class="sd">    The setup adds a ``spatial`` section to those of :meth:`DataBase.new`, and</span>
+<span class="sd">    the database path must end in ``.gpkg``:</span>
 
-<span class="sd">        [database]</span>
-<span class="sd">        path = "basins.gpkg"        # must be a .gpkg file</span>
+<span class="sd">    .. tab-set::</span>
+<span class="sd">        :sync-group: setup</span>
 
-<span class="sd">        [spatial]</span>
-<span class="sd">        file = "my_basins.shp"      # any format geopandas reads</span>
-<span class="sd">        layer = "basins"            # optional, for files with several layers</span>
+<span class="sd">        .. tab-item:: TOML</span>
+<span class="sd">            :sync: toml</span>
 
-<span class="sd">    The source needs a ``name`` column with unique values. An integer ``id``</span>
-<span class="sd">    column, if present, is kept as the feature id.</span>
+<span class="sd">            .. code-block:: toml</span>
+
+<span class="sd">                [database]</span>
+<span class="sd">                path = "catchments.gpkg"</span>
+
+<span class="sd">                [specs]</span>
+<span class="sd">                path = "catchments_specs.json"</span>
+
+<span class="sd">                [spatial]</span>
+<span class="sd">                file = "hydrology.gpkg"</span>
+<span class="sd">                layer = "catchments"</span>
+
+<span class="sd">                [spatial.columns_map]</span>
+<span class="sd">                name = "CatchmentCode"</span>
+<span class="sd">                catchment_code = "CatchmentCode"</span>
+<span class="sd">                catchment_title = "CatchmentName"</span>
+
+<span class="sd">        .. tab-item:: JSON</span>
+<span class="sd">            :sync: json</span>
+
+<span class="sd">            .. code-block:: json</span>
+
+<span class="sd">                {</span>
+<span class="sd">                  "database": {"path": "catchments.gpkg"},</span>
+<span class="sd">                  "specs": {"path": "catchments_specs.json"},</span>
+<span class="sd">                  "spatial": {</span>
+<span class="sd">                    "file": "hydrology.gpkg",</span>
+<span class="sd">                    "layer": "catchments",</span>
+<span class="sd">                    "columns_map": {</span>
+<span class="sd">                      "name": "CatchmentCode",</span>
+<span class="sd">                      "catchment_code": "CatchmentCode",</span>
+<span class="sd">                      "catchment_title": "CatchmentName"</span>
+<span class="sd">                    }</span>
+<span class="sd">                  }</span>
+<span class="sd">                }</span>
+
+<span class="sd">    The ``file`` is the source of the features, in any format geopandas reads. The</span>
+<span class="sd">    ``layer`` picks one layer of a file with several; without it, the first layer</span>
+<span class="sd">    is read, with only a warning.</span>
+
+<span class="sd">    The optional ``columns_map`` declares ``{layer column: source column}``, and a</span>
+<span class="sd">    source column may be used more than once. Only mapped columns enter the layer.</span>
+<span class="sd">    The ``name`` key is the unique key of the features, and defaults to a source</span>
+<span class="sd">    column called ``name``. Names are stripped text, from text or integer sources.</span>
+<span class="sd">    Ids are generated and only stable inside one file, so a source id worth keeping</span>
+<span class="sd">    must be mapped as an attribute.</span>
+
+<span class="sd">    A shapefile holds one layer, so the setup leaves ``layer`` out and ``file``</span>
+<span class="sd">    points to the ``.shp``, next to its companion files. Shapefile field names stop</span>
+<span class="sd">    at 10 characters and the map must use them as read, so a field written as</span>
+<span class="sd">    ``CatchmentCode`` is mapped as ``CatchmentC``. Without a ``.prj``, the layer has</span>
+<span class="sd">    no CRS:</span>
+
+<span class="sd">    .. tab-set::</span>
+<span class="sd">        :sync-group: setup</span>
+
+<span class="sd">        .. tab-item:: TOML</span>
+<span class="sd">            :sync: toml</span>
+
+<span class="sd">            .. code-block:: toml</span>
+
+<span class="sd">                [spatial]</span>
+<span class="sd">                file = "catchments.shp"</span>
+
+<span class="sd">                [spatial.columns_map]</span>
+<span class="sd">                name = "CatchmentC"</span>
+<span class="sd">                catchment_title = "CatchmentN"</span>
+
+<span class="sd">        .. tab-item:: JSON</span>
+<span class="sd">            :sync: json</span>
+
+<span class="sd">            .. code-block:: json</span>
+
+<span class="sd">                {</span>
+<span class="sd">                  "spatial": {</span>
+<span class="sd">                    "file": "catchments.shp",</span>
+<span class="sd">                    "columns_map": {</span>
+<span class="sd">                      "name": "CatchmentC",</span>
+<span class="sd">                      "catchment_title": "CatchmentN"</span>
+<span class="sd">                    }</span>
+<span class="sd">                  }</span>
+<span class="sd">                }</span>
 
 <span class="sd">    .. warning::</span>
 
@@ -2133,6 +2262,8 @@
     <span class="n">_PROMOTE_TO_MULTI</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="c1"># table that the record key points to; None means the layer</span>
     <span class="n">_KEY_TABLE</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># layer columns that a columns map cannot target</span>
+    <span class="n">_RESERVED_COLUMNS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"geometry"</span><span class="p">)</span>
 
     <span class="n">_QUERY_KEYS</span> <span class="o">=</span> <span class="n">SemiSpatialDB</span><span class="o">.</span><span class="n">_QUERY_KEYS</span> <span class="o">+</span> <span class="p">(</span><span class="s2">"feature_name"</span><span class="p">,)</span>
 
@@ -2191,8 +2322,11 @@
                 <span class="s2">"Missing [spatial] section with the source 'file' (and optional 'layer')"</span>
             <span class="p">)</span>
         <span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">spatial</span><span class="p">[</span><span class="s2">"file"</span><span class="p">],</span> <span class="n">layer</span><span class="o">=</span><span class="n">spatial</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"layer"</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_check_features</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_write_layer</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">file_db</span><span class="o">=</span><span class="n">file_db</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"w"</span><span class="p">)</span>
+        <span class="n">gdf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_columns</span><span class="p">(</span>
+            <span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">columns_map</span><span class="o">=</span><span class="n">spatial</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"columns_map"</span><span class="p">),</span> <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_features</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_layer</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">file_db</span><span class="o">=</span><span class="n">file_db</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"w"</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
@@ -2211,47 +2345,143 @@
 
     <span class="c1"># FEATURES</span>
     <span class="c1"># -------------------------------------------------------------------</span>
+<div class="viewcode-block" id="SpatialDB._layer_geometry">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.SpatialDB._layer_geometry">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_layer_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="c1"># accepted geometry types (None: any) and multi-part writing of a layer</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_GEOMETRY_TYPES</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PROMOTE_TO_MULTI</span></div>
+
+
+<div class="viewcode-block" id="SpatialDB._clean_names">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.SpatialDB._clean_names">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_clean_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="c1"># stripped text from text or integers; floats are refused ("83377.0")</span>
+        <span class="n">is_text</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_string_dtype</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">names</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">is_text</span> <span class="ow">or</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_integer_dtype</span><span class="p">(</span><span class="n">names</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Every row of </span><span class="si">{</span><span class="n">layer</span><span class="si">}</span><span class="s2"> needs a text or integer name"</span><span class="p">)</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">names</span> <span class="o">==</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Empty name(s) in </span><span class="si">{</span><span class="n">layer</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">names</span></div>
+
+
+<div class="viewcode-block" id="SpatialDB._select_columns">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.SpatialDB._select_columns">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_select_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">,</span> <span class="n">columns_map</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="c1"># keep the declared columns only; the id is left for GDAL to generate</span>
+        <span class="n">columns_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"name"</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="n">columns_map</span> <span class="ow">or</span> <span class="p">{})}</span>
+        <span class="n">reserved</span> <span class="o">=</span> <span class="p">{</span><span class="n">col</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">columns_map</span><span class="p">}</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_RESERVED_COLUMNS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">reserved</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Reserved layer column(s) in map: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">reserved</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">columns_map</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The geometry column cannot be mapped as an attribute"</span><span class="p">)</span>
+        <span class="n">missing</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">columns_map</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">gdf</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">missing</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Source column(s) </span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s2"> not found; set the name with columns_map. "</span>
+                <span class="sa">f</span><span class="s2">"Available: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">gdf</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">name</span><span class="p">))</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="n">gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="n">gdf</span><span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">columns_map</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_names</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">values</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SpatialDB._layer_fields">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.SpatialDB._layer_fields">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_layer_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="c1"># layer columns and declared types, in field order; pandas dtypes of the</span>
+        <span class="c1"># layer are no use here, since one NULL turns an integer column to float</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_sql</span><span class="p">(</span><span class="n">sql</span><span class="o">=</span><span class="sa">f</span><span class="s2">"PRAGMA table_info(</span><span class="si">{</span><span class="n">layer</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="o">~</span><span class="n">info</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_RESERVED_COLUMNS</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">info</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="SpatialDB._add_columns">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.SpatialDB._add_columns">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="c1"># new layer columns, typed from their values; old rows stay NULL</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">gdf</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="s2">"geometry"</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+                <span class="n">kind</span> <span class="o">=</span> <span class="s2">"TEXT"</span>
+                <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_bool_dtype</span><span class="p">(</span><span class="n">gdf</span><span class="p">[</span><span class="n">col</span><span class="p">]):</span>
+                    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"BOOLEAN"</span>
+                <span class="k">elif</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_integer_dtype</span><span class="p">(</span><span class="n">gdf</span><span class="p">[</span><span class="n">col</span><span class="p">]):</span>
+                    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"INTEGER"</span>
+                <span class="k">elif</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_float_dtype</span><span class="p">(</span><span class="n">gdf</span><span class="p">[</span><span class="n">col</span><span class="p">]):</span>
+                    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"REAL"</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'"'</span><span class="p">,</span> <span class="s1">'""'</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="sa">f</span><span class="s1">'ALTER TABLE </span><span class="si">{</span><span class="n">layer</span><span class="si">}</span><span class="s1"> ADD COLUMN "</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">" </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layer_fields</span><span class="p">(</span><span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SpatialDB._check_attributes">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.SpatialDB._check_attributes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="c1"># GDAL would not refuse these: it writes by position, and coerces</span>
+        <span class="c1"># text in numeric fields to 0.0 and cuts fractions in integer fields</span>
+        <span class="n">unknown</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">gdf</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">-</span> <span class="p">{</span><span class="s2">"geometry"</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">unknown</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Column(s) </span><span class="si">{</span><span class="n">unknown</span><span class="si">}</span><span class="s2"> not in the </span><span class="si">{</span><span class="n">layer</span><span class="si">}</span><span class="s2"> layer"</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">gdf</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">"name"</span><span class="p">,</span> <span class="s2">"geometry"</span><span class="p">]):</span>
+            <span class="n">values</span><span class="p">,</span> <span class="n">kind</span> <span class="o">=</span> <span class="n">gdf</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">fields</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="n">is_int</span> <span class="o">=</span> <span class="s2">"INT"</span> <span class="ow">in</span> <span class="n">kind</span>
+            <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">empty</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">is_int</span> <span class="ow">or</span> <span class="n">kind</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"REAL"</span><span class="p">,</span> <span class="s2">"DOUBLE"</span><span class="p">,</span> <span class="s2">"FLOAT"</span><span class="p">)):</span>
+                <span class="k">continue</span>
+            <span class="n">fits</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_numeric_dtype</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="n">is_int</span> <span class="ow">or</span> <span class="p">(</span><span class="n">values</span> <span class="o">%</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">fits</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Values of </span><span class="si">{</span><span class="n">col</span><span class="si">!r}</span><span class="s2"> do not fit its </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2"> field in </span><span class="si">{</span><span class="n">layer</span><span class="si">}</span><span class="s2">"</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
 <div class="viewcode-block" id="SpatialDB._check_features">
 <a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.SpatialDB._check_features">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_check_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">):</span>
-        <span class="c1"># require unique text names and non-empty geometries of the accepted types</span>
-        <span class="k">if</span> <span class="s2">"name"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">gdf</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="si">}</span><span class="s2"> layer needs a 'name' column"</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="c1"># require unique names and non-empty geometries of the accepted types</span>
         <span class="n">names</span> <span class="o">=</span> <span class="n">gdf</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">names</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_string_dtype</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Every row of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="si">}</span><span class="s2"> needs a text name"</span><span class="p">)</span>
         <span class="n">dups</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">names</span><span class="p">[</span><span class="n">names</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()]))</span>
         <span class="k">if</span> <span class="n">dups</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Duplicate </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="si">}</span><span class="s2"> name(s): </span><span class="si">{</span><span class="n">dups</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Duplicate </span><span class="si">{</span><span class="n">layer</span><span class="si">}</span><span class="s2"> name(s): </span><span class="si">{</span><span class="n">dups</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">empty</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span> <span class="o">|</span> <span class="n">gdf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">is_empty</span>
         <span class="k">if</span> <span class="n">empty</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">empty</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2"> row(s) without geometry, eg: "</span>
                 <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">names</span><span class="p">[</span><span class="n">empty</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_GEOMETRY_TYPES</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">types</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layer_geometry</span><span class="p">(</span><span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">types</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="n">bad</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">gdf</span><span class="o">.</span><span class="n">geom_type</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_GEOMETRY_TYPES</span><span class="p">))</span>
+        <span class="n">bad</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">gdf</span><span class="o">.</span><span class="n">geom_type</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">types</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">bad</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Geometry type(s) </span><span class="si">{</span><span class="n">bad</span><span class="si">}</span><span class="s2"> not accepted in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="si">}</span><span class="s2">. "</span>
-                <span class="sa">f</span><span class="s2">"Valid: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_GEOMETRY_TYPES</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"Geometry type(s) </span><span class="si">{</span><span class="n">bad</span><span class="si">}</span><span class="s2"> not accepted in </span><span class="si">{</span><span class="n">layer</span><span class="si">}</span><span class="s2">. "</span>
+                <span class="sa">f</span><span class="s2">"Valid: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">types</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="SpatialDB._write_layer">
 <a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.SpatialDB._write_layer">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_write_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">,</span> <span class="n">file_db</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">,</span> <span class="n">file_db</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
         <span class="c1"># GDAL keeps the GeoPackage triggers and the spatial index up to date;</span>
-        <span class="c1"># a layer open to any type is declared generic, not typed by its first rows</span>
+        <span class="c1"># a layer open to any type is declared generic, not typed by its first</span>
+        <span class="c1"># rows, and an empty layer has no rows to be typed by</span>
+        <span class="n">types</span><span class="p">,</span> <span class="n">promote</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layer_geometry</span><span class="p">(</span><span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">)</span>
+        <span class="n">geometry_type</span> <span class="o">=</span> <span class="s2">"Unknown"</span> <span class="k">if</span> <span class="n">types</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">gdf</span><span class="o">.</span><span class="n">empty</span> <span class="ow">and</span> <span class="n">types</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">geometry_type</span> <span class="o">=</span> <span class="n">types</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">gdf</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span>
             <span class="n">filename</span><span class="o">=</span><span class="n">file_db</span><span class="p">,</span>
-            <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="p">,</span>
+            <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">,</span>
             <span class="n">driver</span><span class="o">=</span><span class="s2">"GPKG"</span><span class="p">,</span>
             <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
-            <span class="n">geometry_type</span><span class="o">=</span><span class="s2">"Unknown"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_GEOMETRY_TYPES</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">promote_to_multi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_PROMOTE_TO_MULTI</span><span class="p">,</span>
+            <span class="n">geometry_type</span><span class="o">=</span><span class="n">geometry_type</span><span class="p">,</span>
+            <span class="n">promote_to_multi</span><span class="o">=</span><span class="n">promote</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">gdf</span><span class="o">.</span><span class="n">empty</span><span class="p">,</span>
             <span class="n">FID</span><span class="o">=</span><span class="s2">"id"</span><span class="p">,</span>
             <span class="n">GEOMETRY_NAME</span><span class="o">=</span><span class="s2">"geometry"</span><span class="p">,</span>
         <span class="p">)</span>
@@ -2284,40 +2514,92 @@
 
 <div class="viewcode-block" id="SpatialDB.insert_features">
 <a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.SpatialDB.insert_features">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">insert_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">insert_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">,</span> <span class="n">columns_map</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Append features to the layer.</span>
 
-<span class="sd">        Names must be new to the layer. Geometries are reprojected to the layer</span>
-<span class="sd">        CRS. The write goes through geopandas on its own connection, so it cannot</span>
-<span class="sd">        run inside a :meth:`transaction` block.</span>
+<span class="sd">        Names must be new to the layer, and ids are generated. Only mapped</span>
+<span class="sd">        columns are read: they must exist in the layer, and layer columns left</span>
+<span class="sd">        out are stored as NULL. Geometries are reprojected to the layer CRS. The</span>
+<span class="sd">        write goes through geopandas on its own connection, so it cannot run</span>
+<span class="sd">        inside a :meth:`transaction` block.</span>
 
-<span class="sd">        :param gdf: features with a ``name`` column and optional extra columns</span>
+<span class="sd">        :param gdf: source features</span>
 <span class="sd">        :type gdf: geopandas.GeoDataFrame</span>
+<span class="sd">        :param columns_map: column mapping ``{layer_col: source_col}``; ``name``</span>
+<span class="sd">            defaults to a source column of that name</span>
+<span class="sd">        :type columns_map: dict, optional</span>
 <span class="sd">        :return: None</span>
 <span class="sd">        :rtype: None</span>
-<span class="sd">        :raises ValueError: if names are missing, repeated or taken, geometry types</span>
-<span class="sd">            are not accepted, or ``gdf`` has no CRS while the layer has one</span>
+<span class="sd">        :raises ValueError: if names are missing, repeated or taken, a mapped column</span>
+<span class="sd">            is reserved, missing or not fit for the layer, geometry types are not</span>
+<span class="sd">            accepted, or ``gdf`` has no CRS while the layer has one</span>
 <span class="sd">        :raises RuntimeError: if called inside an open transaction</span>
 <span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_no_transaction</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"insert_features"</span><span class="p">)</span>
+        <span class="n">gdf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_columns</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">columns_map</span><span class="o">=</span><span class="n">columns_map</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_append_layer</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="SpatialDB._check_no_transaction">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.SpatialDB._check_no_transaction">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_no_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+        <span class="c1"># GDAL writes through its own connection, which an open block would lock</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_depth</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">in_transaction</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">"insert_features cannot run inside an open transaction; "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> cannot run inside an open transaction; "</span>
                 <span class="s2">"GDAL writes through its own connection"</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SpatialDB._match_crs">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.SpatialDB._match_crs">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_match_crs</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">crs</span><span class="p">):</span>
+        <span class="c1"># reproject to a layer CRS; None means the layer has no CRS to follow</span>
+        <span class="k">if</span> <span class="n">crs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">gdf</span>
+        <span class="k">if</span> <span class="n">gdf</span><span class="o">.</span><span class="n">crs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Geometries have no CRS; the layer uses </span><span class="si">{</span><span class="n">crs</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_check_features</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">)</span>
-        <span class="n">taken</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">gdf</span><span class="p">[</span><span class="s2">"name"</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name_lookup</span><span class="p">(</span><span class="n">table</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">gdf</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SpatialDB._append_layer">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.SpatialDB._append_layer">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_append_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span> <span class="n">add_columns</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># check and write rows already reduced to the layer columns</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_features</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">)</span>
+        <span class="n">taken</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">gdf</span><span class="p">[</span><span class="s2">"name"</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name_lookup</span><span class="p">(</span><span class="n">table</span><span class="o">=</span><span class="n">layer</span><span class="p">)))</span>
         <span class="k">if</span> <span class="n">taken</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="si">}</span><span class="s2"> name(s) already in the database: </span><span class="si">{</span><span class="n">taken</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="n">crs</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_db</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">crs</span>
-        <span class="k">if</span> <span class="n">crs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">gdf</span><span class="o">.</span><span class="n">crs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"Geometries have no CRS; the layer uses </span><span class="si">{</span><span class="n">crs</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
-                <span class="p">)</span>
-            <span class="n">gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_write_layer</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">file_db</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_db</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"a"</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">layer</span><span class="si">}</span><span class="s2"> name(s) already in the database: </span><span class="si">{</span><span class="n">taken</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layer_fields</span><span class="p">(</span><span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">add_columns</span><span class="p">:</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_columns</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_attributes</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">)</span>
+        <span class="n">crs</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_db</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">crs</span>
+        <span class="n">gdf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_crs</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span>
+        <span class="c1"># GDAL appends by position, so columns must follow the layer order</span>
+        <span class="n">gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">fields</span><span class="p">,</span> <span class="s2">"geometry"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_layer</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">file_db</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_db</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"a"</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="SpatialDB._read_layer">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.SpatialDB._read_layer">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="c1"># layer rows with id as the first column; unknown names raise</span>
+        <span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_db</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">,</span> <span class="n">fid_as_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">rename_axis</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">"id"</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_as_list</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+            <span class="n">unknown</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">gdf</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="n">unknown</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown </span><span class="si">{</span><span class="n">layer</span><span class="si">}</span><span class="s2"> name(s): </span><span class="si">{</span><span class="n">unknown</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="p">[</span><span class="n">gdf</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">names</span><span class="p">)]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">gdf</span></div>
 
 
 <div class="viewcode-block" id="SpatialDB.get_features">
@@ -2332,15 +2614,7 @@
 <span class="sd">        :rtype: geopandas.GeoDataFrame</span>
 <span class="sd">        :raises ValueError: if a name is unknown</span>
 <span class="sd">        """</span>
-        <span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_db</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="p">,</span> <span class="n">fid_as_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">rename_axis</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">"id"</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_as_list</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
-            <span class="n">unknown</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">gdf</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]))</span>
-            <span class="k">if</span> <span class="n">unknown</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="si">}</span><span class="s2"> name(s): </span><span class="si">{</span><span class="n">unknown</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-            <span class="n">gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="p">[</span><span class="n">gdf</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">names</span><span class="p">)]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">gdf</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_layer</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="p">)</span></div>
 
 
     <span class="c1"># RECORDS</span>
@@ -2399,7 +2673,8 @@
 <a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.ZonesDB">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ZonesDB</span><span class="p">(</span><span class="n">SpatialDB</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Spatial database of polygons (eg, basins or municipalities), in the ``zones`` layer.</span>
+<span class="sd">    Spatial database of polygons (eg, catchments or municipalities), in the</span>
+<span class="sd">    ``zones`` layer.</span>
 
 <span class="sd">    Records carry ``zone_id``, and queries also accept ``zone_name``.</span>
 <span class="sd">    Polygons are written as multi-polygons, so single and multi-part zones</span>
@@ -2476,6 +2751,406 @@
 <span class="sd">    :param alias: short alias</span>
 <span class="sd">    :type alias: str, optional</span>
 <span class="sd">    """</span></div>
+
+
+
+<div class="viewcode-block" id="HydrologyDB">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.HydrologyDB">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HydrologyDB</span><span class="p">(</span><span class="n">FieldDB</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Sites database for water body reaches, with an optional catchment per site.</span>
+
+<span class="sd">    A site is a point that stands for a reach (eg, its gauge or outlet). The</span>
+<span class="sd">    ``catchments`` layer holds the polygon draining to it, in the file next to</span>
+<span class="sd">    ``sites``, with attributes of that area. Each catchment takes the ``name`` of</span>
+<span class="sd">    its site. Every catchment needs a site, a site has at most one catchment, and</span>
+<span class="sd">    a site may have none, so catchments can be added as they become available.</span>
+
+<span class="sd">    Records carry ``site_id``. An areal series, such as catchment rainfall, is a</span>
+<span class="sd">    record of the site whose spec tells it apart (eg, ``extent`` is ``catchment``).</span>
+
+<span class="sd">    The setup takes an optional ``catchments`` section, read like ``spatial``:</span>
+
+<span class="sd">    .. tab-set::</span>
+<span class="sd">        :sync-group: setup</span>
+
+<span class="sd">        .. tab-item:: TOML</span>
+<span class="sd">            :sync: toml</span>
+
+<span class="sd">            .. code-block:: toml</span>
+
+<span class="sd">                [database]</span>
+<span class="sd">                path = "reaches.gpkg"</span>
+
+<span class="sd">                [specs]</span>
+<span class="sd">                path = "reaches_specs.json"</span>
+
+<span class="sd">                [spatial]</span>
+<span class="sd">                file = "gauges.gpkg"</span>
+<span class="sd">                layer = "gauges"</span>
+
+<span class="sd">                [spatial.columns_map]</span>
+<span class="sd">                name = "GaugeCode"</span>
+<span class="sd">                gauge_title = "GaugeName"</span>
+
+<span class="sd">                [catchments]</span>
+<span class="sd">                file = "hydrology.gpkg"</span>
+<span class="sd">                layer = "catchments"</span>
+<span class="sd">                skip_unmatched = true</span>
+
+<span class="sd">                [catchments.columns_map]</span>
+<span class="sd">                name = "GaugeCode"</span>
+<span class="sd">                area_km2 = "AreaKm2"</span>
+
+<span class="sd">        .. tab-item:: JSON</span>
+<span class="sd">            :sync: json</span>
+
+<span class="sd">            .. code-block:: json</span>
+
+<span class="sd">                {</span>
+<span class="sd">                  "database": {"path": "reaches.gpkg"},</span>
+<span class="sd">                  "specs": {"path": "reaches_specs.json"},</span>
+<span class="sd">                  "spatial": {</span>
+<span class="sd">                    "file": "gauges.gpkg",</span>
+<span class="sd">                    "layer": "gauges",</span>
+<span class="sd">                    "columns_map": {</span>
+<span class="sd">                      "name": "GaugeCode",</span>
+<span class="sd">                      "gauge_title": "GaugeName"</span>
+<span class="sd">                    }</span>
+<span class="sd">                  },</span>
+<span class="sd">                  "catchments": {</span>
+<span class="sd">                    "file": "hydrology.gpkg",</span>
+<span class="sd">                    "layer": "catchments",</span>
+<span class="sd">                    "skip_unmatched": true,</span>
+<span class="sd">                    "columns_map": {</span>
+<span class="sd">                      "name": "GaugeCode",</span>
+<span class="sd">                      "area_km2": "AreaKm2"</span>
+<span class="sd">                    }</span>
+<span class="sd">                  }</span>
+<span class="sd">                }</span>
+
+<span class="sd">    In the map, ``name`` is the source column holding the site names. Features</span>
+<span class="sd">    naming no site are skipped with a warning, unless ``skip_unmatched`` is</span>
+<span class="sd">    ``false``; no match at all is an error, as it usually points to a wrong</span>
+<span class="sd">    column. Without the section the layer starts empty, with ``name`` alone, in</span>
+<span class="sd">    the CRS of the sites. The columns set at creation are kept unless an append</span>
+<span class="sd">    asks for more.</span>
+
+<span class="sd">    :param name: database name</span>
+<span class="sd">    :type name: str</span>
+<span class="sd">    :param alias: short alias</span>
+<span class="sd">    :type alias: str, optional</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        # a polygon drawn in a GIS: one feature, no useful columns</span>
+<span class="sd">        db.append_catchment(</span>
+<span class="sd">            name="CODE002",</span>
+<span class="sd">            file="drawn.gpkg",</span>
+<span class="sd">            attributes={"area_km2": 120.5},</span>
+<span class="sd">        )</span>
+<span class="sd">        # one feature of a larger file, with attributes from its columns</span>
+<span class="sd">        db.append_catchment(</span>
+<span class="sd">            name="CODE003",</span>
+<span class="sd">            file="hydrology.gpkg",</span>
+<span class="sd">            layer="catchments",</span>
+<span class="sd">            columns_map={"name": "GaugeCode", "area_km2": "AreaKm2"},</span>
+<span class="sd">        )</span>
+<span class="sd">        db.missing_catchments()</span>
+<span class="sd">    """</span>
+
+    <span class="c1"># this is /src/plans/data/sql/hydrology (rules of the catchments layer)</span>
+    <span class="n">SQL_DIR</span> <span class="o">=</span> <span class="n">DATA_SQL_DIR</span> <span class="o">/</span> <span class="s2">"hydrology"</span>
+
+    <span class="n">_CATCHMENTS</span> <span class="o">=</span> <span class="s2">"catchments"</span>
+    <span class="n">_CATCHMENT_TYPES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"Polygon"</span><span class="p">,</span> <span class="s2">"MultiPolygon"</span><span class="p">)</span>
+    <span class="c1"># temporary source column holding clean site names</span>
+    <span class="n">_SOURCE_KEY</span> <span class="o">=</span> <span class="s2">"_site_key"</span>
+
+    <span class="c1"># FILE CREATION</span>
+    <span class="c1"># -------------------------------------------------------------------</span>
+<div class="viewcode-block" id="HydrologyDB._layer_geometry">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.HydrologyDB._layer_geometry">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_layer_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="c1"># catchments are written as multi-polygons, as in ZonesDB</span>
+        <span class="k">if</span> <span class="n">layer</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_CATCHMENTS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_CATCHMENT_TYPES</span><span class="p">,</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_layer_geometry</span><span class="p">(</span><span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HydrologyDB._prepare_file">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.HydrologyDB._prepare_file">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">file_db</span><span class="p">):</span>
+        <span class="c1"># the sites come first: catchments are matched to them and follow their CRS</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_prepare_file</span><span class="p">(</span><span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span> <span class="n">file_db</span><span class="o">=</span><span class="n">file_db</span><span class="p">)</span>
+        <span class="n">sites</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">file_db</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="p">)</span>
+        <span class="n">section</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_CATCHMENTS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">section</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">"str"</span><span class="p">)},</span>
+                <span class="n">geometry</span><span class="o">=</span><span class="n">gpd</span><span class="o">.</span><span class="n">GeoSeries</span><span class="p">([],</span> <span class="n">crs</span><span class="o">=</span><span class="n">sites</span><span class="o">.</span><span class="n">crs</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">"file"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">section</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The [catchments] section needs the source 'file'"</span><span class="p">)</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">section</span><span class="p">[</span><span class="s2">"file"</span><span class="p">],</span> <span class="n">layer</span><span class="o">=</span><span class="n">section</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"layer"</span><span class="p">))</span>
+            <span class="n">gdf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_sites</span><span class="p">(</span>
+                <span class="n">gdf</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+                <span class="n">columns_map</span><span class="o">=</span><span class="n">section</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"columns_map"</span><span class="p">),</span>
+                <span class="n">sites</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="n">sites</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]),</span>
+                <span class="n">skip_unmatched</span><span class="o">=</span><span class="n">section</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"skip_unmatched"</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_features</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_CATCHMENTS</span><span class="p">)</span>
+            <span class="n">gdf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_crs</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">sites</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_layer</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">file_db</span><span class="o">=</span><span class="n">file_db</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"w"</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_CATCHMENTS</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="HydrologyDB._finalize_file">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.HydrologyDB._finalize_file">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_finalize_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
+        <span class="c1"># the rules of the catchments layer, which GDAL has already registered</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_finalize_file</span><span class="p">(</span><span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_table</span><span class="p">(</span><span class="n">table</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_CATCHMENTS</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+    <span class="c1"># SOURCE FEATURES</span>
+    <span class="c1"># -------------------------------------------------------------------</span>
+<div class="viewcode-block" id="HydrologyDB._source_keys">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.HydrologyDB._source_keys">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_source_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+        <span class="c1"># clean site names of a source, indexed by row; rows with no name are out.</span>
+        <span class="c1"># An integer column with a gap reads as float, so whole floats are integers</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_float_dtype</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">keys</span> <span class="o">%</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"int64"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_string_dtype</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="n">keys</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">""</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_names</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_CATCHMENTS</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HydrologyDB._match_sites">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.HydrologyDB._match_sites">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_match_sites</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">,</span> <span class="n">columns_map</span><span class="p">,</span> <span class="n">sites</span><span class="p">,</span> <span class="n">skip_unmatched</span><span class="p">):</span>
+        <span class="c1"># reduce a source to the layer columns of the features that name a site</span>
+        <span class="n">columns_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">columns_map</span> <span class="ow">or</span> <span class="p">{})</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">columns_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">gdf</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Source column </span><span class="si">{</span><span class="n">source</span><span class="si">!r}</span><span class="s2"> not found; set the site names with "</span>
+                <span class="sa">f</span><span class="s2">"columns_map. Available: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">gdf</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="n">gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_source_keys</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="n">gdf</span><span class="p">[</span><span class="n">source</span><span class="p">])</span>
+        <span class="n">matched</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="n">keys</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">sites</span><span class="p">)]</span>
+        <span class="n">skipped</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">matched</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">matched</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No value of source column </span><span class="si">{</span><span class="n">source</span><span class="si">!r}</span><span class="s2"> names a site"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">skipped</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">skip_unmatched</span><span class="p">:</span>
+            <span class="n">unknown</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="o">~</span><span class="n">keys</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">sites</span><span class="p">)]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">skipped</span><span class="si">}</span><span class="s2"> feature(s) name no site, eg: </span><span class="si">{</span><span class="n">unknown</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">skipped</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">skipped</span><span class="si">}</span><span class="s2"> feature(s) naming no site were skipped"</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_columns</span><span class="p">(</span>
+            <span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">matched</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_SOURCE_KEY</span><span class="p">:</span> <span class="n">matched</span><span class="p">}),</span>
+            <span class="n">columns_map</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="n">columns_map</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SOURCE_KEY</span><span class="p">},</span>
+            <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_CATCHMENTS</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HydrologyDB._pick_feature">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.HydrologyDB._pick_feature">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pick_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span> <span class="n">columns_map</span><span class="p">):</span>
+        <span class="c1"># one feature of a source: only its key column is read to find the row,</span>
+        <span class="c1"># and then only that row, so a large file is never loaded whole</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">columns_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">file</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Without a 'name' in columns_map, </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2"> must hold one feature"</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">gdf</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span>
+            <span class="n">filename</span><span class="o">=</span><span class="n">file</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">source</span><span class="p">],</span> <span class="n">ignore_geometry</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">available</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">file</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Source column </span><span class="si">{</span><span class="n">source</span><span class="si">!r}</span><span class="s2"> not found. Available: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">available</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_source_keys</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="n">table</span><span class="p">[</span><span class="n">source</span><span class="p">])</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">keys</span> <span class="o">==</span> <span class="n">name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="si">}</span><span class="s2"> feature(s) of </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2"> have </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> equal to </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">; "</span>
+                <span class="s2">"expected one"</span>
+            <span class="p">)</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rows</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">file</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span></div>
+
+
+    <span class="c1"># CATCHMENTS</span>
+    <span class="c1"># -------------------------------------------------------------------</span>
+<div class="viewcode-block" id="HydrologyDB.append_catchment">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.HydrologyDB.append_catchment">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_catchment</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="n">file</span><span class="p">,</span>
+        <span class="n">layer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">columns_map</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">add_columns</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Append the catchment of one site from a spatial file.</span>
+
+<span class="sd">        The geometry comes from ``file``. With ``name`` in ``columns_map``, that</span>
+<span class="sd">        source column picks the feature; without it, the file must hold exactly</span>
+<span class="sd">        one feature, as in a polygon just drawn. Attributes may come from other</span>
+<span class="sd">        ``columns_map`` entries or from ``attributes``, and layer columns left out</span>
+<span class="sd">        are stored as NULL. Geometries are reprojected to the layer CRS.</span>
+
+<span class="sd">        The write goes through geopandas on its own connection, so it cannot run</span>
+<span class="sd">        inside a :meth:`transaction` block.</span>
+
+<span class="sd">        :param name: site name</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param file: source file, in any format geopandas reads</span>
+<span class="sd">        :type file: str or Path</span>
+<span class="sd">        :param layer: source layer, for files with several</span>
+<span class="sd">        :type layer: str, optional</span>
+<span class="sd">        :param columns_map: column mapping ``{layer_col: source_col}``</span>
+<span class="sd">        :type columns_map: dict, optional</span>
+<span class="sd">        :param attributes: attribute values ``{layer_col: value}``</span>
+<span class="sd">        :type attributes: dict, optional</span>
+<span class="sd">        :param add_columns: add attribute columns the layer does not have, typed</span>
+<span class="sd">            from their values; existing rows stay NULL</span>
+<span class="sd">        :type add_columns: bool</span>
+<span class="sd">        :param overwrite: replace the catchment of the site, if any; its own ``id``</span>
+<span class="sd">            changes, which records do not depend on</span>
+<span class="sd">        :type overwrite: bool</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        :raises ValueError: if the site is unknown or has a catchment, the source</span>
+<span class="sd">            does not give one feature, a column is unknown, reserved or set twice,</span>
+<span class="sd">            or a value or geometry does not fit the layer</span>
+<span class="sd">        :raises RuntimeError: if called inside an open transaction</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_no_transaction</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"append_catchment"</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_lookup</span><span class="p">(</span><span class="n">table</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Name </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> not in the </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="si">}</span><span class="s2"> layer"</span><span class="p">)</span>
+        <span class="n">columns_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">columns_map</span> <span class="ow">or</span> <span class="p">{})</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">attributes</span> <span class="ow">or</span> <span class="p">{})</span>
+        <span class="n">clash</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">{</span><span class="o">*</span><span class="n">columns_map</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_RESERVED_COLUMNS</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">clash</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Attribute(s) </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">clash</span><span class="p">)</span><span class="si">}</span><span class="s2"> cannot be set by value"</span><span class="p">)</span>
+        <span class="n">exists</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_lookup</span><span class="p">(</span><span class="n">table</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_CATCHMENTS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">exists</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Site </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> already has a catchment"</span><span class="p">)</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pick_feature</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">,</span> <span class="n">columns_map</span><span class="o">=</span><span class="n">columns_map</span>
+        <span class="p">)</span>
+        <span class="n">gdf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_columns</span><span class="p">(</span>
+            <span class="n">gdf</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_SOURCE_KEY</span><span class="p">:</span> <span class="n">name</span><span class="p">}),</span>
+            <span class="n">columns_map</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="n">columns_map</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SOURCE_KEY</span><span class="p">},</span>
+            <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_CATCHMENTS</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">)</span>
+        <span class="n">previous</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_catchments</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">exists</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">exists</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="sa">f</span><span class="s2">"DELETE FROM </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_CATCHMENTS</span><span class="si">}</span><span class="s2"> WHERE name = ?"</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="c1"># two connections cannot share a transaction, so a failed write restores</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_append_layer</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_CATCHMENTS</span><span class="p">,</span> <span class="n">add_columns</span><span class="o">=</span><span class="n">add_columns</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">exists</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_append_layer</span><span class="p">(</span>
+                    <span class="n">gdf</span><span class="o">=</span><span class="n">previous</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">"id"</span><span class="p">),</span> <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_CATCHMENTS</span>
+                <span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="HydrologyDB.insert_catchments">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.HydrologyDB.insert_catchments">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">insert_catchments</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">,</span> <span class="n">columns_map</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_unmatched</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">add_columns</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Append several catchments, eg generated in Python.</span>
+
+<span class="sd">        In the map, ``name`` is the source column holding the site names. Layer</span>
+<span class="sd">        columns left out are stored as NULL. Geometries are reprojected to the</span>
+<span class="sd">        layer CRS. All rows are checked before the write, and sites that already</span>
+<span class="sd">        have a catchment raise; use :meth:`append_catchment` to replace one.</span>
+
+<span class="sd">        :param gdf: source features</span>
+<span class="sd">        :type gdf: geopandas.GeoDataFrame</span>
+<span class="sd">        :param columns_map: column mapping ``{layer_col: source_col}``; ``name``</span>
+<span class="sd">            defaults to a source column of that name</span>
+<span class="sd">        :type columns_map: dict, optional</span>
+<span class="sd">        :param skip_unmatched: skip features naming no site, with a warning,</span>
+<span class="sd">            instead of raising</span>
+<span class="sd">        :type skip_unmatched: bool</span>
+<span class="sd">        :param add_columns: add attribute columns the layer does not have, typed</span>
+<span class="sd">            from their values; existing rows stay NULL</span>
+<span class="sd">        :type add_columns: bool</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        :raises ValueError: if no feature names a site, a site has a catchment or</span>
+<span class="sd">            is repeated, or a column or geometry does not fit the layer</span>
+<span class="sd">        :raises RuntimeError: if called inside an open transaction</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_no_transaction</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"insert_catchments"</span><span class="p">)</span>
+        <span class="n">gdf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_sites</span><span class="p">(</span>
+            <span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span>
+            <span class="n">columns_map</span><span class="o">=</span><span class="n">columns_map</span><span class="p">,</span>
+            <span class="n">sites</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name_lookup</span><span class="p">(</span><span class="n">table</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="p">)),</span>
+            <span class="n">skip_unmatched</span><span class="o">=</span><span class="n">skip_unmatched</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_append_layer</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_CATCHMENTS</span><span class="p">,</span> <span class="n">add_columns</span><span class="o">=</span><span class="n">add_columns</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="HydrologyDB.get_catchments">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.HydrologyDB.get_catchments">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_catchments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Read the catchments layer as a GeoDataFrame.</span>
+
+<span class="sd">        :param names: one or more site names; ``None`` returns the whole layer</span>
+<span class="sd">        :type names: str or list[str], optional</span>
+<span class="sd">        :return: layer rows; ``id`` belongs to the catchment, not to the site</span>
+<span class="sd">        :rtype: geopandas.GeoDataFrame</span>
+<span class="sd">        :raises ValueError: if a name has no catchment</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_layer</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_CATCHMENTS</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HydrologyDB.missing_catchments">
+<a class="viewcode-back" href="../../generated/plans.databases.html#plans.databases.HydrologyDB.missing_catchments">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">missing_catchments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        List the sites without a catchment.</span>
+
+<span class="sd">        :return: site names</span>
+<span class="sd">        :rtype: list[str]</span>
+<span class="sd">        """</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_sql</span><span class="p">(</span>
+            <span class="n">sql</span><span class="o">=</span><span class="sa">f</span><span class="s2">"SELECT name FROM </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_LAYER</span><span class="si">}</span><span class="s2"> WHERE name NOT IN "</span>
+            <span class="sa">f</span><span class="s2">"(SELECT name FROM </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_CATCHMENTS</span><span class="si">}</span><span class="s2">) ORDER BY id"</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+</div>
 
 
 

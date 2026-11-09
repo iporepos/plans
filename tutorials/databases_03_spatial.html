@@ -384,6 +384,7 @@
 <li class="toctree-l2"><a class="reference internal" href="databases_02_semispatial.html">Databases - Station networks</a></li>
 <li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Databases - Spatial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="databases_04_lab.html">Databases - Laboratory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="databases_05_hydrology.html">Databases - Hydrology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bivar_01.html">Bivariate data - Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bivar_02_models.html">Bivariate data - Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="stochastic_01_arma.html">Stochastic series - AR(1) generator</a></li>
@@ -585,14 +586,14 @@
 </section>
 <section id="zones-a-rainfall-grid">
 <h2>Zones: a rainfall grid<a class="headerlink" href="#zones-a-rainfall-grid" title="Link to this heading">#</a></h2>
-<p>Gridded products, such as satellite rainfall, are polygons in a regular grid. Lets make an 8 by 6 grid of half-degree cells. The layer needs a unique <code class="docutils literal notranslate"><span class="pre">name</span></code> for each zone; an integer <code class="docutils literal notranslate"><span class="pre">id</span></code>, when given, is kept as the key of the zone:</p>
+<p>Gridded products, such as satellite rainfall, are polygons in a regular grid. Lets make an 8 by 6 grid of half-degree cells, each with a unique <code class="docutils literal notranslate"><span class="pre">name</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cells</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
         <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="o">-</span><span class="mf">54.0</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">col</span><span class="p">,</span> <span class="o">-</span><span class="mf">29.0</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">cells</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"id"</span><span class="p">:</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">row</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">+</span> <span class="n">col</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"R</span><span class="si">{</span><span class="n">row</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">C</span><span class="si">{</span><span class="n">col</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"geometry"</span><span class="p">:</span> <span class="n">box</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x0</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">y0</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)})</span>
+        <span class="n">cells</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"name"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"R</span><span class="si">{</span><span class="n">row</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">C</span><span class="si">{</span><span class="n">col</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"geometry"</span><span class="p">:</span> <span class="n">box</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x0</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">y0</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)})</span>
 <span class="n">grid</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">cells</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">"EPSG:4674"</span><span class="p">)</span>
 
 <span class="n">file_grid</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"grid.gpkg"</span>
@@ -620,7 +621,6 @@
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>id</th>
       <th>name</th>
       <th>geometry</th>
     </tr>
@@ -628,31 +628,26 @@
   <tbody>
     <tr>
       <th>0</th>
-      <td>1</td>
       <td>R1C1</td>
       <td>POLYGON ((-53.5 -29.5, -53.5 -29, -54 -29, -54...</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>2</td>
       <td>R1C2</td>
       <td>POLYGON ((-53 -29.5, -53 -29, -53.5 -29, -53.5...</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>3</td>
       <td>R1C3</td>
       <td>POLYGON ((-52.5 -29.5, -52.5 -29, -53 -29, -53...</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>4</td>
       <td>R1C4</td>
       <td>POLYGON ((-52 -29.5, -52 -29, -52.5 -29, -52.5...</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>5</td>
       <td>R1C5</td>
       <td>POLYGON ((-51.5 -29.5, -51.5 -29, -52 -29, -52...</td>
     </tr>
@@ -660,7 +655,7 @@
 </table>
 </div></div></div>
 </div>
-<p>A spatial database is created from the usual setup plus a <code class="docutils literal notranslate"><span class="pre">[spatial]</span></code> section, with the source <code class="docutils literal notranslate"><span class="pre">file</span></code> of the geometries and, if the file has several, the <code class="docutils literal notranslate"><span class="pre">layer</span></code>. The database must be a <code class="docutils literal notranslate"><span class="pre">.gpkg</span></code> file:</p>
+<p>A spatial database is created from the usual setup plus a <code class="docutils literal notranslate"><span class="pre">[spatial]</span></code> section, with the source <code class="docutils literal notranslate"><span class="pre">file</span></code> of the geometries and, if the file has several, the <code class="docutils literal notranslate"><span class="pre">layer</span></code>. The database must be a <code class="docutils literal notranslate"><span class="pre">.gpkg</span></code> file. Each zone gets a generated <code class="docutils literal notranslate"><span class="pre">id</span></code>, which is only stable inside this file, so the <code class="docutils literal notranslate"><span class="pre">name</span></code> is the reference to use elsewhere:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file_specs</span> <span class="o">=</span> <span class="n">write_specs</span><span class="p">(</span>
@@ -887,6 +882,7 @@
 </table>
 </div></div></div>
 </div>
+<p>Only the <code class="docutils literal notranslate"><span class="pre">name</span></code> and the geometry enter the layer by default. Any other column must be declared in a <code class="docutils literal notranslate"><span class="pre">columns_map</span></code>, as <code class="docutils literal notranslate"><span class="pre">{layer</span> <span class="pre">column:</span> <span class="pre">source</span> <span class="pre">column}</span></code>, so the drainage area is declared in the setup below.</p>
 <p>Monthly streamflow is the drainage area times a runoff depth, converted to cubic meters per second. Runoff shares one noise for the whole network, so wet months are wet everywhere:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -899,7 +895,7 @@
     <span class="n">config</span><span class="o">=</span><span class="p">{</span>
         <span class="s2">"database"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"path"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"rivers_db.gpkg"</span><span class="p">)},</span>
         <span class="s2">"specs"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"path"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_specs</span><span class="p">)},</span>
-        <span class="s2">"spatial"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"file"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_rivers</span><span class="p">)},</span>
+        <span class="s2">"spatial"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"file"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_rivers</span><span class="p">),</span> <span class="s2">"columns_map"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"area_km2"</span><span class="p">:</span> <span class="s2">"area_km2"</span><span class="p">}},</span>
     <span class="p">},</span>
     <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
@@ -965,31 +961,172 @@
 </section>
 <section id="sites-weather-stations">
 <h2>Sites: weather stations<a class="headerlink" href="#sites-weather-stations" title="Link to this heading">#</a></h2>
-<p>Points are sites, such as weather stations. The layer only accepts points; any other geometry is refused:</p>
+<p>Points are sites, such as weather stations. This source is a shapefile, and its key is not called <code class="docutils literal notranslate"><span class="pre">name</span></code>, but <code class="docutils literal notranslate"><span class="pre">station</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stations</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
-    <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Coast"</span><span class="p">,</span> <span class="s2">"Valley"</span><span class="p">,</span> <span class="s2">"Plateau"</span><span class="p">]},</span>
+    <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">"station"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Coast"</span><span class="p">,</span> <span class="s2">"Valley"</span><span class="p">,</span> <span class="s2">"Plateau"</span><span class="p">],</span> <span class="s2">"operator"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"INMET"</span><span class="p">,</span> <span class="s2">"INMET"</span><span class="p">,</span> <span class="s2">"ANA"</span><span class="p">]},</span>
     <span class="n">geometry</span><span class="o">=</span><span class="n">gpd</span><span class="o">.</span><span class="n">points_from_xy</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">50.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">52.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">53.2</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">30.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">30.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">28.9</span><span class="p">]),</span>
     <span class="n">crs</span><span class="o">=</span><span class="s2">"EPSG:4674"</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">file_stations</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"sites.gpkg"</span>
-<span class="n">stations</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">file_stations</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="s2">"GPKG"</span><span class="p">)</span>
+<span class="n">file_stations</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"sites.shp"</span>
+<span class="n">stations</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">file_stations</span><span class="p">)</span>
 
 <span class="n">file_specs</span> <span class="o">=</span> <span class="n">write_specs</span><span class="p">(</span>
     <span class="n">file_specs</span><span class="o">=</span><span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"sites_specs.json"</span><span class="p">,</span>
     <span class="n">specs</span><span class="o">=</span><span class="p">[(</span><span class="s2">"TAS_MONTHLY"</span><span class="p">,</span> <span class="s2">"Monthly mean air temperature"</span><span class="p">,</span> <span class="s2">"surface air temperature"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">,</span> <span class="s2">"INMET"</span><span class="p">,</span> <span class="s2">"station"</span><span class="p">)],</span>
 <span class="p">)</span>
-<span class="n">sdb</span> <span class="o">=</span> <span class="n">SitesDB</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Stations"</span><span class="p">)</span>
-<span class="n">sdb</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
-    <span class="n">config</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">"database"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"path"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"sites_db.gpkg"</span><span class="p">)},</span>
-        <span class="s2">"specs"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"path"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_specs</span><span class="p">)},</span>
-        <span class="s2">"spatial"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"file"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_stations</span><span class="p">)},</span>
-    <span class="p">},</span>
-    <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The setup so far was a dict, but it can also be a TOML or JSON file with the same structure. The <code class="docutils literal notranslate"><span class="pre">spatial</span></code> section takes the source <code class="docutils literal notranslate"><span class="pre">file</span></code>, and the <code class="docutils literal notranslate"><span class="pre">columns_map</span></code> declares <code class="docutils literal notranslate"><span class="pre">{layer</span> <span class="pre">column:</span> <span class="pre">source</span> <span class="pre">column}</span></code>. The <code class="docutils literal notranslate"><span class="pre">name</span></code> entry sets the unique key of the sites, from text or integer values, stored as text. A source column may be used more than once, and columns left out of the map stay out of the layer. A shapefile holds a single layer, so there is no <code class="docutils literal notranslate"><span class="pre">layer</span></code> key:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="setup" data-sync-id="toml" for="sd-tab-item-0">
+TOML</label><div class="sd-tab-content docutils">
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[database]</span>
+<span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"outputs/databases/sites_db.gpkg"</span>
+
+<span class="k">[specs]</span>
+<span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"outputs/databases/sites_specs.json"</span>
+
+<span class="k">[spatial]</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"outputs/databases/sites.shp"</span>
+
+<span class="k">[spatial.columns_map]</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"station"</span>
+<span class="n">operator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"operator"</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="setup" data-sync-id="json" for="sd-tab-item-1">
+JSON</label><div class="sd-tab-content docutils">
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"database"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"outputs/databases/sites_db.gpkg"</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"specs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"outputs/databases/sites_specs.json"</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"spatial"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"outputs/databases/sites.shp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"columns_map"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"station"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"operator"</span><span class="p">:</span><span class="w"> </span><span class="s2">"operator"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Lets write the TOML version, and pass its path to <code class="docutils literal notranslate"><span class="pre">.new()</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file_setup</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="s2">"sites_setup.toml"</span>
+<span class="n">file_setup</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">"""[database]</span>
+<span class="s2">path = "</span><span class="si">{</span><span class="p">(</span><span class="n">OUTPUT_DIR</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s1">'sites_db.gpkg'</span><span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
+
+<span class="s2">[specs]</span>
+<span class="s2">path = "</span><span class="si">{</span><span class="n">file_specs</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
+
+<span class="s2">[spatial]</span>
+<span class="s2">file = "</span><span class="si">{</span><span class="n">file_stations</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
+
+<span class="s2">[spatial.columns_map]</span>
+<span class="s2">name = "station"</span>
+<span class="s2">operator = "operator"</span>
+<span class="s2">"""</span><span class="p">,</span>
+    <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="k">try</span><span class="p">:</span>
+<span class="n">sdb</span> <span class="o">=</span> <span class="n">SitesDB</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Stations"</span><span class="p">)</span>
+<span class="n">sdb</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">file_setup</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sdb</span><span class="o">.</span><span class="n">get_features</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>name</th>
+      <th>operator</th>
+      <th>geometry</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>Coast</td>
+      <td>INMET</td>
+      <td>POINT (-50.5 -30.2)</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>Valley</td>
+      <td>INMET</td>
+      <td>POINT (-52 -30)</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>Plateau</td>
+      <td>ANA</td>
+      <td>POINT (-53.2 -28.9)</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>The source format only changes the <code class="docutils literal notranslate"><span class="pre">spatial</span></code> section. A GeoPackage may hold several layers, so the setup names one with <code class="docutils literal notranslate"><span class="pre">layer</span></code>; without it, the first layer is read, with only a warning. A shapefile has two traps of its own. Its field names stop at 10 characters and the map must use them as read, so a field written as <code class="docutils literal notranslate"><span class="pre">station_name</span></code> is mapped as <code class="docutils literal notranslate"><span class="pre">station_na</span></code>. Its CRS lives in the <code class="docutils literal notranslate"><span class="pre">.prj</span></code> file next to it, and without that file the layer has no CRS.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="setup" data-sync-id="toml" for="sd-tab-item-2">
+TOML</label><div class="sd-tab-content docutils">
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[spatial]</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"network.gpkg"</span>
+<span class="n">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"stations"</span>
+
+<span class="k">[spatial.columns_map]</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"station_name"</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="setup" data-sync-id="json" for="sd-tab-item-3">
+JSON</label><div class="sd-tab-content docutils">
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"spatial"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"network.gpkg"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"layer"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stations"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"columns_map"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"station_name"</span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The layer only accepts points; any other geometry is refused:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
     <span class="n">sdb</span><span class="o">.</span><span class="n">insert_features</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">1</span><span class="p">)[[</span><span class="s2">"name"</span><span class="p">,</span> <span class="s2">"geometry"</span><span class="p">]])</span>
 <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
@@ -1002,7 +1139,7 @@
 </div>
 </div>
 </div>
-<p>Networks grow. The <code class="docutils literal notranslate"><span class="pre">.insert_features()</span></code> method adds sites later. Here, a new station comes in UTM coordinates; it is reprojected to the CRS of the layer, and gets the next id:</p>
+<p>Networks grow. The <code class="docutils literal notranslate"><span class="pre">.insert_features()</span></code> method adds sites later. Here, a new station comes in UTM coordinates; it is reprojected to the CRS of the layer, and gets the next id. It takes a <code class="docutils literal notranslate"><span class="pre">columns_map</span></code> as well; layer columns left out stay empty, and columns the layer does not have are refused:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_station</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
@@ -1036,6 +1173,7 @@
       <th></th>
       <th>id</th>
       <th>name</th>
+      <th>operator</th>
       <th>geometry</th>
     </tr>
   </thead>
@@ -1044,24 +1182,28 @@
       <th>0</th>
       <td>1</td>
       <td>Coast</td>
+      <td>INMET</td>
       <td>POINT (-50.5 -30.2)</td>
     </tr>
     <tr>
       <th>1</th>
       <td>2</td>
       <td>Valley</td>
+      <td>INMET</td>
       <td>POINT (-52 -30)</td>
     </tr>
     <tr>
       <th>2</th>
       <td>3</td>
       <td>Plateau</td>
+      <td>ANA</td>
       <td>POINT (-53.2 -28.9)</td>
     </tr>
     <tr>
       <th>3</th>
       <td>4</td>
       <td>Ridge</td>
+      <td>NaN</td>
       <td>POINT (-51.5166 -29.64896)</td>
     </tr>
   </tbody>
@@ -1164,7 +1306,7 @@
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">FieldDB</span></code> is a <code class="docutils literal notranslate"><span class="pre">SitesDB</span></code> meant for in situ measurements, such as a climate station network. It works the same way for now. For samples analysed in a laboratory, see the <a class="reference internal" href="databases_04_lab.html"><span class="doc">Databases - Laboratory</span></a> tutorial.</p>
+<p><code class="docutils literal notranslate"><span class="pre">FieldDB</span></code> is a <code class="docutils literal notranslate"><span class="pre">SitesDB</span></code> meant for in situ measurements, such as a climate station network. It works the same way for now. For samples analysed in a laboratory, see the <a class="reference internal" href="databases_04_lab.html"><span class="doc">Databases - Laboratory</span></a> tutorial. For river reaches with their catchments, see the <a class="reference internal" href="databases_05_hydrology.html"><span class="doc">Databases - Hydrology</span></a> tutorial.</p>
 </div>
 </section>
 <section id="any-geometry-spatialdb">
