@@ -17,8 +17,8 @@ https://pypi.org/project/plans/)
 
 # plans
 
-A simulation tool that supports watershed conservation 
-projects in planning the expansion of nature-based solutions for water
+A simulation tool that supports watershed conservation projects
+in planning the expansion of nature-based solutions for water
 at the hillslope scale.
 
 <a example2>
