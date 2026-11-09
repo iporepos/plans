@@ -1545,9 +1545,9 @@ class SpatialDB(SemiSpatialDB):
     GeoPackage database whose records point to features stored in the same file.
 
     The file holds one layer of features next to the standard tables. Each
-    feature has an ``id``, a unique ``name``, a ``geometry`` and any extra
-    columns of the source. Records carry ``feature_id``, a real foreign key to
-    the layer, so a record cannot point to a missing feature.
+    feature has a generated ``id``, a unique ``name``, a ``geometry`` and the
+    attributes declared in the columns map. Records carry ``feature_id``, a real
+    foreign key to the layer, so a record cannot point to a missing feature.
 
     This class stores any geometry type, mixed in one ``features`` layer.
     Its children :class:`ZonesDB`, :class:`PathsDB` and :class:`SitesDB`
@@ -1569,8 +1569,14 @@ class SpatialDB(SemiSpatialDB):
         file = "my_basins.shp"      # any format geopandas reads
         layer = "basins"            # optional, for files with several layers
 
-    The source needs a ``name`` column with unique values. An integer ``id``
-    column, if present, is kept as the feature id.
+        [spatial.columns_map]       # optional, {layer column: source column}
+        name = "BasinCode"          # the unique key; defaults to a "name" column
+        basin_code = "BasinCode"    # a source column may be used more than once
+        basin_title = "BasinName"
+
+    Only mapped columns enter the layer. Names are stripped text, from text or
+    integer sources, and must be unique. Ids are generated and only stable inside
+    one file, so a source id worth keeping must be mapped as an attribute.
 
     .. warning::
 
@@ -1592,6 +1598,8 @@ class SpatialDB(SemiSpatialDB):
     _PROMOTE_TO_MULTI = False
     # table that the record key points to; None means the layer
     _KEY_TABLE = None
+    # layer columns that a columns map cannot target
+    _RESERVED_COLUMNS = ("id", "geometry")
 
     _QUERY_KEYS = SemiSpatialDB._QUERY_KEYS + ("feature_name",)
 
@@ -1636,6 +1644,7 @@ class SpatialDB(SemiSpatialDB):
                 "Missing [spatial] section with the source 'file' (and optional 'layer')"
             )
         gdf = gpd.read_file(filename=spatial["file"], layer=spatial.get("layer"))
+        gdf = self._select_columns(gdf=gdf, columns_map=spatial.get("columns_map"))
         self._check_features(gdf=gdf)
         self._write_layer(gdf=gdf, file_db=file_db, mode="w")
         return None
@@ -1652,13 +1661,65 @@ class SpatialDB(SemiSpatialDB):
 
     # FEATURES
     # -------------------------------------------------------------------
+    def _clean_names(self, names):
+        # stripped text from text or integers; floats are refused ("83377.0")
+        is_text = pd.api.types.is_string_dtype(names)
+        if names.isna().any() or not (is_text or pd.api.types.is_integer_dtype(names)):
+            raise ValueError(f"Every row of {self._LAYER} needs a text or integer name")
+        names = names.astype(str).str.strip()
+        if (names == "").any():
+            raise ValueError(f"Empty name(s) in {self._LAYER}")
+        return names
+
+    def _select_columns(self, gdf, columns_map=None):
+        # keep the declared columns only; the id is left for GDAL to generate
+        columns_map = {"name": "name", **(columns_map or {})}
+        reserved = {col.lower() for col in columns_map} & set(self._RESERVED_COLUMNS)
+        if reserved:
+            raise ValueError(f"Reserved layer column(s) in map: {sorted(reserved)}")
+        if gdf.geometry.name in columns_map.values():
+            raise ValueError("The geometry column cannot be mapped as an attribute")
+        missing = sorted(set(columns_map.values()) - set(gdf.columns))
+        if missing:
+            raise ValueError(
+                f"Source column(s) {missing} not found; set the name with columns_map. "
+                f"Available: {list(gdf.columns.drop(labels=gdf.geometry.name))}"
+            )
+        gdf = gdf.reset_index(drop=True)
+        data = {col: gdf[source] for col, source in columns_map.items()}
+        data["name"] = self._clean_names(names=data["name"])
+        return gpd.GeoDataFrame(data, geometry=gdf.geometry.values)
+
+    def _layer_fields(self):
+        # layer columns and declared types, in field order; pandas dtypes of the
+        # layer are no use here, since one NULL turns an integer column to float
+        info = self.query_sql(sql=f"PRAGMA table_info({self._LAYER})")
+        info = info[~info["name"].isin(self._RESERVED_COLUMNS)]
+        return dict(zip(info["name"], info["type"]))
+
+    def _check_attributes(self, gdf, fields):
+        # GDAL would not refuse these: it writes by position, and coerces
+        # text in numeric fields to 0.0 and cuts fractions in integer fields
+        unknown = sorted(set(gdf.columns) - set(fields) - {"geometry"})
+        if unknown:
+            raise ValueError(f"Column(s) {unknown} not in the {self._LAYER} layer")
+        for col in gdf.columns.drop(labels=["name", "geometry"]):
+            values, kind = gdf[col].dropna(), fields[col].upper()
+            is_int = "INT" in kind
+            if values.empty or not (is_int or kind in ("REAL", "DOUBLE", "FLOAT")):
+                continue
+            fits = pd.api.types.is_numeric_dtype(values) and (
+                not is_int or (values % 1 == 0).all()
+            )
+            if not fits:
+                raise ValueError(
+                    f"Values of {col!r} do not fit its {kind} field in {self._LAYER}"
+                )
+        return None
+
     def _check_features(self, gdf):
-        # require unique text names and non-empty geometries of the accepted types
-        if "name" not in gdf.columns:
-            raise ValueError(f"The {self._LAYER} layer needs a 'name' column")
+        # require unique names and non-empty geometries of the accepted types
         names = gdf["name"]
-        if names.isna().any() or not pd.api.types.is_string_dtype(names):
-            raise ValueError(f"Every row of {self._LAYER} needs a text name")
         dups = sorted(set(names[names.duplicated()]))
         if dups:
             raise ValueError(f"Duplicate {self._LAYER} name(s): {dups}")
@@ -1711,20 +1772,26 @@ class SpatialDB(SemiSpatialDB):
         # the table records point to: _KEY_TABLE, or the layer
         return self._KEY_TABLE or self._LAYER
 
-    def insert_features(self, gdf):
+    def insert_features(self, gdf, columns_map=None):
         """
         Append features to the layer.
 
-        Names must be new to the layer. Geometries are reprojected to the layer
-        CRS. The write goes through geopandas on its own connection, so it cannot
-        run inside a :meth:`transaction` block.
+        Names must be new to the layer, and ids are generated. Only mapped
+        columns are read: they must exist in the layer, and layer columns left
+        out are stored as NULL. Geometries are reprojected to the layer CRS. The
+        write goes through geopandas on its own connection, so it cannot run
+        inside a :meth:`transaction` block.
 
-        :param gdf: features with a ``name`` column and optional extra columns
+        :param gdf: source features
         :type gdf: geopandas.GeoDataFrame
+        :param columns_map: column mapping ``{layer_col: source_col}``; ``name``
+            defaults to a source column of that name
+        :type columns_map: dict, optional
         :return: None
         :rtype: None
-        :raises ValueError: if names are missing, repeated or taken, geometry types
-            are not accepted, or ``gdf`` has no CRS while the layer has one
+        :raises ValueError: if names are missing, repeated or taken, a mapped column
+            is reserved, missing or not fit for the layer, geometry types are not
+            accepted, or ``gdf`` has no CRS while the layer has one
         :raises RuntimeError: if called inside an open transaction
         """
         if self._tx_depth or self.conn.in_transaction:
@@ -1732,17 +1799,22 @@ class SpatialDB(SemiSpatialDB):
                 "insert_features cannot run inside an open transaction; "
                 "GDAL writes through its own connection"
             )
+        gdf = self._select_columns(gdf=gdf, columns_map=columns_map)
         self._check_features(gdf=gdf)
         taken = sorted(set(gdf["name"]) & set(self._name_lookup(table=self._LAYER)))
         if taken:
             raise ValueError(f"{self._LAYER} name(s) already in the database: {taken}")
-        crs = gpd.read_file(filename=self.file_db, layer=self._LAYER, rows=0).crs
+        fields = self._layer_fields()
+        self._check_attributes(gdf=gdf, fields=fields)
+        crs = gpd.read_file(filename=self.file_db, layer=self._LAYER, rows=1).crs
         if crs is not None:
             if gdf.crs is None:
                 raise ValueError(
                     f"Geometries have no CRS; the layer uses {crs.to_string()}"
                 )
             gdf = gdf.to_crs(crs=crs)
+        # GDAL appends by position, so columns must follow the layer order
+        gdf = gdf.reindex(columns=[*fields, "geometry"])
         self._write_layer(gdf=gdf, file_db=self.file_db, mode="a")
         return None
 

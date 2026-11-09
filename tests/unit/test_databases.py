@@ -1031,8 +1031,9 @@ class TestZonesDB(unittest.TestCase):
     def setUpClass(cls):
         """
         Runs once before all tests in this class: create a zones database from
-        a source layer with ids 10 (A, polygon) and 20 (B, multi-polygon), and
-        two months of records for each zone.
+        a source layer with zones A (polygon) and B (multi-polygon), whose source
+        ids 10 and 20 give way to generated ids 1 and 2, and two months of
+        records for each zone.
         """
         cls.temp_dir = Path(tempfile.mkdtemp())
         cls.file_specs = cls.temp_dir / "specs.json"
@@ -1055,7 +1056,7 @@ class TestZonesDB(unittest.TestCase):
                 {
                     "datetime": ["2000-01-01", "2000-02-01"] * 2,
                     "value": [11.0, 12.0, 21.0, 22.0],
-                    "zone_id": [10, 10, 20, 20],
+                    "zone_id": [1, 1, 2, 2],
                 }
             ),
             spec_name="PPT",
@@ -1076,15 +1077,19 @@ class TestZonesDB(unittest.TestCase):
         # setup dict; spatial=False leaves out the [spatial] section
         cfg = {"database": {"path": str(path)}, "specs": {"path": str(cls.file_specs)}}
         if spatial:
-            cfg["spatial"] = {"file": str(cls.file_source), "layer": "basins"}
+            cfg["spatial"] = {
+                "file": str(cls.file_source),
+                "layer": "basins",
+                "columns_map": {"code": "code"},
+            }
         return cfg
 
     # -------------------------------------------------------------------
     # creation
     # -------------------------------------------------------------------
-    def test_layer_keeps_ids_and_columns(self):
+    def test_layer_generates_ids_and_maps_columns(self):
         gdf = self.db.get_features(names=["A", "B"])
-        self.assertEqual(gdf["id"].tolist(), [10, 20])
+        self.assertEqual(gdf["id"].tolist(), [1, 2])
         self.assertEqual(gdf["code"].tolist(), ["a", "b"])
         self.assertEqual(set(gdf.geom_type), {"MultiPolygon"})
 
@@ -1124,7 +1129,7 @@ class TestZonesDB(unittest.TestCase):
         )
         self.db.insert_features(gdf=gdf)
         zone = self.db.get_features(names="C")
-        self.assertEqual(zone["id"].iloc[0], 21)
+        self.assertEqual(zone["id"].iloc[0], 3)
         self.assertLess(zone.geometry.iloc[0].bounds[2], 1)  # degrees, not meters
         with self.assertRaises(ValueError) as ctx:
             self.db.insert_features(gdf=gdf)
@@ -1162,7 +1167,7 @@ class TestZonesDB(unittest.TestCase):
     def test_query_by_name_and_id(self):
         df = self.db.query_records(query_dict={"zone_name": "B"})
         self.assertEqual(df["value"].tolist(), [21.0, 22.0])
-        df = self.db.query_records(query_dict={"zone_name": "B", "zone_id": 10})
+        df = self.db.query_records(query_dict={"zone_name": "B", "zone_id": 1})
         self.assertEqual(len(df), 0)  # filters combine with AND
         with self.assertRaises(ValueError):
             self.db.query_records(query_dict={"zone_name": "NOPE"})
@@ -1170,7 +1175,189 @@ class TestZonesDB(unittest.TestCase):
     def test_wide(self):
         df = self.db.query_records(query_dict={"spec_name": "PPT", "wide": True})
         self.assertEqual(df.columns.names, ["spec_name", "zone_id"])
-        self.assertEqual(df[("PPT", 20)].tolist(), [21.0, 22.0])
+        self.assertEqual(df[("PPT", 2)].tolist(), [21.0, 22.0])
+
+
+class TestSpatialColumns(unittest.TestCase):
+    """
+    Columns map of the layer, run once on SitesDB: names come from an integer
+    code, and the source ``id``, ``name`` and ``junk`` columns are not the layer's.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Runs once before all tests in this class.
+        """
+        cls.temp_dir = Path(tempfile.mkdtemp())
+        cls.file_specs = cls.temp_dir / "specs.json"
+        cls.file_specs.write_text(
+            json.dumps([dict(SPECS[0], name="PPT")]), encoding="utf-8"
+        )
+        cls.file_source = cls.temp_dir / "source.gpkg"
+        gpd.GeoDataFrame(
+            {
+                "id": [50, 60],
+                "name": ["Official A", "Official B"],
+                "StationCode": [83377, 83378],
+                "Area": [1.5, 2.5],
+                "Count": [3, 4],
+                "junk": ["j", "k"],
+            },
+            geometry=[Point(0, 0), Point(1, 1)],
+            crs="EPSG:4326",
+        ).to_file(filename=cls.file_source, driver="GPKG")
+        cls.db = SitesDB(name="sites")
+        cls.db.new(
+            config=cls._config(
+                path=cls.temp_dir / "sites.gpkg",
+                columns_map={
+                    "name": "StationCode",
+                    "station_code": "StationCode",
+                    "title": "name",
+                    "area": "Area",
+                    "count": "Count",
+                },
+            )
+        )
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Runs once after all tests in this class.
+        """
+        cls.db.close()
+        shutil.rmtree(cls.temp_dir)
+        return None
+
+    @classmethod
+    def _config(cls, path, columns_map):
+        # setup dict with a columns map
+        return {
+            "database": {"path": str(path)},
+            "specs": {"path": str(cls.file_specs)},
+            "spatial": {"file": str(cls.file_source), "columns_map": columns_map},
+        }
+
+    def _insert(self, data, columns_map=None):
+        # append one row per value of the first column
+        rows = len(next(iter(data.values())))
+        self.db.insert_features(
+            gdf=gpd.GeoDataFrame(
+                data, geometry=[Point(2, 2)] * rows, crs="EPSG:4326"
+            ),
+            columns_map=columns_map,
+        )
+
+    def _row(self, name):
+        # one row of the layer as a dict
+        return self.db.get_features(names=name).iloc[0].to_dict()
+
+    # -------------------------------------------------------------------
+    # creation
+    # -------------------------------------------------------------------
+    def test_new_maps_declared_columns_only(self):
+        row = self._row(name="83377")
+        self.assertEqual(row["id"], 1)
+        self.assertEqual(row["station_code"], 83377)  # one source, two columns
+        self.assertEqual(row["title"], "Official A")
+        self.assertNotIn("junk", row)
+        self.assertNotIn("StationCode", row)
+
+    def test_new_failure_leaves_no_file(self):
+        path = self.temp_dir / "x.gpkg"
+        with self.assertRaises(ValueError):
+            SitesDB(name="bad").new(
+                config=self._config(path=path, columns_map={"id": "id"})
+            )
+        self.assertFalse(path.exists())
+
+    # -------------------------------------------------------------------
+    # append
+    # -------------------------------------------------------------------
+    def test_append_writes_by_name(self):
+        # GDAL writes by position: map order, swapped fields and a late name
+        self._insert(
+            data={"c": [7], "a": [100.0], "t": ["tt"], "k": ["BYNAME"]},
+            columns_map={"count": "c", "area": "a", "title": "t", "name": "k"},
+        )
+        row = self._row(name="BYNAME")
+        self.assertEqual(row["count"], 7)
+        self.assertEqual(row["area"], 100.0)
+        self.assertEqual(row["title"], "tt")
+
+    def test_append_leaves_null_and_ignores_unmapped(self):
+        self._insert(data={"name": ["PLAIN"], "Area": [9.0]})
+        row = self._row(name="PLAIN")
+        self.assertTrue(pd.isna(row["area"]))
+        self.assertTrue(pd.isna(row["title"]))
+
+    def test_append_refuses_unfit_columns(self):
+        # a NULL in the integer field must not hide its declared type
+        self._insert(data={"name": ["NULLS"]})
+        cases = {
+            "new_column": {"rainfall": [7.0]},
+            "text_in_real": {"area": ["big"]},
+            "text_in_integer": {"count": ["big"]},
+            "fraction_in_integer": {"count": [7.9]},
+        }
+        for label, attrs in cases.items():
+            with self.subTest(label=label):
+                with self.assertRaises(ValueError):
+                    self._insert(
+                        data={"name": [label], **attrs},
+                        columns_map={col: col for col in attrs},
+                    )
+                self.assertNotIn(label, self.db.get_features()["name"].tolist())
+        # a whole number still fits, as sources with gaps read integers as float
+        self._insert(
+            data={"name": ["WHOLE"], "c": [7.0]}, columns_map={"count": "c"}
+        )
+        self.assertEqual(self._row(name="WHOLE")["count"], 7)
+
+    # -------------------------------------------------------------------
+    # names and map
+    # -------------------------------------------------------------------
+    def test_names_are_cleaned_or_refused(self):
+        self._insert(data={"name": [" PADDED "]})
+        self.assertEqual(self._row(name="PADDED")["name"], "PADDED")
+        cases = {
+            "float": [1.0],
+            "missing": [None],
+            "blank": ["  "],
+            "taken_after_strip": [" 83377 "],
+            "repeated_after_strip": ["D ", "D"],
+        }
+        for label, names in cases.items():
+            with self.subTest(label=label):
+                with self.assertRaises(ValueError):
+                    self._insert(data={"name": names})
+
+    def test_bad_map(self):
+        cases = {
+            "reserved_id": {"id": "x"},
+            "reserved_geometry_any_case": {"Geometry": "x"},
+            "geometry_as_attribute": {"shape": "geometry"},
+            "missing_source": {"area": "nope"},
+            "name_not_in_source": {"name": "nope"},
+        }
+        for label, columns_map in cases.items():
+            with self.subTest(label=label):
+                with self.assertRaises(ValueError):
+                    self._insert(
+                        data={"name": [label], "x": [1]}, columns_map=columns_map
+                    )
+
+    def test_records_by_mapped_name(self):
+        self.db.insert_records(
+            dataframe=pd.DataFrame(
+                {"datetime": ["2000-01-01"], "value": [1.0], "site_name": ["83378"]}
+            ),
+            spec_name="PPT",
+            flag=1,
+        )
+        df = self.db.query_records(query_dict={"site_name": "83378"})
+        self.assertEqual(df["site_id"].tolist(), [2])
 
 
 class TestLabDB(unittest.TestCase):

@@ -1,5 +1,64 @@
 # Memory Log
 
+## 2026-11-09 — `SpatialDB` columns map wrapped: unit tests and tutorial 03 updated
+Ipo skipped the soft test and asked to finish.
+- `test_databases`: `TestZonesDB` moved to generated ids, new `TestSpatialColumns` (one database). 116 tests pass on the system Python (geopandas 1.1.2) and `.venv` (1.2.0).
+- `databases_03_spatial`: prose and code updated, `columns_map` shown on rivers (`area_km2`) and sites (`name` from `station`, plus `operator`); executed with nbclient from `.venv` in the scratchpad. Only cells 7 and 27 changed output. Tutorial 04 needs no change. Full Sphinx site build not run.
+- Still open: the INMET build scripts in `prompts/outputs` were not updated.
+
+## 2026-11-09 — `SpatialDB` columns map patched, awaiting Ipo's soft test; unit tests not yet updated
+Supersedes the recommendations in the entry below. Ipo chose agnostic physical `id`/`name` columns, so no `LabDB` layer key and no change in `src/plans/data`.
+- `[spatial.columns_map]` and `insert_features(gdf, columns_map=None)` take `{layer_col: source_col}`. Named `columns_map` to match the existing parameter. Only mapped columns enter the layer; `name` defaults to a source `name` column; `id` and `geometry` are reserved. Ids are always generated.
+- Names: text or integer, stripped, unique; floats, missing and blank refused.
+- Append now reorders to the layer's field order and refuses unknown columns, text in numeric fields and fractions in integer fields. Field types come from `PRAGMA table_info`: pandas dtypes change with NULLs, and geopandas `rows=0` reads the whole layer, so the CRS read uses `rows=1`.
+- `test_databases`: `TestZonesDB.setUpClass` errors on old ids `[10, 20]`. On a scratchpad copy with those ids changed, 3 of 108 fail, all old-id expectations (`test_wide`, `test_insert_features`, `test_layer_keeps_ids_and_columns`). Tutorials 03 and 04 code cells ran as scripts; saved outputs and prose not reviewed.
+- INMET build scripts in `prompts/outputs` rely on source ids and extra columns, so they need updating before the next build.
+
+## 2026-11-09 — Design review (not implemented): layer key and attribute columns; append bug found
+Ipo's proposal: a declared unique source column becomes `site_name` (string), `site_id` is always generated, and other columns enter only through an explicit map. No source code changed; probes ran in the scratchpad only.
+- **Bug confirmed in `insert_features`:** GDAL append writes attributes by position, not name. Swapped columns exchange values, a new numeric column lands in an existing one with no warning, and a gdf with `name` not first stores another column as the key after the name checks passed. A new text column in a numeric slot becomes 0.0 with only a RuntimeWarning.
+- GDAL findings: no id column gives ids 1..n; `FID="site_id"` works and accepts foreign keys; a source column named like the FID is taken as the id, so it must be dropped.
+- Recommended to Ipo, awaiting decisions: one `columns_map` `{db_col: source}` instead of `column_unique` plus `rename` (matches the existing direction); physical `site_id`/`site_name` columns, with a separate layer key because `LabDB._FEATURE_KEY` is `mixture_id`; accept str and int names, reject float.
+- Needs approval when implemented: `sql/spatial/layer.sql`, `sql/spatial/records.sql`, `sql/lab/samples.sql`.
+
+## 2026-11-06 — Operation session: INMET hourly SitesDB build started
+`prompts/outputs/inmet_hourly/build_sitesdb.py` -> `inmet_hourly.gpkg` (564 stations, 9 specs, ~547M records, est. ~44 GB). Full dataset chosen by Ipo.
+- Source `rad` overflowed its SMALLINT packing (>3276.7 kJ/m2 wraps negative); Ipo chose to load as is, so negatives get flagged suspect.
+- Pressure hPa -> kPa, humidity % -> fraction; statistics: instant (ap, tas, tdp, hur, windd), sum (p, rad), maximum (windg), mean (winds).
+- Loaded station by station (source fid blocks, one transaction each) to fit memory.
+- Run killed by Claude Code (system low on memory) at station 76/564 after 57 min; 6 GB partial file kept. Per-station time grew ~10 s -> 60-90 s (index upkeep), so a full run as written would take many hours. Not restarted.
+
+## 2026-11-06 — Operation session: INMET daily SitesDB built
+Built `prompts/outputs/inmet_daily/inmet_daily.gpkg` (SitesDB, 135 stations, 9 specs, 20.4M records, 1.7 GB, ~8 min) with `build_sitesdb.py` in the same folder. No source code changed.
+- Site `name` = INMET station code (stable key); official station name kept as `label`; site id = source `id_station`.
+- Humidity converted % -> fraction to match the catalog domain `[0U1]`; all specs use scale 1, offset 0.
+- Source no-data (-9999) dropped (`nan_policy="drop"`), batch flag `regular`; 1 negative Piché evaporation flagged suspect.
+
+## 2026-11-06 — OPEN DESIGN (not implemented): static attributes of spatial features
+**Current behavior:** `SpatialDB.new()` copies every source column into the layer (`id`, `name`, `geometry` plus extras such as `area_km2` and `code`). They are untyped, have no units and are undocumented. What `insert_features` does with columns new to the layer is untested.
+
+**Agreed split (Ipo):**
+- Attributes that change over time and are numeric (eg % forest cover per year) are records with a spec.
+- Fixed attributes, numeric (basin area, which Ipo finds controversial but not time-varying) or descriptive (operator company, river name), are attributes, not records.
+- Ipo is wary of the database carrying information beyond what querying needs, and of the burden of documenting columns.
+
+**Proposal under discussion (Claude):**
+- Keep the layer as the wide attributes table, instead of a separate `attributes` table, which would duplicate it and not show in QGIS.
+- Policy: the core (queries, keys, checks) never uses attributes; they serve analysis through `get_features()` and merge.
+- Optional documentation through the GeoPackage schema extension `gpkg_data_columns` (title and description per column), possibly fed from `[spatial.columns]` in the setup. Do not refuse undocumented columns.
+- A possible `add_attribute(name, values, description=...)`.
+
+**Before deciding:** test in the scratchpad that plain-SQLite `ALTER TABLE ADD COLUMN` and `UPDATE` of non-geometry columns work with the GDAL triggers, and that GDAL reads `gpkg_data_columns` back (as aliases/comments). Next step options given to Ipo: (1) run that test and propose code, or (2) only document the current behavior and policy in the `SpatialDB` docstring.
+
+**Other pending items from this session:**
+- `GeoUnivar` `edgecolor_map="none"` default hides lines; fix in `analyst.py`.
+- Vault fixes to mirror: HYC100 Discharge stub; aliases RAIN, FS and SRVI.
+- The water quality glossary is to become vault notes.
+- Possible `static` statistic.
+- LabDB loaders for the lab results tables.
+- A standards/thresholds table.
+- Full Sphinx site build not yet run.
+
 ## 2026-11-06 — Four database tutorials added to `docs/tutorials` and listed in `examples.rst` after `univar_03_geo`
 - `databases_01`: DataBase, one station, monthly temperature and rain; void and suspect flags, long and wide queries, metadata.
 - `databases_02_semispatial`: a 30-station network; external station GeoPackage joined with `merge`; GeoUnivar map; spatial selection to ids.
